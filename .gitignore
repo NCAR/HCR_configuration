@@ -38,3 +38,7 @@ __makefile.template
 
 projDir/data
 projDir/logs
+
+projDir/control/crontab
+projDir/control/data_list
+projDir/control/proc_list

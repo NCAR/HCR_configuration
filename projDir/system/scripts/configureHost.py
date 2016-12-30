@@ -138,6 +138,16 @@ def main():
     cmd = "ln -s " + gitProjDir
     runCommand(cmd)
     
+    # make link to proc_list, crontab and data_list
+
+    os.chdir(controlDir)
+    cmd = "ln -s proc_list." + hostType + " proc_list"
+    runCommand(cmd)
+    cmd = "ln -s crontab." + hostType + " crontab"
+    runCommand(cmd)
+    cmd = "ln -s data_list." + hostType + " data_list"
+    runCommand(cmd)
+    
     ############################################
     # data dir - specific to the host type
     # populate installed data dir /data/hcr
