@@ -195,6 +195,13 @@ if ($?prompt) then
   alias L ls -agl
   alias LS ls -aFRts 
 
+  alias gstat 'git status'
+  alias gcom 'git commit -am \!*'
+  alias gpush 'git push'
+  alias gpull 'git pull'
+  alias gdiff 'git diff '
+  alias gdt 'git difftool -g -y '
+
   alias xx 'xrdb ~/.Xdefaults'
   alias cvs 'cvs -d :pserver:${CVSUSER}@localhost:/cvs \!*'
   alias cvsforward 'ssh -a -x -C -Y -R 2401:localhost:2401 -R 8888:localhost:8888'

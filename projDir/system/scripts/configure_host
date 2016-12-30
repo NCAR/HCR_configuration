@@ -17,6 +17,10 @@
 
 export PATH=.:/bin:/usr/bin:/sbin:/usr/sbin:/usr/bin/X11:/usr/local/bin:/usr/local/sbin
 
+DATA_DIR="/data/hcr"
+GIT_REPO_DIR="/home/hcr/git/HCR_configuration"
+debug=false
+
 #--------------------------------------------------------------------
 # usage function
 #
@@ -28,19 +32,17 @@ function usage() {
     echo "  -h:  produce this usage list"
     echo "  -d:  turn debugging on"
     echo "  -v:  version"
-    echo "  -r:  specify root directory (required arg)"
-    echo "       This dir contains projects, apps and libs"
+    echo "  -r:  specify repository directory"
+    echo "       This dir, in git, contains projDir"
+    echo "       default is: $GIT_REPO_DIR"
     echo "  -D:  specify data dir"
-    echo "       i.e. the top dir for the data"
+    echo "       this is the top dir for the data"
+    echo "       default is: $DATA_DIR"
     echo
 }
 
 #--------------------------------------------------------------------
 # check args
-
-DATA_DIR="/data/hcr"
-ROOT_DIR="not_set"
-debug=false
 
 # Parse command line options.
 while getopts hvdr:D: OPT; do
@@ -53,11 +55,11 @@ while getopts hvdr:D: OPT; do
             debug=true
             ;;
         v)
-            echo "`basename $0` version 1.0"
+            echo "`basename $0` version 1.1"
             exit 0
             ;;
         r)
-            ROOT_DIR=$OPTARG
+            GIT_REPO_DIR=$OPTARG
             ;;
         D)
             DATA_DIR=$OPTARG
@@ -74,30 +76,21 @@ done
 # Remove the switches we parsed above.
 shift `expr $OPTIND - 1`
 
-if [ "$ROOT_DIR" == "not_set" ] 
-then
-    echo
-    echo "ERROR - bad command line"
-    echo "  Must specify root dir using -r option"
-    usage
-    exit -1
-fi
-
 if [ "$debug" == "true" ]
 then
-    echo "ROOT_DIR is $ROOT_DIR"
+    echo "GIT_REPO_DIR is $GIT_REPO_DIR"
     echo "DATA_DIR is $DATA_DIR"
-    echo "debug is $debug"
+    echo "debug is true"
 fi
 
 # set directory paths
 
-cvs_hcr_dir=$ROOT_DIR/projects/hcr
-cvs_proj_dir=$cvs_hcr_dir/projDir
-system_dir=$cvs_proj_dir/system
+git_repo_dir=$GIT_REPO_DIR/projects/hcr
+git_proj_dir=$git_repo_dir/projDir
+system_dir=$git_proj_dir/system
 
-echo "cvs_hcr_dir: $cvs_hcr_dir"
-echo "cvs_proj_dir: $cvs_proj_dir"
+echo "git_repo_dir: $git_repo_dir"
+echo "git_proj_dir: $git_proj_dir"
 echo "system_dir: $system_dir"
 
 #-- get current host type if possible -------------------------------
@@ -115,7 +108,7 @@ fi
 #-- get host type ---------------------------------------------------
 
 while [ "$host_type" != archiver -a \
-        "$host_type" != hcrdrx ]
+        "$host_type" != drx ]
 
 do
 
@@ -123,13 +116,13 @@ echo "Choose host type from the following list"
 echo " or hit enter to use existing host type as shown:"
 echo
 echo "    archiver"
-echo "    hcrdrx"
+echo "    drx"
 read -ep "    ......($installed_host_type)? " host_type
 test "$host_type" || host_type=$installed_host_type
 echo
 
 if [ "$host_type" != archiver -a \
-     "$host_type" != hcrdrx ]
+     "$host_type" != drx ]
 
 then
 
@@ -178,7 +171,7 @@ done
 
 cd $HOME
 /bin/mv -f projDir $backup_links_dir
-ln -s $cvs_proj_dir
+ln -s $git_proj_dir
 
 ############################################
 # data dir - specific to the host type
@@ -186,7 +179,7 @@ ln -s $cvs_proj_dir
 #   which must be writable by hcr
 # make link to data dir
 
-cvs_data_dir=$cvs_hcr_dir/data_dirs/data.${host_type}
+cvs_data_dir=$git_repo_dir/data_dirs/data.${host_type}
 inst_data_dir=$DATA_DIR/data.${host_type}
 
 cd $HOME/projDir
