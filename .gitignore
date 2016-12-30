@@ -34,3 +34,7 @@ __makefile.template
 
 # Binaries
 
+# Links
+
+projDir/data
+projDir/logs

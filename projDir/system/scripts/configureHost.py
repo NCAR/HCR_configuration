@@ -48,7 +48,7 @@ def main():
     # compute paths
 
     gitProjDir = os.path.join(options.gitDir, 'projDir')
-    gitSystemDir = os.path.join(options.gitDir, 'system')
+    gitSystemDir = os.path.join(gitProjDir, 'system')
     
     # debug print
 
@@ -98,8 +98,7 @@ def main():
             print >>sys.stderr, "ERROR - invalid host type: ", hostType
             sys.exit(1)
 
-    hostTypeDir = os.path.join(options.gitDir, hostType)
-    gitProjDir = os.path.join(hostTypeDir, "projDir")
+    gitProjDir = os.path.join(options.gitDir, "projDir")
 
     # save the host type to ~/.host_type
 
@@ -124,7 +123,7 @@ def main():
     # make links to the dotfiles in git projDir
     
     os.chdir(homeDir)
-    for rootName in ['cshrc', 'emacs', 'Xdefaults' ]:
+    for rootName in ['cshrc', 'bashrc', 'emacs', 'Xdefaults' ]:
         dotName = '.' + rootName
         removeSymlink(homeDir, dotName)
         sourceDir = os.path.join(gitSystemDir, 'dotfiles')
