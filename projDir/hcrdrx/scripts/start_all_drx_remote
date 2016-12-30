@@ -1,0 +1,14 @@
+#! /bin/csh -f
+
+# start processes on drx
+
+ssh hcr@rds projDir/system/scripts/start_all
+
+# start up montor
+
+start_procmap_monitor.drx
+
+
+
+
+

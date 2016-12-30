@@ -1,0 +1,10 @@
+#! /bin/csh -f
+
+cd $PROJ_DIR/time_series/params
+
+running "TsPrint -params TsPrint.power_server"
+if ($status == 1) then
+  TsPrint -params TsPrint.power_server |& \
+    LogFilter -d $ERRORS_LOG_DIR -p TsPrint -i power_server &
+endif
+

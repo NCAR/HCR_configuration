@@ -1,0 +1,10 @@
+#! /bin/csh -f
+
+cd $PROJ_DIR/time_series/params
+
+running "Fmq2Fmq -params Fmq2Fmq.time_series"
+if ($status == 1) then
+  Fmq2Fmq -params Fmq2Fmq.time_series |& \
+    LogFilter -d $ERRORS_LOG_DIR -p Fmq2Fmq -i time_series &
+endif
+

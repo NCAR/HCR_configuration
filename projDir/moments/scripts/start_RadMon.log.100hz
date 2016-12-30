@@ -1,0 +1,11 @@
+#! /bin/csh -f
+
+cd $PROJ_DIR/moments/params
+
+running "RadMon -params RadMon.log.100hz"
+if ($status == 1) then
+  RadMon -params RadMon.log.100hz |& \
+    LogFilter -d $ERRORS_LOG_DIR -p RadMon -i log.100hz &
+endif
+
+

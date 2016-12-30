@@ -1,0 +1,8 @@
+#! /bin/csh -f
+
+cd $PROJ_DIR/moments/params
+
+RadMon -params RadMon.summary.100hz
+
+
+

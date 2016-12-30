@@ -1,0 +1,3 @@
+#! /bin/csh -f
+
+ssh hcr@rds projDir/hcrdrx/scripts/start_hcrdrx.ops 

@@ -1,0 +1,13 @@
+#! /bin/csh -f
+
+cd $HOME/workspace/hcr/src/HcrPmc730Daemon
+
+running "HcrPmc730Daemon"
+if ($status == 0) then
+    exit 0
+endif
+
+snuff HcrPmc730Daemon
+
+HcrPmc730Daemon |& LogFilter -d $ERRORS_LOG_DIR -p HcrPmc730Daemon -i ops &
+

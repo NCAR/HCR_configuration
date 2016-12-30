@@ -1,0 +1,10 @@
+#! /bin/csh -f
+
+cd $PROJ_DIR/ingest/params
+
+running "AcGeoref2Spdb -params AcGeoref2Spdb.fog"
+if ($status == 1) then
+  AcGeoref2Spdb -params AcGeoref2Spdb.fog -debug |& \
+    LogFilter -d $ERRORS_LOG_DIR -p AcGeoref2Spdb -i fog &
+endif
+

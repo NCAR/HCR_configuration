@@ -1,0 +1,20 @@
+#! /bin/csh -f
+
+cd $HOME/HCR_instrument/src/MotionControl/
+
+running "MotionControlDaemon"
+if ($status == 0) then
+    exit 0
+endif
+
+snuff MotionControlDaemon
+
+limit coredumpsize unlimited
+#set rotCorr="-3.10"	# measured in hangar 20160914
+#set tiltCorr="-2.86"	# measured in hangar 20160914
+set rotCorr="-3.10"	# measured in hangar 20160914
+set tiltCorr="-3.86"	# measured in hangar 20160914
+MotionControlDaemon \
+    --rotBeamAngleCorrection $rotCorr --tiltBeamAngleCorrection $tiltCorr |& \
+    LogFilter -d $ERRORS_LOG_DIR -p MotionControlDaemon -i ops &
+

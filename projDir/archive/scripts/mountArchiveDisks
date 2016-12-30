@@ -1,0 +1,8 @@
+#! /bin/csh -f
+
+#
+# mount the archive disks
+#
+
+mount /usb/HCR_a
+mount /usb/HCR_b

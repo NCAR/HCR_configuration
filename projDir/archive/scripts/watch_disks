@@ -1,0 +1,11 @@
+#! /bin/csh -f
+
+#
+# watch the USB drives for writing data
+#
+
+while (1)
+  echo "================================================================"
+  df -m
+  sleep 5
+end

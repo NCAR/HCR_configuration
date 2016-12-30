@@ -1,0 +1,10 @@
+#! /bin/csh -f
+
+cd $PROJ_DIR/moments/params
+
+running "RadxDwellCombine -params RadxDwellCombine.realtime.10hz"
+if ($status == 1) then
+  RadxDwellCombine -params RadxDwellCombine.realtime.10hz -debug |& \
+    LogFilter -d $ERRORS_LOG_DIR -p RadxDwellCombine -i realtime.10hz &
+endif
+

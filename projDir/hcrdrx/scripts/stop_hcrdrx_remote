@@ -1,0 +1,4 @@
+#! /bin/csh -f
+
+ssh hcr@rds projDir/hcrdrx/scripts/stop_hcrdrx
+ 

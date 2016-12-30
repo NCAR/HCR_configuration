@@ -1,0 +1,10 @@
+#! /bin/csh -f
+
+cd $PROJ_DIR/moments/params
+
+running "Iq2Dsr -params Iq2Dsr.100hz"
+if ($status == 1) then
+  Iq2Dsr -params Iq2Dsr.100hz -debug |& \
+    LogFilter -d $ERRORS_LOG_DIR -p Iq2Dsr -i 100hz &
+endif
+

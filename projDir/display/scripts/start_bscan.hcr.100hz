@@ -1,0 +1,15 @@
+#! /bin/csh
+
+rehash
+
+# start BSCAN in archive mode
+
+setenv PROJ_DIR /opt/local/hcr/projDir
+cd $PROJ_DIR/display/params
+
+if ($#argv < 6) then
+  HawkEye -params HawkEye.bscan.100hz >& /dev/null &
+else
+  HawkEye -params HawkEye.bscan.100hz -start_time "$1 $2 $3 $4 $5 $6" >& /dev/null &
+endif
+

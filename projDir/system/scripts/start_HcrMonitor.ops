@@ -1,0 +1,14 @@
+#! /bin/csh -f
+
+cd $HOME/workspace/hcr/src/HcrMonitor/
+
+running "HcrMonitor"
+if ($status == 0) then
+    exit 0
+endif
+
+snuff HcrMonitor
+
+limit coredumpsize unlimited
+HcrMonitor |& LogFilter -d $ERRORS_LOG_DIR -p HcrMonitor -i ops &
+

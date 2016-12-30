@@ -1,0 +1,8 @@
+#! /bin/csh -f
+
+xterm -title AcGeorefCompare.ops -bg black -fg yellow -g 90x35-0-0 -fn fixed -e tail -f $DATA_DIR/logs/status/today/AcGeorefCompare.ops.log &
+
+
+
+
+

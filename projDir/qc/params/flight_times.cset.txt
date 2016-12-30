@@ -1,0 +1,204 @@
+Reading RAF netcdf file: /scr/eldora1/rsfdata/cset/gv_data/CSETff01.nc
+  _timeCoordName: Time
+  _latCoordName: LATC
+  _lonCoordName: LONC
+  _callSign: N677F
+  _projectName: CSET
+  _flightNum: ff01
+==>> nTimes: 16201
+==>> Time units: seconds since 2015-06-29 00:00:00 +0000
+==>> Time base: 2015/06/29 00:00:00
+==>> startTime: 2015/06/29 16:00:00
+==>> endTime: 2015/06/29 20:30:00
+Reading RAF netcdf file: /scr/eldora1/rsfdata/cset/gv_data/CSETrf01.nc
+  _timeCoordName: Time
+  _latCoordName: LATC
+  _lonCoordName: LONC
+  _callSign: N677F
+  _projectName: CSET
+  _flightNum: rf01
+==>> nTimes: 18001
+==>> Time units: seconds since 2015-07-01 00:00:00 +0000
+==>> Time base: 2015/07/01 00:00:00
+==>> startTime: 2015/07/01 17:25:00
+==>> endTime: 2015/07/01 22:25:00
+Reading RAF netcdf file: /scr/eldora1/rsfdata/cset/gv_data/CSETrf02.nc
+  _timeCoordName: Time
+  _latCoordName: LATC
+  _lonCoordName: LONC
+  _callSign: N677F
+  _projectName: CSET
+  _flightNum: rf02
+==>> nTimes: 22801
+==>> Time units: seconds since 2015-07-07 00:00:00 +0000
+==>> Time base: 2015/07/07 00:00:00
+==>> startTime: 2015/07/07 14:55:00
+==>> endTime: 2015/07/07 21:15:00
+Reading RAF netcdf file: /scr/eldora1/rsfdata/cset/gv_data/CSETrf03.nc
+  _timeCoordName: Time
+  _latCoordName: LATC
+  _lonCoordName: LONC
+  _callSign: N677F
+  _projectName: CSET
+  _flightNum: rf03
+==>> nTimes: 25681
+==>> Time units: seconds since 2015-07-09 00:00:00 +0000
+==>> Time base: 2015/07/09 00:00:00
+==>> startTime: 2015/07/09 16:30:00
+==>> endTime: 2015/07/09 23:38:00
+Reading RAF netcdf file: /scr/eldora1/rsfdata/cset/gv_data/CSETrf04.nc
+  _timeCoordName: Time
+  _latCoordName: LATC
+  _lonCoordName: LONC
+  _callSign: N677F
+  _projectName: CSET
+  _flightNum: rf04
+==>> nTimes: 23881
+==>> Time units: seconds since 2015-07-12 00:00:00 +0000
+==>> Time base: 2015/07/12 00:00:00
+==>> startTime: 2015/07/12 14:50:00
+==>> endTime: 2015/07/12 21:28:00
+Reading RAF netcdf file: /scr/eldora1/rsfdata/cset/gv_data/CSETrf05.nc
+  _timeCoordName: Time
+  _latCoordName: LATC
+  _lonCoordName: LONC
+  _callSign: N677F
+  _projectName: CSET
+  _flightNum: rf05
+==>> nTimes: 27481
+==>> Time units: seconds since 2015-07-14 00:00:00 +0000
+==>> Time base: 2015/07/14 00:00:00
+==>> startTime: 2015/07/14 16:40:00
+==>> endTime: 2015/07/15 00:18:00
+Reading RAF netcdf file: /scr/eldora1/rsfdata/cset/gv_data/CSETrf06.nc
+  _timeCoordName: Time
+  _latCoordName: LATC
+  _lonCoordName: LONC
+  _callSign: N677F
+  _projectName: CSET
+  _flightNum: rf06
+==>> nTimes: 24901
+==>> Time units: seconds since 2015-07-17 00:00:00 +0000
+==>> Time base: 2015/07/17 00:00:00
+==>> startTime: 2015/07/17 14:55:00
+==>> endTime: 2015/07/17 21:50:00
+Reading RAF netcdf file: /scr/eldora1/rsfdata/cset/gv_data/CSETrf07.nc
+  _timeCoordName: Time
+  _latCoordName: LATC
+  _lonCoordName: LONC
+  _callSign: N677F
+  _projectName: CSET
+  _flightNum: rf07
+==>> nTimes: 27781
+==>> Time units: seconds since 2015-07-19 00:00:00 +0000
+==>> Time base: 2015/07/19 00:00:00
+==>> startTime: 2015/07/19 16:22:00
+==>> endTime: 2015/07/20 00:05:00
+Reading RAF netcdf file: /scr/eldora1/rsfdata/cset/gv_data/CSETrf08.nc
+  _timeCoordName: Time
+  _latCoordName: LATC
+  _lonCoordName: LONC
+  _callSign: N677F
+  _projectName: CSET
+  _flightNum: rf08
+==>> nTimes: 25801
+==>> Time units: seconds since 2015-07-22 00:00:00 +0000
+==>> Time base: 2015/07/22 00:00:00
+==>> startTime: 2015/07/22 15:00:00
+==>> endTime: 2015/07/22 22:10:00
+Reading RAF netcdf file: /scr/eldora1/rsfdata/cset/gv_data/CSETrf09.nc
+  _timeCoordName: Time
+  _latCoordName: LATC
+  _lonCoordName: LONC
+  _callSign: N677F
+  _projectName: CSET
+  _flightNum: rf09
+==>> nTimes: 29101
+==>> Time units: seconds since 2015-07-24 00:00:00 +0000
+==>> Time base: 2015/07/24 00:00:00
+==>> startTime: 2015/07/24 16:25:00
+==>> endTime: 2015/07/25 00:30:00
+Reading RAF netcdf file: /scr/eldora1/rsfdata/cset/gv_data/CSETrf10.nc
+  _timeCoordName: Time
+  _latCoordName: LATC
+  _lonCoordName: LONC
+  _callSign: N677F
+  _projectName: CSET
+  _flightNum: rf10
+==>> nTimes: 25921
+==>> Time units: seconds since 2015-07-27 00:00:00 +0000
+==>> Time base: 2015/07/27 00:00:00
+==>> startTime: 2015/07/27 14:59:00
+==>> endTime: 2015/07/27 22:11:00
+Reading RAF netcdf file: /scr/eldora1/rsfdata/cset/gv_data/CSETrf11.nc
+  _timeCoordName: Time
+  _latCoordName: LATC
+  _lonCoordName: LONC
+  _callSign: N677F
+  _projectName: CSET
+  _flightNum: rf11
+==>> nTimes: 27481
+==>> Time units: seconds since 2015-07-29 00:00:00 +0000
+==>> Time base: 2015/07/29 00:00:00
+==>> startTime: 2015/07/29 16:30:00
+==>> endTime: 2015/07/30 00:08:00
+Reading RAF netcdf file: /scr/eldora1/rsfdata/cset/gv_data/CSETrf12.nc
+  _timeCoordName: Time
+  _latCoordName: LATC
+  _lonCoordName: LONC
+  _callSign: N677F
+  _projectName: CSET
+  _flightNum: rf12
+==>> nTimes: 28201
+==>> Time units: seconds since 2015-08-01 00:00:00 +0000
+==>> Time base: 2015/08/01 00:00:00
+==>> startTime: 2015/08/01 14:50:00
+==>> endTime: 2015/08/01 22:40:00
+Reading RAF netcdf file: /scr/eldora1/rsfdata/cset/gv_data/CSETrf13.nc
+  _timeCoordName: Time
+  _latCoordName: LATC
+  _lonCoordName: LONC
+  _callSign: N677F
+  _projectName: CSET
+  _flightNum: rf13
+==>> nTimes: 26461
+==>> Time units: seconds since 2015-08-03 00:00:00 +0000
+==>> Time base: 2015/08/03 00:00:00
+==>> startTime: 2015/08/03 16:24:00
+==>> endTime: 2015/08/03 23:45:00
+Reading RAF netcdf file: /scr/eldora1/rsfdata/cset/gv_data/CSETrf14.nc
+  _timeCoordName: Time
+  _latCoordName: LATC
+  _lonCoordName: LONC
+  _callSign: N677F
+  _projectName: CSET
+  _flightNum: rf14
+==>> nTimes: 25801
+==>> Time units: seconds since 2015-08-07 00:00:00 +0000
+==>> Time base: 2015/08/07 00:00:00
+==>> startTime: 2015/08/07 14:50:00
+==>> endTime: 2015/08/07 22:00:00
+Reading RAF netcdf file: /scr/eldora1/rsfdata/cset/gv_data/CSETrf15.nc
+  _timeCoordName: Time
+  _latCoordName: LATC
+  _lonCoordName: LONC
+  _callSign: N677F
+  _projectName: CSET
+  _flightNum: rf15
+==>> nTimes: 26341
+==>> Time units: seconds since 2015-08-09 00:00:00 +0000
+==>> Time base: 2015/08/09 00:00:00
+==>> startTime: 2015/08/09 16:25:00
+==>> endTime: 2015/08/09 23:44:00
+Reading RAF netcdf file: /scr/eldora1/rsfdata/cset/gv_data/CSETrf16.nc
+  _timeCoordName: Time
+  _latCoordName: LATC
+  _lonCoordName: LONC
+  _callSign: N677F
+  _projectName: CSET
+  _flightNum: rf16
+==>> nTimes: 24001
+==>> Time units: seconds since 2015-08-12 00:00:00 +0000
+==>> Time base: 2015/08/12 00:00:00
+==>> startTime: 2015/08/12 15:25:00
+==>> endTime: 2015/08/12 22:05:00

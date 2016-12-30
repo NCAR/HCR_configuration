@@ -1,0 +1,5 @@
+#! /bin/csh -f
+
+snuff "TsTcp2Fmq -params TsTcp2Fmq.wband"
+start_TsTcp2Fmq.wband
+

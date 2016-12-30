@@ -1,0 +1,22 @@
+$PROJ_DIR/doc/howto/Nagios_howto.txt
+
+Open http://192.168.4.250/nagios with your browser.
+
+If necessary, login as 'nagiosadmin', password 'foobar'.
+
+The most helpful screen is "Service Problems", "unhandled"
+
+Nagios configuration is here:
+spol:/usr/local/nagios/etc
+
+Note remote commands are defined here:
+/usr/local/nagios/etc/nrpe.cfg
+
+If you change a remote monitoring command, you must push these file out using
+/net/adm/scripts/push_nagios
+
+If you change the configuration files, you must check them with
+/usr/local/nagios/bin/nagios -v /usr/local/nagios/etc/nagios.cfg
+
+Once you've resolved your syntax errors, restart nagios:
+/etc/rc.d/init.d/nagios restart

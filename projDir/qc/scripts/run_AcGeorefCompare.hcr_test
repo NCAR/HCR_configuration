@@ -1,0 +1,25 @@
+#! /bin/csh
+
+setenv PROJ_DIR $HOME/cvs/projects/hcr/projDir
+setenv DATA_DIR /scr/eldora1/rsfdata/cset
+
+cd $PROJ_DIR/qc/params
+
+# flightNum: rf02
+# startTime: 2014/11/20 18:00:00
+# endTime:   2014/11/20 23:10:00
+
+AcGeorefCompare -params AcGeorefCompare.hcr_test -debug -start "2014 11 20 18 00 00" -end "2014 11 20 23 10 00" > $PROJ_DIR/qc/data/cset/HCR-TEST.rf02.20141120_180000.to.20141120_231000.txt
+
+# flightNum: rf03
+# startTime: 2014/11/24 17:35:00
+# endTime:   2014/11/24 22:00:00
+
+AcGeorefCompare -params AcGeorefCompare.hcr_test -debug -start "2014 11 24 17 35 00" -end "2014 11 24 22 00 00" > $PROJ_DIR/qc/data/cset/HCR-TEST.rf03.20141124_173500.to.20141124_220000.txt
+
+# flightNum: rf04
+# startTime: 2014/12/01 18:30:00
+# endTime:   2014/12/01 19:50:00
+
+AcGeorefCompare -params AcGeorefCompare.hcr_test -debug -start "2014 12 01 18 30 00" -end "2014 12 01 19 50 00" > $PROJ_DIR/qc/data/cset/HCR-TEST.rf04.20141201_183000.to.20141201_195000.txt
+

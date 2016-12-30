@@ -1,0 +1,10 @@
+#! /bin/csh
+
+setenv PROJ_DIR $HOME/hcrProjDir
+setenv DATA_DIR $HOME/hcrDataDir
+
+cd $PROJ_DIR/ingest/params
+
+AcGeoref2Spdb -params AcGeoref2Spdb.raf_1hz -debug -f $DATA_DIR/gv_data/*.nc
+
+

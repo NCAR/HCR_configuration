@@ -1,0 +1,9 @@
+#! /bin/csh -f
+
+xterm -title procmap.drx -bg black -fg orange -g 100x12+0+100 -fn fixed -e print_procmap -hb -up -status -c 5 -host rds
+
+
+
+
+
+

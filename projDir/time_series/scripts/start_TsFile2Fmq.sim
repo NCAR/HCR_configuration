@@ -1,0 +1,10 @@
+#! /bin/csh -f
+
+cd $PROJ_DIR/time_series/params
+
+running "TsFile2Fmq -params TsFile2Fmq.sim"
+if ($status == 1) then
+  TsFile2Fmq -params TsFile2Fmq.sim |& \
+    LogFilter -d $ERRORS_LOG_DIR -p TsFile2Fmq -i sim &
+endif
+

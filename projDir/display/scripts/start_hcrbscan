@@ -1,0 +1,5 @@
+#! /bin/csh -f
+
+cd $HOME/workspace/hcr/src/hcrbscan
+hcrbscan |& LogFilter -d $ERRORS_LOG_DIR -p hcrbscan &
+

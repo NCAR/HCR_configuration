@@ -1,0 +1,25 @@
+save_time_series_howto.txt
+==========================
+
+How to save time series data.
+
+Start recoding
+--------------
+
+On 'archiver', run
+
+  start_ts_recording.wband 
+
+A window will open, with yellow text, showing the files being saved.
+
+Stop recording
+--------------
+
+Either:
+
+  run 'stop_ts_recording'
+
+or:
+
+  close the window with yellow text.
+

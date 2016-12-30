@@ -1,0 +1,4 @@
+#! /bin/csh -f
+
+stop_ts_recording.wband
+

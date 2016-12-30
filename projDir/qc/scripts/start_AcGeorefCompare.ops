@@ -1,0 +1,10 @@
+#! /bin/csh -f
+
+cd $PROJ_DIR/qc/params
+
+running "AcGeorefCompare -params AcGeorefCompare.ops"
+if ($status == 1) then
+  AcGeorefCompare -params AcGeorefCompare.ops |& \
+    LogFilter -d $ERRORS_LOG_DIR -p AcGeorefCompare -i ops &
+endif
+

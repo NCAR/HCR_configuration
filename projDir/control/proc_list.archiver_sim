@@ -1,0 +1,64 @@
+###############################################################################
+# SYSTEM processes - sim
+#
+DsServerMgr   primary    start_DsServerMgr         snuff_inst        localhost
+DsFmqServer   manager    start_DsFmqServer         snuff_inst        localhost
+Janitor       logs       start_Janitor.logs        kill_Janitor      localhost
+Scout         primary    start_Scout               kill_Scout        localhost
+DataMapper    primary    start_DataMapper          kill_DataMapper   localhost
+#
+###############################################################################
+# HCR transmitter daemon
+#
+#hcr_xmitd      primary   start_hcr_xmitd               snuff_inst    localhost
+#
+###############################################################################
+# TIME SERIES FROM WBAND
+#TsTcp2Fmq     wband         start_TsTcp2Fmq.wband  snuff_inst    localhost
+#
+###############################################################################
+# SIMULATE MODE
+#
+# (a) Comment out TsTcp2Fmq above
+# (b) Uncomment TsFile2Fmq below
+#
+# TsFile2Fmq reads data from files, and simulates the data stream
+# from the drx
+#
+TsFile2Fmq     sim        start_TsFile2Fmq.sim   snuff_inst    localhost
+#
+###############################################################################
+# Time series data for tcpscope
+# Only needed for testing, not needed for ops
+#
+#TsFmq2Tcp     wband      start_TsFmq2Tcp.wband     snuff_inst    localhost
+#
+###############################################################################
+# Saving time series data
+#
+TsSmartSave   wband      start_TsSmartSave.wband   snuff_inst    localhost
+#
+###############################################################################
+# Moments
+#
+Iq2Dsr    wband          start_Iq2Dsr.wband            snuff_inst    localhost
+RadMon    log.wband      start_RadMon.log.wband        snuff_inst    localhost
+Dsr2Radx  moments.wband  start_Dsr2Radx.moments.wband  snuff_inst    localhost
+Dsr2Radx  covar.wband    start_Dsr2Radx.covar.wband    snuff_inst    localhost
+#
+###############################################################################
+# Displays
+#
+RadMon    wband          start_RadMon.wband            snuff_inst    localhost
+###############################################################################
+# SYSVIEW
+#SysView       ops        start_SysView               kill_SysView    localhost
+#LdataWatcher  sysview    start_LdataWatcher.sysview  snuff_inst      localhost
+#Janitor       sysview    start_Janitor.sysview       kill_Janitor    localhost
+#
+###############################################################################
+# Monitoring - for nagios
+#
+TsStatusMonitor wband    start_TsStatusMonitor.wband   snuff_inst    localhost
+#
+###############################################################################

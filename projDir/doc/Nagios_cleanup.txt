@@ -1,0 +1,12 @@
+###############################################
+# Cleaning up old nagios entries
+###############################################
+
+(1) Become the 'prod user':
+
+  sudo su
+  su - prod
+
+(2) Run cleanup script
+
+  ~/nagios_cleanup

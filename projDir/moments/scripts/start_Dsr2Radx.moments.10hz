@@ -1,0 +1,10 @@
+#! /bin/csh -f
+
+cd $PROJ_DIR/moments/params
+
+running "Dsr2Radx -params Dsr2Radx.moments.10hz"
+if ($status == 1) then
+  Dsr2Radx -params Dsr2Radx.moments.10hz |& \
+    LogFilter -d $ERRORS_LOG_DIR -p Dsr2Radx -i moments.10hz &
+endif
+

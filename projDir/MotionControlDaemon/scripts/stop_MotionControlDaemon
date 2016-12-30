@@ -1,0 +1,4 @@
+#! /bin/csh -f
+# We shorten the name for MotionControlDaemon, since pgrep/pkill don't
+# deal with names longer than 15 characters...
+pkill MotionControlD

@@ -1,0 +1,6 @@
+#! /bin/csh -f
+
+xterm -title AcGeoref_monitor.moments_10hz -bg black -fg yellow -g 50x20+0-0 -fn fixed -e tail -f $DATA_DIR/logs/status/today/AcGeoref2Spdb.moments_10hz.log &
+
+
+

@@ -1,0 +1,3 @@
+#! /bin/csh -f
+
+RadMon -params ~/projDir/display/params/RadMon.wband -summary -update -1

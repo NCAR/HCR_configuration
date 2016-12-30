@@ -1,0 +1,4 @@
+#! /bin/csh -f
+
+snuff "Iq2Dsr -params Iq2Dsr.100hz"
+start_Iq2Dsr.100hz

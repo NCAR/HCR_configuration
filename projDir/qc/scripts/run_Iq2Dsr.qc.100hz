@@ -1,0 +1,16 @@
+#! /bin/csh -f
+
+setenv PROJ_DIR ~/cvs/projects/hcr/projDir
+setenv DATA_DIR /scr/eldora1/rsfdata/cset/hcr
+setenv SITE_NAME CSET
+
+cd $PROJ_DIR/qc/params
+
+Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f $DATA_DIR/time_series/wband/save/201506*/*iwrf_ts >& /tmp/Iq2Dsr.qc.100hz
+
+Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f $DATA_DIR/time_series/wband/save/201507*/*iwrf_ts >>& /tmp/Iq2Dsr.qc.100hz
+
+Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f $DATA_DIR/time_series/wband/save/201508*/*iwrf_ts >>& /tmp/Iq2Dsr.qc.100hz
+
+
+

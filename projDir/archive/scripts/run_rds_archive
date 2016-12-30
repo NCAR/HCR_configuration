@@ -1,0 +1,20 @@
+#! /bin/csh -f
+
+#
+# run archive for each drive
+#
+
+doRemoteArchive.py --debug \
+    --host rds \
+    --dir projDir/logs \
+    --project $PROJECT_NAME \
+    --driveIndex 0 \
+    |& LogFilter -d $ERRORS_LOG_DIR -p run_rds_archive >& /dev/null &
+
+doRemoteArchive.py --debug \
+    --host rds \
+    --dir projDir/logs \
+    --project $PROJECT_NAME \
+    --driveIndex 1 \
+    |& LogFilter -d $ERRORS_LOG_DIR -p run_rds_archive >& /dev/null &
+

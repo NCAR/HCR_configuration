@@ -1,0 +1,12 @@
+#! /bin/csh
+
+setenv PROJ_DIR $HOME/hcrProjDir
+setenv DATA_DIR $HOME/hcrDataDir
+
+cd $PROJ_DIR/ingest/params
+
+AcGeoref2Spdb -params AcGeoref2Spdb.cfradial_100hz -debug -f $DATA_DIR/cfradial/moments/100hz/*/*nc
+
+
+
+

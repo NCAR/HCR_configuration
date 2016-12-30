@@ -1,0 +1,5 @@
+#! /bin/csh -f
+
+xterm -title TsPrint -bg black -fg white -g 130x30-0+170 -fn fixed -sb -sl 2000 -e ssh archiver TsPrint -params projDir/time_series/params/TsPrint.wband -nsamples 10000 -gate 11 -ngates 1
+
+

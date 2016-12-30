@@ -1,0 +1,28 @@
+#! /bin/csh -f
+
+#
+# ensure that no archive tasks are still running
+#
+
+kill_archive
+
+#
+# run archives for each drive
+#
+
+doArchive.py --debug \
+    --source $DATA_DIR \
+    --dirListPath $PROJ_DIR/archive/params/archiveDirList \
+    --project $PROJECT_NAME \
+    --maxAgeHours 18 \
+    --driveIndex 0 \
+    |& LogFilter -d $ERRORS_LOG_DIR -p doArchive -i drive0 >& /dev/null &
+
+doArchive.py --debug \
+    --source $DATA_DIR \
+    --dirListPath $PROJ_DIR/archive/params/archiveDirList \
+    --project $PROJECT_NAME \
+    --maxAgeHours 18 \
+    --driveIndex 1 \
+    |& LogFilter -d $ERRORS_LOG_DIR -p doArchive -i drive1 >& /dev/null &
+

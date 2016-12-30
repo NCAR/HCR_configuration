@@ -1,0 +1,4 @@
+#! /bin/csh -f
+
+snuff cmigitsDaemon
+start_cmigitsDaemon.ops

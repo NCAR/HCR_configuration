@@ -1,0 +1,10 @@
+#! /bin/csh -f
+
+cd $PROJ_DIR/cmigitsDaemon/params
+
+running "Fmq2Fmq -params Fmq2Fmq.cmigits"
+if ($status == 1) then
+  Fmq2Fmq -params Fmq2Fmq.cmigits |& \
+    LogFilter -d $ERRORS_LOG_DIR -p Fmq2Fmq -i cmigits &
+endif
+

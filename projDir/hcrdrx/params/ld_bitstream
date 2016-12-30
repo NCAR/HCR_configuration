@@ -1,0 +1,1 @@
+sudo /opt/Pentek/P7140driver-2.3/Linux/bin/virtexload7140 /dev/pentek/p7142/0/ctrl /home/hcr/workspace/sd3c/firmware/bitstream/DDC8_ops.mcs; sudo /etc/rc.local

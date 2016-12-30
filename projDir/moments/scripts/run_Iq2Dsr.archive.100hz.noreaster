@@ -1,0 +1,11 @@
+#! /bin/csh -f
+
+setenv PROJ_DIR ~/cvs/projects/hcr/projDir
+setenv DATA_DIR /export/eldora1/rsfdata/noreaster
+
+cd $PROJ_DIR/moments/params
+
+Iq2Dsr -params Iq2Dsr.archive.100hz -debug -f $DATA_DIR/time_series/wband/save/20150202/20150202_181*iwrf_ts
+
+
+

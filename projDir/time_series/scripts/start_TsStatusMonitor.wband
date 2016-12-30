@@ -1,0 +1,10 @@
+#! /bin/csh -f
+
+cd $PROJ_DIR/time_series/params
+
+running "TsStatusMonitor -params TsStatusMonitor.wband"
+if ($status == 1) then
+  TsStatusMonitor -params TsStatusMonitor.wband |& \
+    LogFilter -d $ERRORS_LOG_DIR -p TsStatusMonitor -i wband &
+endif
+

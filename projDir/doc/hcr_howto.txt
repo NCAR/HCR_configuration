@@ -1,0 +1,119 @@
+Running the HCR apps
+====================
+
+1. Logging in
+-------------
+
+The 'hcr' account is used on both archiver and hcrdrx.
+
+Both machines are accessible via a router on the UCAR guest network.
+
+The router IP address is 128.117.47.230.
+
+The DNS-supplied name is radar-router.guest.ucar.edu.
+
+To log in to archiver:
+
+  ssh -XY hcr@radar-router.guest.ucar.edu
+
+From there you can log in to hcrdrx.
+
+To log in to hcrdrx directly, use
+
+  ssh -XY -p 23 hcr@radar-router.guest.ucar.edu
+
+2. Web page
+-----------
+
+The main web page is:
+
+  http://radar-router.guest.ucar.edu
+
+There are links to the SysView monitoring page, and how-to docs,
+including this one.
+
+3. Running apps on hcrdrx
+--------------------------
+
+The 'hcrdrx' app runs on the hcrdrx host.
+
+(a) To start the system, run
+
+  start_all
+
+Type 'ppm' to see the apps which are running.
+
+(b) To monitor the log file for hcrdrx in real-time, run
+
+  check_log.hcrdrx
+
+(c) To stop the system, run
+
+  stop_all
+
+(d) To run hcrdrx by hand and watch the output, do
+
+  stop_all
+  cd
+  cd projDir/hcrdrx/params
+  hcrdrx hcrdrx.ops
+
+4. Running apps on archiver
+---------------------------
+
+The bulk of the system runs on archiver.
+
+(a) To start the system up, run
+
+  start_all
+
+Type 'ppm' to see the apps which are running.
+
+Type 'pcheck' to make sure all required processes are running.
+
+(b) CfRadial data files
+
+The CfRadial files from Iq2Dsr and Dsr2Radx are stored in:
+
+  projDir/data/cfradial/moments/wband
+
+(c) To stop the system, run
+
+  stop_all
+
+(d) To run HawkEye (using the simulated angles), run
+
+  start_HawkEye.wband
+
+(e) To run tcpscope, run
+
+  start_tcpscope.wband
+
+(f) Restart Iq2Dsr after changing params
+
+  restart_Iq2Dsr.wband
+
+(g) To run the bscan display (using DDS):
+
+  cd
+  cd workspace/hcr/src/hcrbscan
+  ./hcrbscan
+
+(h) To run the hcr archiver (using DDS):
+
+  cd
+  cd workspace/hcr/src/hcrarchiver
+  ./hcrarchiver
+
+The CfRadial files from hcrarchiver are stored in:
+
+  /data_first
+
+
+
+
+
+
+
+
+

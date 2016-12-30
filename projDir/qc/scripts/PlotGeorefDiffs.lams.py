@@ -1,0 +1,630 @@
+#!/usr/bin/env python
+
+#===========================================================================
+#
+# Produce plots for GEOREF differences
+#
+#===========================================================================
+
+import os
+import sys
+import subprocess
+from optparse import OptionParser
+import numpy as np
+from numpy import convolve
+from numpy import linalg, array, ones
+import matplotlib.pyplot as plt
+import matplotlib as mpl
+from matplotlib import dates
+import math
+import datetime
+import contextlib
+
+def main():
+
+#   globals
+
+    global options
+    global debug
+    global startTime
+    global endTime
+    global timeLimitsSet
+    timeLimitsSet = False
+
+# parse the command line
+
+    usage = "usage: %prog [options]"
+    parser = OptionParser(usage)
+    parser.add_option('--debug',
+                      dest='debug', default=False,
+                      action="store_true",
+                      help='Set debugging on')
+    parser.add_option('--verbose',
+                      dest='verbose', default=False,
+                      action="store_true",
+                      help='Set verbose debugging on')
+    parser.add_option('--file',
+                      dest='compFilePath',
+                      default='../data/cset/HCR-TEST.rf04.20141201_183000.to.20141201_195000.txt',
+                      help='File path for comparison results')
+    parser.add_option('--title',
+                      dest='title',
+                      default='CSET GV and HCR CMIGITS DATA',
+                      help='Title for plot')
+    parser.add_option('--widthMain',
+                      dest='mainWidthMm',
+                      default=400,
+                      help='Width of main figure in mm')
+    parser.add_option('--heightMain',
+                      dest='mainHeightMm',
+                      default=300,
+                      help='Height of main figure in mm')
+    parser.add_option('--filtLen',
+                      dest='filtLen',
+                      default=21,
+                      help='Len of moving mean filter')
+    parser.add_option('--start',
+                      dest='startTime',
+                      default='1970 01 01 00 00 00',
+                      help='Start time for XY plot')
+    parser.add_option('--end',
+                      dest='endTime',
+                      default='1970 01 01 01 00 00',
+                      help='End time for XY plot')
+    
+    (options, args) = parser.parse_args()
+    
+    if (options.verbose == True):
+        options.debug = True
+
+    # time limits
+
+    year, month, day, hour, minute, sec = options.startTime.split()
+    startTime = datetime.datetime(int(year), int(month), int(day),
+                                  int(hour), int(minute), int(sec))
+
+    year, month, day, hour, minute, sec = options.endTime.split()
+    endTime = datetime.datetime(int(year), int(month), int(day),
+                                int(hour), int(minute), int(sec))
+
+    Jan1970 = datetime.datetime(1970, 1, 1, 0, 0, 0)
+    if ((startTime != Jan1970) and (endTime != Jan1970)):
+        timeLimitsSet = True
+
+    if (options.debug == True):
+        print >>sys.stderr, "Running %prog"
+        print >>sys.stderr, "  compFilePath: ", options.compFilePath
+        if (timeLimitsSet):
+            print >>sys.stderr, "  startTime: ", startTime
+            print >>sys.stderr, "  endTime: ", endTime
+        
+    # read in column headers for bias results
+
+    iret, compHdrs, compData = readColumnHeaders(options.compFilePath)
+    if (iret != 0):
+        sys.exit(-1)
+
+    # read in data for comp results
+
+    compData, compTimes = readInputData(options.compFilePath, compHdrs, compData)
+
+    # load up the data arrays
+
+    loadDataArrays(compData, compTimes)
+
+    # render the plots
+    
+    doPlotOverview()
+    doPlotIns()
+    doPlotDiffs()
+
+    #doPlot2DHist()
+
+    # show them
+
+    plt.show()
+
+    sys.exit(0)
+    
+########################################################################
+# Read columm headers for the data
+# this is in the first line
+
+def readColumnHeaders(filePath):
+
+    colHeaders = []
+    colData = {}
+
+    fp = open(filePath, 'r')
+    line = fp.readline()
+    fp.close()
+    
+    commentIndex = line.find("#")
+    if (commentIndex == 0):
+        # header
+        colHeaders = line.lstrip("# ").rstrip("\n").split()
+        if (options.debug == True):
+            print >>sys.stderr, "colHeaders: ", colHeaders
+    else:
+        print >>sys.stderr, "ERROR - readColumnHeaders"
+        print >>sys.stderr, "  First line does not start with #"
+        return -1, colHeaders, colData
+    
+    for index, var in enumerate(colHeaders, start=0):
+        colData[var] = []
+        
+    return 0, colHeaders, colData
+
+########################################################################
+# Read in the data
+
+def readInputData(filePath, colHeaders, colData):
+
+    # open file
+
+    fp = open(filePath, 'r')
+    lines = fp.readlines()
+
+    # read in a line at a time, set colData
+    for line in lines:
+        
+        commentIndex = line.find("#")
+        if (commentIndex >= 0):
+            continue
+            
+        # data
+        
+        data = line.strip().split()
+        if (len(data) != len(colHeaders)):
+            if (options.debug == True):
+                print >>sys.stderr, "skipping line: ", line
+            continue;
+
+        for index, var in enumerate(colHeaders, start=0):
+            # print >>sys.stderr, "index, data[index]: ", index, ", ", data[index]
+            if (var == 'count' or var == 'year' or var == 'month' or var == 'day' or \
+                var == 'hour' or var == 'min' or var == 'sec' or \
+                var == 'unix_time'):
+                colData[var].append(int(data[index]))
+            else:
+                colData[var].append(float(data[index]))
+
+    fp.close()
+
+    # load observation times array
+
+    year = colData['year']
+    month = colData['month']
+    day = colData['day']
+    hour = colData['hour']
+    minute = colData['min']
+    sec = colData['sec']
+
+    obsTimes = []
+    for ii, var in enumerate(year, start=0):
+        thisTime = datetime.datetime(year[ii], month[ii], day[ii],
+                                     hour[ii], minute[ii], sec[ii])
+        obsTimes.append(thisTime)
+
+    return colData, obsTimes
+
+########################################################################
+# Moving average filter
+
+def movingAverage(values, window):
+
+    if (window < 2):
+        return values
+
+    weights = np.repeat(1.0, window)/window
+    sma = np.convolve(values, weights, 'same')
+    return sma
+
+########################################################################
+# Set up arrays for plotting
+
+def loadDataArrays(compData, compTimes):
+
+    filtLen = int(options.filtLen)
+    
+    # set up arrays
+
+    global ctimes
+
+    ctimes = np.array(compTimes).astype(datetime.datetime)
+    
+    global tempAir, tempCmigits, tempTailcone
+    global pressure, rh, density, altPres, altGps
+    global vertVel, gvMassKg, gvMass10000Kg
+    global aoa, aoaSm, aoa2, ias, tas
+
+    tempAir = np.array(compData["temp"]).astype(np.double)
+    tempCmigits = np.array(compData["tempSec"]).astype(np.double)
+    tempTailcone = np.array(compData["custom0Sec"]).astype(np.double)
+    tempNose = np.array(compData["custom6"]).astype(np.double)
+    tempAtf1 = np.array(compData["custom7"]).astype(np.double)
+    pressure = np.array(compData["pressure"]).astype(np.double)
+    rh = np.array(compData["rh"]).astype(np.double)
+    density = np.array(compData["density"]).astype(np.double)
+    altPres = np.array(compData["altPresM"]).astype(np.double)
+    altGps = np.array(compData["altGpsM"]).astype(np.double)
+    vertVel = np.array(compData["vertVel"]).astype(np.double)
+    gvMassKg = np.array(compData["weightKg"]).astype(np.double)
+    gvMass10000Kg = np.array(compData["weightKg"]).astype(np.double) / 10000.0
+    aoa = np.array(compData["aoa"]).astype(np.double)
+    aoaSm = movingAverage(aoa, filtLen)
+    aoa2 = aoaSm / 2.0
+    ias = np.array(compData["ias"]).astype(np.double)
+    tas = np.array(compData["tas"]).astype(np.double)
+
+    global accelNorm, accelNormSm, accelLat, accelLatSm, accelLon, accelLonSm
+
+    accelNorm = np.array(compData["accelNorm"]).astype(np.double)
+    accelNormSm = movingAverage(accelNorm, filtLen) + 1.0
+    accelLat = np.array(compData["accelLat"]).astype(np.double)
+    accelLatSm = movingAverage(accelLat, filtLen)
+    accelLon = np.array(compData["accelLon"]).astype(np.double)
+    accelLonSm = movingAverage(accelLon, filtLen)
+
+    global altDiff, pitchDiff, rollDiff, trackDiff, hdgDiff, vVelDiff
+    global pitchDiffSm, rollDiffSm, trackDiffSm, hdgDiffSm, vVelDiffSm
+    global driftDiff, driftDiffSm
+
+    altDiff = np.array(compData["altDiff"]).astype(np.double)
+    altDiffSm = movingAverage(altDiff, filtLen)
+
+    pitchDiff = np.array(compData["pitchDiff"]).astype(np.double)
+    pitchDiffSm = movingAverage(pitchDiff, filtLen)
+
+    rollDiff = np.array(compData["rollDiff"]).astype(np.double)
+    rollDiffSm = movingAverage(rollDiff, filtLen)
+
+    trackDiff = np.array(compData["trackDiff"]).astype(np.double)
+    trackDiffSm = movingAverage(trackDiff, filtLen)
+
+    hdgDiff = np.array(compData["hdgDiff"]).astype(np.double)
+    hdgDiffSm = movingAverage(hdgDiff, filtLen)
+
+    driftDiff = np.array(compData["driftDiff"]).astype(np.double)
+    driftDiffSm = movingAverage(driftDiff, filtLen)
+
+    vVelDiff = np.array(compData["vertVelDiff"]).astype(np.double)
+    vVelDiffSm = movingAverage(vVelDiff, filtLen)
+    
+    global pitch, pitch2, pitch3, pitchSm, pitch2Sm, pitch3Sm
+    pitch = np.array(compData["pitch"]).astype(np.double)
+    pitchSm = movingAverage(pitch, filtLen)
+    pitch2 = np.array(compData["custom0"]).astype(np.double)
+    pitch2Sm = movingAverage(pitch2, filtLen)
+    pitch3 = np.array(compData["custom1"]).astype(np.double)
+    pitch3Sm = movingAverage(pitch3, filtLen)
+
+    global pitchCm, pitchCmSm, pitchLams, pitchLamsSm, pitchGp, pitchGpSm
+    pitchCm = np.array(compData["pitchSec"]).astype(np.double)
+    pitchCmSm = movingAverage(pitchCm, filtLen)
+    pitchLams = np.array(compData["custom6"]).astype(np.double)
+    pitchLamsSm = movingAverage(pitchLams, filtLen)
+    pitchGp = np.array(compData["custom8"]).astype(np.double)
+    pitchGpSm = movingAverage(pitchGp, filtLen)
+
+    global pitchDiff2, pitchDiff2Sm, pitchDiff3, pitchDiff3Sm
+    global pitchDiffLams, pitchDiffLamsSm, pitchDiffGp, pitchDiffGpSm
+    pitchDiff2 = (pitch - pitch2)
+    pitchDiff2Sm = movingAverage(pitchDiff2, filtLen)
+    pitchDiff3 = pitch - pitch3
+    pitchDiff3Sm = movingAverage(pitchDiff3, filtLen)
+    pitchDiffLams = pitch - pitchLams
+    pitchDiffLamsSm = movingAverage(pitchDiffLams, filtLen)
+    pitchDiffGp = pitch - pitchGp
+    pitchDiffGpSm = movingAverage(pitchDiffGp, filtLen)
+
+    global roll, roll2, roll3, rollSm, roll2Sm, roll3Sm
+    roll = np.array(compData["roll"]).astype(np.double)
+    rollSm = movingAverage(roll, filtLen)
+    roll2 = np.array(compData["custom2"]).astype(np.double)
+    roll2Sm = movingAverage(roll2, filtLen)
+    roll3 = np.array(compData["custom3"]).astype(np.double)
+    roll3Sm = movingAverage(roll3, filtLen)
+
+    global rollCm, rollCmSm, rollLams, rollLamsSm, rollGp, rollGpSm
+    rollCm = np.array(compData["rollSec"]).astype(np.double)
+    rollCmSm = movingAverage(rollCm, filtLen)
+    rollLams = np.array(compData["custom7"]).astype(np.double)
+    rollLamsSm = movingAverage(rollLams, filtLen)
+    rollGp = np.array(compData["custom9"]).astype(np.double)
+    rollGpSm = movingAverage(rollGp, filtLen)
+
+    global rollDiff2, rollDiff2Sm, rollDiff3, rollDiff3Sm
+    global rollDiffLams, rollDiffLamsSm, rollDiffGp, rollDiffGpSm
+    rollDiff2 = (roll - roll2)
+    rollDiff2Sm = movingAverage(rollDiff2, filtLen)
+    rollDiff3 = roll - roll3
+    rollDiff3Sm = movingAverage(rollDiff3, filtLen)
+    rollDiffLams = roll - rollLams
+    rollDiffLamsSm = movingAverage(rollDiffLams, filtLen)
+    rollDiffGp = roll - rollGp
+    rollDiffGpSm = movingAverage(rollDiffGp, filtLen)
+
+    global drift, drift2, drift3, driftDiff2, driftDiff2Sm, driftDiff3, driftDiff3Sm
+    drift = np.array(compData["drift"]).astype(np.double)
+    drift2 = np.array(compData["custom4"]).astype(np.double)
+    drift3 = np.array(compData["custom5"]).astype(np.double)
+    driftDiff2 = drift - drift2
+    driftDiff2Sm = movingAverage(driftDiff2, filtLen)
+    driftDiff3 = drift - drift3
+    driftDiff3Sm = movingAverage(driftDiff3, filtLen)
+
+    global surfaceVel, surfaceVelSm
+    surfaceVel = np.array(compData["custom1Sec"]).astype(np.double)
+    surfaceVelSm = movingAverage(surfaceVel, filtLen * 5)
+
+########################################################################
+# Plot aircraft variables as flight overview
+
+def doPlotOverview():
+
+    # set up plots
+
+    widthIn = float(options.mainWidthMm) / 25.4
+    htIn = float(options.mainHeightMm) / 25.4
+    
+    fig = plt.figure(1, (widthIn, htIn))
+    
+    ax1 = fig.add_subplot(4,1,1,xmargin=0.0)
+    ax2 = fig.add_subplot(4,1,2,xmargin=0.0)
+    ax3 = fig.add_subplot(4,1,3,xmargin=0.0)
+    ax4 = fig.add_subplot(4,1,4,xmargin=0.0)
+    
+    ax1.plot(ctimes, altPres, \
+             label='Pressure altitude (m)', color='blue', linewidth=1)
+    
+    ax2.plot(ctimes, tempAir, label='Air temp (C)', color='red', linewidth=1)
+    ax2.plot(ctimes, tempCmigits, label='Cmigits temp (C)', color='blue', linewidth=1)
+    ax2.plot(ctimes, tempTailcone, label='Tailcone temp (C)', color='green', linewidth=1)
+
+    ax3.plot(ctimes, ias, \
+             label='Indicated Airspeed', color='green', linewidth=1)
+
+    ax4.plot(ctimes, aoaSm, \
+             label='Angle of attack', color='red', linewidth=1)
+    ax4.plot(ctimes, accelNormSm, \
+             label='accelNorm', color='orange', linewidth=1)
+
+    configTimeAxis(ax1, -9999, -9999, "Altitude", 'upper left')
+    configTimeAxis(ax2, -9999, -9999, "Temp (C)", 'upper center')
+    configTimeAxis(ax3, 50, 200, "Airspeed (m/s)", 'upper center')
+    configTimeAxis(ax4, -1, 6, "AOA, G-Accel", 'upper right')
+    
+    fig.autofmt_xdate()
+    fig.tight_layout()
+    fig.subplots_adjust(bottom=0.08, left=0.06, right=0.97, top=0.96)
+
+    fig.suptitle("FLIGHT OVERVIEW - file " + os.path.basename(options.compFilePath))
+
+    return
+
+########################################################################
+# Plot INS and diffs
+
+def doPlotIns():
+
+    # set up plots
+
+    widthIn = float(options.mainWidthMm) / 25.4
+    htIn = float(options.mainHeightMm) / 25.4
+    
+    fig = plt.figure(2, (widthIn, htIn))
+    
+    ax1 = fig.add_subplot(4,1,1,xmargin=0.0)
+    ax2 = fig.add_subplot(4,1,2,xmargin=0.0)
+    ax3 = fig.add_subplot(4,1,3,xmargin=0.0)
+    ax4 = fig.add_subplot(4,1,4,xmargin=0.0)
+    
+    ax1.plot(ctimes, pitch3Sm, label='PitchIns3', color='orange', linewidth=1)
+    ax1.plot(ctimes, pitch2Sm, label='PitchIns2', color='brown', linewidth=1)
+    ax1.plot(ctimes, pitchSm, label='PitchIns1', color='green', linewidth=1)
+    ax1.plot(ctimes, pitchLamsSm, label='PitchLams', color='blue', linewidth=1)
+    ax1.plot(ctimes, pitchCmSm, label='PitchCmigits', color='red', linewidth=1)
+    ax1.plot(ctimes, pitchGpSm, label='PitchGp', color='magenta', linewidth=1)
+    
+    ax2.plot(ctimes, roll3Sm, label='RollIns3', color='orange', linewidth=1)
+    ax2.plot(ctimes, roll2Sm, label='RollIns2', color='black', linewidth=1)
+    ax2.plot(ctimes, rollSm, label='RollIns1', color='green', linewidth=1)
+    ax2.plot(ctimes, rollLamsSm, label='RollLams', color='blue', linewidth=1)
+    ax2.plot(ctimes, rollCmSm, label='RollCmigits', color='red', linewidth=1)
+    ax2.plot(ctimes, rollGpSm, label='RollGp', color='magenta', linewidth=1)
+    
+    ax3.plot(ctimes, pitchDiffGpSm, \
+             label='pitchDiffGp', color='magenta', linewidth=1)
+    ax3.plot(ctimes, pitchDiffLamsSm, \
+             label='pitchDiffLams', color='blue', linewidth=1)
+    ax3.plot(ctimes, pitchDiff2Sm, \
+             label='pitchDiffIns2', color='black', linewidth=1)
+    ax3.plot(ctimes, pitchDiff3Sm, \
+             label='pitchDiffIns3', color='green', linewidth=1)
+    ax3.plot(ctimes, pitchDiffSm, \
+             label='pitchDiffCmigits', color='red', linewidth=1)
+
+    ax4.plot(ctimes, rollDiffGpSm, \
+             label='rollDiffGp', color='magenta', linewidth=1)
+    ax4.plot(ctimes, rollDiffLamsSm, \
+             label='rollDiffLams', color='blue', linewidth=1)
+    ax4.plot(ctimes, rollDiff2Sm, \
+             label='rollDiffIns2', color='black', linewidth=1)
+    ax4.plot(ctimes, rollDiff3Sm, \
+             label='rollDiffIns3', color='green', linewidth=1)
+    ax4.plot(ctimes, rollDiffSm, \
+             label='rollDiffCmigits', color='red', linewidth=1)
+
+    configTimeAxis(ax1, -9999, -9999, "Pitch", 'upper right')
+    configTimeAxis(ax2, -9999, -9999, "Roll", 'upper right')
+    configTimeAxis(ax3, -1, 6, "PitchDiffs", 'upper right')
+    configTimeAxis(ax4, -2, 3, "RollDiffs", 'upper right')
+    
+    fig.autofmt_xdate()
+    fig.tight_layout()
+    fig.subplots_adjust(bottom=0.08, left=0.06, right=0.97, top=0.96)
+
+    # title name
+
+    fig.suptitle("ROLL and PITCH - file " + os.path.basename(options.compFilePath))
+
+    return
+
+########################################################################
+# Plot the diffs
+
+def doPlotDiffs():
+
+    # set up plots
+
+    widthIn = float(options.mainWidthMm) / 25.4
+    htIn = float(options.mainHeightMm) / 25.4
+    
+    fig = plt.figure(3, (widthIn, htIn))
+    
+    ax1 = fig.add_subplot(3,1,1,xmargin=0.0)
+    ax2 = fig.add_subplot(3,1,2,xmargin=0.0)
+    ax3 = fig.add_subplot(3,1,3,xmargin=0.0)
+    
+    ax1.plot(ctimes, driftDiffSm, \
+             label='driftDiff', color='black', linewidth=1)
+    ax1.plot(ctimes, hdgDiffSm, \
+             label='hdgDiff', color='blue', linewidth=1)
+    ax1.plot(ctimes, vVelDiffSm, \
+             label='vVelDiff', color='green', linewidth=1)
+    ax1.plot(ctimes, altDiff, \
+             label='altDiff', color='red', linewidth=2)
+
+    ax2.plot(ctimes, accelNormSm, \
+             label='accelNorm', color='orange', linewidth=1)
+    ax2.plot(ctimes, aoaSm, \
+              label='aoa', color='red', linewidth=1)
+    ax2.plot(ctimes, pitchDiffSm, \
+              label='pitchDiff', color='green', linewidth=1)
+    ax2.plot(ctimes, rollDiffSm, \
+              label='rollDiff', color='blue', linewidth=1)
+
+    ax3.plot(ctimes, surfaceVelSm, \
+             label='surfaceVel', color='blue', linewidth=1)
+
+    configTimeAxis(ax1, -3, 3, "diffs", 'upper right')
+    configTimeAxis(ax2, -1.5, 3, "diffs", 'upper right')
+    configTimeAxis(ax3, -9999, -9999, "SurfaceVel", 'upper right')
+    
+    fig.autofmt_xdate()
+    fig.tight_layout()
+    fig.subplots_adjust(bottom=0.08, left=0.06, right=0.97, top=0.96)
+
+    # title name
+
+    fig.suptitle("INS minus CMIGITS - file " + os.path.basename(options.compFilePath))
+
+    return
+
+########################################################################
+# Produce the 2-D histograms
+
+def doPlot2DHist():
+
+    # set up plots
+
+    widthIn = float(options.mainWidthMm) / 25.4
+    htIn = float(options.mainHeightMm) / 25.4
+    
+    fig = plt.figure(4, (widthIn, htIn))
+    
+    ax1 = fig.add_subplot(2,2,1,xmargin=0.0)
+    ax2 = fig.add_subplot(2,2,2,xmargin=0.0)
+    ax3 = fig.add_subplot(2,2,3,xmargin=0.0)
+    ax4 = fig.add_subplot(2,2,4,xmargin=0.0)
+
+    # pitch offset vs G force
+
+    (counts1, xedges1, yedges1, Image1) = ax1.hist2d(accelNorm, pitchDiff, 
+                                                     bins=100, norm=mpl.colors.LogNorm())
+    cbar1 = fig.colorbar(mappable=Image1, ax=ax1)
+    cbar1.set_label("count")
+    ax1.set_xlabel('G-acceleration normal')
+    ax1.set_ylabel('Pitch offset')
+
+    # roll offset vs G force
+
+    (counts2, xedges2, yedges2, Image2) = ax2.hist2d(accelNorm, rollDiff,
+                                                     bins=100, norm=mpl.colors.LogNorm())
+    cbar2 = fig.colorbar(mappable=Image2, ax=ax2)
+    cbar2.set_label("count")
+    ax2.set_xlabel('G-acceleration normal')
+    ax2.set_ylabel('Roll offset')
+
+    # pitch offset vs Angle of attack
+
+    (counts3, xedges3, yedges3, Image3) = ax3.hist2d(aoa, pitchDiff, 
+                                                     bins=100, norm=mpl.colors.LogNorm())
+    cbar3 = fig.colorbar(mappable=Image3, ax=ax3)
+    cbar3.set_label("count")
+    ax3.set_xlabel('AOA')
+    ax3.set_ylabel('Pitch offset')
+
+    # roll offset vs Angle of attack
+
+    (counts4, xedges4, yedges4, Image4) = ax4.hist2d(aoa, rollDiff, 
+                                                     bins=100, norm=mpl.colors.LogNorm())
+    cbar4 = fig.colorbar(mappable=Image4, ax=ax4)
+    cbar4.set_label("count")
+    ax4.set_xlabel('AOA')
+    ax4.set_ylabel('Roll offset')
+
+    fig.tight_layout()
+    fig.subplots_adjust(bottom=0.08, left=0.06, right=0.97, top=0.96)
+
+    fig.suptitle("2D histograms - file " + os.path.basename(options.compFilePath))
+
+    return
+
+########################################################################
+# Configure axes, legends etc
+
+def configTimeAxis(ax, miny, maxy, ylabel, legendLoc):
+    
+    legend = ax.legend(loc=legendLoc, ncol=8)
+    for label in legend.get_texts():
+        label.set_fontsize('x-small')
+        ax.set_xlabel("Time")
+    ax.set_ylabel(ylabel)
+    ax.grid(True)
+    if (miny > -9990 and maxy > -9990):
+        ax.set_ylim([miny, maxy])
+    hfmt = dates.DateFormatter('%H:%M:%S')
+    ax.xaxis.set_major_locator(dates.AutoDateLocator())
+    ax.xaxis.set_major_formatter(hfmt)
+    for tick in ax.xaxis.get_major_ticks():
+        tick.label.set_fontsize(8) 
+
+    if (timeLimitsSet):
+        ax.set_xlim(startTime, endTime)
+
+########################################################################
+# Run a command in a shell, wait for it to complete
+
+def runCommand(cmd):
+
+    if (options.debug == True):
+        print >>sys.stderr, "running cmd:",cmd
+    
+    try:
+        retcode = subprocess.call(cmd, shell=True)
+        if retcode < 0:
+            print >>sys.stderr, "Child was terminated by signal: ", -retcode
+        else:
+            if (options.debug == True):
+                print >>sys.stderr, "Child returned code: ", retcode
+    except OSError, e:
+        print >>sys.stderr, "Execution failed:", e
+
+########################################################################
+# Run - entry point
+
+if __name__ == "__main__":
+   main()
+

@@ -1,0 +1,6 @@
+#! /bin/csh -f
+
+running "hcrdrx"
+if ($status == 0) then
+    snuff hcrdrx
+endif

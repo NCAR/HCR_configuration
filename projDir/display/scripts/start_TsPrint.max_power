@@ -1,0 +1,3 @@
+#! /bin/csh -f
+
+xterm -title RangeToMaxPower -bg black -fg orange -g 104x13-0-0 -fn fixed -e TsPrint -instance max_power -fmq $DATA_DIR/fmq/ts/wband/shmem_10000 -max_power -gate 30 -ngates 2000 -xml_cal $PROJ_DIR/moments/params/fallback_cal.xml -nsamples 10000 -dual -labels 8 -range_in_ft -velocity &
