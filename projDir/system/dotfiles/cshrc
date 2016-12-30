@@ -21,32 +21,35 @@ setenv PRINTER color.gate.rtf
 
 setenv LANG C
 
-setenv HOST_OS LINUX
-setenv BUILD_DIR $HOME/cvs
-setenv RAP_MAKE_INC_DIR $BUILD_DIR/make_include
-setenv RAP_MAKE_BIN_DIR $BUILD_DIR/make_bin
-setenv RAP_INC_DIR $BUILD_DIR/include
-setenv RAP_LIB_DIR $BUILD_DIR/lib
-setenv RAP_BIN_DIR $BUILD_DIR/bin
-setenv RAP_MAN_DIR $BUILD_DIR/man
-setenv RAP_DOC_DIR $BUILD_DIR/doc
-setenv RAP_JAR_DIR $BUILD_DIR/java/dist/lib
-setenv RAP_SHARED_INC_DIR $BUILD_DIR/include
-setenv RAP_SHARED_LIB_DIR $BUILD_DIR/lib
-setenv RAP_SHARED_BIN_DIR $BUILD_DIR/bin
-
-setenv KADIR "/opt/ka"
-setenv HCRDIR "/opt/hcr"
-setenv TAO_ROOT /opt/local/ACE+TAO-1.6a/ACE_wrappers/TAO
-setenv ACE_ROOT /opt/local/ACE+TAO-1.6a/ACE_wrappers
-setenv DDS_ROOT /opt/local/OpenDDS-2.0/DDS
-
 # Note: options for HOST_OS environment variable are
 #  LINUX
 #  LINUX_64
 #  LINUX_64_32MODE
 #  DARWIN
 #  CYGWIN
+
+setenv HOST_OS LINUX_64
+
+setenv LROSE_CORE_DIR $HOME/git/lrose-core
+setenv LROSE_INSTALL_DIR $HOME/lrose
+
+setenv RAP_MAKE_INC_DIR $LROSE_CORE_DIR/codebase/make_include
+setenv RAP_MAKE_BIN_DIR $LROSE_CORE_DIR/codebase/make_bin
+
+setenv RAP_INC_DIR $LROSE_INSTALL_DIR/include
+setenv RAP_LIB_DIR $LROSE_INSTALL_DIR/lib
+setenv RAP_BIN_DIR $LROSE_INSTALL_DIR/bin
+setenv RAP_MAN_DIR $LROSE_INSTALL_DIR/man
+setenv RAP_DOC_DIR $LROSE_INSTALL_DIR/doc
+
+setenv RAP_SHARED_INC_DIR $RAP_INC_DIR
+setenv RAP_SHARED_LIB_DIR $RAP_LIB_DIR
+setenv RAP_SHARED_BIN_DIR $RAP_BIN_DIR
+
+setenv HCRDIR "/opt/hcr"
+setenv TAO_ROOT /opt/local/ACE+TAO-1.6a/ACE_wrappers/TAO
+setenv ACE_ROOT /opt/local/ACE+TAO-1.6a/ACE_wrappers
+setenv DDS_ROOT /opt/local/OpenDDS-2.0/DDS
 
 # CVS
 
@@ -57,17 +60,12 @@ setenv CVSROOT :pserver:${CVSUSER}@localhost:/cvs
 
 setenv QTDIR /usr/lib64/qt4
 
-setenv RVP8_INC_DIR $RAP_INC_DIR
-setenv RVP8_LIB_DIR $RAP_LIB_DIR
-setenv RVP8_BIN_DIR $RAP_BIN_DIR
-setenv REFR_BIN_DIR $RAP_BIN_DIR
-
 setenv FC gfortran
 setenv GCC_WARNINGS -Wall
 
 # --- LD library path --
 
-setenv LD_LIBRARY_PATH $QTDIR/lib:/usr/local/lib:$HOME/cvs/lib:/usr/local/netcdf4/lib:/home/mjo/lib32:$HOME/build/lib
+setenv LD_LIBRARY_PATH $QTDIR/lib:$RAP_LIB_DIR
 
 # --- NCAR GRAPHICS ---
 
@@ -99,8 +97,6 @@ setenv LDATA_FMQ_ACTIVE true
 setenv DS_COMM_TIMEOUT_MSECS 60000
 setenv DS_PING_TIMEOUT_MSECS 20000
 
-setenv PAPER_SIZE 500x700+60+60
-
 # --- site info --- 
 
 if (-f $PROJ_DIR/system/params/site_info) then
@@ -125,13 +121,11 @@ if ( -d $PROJ_DIR ) then
   end
 endif
 
-if ($?BUILD_DIR) then
-  if ( -d $BUILD_DIR/bin ) then
-    set path = ($path $BUILD_DIR/bin)
+if ($RAP_BIN_DIR) then
+  if ( -d $RAP_BIN_DIR ) then
+    set path = ($path $RAP_BIN_DIR)
   endif
 endif
-
-set path = ($path $HOME/build/bin)
 
 set savehist=0
 
