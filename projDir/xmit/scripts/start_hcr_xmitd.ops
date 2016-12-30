@@ -1,6 +1,6 @@
 #! /bin/csh -f
 
-cd ~hcr/HCR_instrument/src/hcr_xmit
+cd ~hcr/git/HCR_instrument/src/hcr_xmit
 
 running "hcr_xmitd"
 if ($status == 1) then
