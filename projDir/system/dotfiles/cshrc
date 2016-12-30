@@ -121,10 +121,8 @@ if ( -d $PROJ_DIR ) then
   end
 endif
 
-if ($RAP_BIN_DIR) then
-  if ( -d $RAP_BIN_DIR ) then
-    set path = ($path $RAP_BIN_DIR)
-  endif
+if ( -d $RAP_BIN_DIR ) then
+  set path = ($path $RAP_BIN_DIR)
 endif
 
 set savehist=0
