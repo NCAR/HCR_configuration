@@ -1,29 +1,36 @@
+# emacs
+
+~*
+*~
+
 # Compiled Object files
+
+*.so
+*.o
+*.a
+*.la
+*.lo
 *.slo
 *.lo
 *.o
 *.obj
 
-# Precompiled Headers
-*.gch
-*.pch
-
-# Compiled Dynamic libraries
-*.so
-*.dylib
-*.dll
-
-# Fortran module files
-*.mod
-*.smod
-
 # Compiled Static libraries
+
 *.lai
 *.la
 *.a
 *.lib
 
-# Executables
-*.exe
-*.out
-*.app
+# configure
+
+makefile
+.dirstamp
+.deps
+makefile.in
+makefile.am
+__makefile.template
+.libs
+
+# Binaries
+
