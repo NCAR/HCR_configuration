@@ -80,6 +80,6 @@ RemoveEmptyDirs = TRUE;
 // Type: float
 //
 
-MaxNoModDays = 7;
+MaxNoModDays = 60;
 
 
