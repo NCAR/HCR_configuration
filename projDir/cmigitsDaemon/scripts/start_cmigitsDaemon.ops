@@ -1,7 +1,7 @@
 #! /bin/csh -f
 #set ttyPort = "/dev/ttyS2"
 set ttyPort = "/dev/ttyUSB0"
-cd $HOME/HCR_instrument/src/cmigitsDaemon/
+cd $HOME/git/HCR_instrument/src/cmigitsDaemon/
 
 running "cmigitsDaemon $ttyPort"
 if ($status == 0) then

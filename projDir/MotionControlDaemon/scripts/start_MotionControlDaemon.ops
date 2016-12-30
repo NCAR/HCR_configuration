@@ -1,6 +1,6 @@
 #! /bin/csh -f
 
-cd $HOME/HCR_instrument/src/MotionControl/
+cd $HOME/git/HCR_instrument/src/MotionControl/
 
 running "MotionControlDaemon"
 if ($status == 0) then
