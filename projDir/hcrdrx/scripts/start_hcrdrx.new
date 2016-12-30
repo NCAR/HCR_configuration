@@ -14,7 +14,7 @@ endif
 
 # load the DDC8 bitstream
 
-loadDDC8.sh |& LogFilter -d $ERRORS_LOG_DIR -p hcrdrx -i ops
+loadDDC8.new.sh |& LogFilter -d $ERRORS_LOG_DIR -p hcrdrx -i ops
 
 # start
 limit coredumpsize unlimited

@@ -10,11 +10,19 @@ endif
 snuff MotionControlDaemon
 
 limit coredumpsize unlimited
-#set rotCorr="-3.10"	# measured in hangar 20160914
-#set tiltCorr="-2.86"	# measured in hangar 20160914
-set rotCorr="-3.10"	# measured in hangar 20160914
-set tiltCorr="-3.86"	# measured in hangar 20160914
+set rotBeamCorr="-3.10"		# measured in hangar 20160914
+set tiltBeamCorr="-0.58"	# value used at the end of CSET
+#set tiltBeamCorr="-2.86"	# measured in hangar 20160914
+#set tiltBeamCorr="-5.1"	# RF03 first correction (pointing fore 2.3 deg.)
+#set tiltBeamCorr="-4.0"	# RF03 2nd correction (pointing aft ~1.1 deg)
+#set tiltBeamCorr="-3.8"	# RF03 3rd correction
+#set tiltBeamCorr="-3.5"	# RF03 4th grasp at straws....
+#set tiltBeamCorr="-2.8"	# RF03 5th grasp at straws....
+#set tiltBeamCorr="-4.0"		# RF03 6th grasp at straws....
+set tiltBeamCorr="-0.48"	# RF04 first correction
+set rotBeamCorr="-5.10"		# measured in hangar 20160914
 MotionControlDaemon \
-    --rotBeamAngleCorrection $rotCorr --tiltBeamAngleCorrection $tiltCorr |& \
+    --rotBeamAngleCorrection $rotBeamCorr \
+    --tiltBeamAngleCorrection $tiltBeamCorr |& \
     LogFilter -d $ERRORS_LOG_DIR -p MotionControlDaemon -i ops &
 

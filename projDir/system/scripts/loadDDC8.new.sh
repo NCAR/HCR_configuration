@@ -1,5 +1,5 @@
 #!/bin/sh -x
-mcsFile=~hcr/workspace/sd3c/firmware/bitstream/sd3c-ddc8.mcs
+mcsFile=~hcr/workspace/sd3c/firmware/bitstream/sd3c-ddc8.mcs.new
 
 echo "Loading ${mcsFile##*/} to the Pentek"
 ReadyFlowDir=~hcr/HCR_instrument/src/ReadyFlow7142_428_WinDriver1150/linux/1.0/x86_64

@@ -1,8 +1,9 @@
 #! /bin/csh -f
+#set ttyPort = "/dev/ttyS2"
+set ttyPort = "/dev/ttyUSB0"
+cd $HOME/HCR_instrument/src/cmigitsDaemon/
 
-cd $HOME/workspace/hcr/src/cmigitsDaemon/
-
-running "cmigitsDaemon /dev/ttyS2"
+running "cmigitsDaemon $ttyPort"
 if ($status == 0) then
     exit 0
 endif
@@ -10,6 +11,6 @@ endif
 snuff cmigitsDaemon
 
 limit coredumpsize unlimited
-cmigitsDaemon /dev/ttyS2 |& \
+cmigitsDaemon $ttyPort |& \
     LogFilter -d $ERRORS_LOG_DIR -p cmigitsDaemon -i ops &
 

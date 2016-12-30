@@ -8,6 +8,7 @@ Janitor       logs       start_Janitor.logs        kill_Janitor      localhost
 # HCR DRX processes
 #
 cmigitsDaemon          ops   start_cmigitsDaemon.ops        stop_cmigitsDaemon         localhost
+#SpatialFogDaemon       ops   start_SpatialFogDaemon.ops     stop_SpatialFogDaemon.ops  localhost
 MotionControlDaemon    ops   start_MotionControlDaemon.ops  stop_MotionControlDaemon   localhost
 HcrPmc730Daemon        ops   start_HcrPmc730Daemon.ops      stop_HcrPmc730Daemon       localhost
 HcrMonitor             ops   start_HcrMonitor.ops           stop_HcrMonitor            localhost
@@ -23,7 +24,7 @@ HcrMonitor             ops   start_HcrMonitor.ops           stop_HcrMonitor     
 #
 ###############################################################################
 # COPY CMIGITS TO ARCHIVER
-Fmq2Fmq       cmigits start_Fmq2Fmq.cmigits  snuff_inst  localhost
+#Fmq2Fmq       cmigits start_Fmq2Fmq.cmigits  snuff_inst  localhost
 #
 ###############################################################################
 # Max power for safety monitor

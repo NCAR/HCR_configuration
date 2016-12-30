@@ -1,6 +1,6 @@
 #! /bin/csh -f
 
-cd $HOME/workspace/hcr/src/HcrPmc730Daemon
+cd $HOME/HCR_instrument/src/HcrPmc730Daemon
 
 running "HcrPmc730Daemon"
 if ($status == 0) then
