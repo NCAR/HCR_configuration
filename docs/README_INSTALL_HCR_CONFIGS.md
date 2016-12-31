@@ -35,7 +35,7 @@ There are 2 host types:
   drx
 ```
 
-You need to specify the relevant host type.
+You will be prompted for the host type - specify the relevant one.
 
 ### Check the setup and links:
 
