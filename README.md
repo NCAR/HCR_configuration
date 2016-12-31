@@ -18,3 +18,7 @@ Configuration files and scripts for HCR real-time operations.
 
   See [README_LROSE_BUILD.md](./docs/README_LROSE_BUILD.md)
 
+### Running HCR
+
+  See [README_RUN_HCR.md](./docs/README_RUN_HCR.md)
+
