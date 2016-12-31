@@ -64,7 +64,6 @@ def main():
         print >>sys.stderr, "    gitDir: ", options.gitDir
         print >>sys.stderr, "    gitProjDir: ", gitProjDir
         print >>sys.stderr, "    gitSystemDir: ", gitSystemDir
-        print >>sys.stderr, "    installed dataDir: ", options.dataDir
 
     # read current host type if previously set
 
@@ -116,6 +115,7 @@ def main():
     print "  runtime: " + str(datetime.datetime.now())
     print
     print "  host type: ", hostType
+    print "  data dir:  ", installDataDir
     print
     print "*********************************************************************"
     print " "
@@ -156,6 +156,9 @@ def main():
     dataSubDir = "data." + hostType
     templateDataDir = os.path.join(dataDirsPath, dataSubDir)
     installDataDir = options.dataDir
+
+    if (options.debug):
+        print >>sys.stderr, "Install data dir: ", installDataDir
 
     # create symlink to data if it does not already exist
 

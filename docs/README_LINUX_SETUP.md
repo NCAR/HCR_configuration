@@ -1,6 +1,6 @@
 ## Setting up LINUX for building LROSE
 
-### SHELL
+### SHELL - csh
 
 The HCR runtime configuration expects the login shell to be ```csh``` or ```tcsh```.
 
