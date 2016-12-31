@@ -1,5 +1,9 @@
 ## Setting up LINUX for building LROSE
 
+### SHELL
+
+The HCR runtime configuration expects the login shell to be ```csh``` or ```tcsh```.
+
 ### gcc/g++ versions for LROSE build
 
 LROSE expects support for the c++11 standard.

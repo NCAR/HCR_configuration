@@ -27,7 +27,7 @@ This will install netcdf in:
 
 The software development system at NCAR/RAL (formerly RAP) and NCAR/EOL makes use of a recursive makefile approach, using environment variables to identify the various directories used during the build.
 
-If you have correctly installed the HCR configurations, and sourced the ~.,cshrc file
+If you have correctly installed the HCR configurations, and sourced the ~/.cshrc file
 the build environment should already be set up.
 
 If not, perform the actions in the following section.
@@ -36,14 +36,13 @@ If not, perform the actions in the following section.
 
 For sh or bash:
 ```
-  cd ~/HCR_configuration/build
+  cd ~/git/HCR_configuration/build
   source /set_build_env.sh
 ```  
 
 For csh or tcsh:
 ```
-  cd ~/HCR_configuration/build
-  source /set_build_env.csh
+  source ~/git/HCR_configuration/build/set_build_env.csh
 ```
 
 This will set the following important environment variables:
@@ -70,7 +69,7 @@ automatically via the ~/.cshrc file.
 
 To perform the build:
 ```
-  cd ~/HCR_configuration/build
+  cd ~/git/HCR_configuration/build
   source ./set_build_env.csh
   ./build_lrose.hcr
 ```
