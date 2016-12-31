@@ -115,7 +115,6 @@ def main():
     print "  runtime: " + str(datetime.datetime.now())
     print
     print "  host type: ", hostType
-    print "  data dir:  ", installDataDir
     print
     print "*********************************************************************"
     print " "
@@ -155,7 +154,7 @@ def main():
     dataDirsPath = os.path.join(options.gitDir, 'data_dirs')
     dataSubDir = "data." + hostType
     templateDataDir = os.path.join(dataDirsPath, dataSubDir)
-    installDataDir = options.dataDir
+    installDataDir = os.path.join(options.dataDir, dataSubDir)
 
     if (options.debug):
         print >>sys.stderr, "Install data dir: ", installDataDir
@@ -222,7 +221,7 @@ def runCommand(cmd):
 
     if (options.debug == True):
         print >>sys.stderr, "running cmd:",cmd
-    
+
     try:
         retcode = subprocess.call(cmd, shell=True)
         if retcode < 0:
