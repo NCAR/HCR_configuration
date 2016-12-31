@@ -7,7 +7,7 @@ To start the system:
   start_all
 ```
 
-To monitor the system
+To monitor the system:
 
 ```
 
@@ -21,6 +21,8 @@ To monitor the system
   pdm
 
 ```
+
+NOTE: TerrainHtServer takes a while to start up and register with procmap.
 
 To stop the system:
 
