@@ -16,13 +16,6 @@ Create the following directory, owned by the hcr user:
 
 ### Run the configuration script
 
-There are 2 host types:
-
-```
-  archiver
-  drx
-```
-
 Go to the system scripts directory:
 
 ```
@@ -34,6 +27,15 @@ Run the script:
 ```
   ./configureHost.py
 ```
+
+There are 2 host types:
+
+```
+  archiver
+  drx
+```
+
+You need to specify the relevant host type.
 
 ### Check the setup and links:
 
