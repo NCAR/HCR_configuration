@@ -1,5 +1,5 @@
 #! /bin/csh -f
 
-cd $HOME/HCR_instrument/src/hcrgui
+cd $HOME/git/HCR_instrument/src/hcrgui
 ./hcrgui |& LogFilter -d $ERRORS_LOG_DIR -p hcrgui &
 

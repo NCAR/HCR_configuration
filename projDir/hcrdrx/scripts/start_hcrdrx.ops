@@ -2,7 +2,7 @@
 
 # got to params dir
 
-cd /home/hcr/HCR_instrument/src/hcrdrx/
+cd /home/hcr/git/HCR_instrument/src/hcrdrx/
 
 # check if already running
 

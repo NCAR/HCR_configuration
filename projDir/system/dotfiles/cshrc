@@ -65,7 +65,7 @@ setenv GCC_WARNINGS -Wall
 
 # --- LD library path --
 
-setenv LD_LIBRARY_PATH $QTDIR/lib:$RAP_LIB_DIR
+setenv LD_LIBRARY_PATH ${QTDIR}/lib:${RAP_LIB_DIR}:/home/hcr/ReadyFlow/7142_428/linux/1.0/x86_64/lib
 
 # --- NCAR GRAPHICS ---
 
