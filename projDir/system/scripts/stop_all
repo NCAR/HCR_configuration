@@ -11,8 +11,6 @@ kill_auto_restart
 
 #procmap_list_kill -proc_list $PROJ_DIR/control/proc_list
 
-# kadrx needs special snuff_slow
-
 stop_hcrdrx
 
 # on rds, stop cmigitsDaemon, MotionControlDaemon, 
@@ -22,9 +20,10 @@ stop_MotionControlDaemon
 stop_HcrPmc730Daemon
 stop_HcrMonitor
 
-# on archiver, hcr_xmitd and fireflyd
+# on archiver, hcr_xmitd, fireflyd, and SpectracomDaemon
 stop_hcr_xmitd
 stop_fireflyd
+stop_SpectracomDaemon
 
 # kill the server manager so that it does not restart processes
 # which have been killed already.

@@ -24,6 +24,12 @@ TerrainHtServer  ops   start_TerrainHtServer.ops   snuff_inst
 fireflyd      ops        start_fireflyd.ops        snuff_inst        
 #
 ###############################################################################
+# daemon to monitor the Spectracom SecureSync GPS-disciplined clock /
+# 10 MHz oscillator / 1 PPS source
+#
+SpectracomDaemon      ops        start_SpectracomDaemon.ops        snuff_inst        
+#
+###############################################################################
 # TIME SERIES FROM WBAND
 TsTcp2Fmq     wband         start_TsTcp2Fmq.wband  snuff_inst    
 #
