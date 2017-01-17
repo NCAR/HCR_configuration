@@ -1,0 +1,18 @@
+#! /bin/csh
+#
+# Start the SpectracomDaemon, which collects status from the Spectracom
+# SecureSync time/frequency server
+#
+cd $HOME/git/HCR_instrument/src/SpectracomDaemon/
+
+running "SpectracomDaemon"
+if ($status == 0) then
+    exit 0
+endif
+
+snuff SpectracomDaemon
+
+limit coredumpsize unlimited
+SpectracomDaemon.py |& \
+    LogFilter -d $ERRORS_LOG_DIR -p SpectracomDaemon -i ops -noLineStamp &
+

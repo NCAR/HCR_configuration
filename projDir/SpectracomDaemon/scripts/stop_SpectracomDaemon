@@ -1,0 +1,2 @@
+#!/bin/csh
+pkill -f --signal SIGINT SpectracomDaemon.py
