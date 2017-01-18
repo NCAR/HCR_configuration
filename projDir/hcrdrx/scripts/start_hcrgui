@@ -1,4 +1,4 @@
-#! /bin/csh -f
+#!/bin/csh
 
 cd $HOME/git/HCR_instrument/src/hcrgui
 ./hcrgui |& LogFilter -d $ERRORS_LOG_DIR -p hcrgui &
