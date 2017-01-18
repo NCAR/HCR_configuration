@@ -100,7 +100,7 @@ input_mode = IWRF_FMQ_INPUT;
 // Type: string
 //
 
-input_fmq_url = "fmqp:://localhost::fmq/moments/10hz/shmem_20010";
+input_fmq_url = "fmqp:://localhost::fmq/moments/10hz/shmem_20020";
 
 ///////////// seek_to_end_of_fmq //////////////////////
 //
