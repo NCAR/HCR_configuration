@@ -3,7 +3,7 @@
 # Start the SpectracomDaemon, which collects status from the Spectracom
 # SecureSync time/frequency server
 #
-cd $HOME/git/HCR_instrument/src/SpectracomDaemon/
+cd ~hcr/git/HCR_instrument/src/SpectracomDaemon/
 
 running "SpectracomDaemon"
 if ($status == 0) then
