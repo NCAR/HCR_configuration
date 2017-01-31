@@ -127,7 +127,7 @@ endif
 
 set savehist=0
 
-set path = ($path $HOME/anaconda2/bin)
+set path = ($path /usr/lib64/qt4/bin $HOME/anaconda2/bin)
 
 set path = ($path ~/bin \
         /opt/local/bin \
