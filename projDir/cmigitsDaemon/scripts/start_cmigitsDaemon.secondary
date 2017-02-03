@@ -11,10 +11,10 @@ set antennaOffset = "-20,-6,-18"	# outboard
 
 cd /home/hcr/git/HCR_instrument/src/cmigitsDaemon/
 
-set cmd = "cmigitsDaemon --antennaOffset $antennaOffset $devName"
+set cmd = "cmigitsDaemon --secondary --antennaOffset $antennaOffset $devName"
 # The instance name for cmigitsDaemon is "ops" unless it's run with the
 # --secondary flag, when the instance is "secondary"
-set instance = "ops"
+set instance = "secondary"
 
 limit coredumpsize unlimited
 running "$cmd"

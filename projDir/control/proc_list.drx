@@ -1,32 +1,33 @@
 ##############################################################################
 # SYSTEM processes
 #
-Janitor       logs       start_Janitor.logs        kill_Janitor      localhost
-#DataMapper    primary    start_DataMapper          kill_DataMapper   localhost
+Janitor       logs       start_Janitor.logs        kill_Janitor
+#DataMapper    primary    start_DataMapper          kill_DataMapper
 #
 ###############################################################################
 # HCR DRX processes
 #
-cmigitsDaemon          ops   start_cmigitsDaemon.ops        stop_cmigitsDaemon         localhost
-#SpatialFogDaemon       ops   start_SpatialFogDaemon.ops     stop_SpatialFogDaemon.ops  localhost
-MotionControlDaemon    ops   start_MotionControlDaemon.ops  stop_MotionControlDaemon   localhost
-HcrPmc730Daemon        ops   start_HcrPmc730Daemon.ops      stop_HcrPmc730Daemon       localhost
-HcrMonitor             ops   start_HcrMonitor.ops           stop_HcrMonitor            localhost
-#hcrdrx       ops        start_hcrdrx.ops          stop_hcrdrx   localhost
+cmigitsDaemon          ops       start_cmigitsDaemon.ops        stop_cmigitsDaemon.ops
+cmigitsDaemon          secondary start_cmigitsDaemon.secondary  stop_cmigitsDaemon.secondary
+#SpatialFogDaemon       ops   start_SpatialFogDaemon.ops     stop_SpatialFogDaemon.ops
+MotionControlDaemon    ops   start_MotionControlDaemon.ops  stop_MotionControlDaemon
+HcrPmc730Daemon        ops   start_HcrPmc730Daemon.ops      stop_HcrPmc730Daemon
+HcrMonitor             ops   start_HcrMonitor.ops           stop_HcrMonitor
+#hcrdrx       ops        start_hcrdrx.ops          stop_hcrdrx
 #
 ###############################################################################
 # TIME SERIES FROM WBAND
-#TsTcp2Fmq     wband         start_TsTcp2Fmq.wband  snuff_inst    localhost
+#TsTcp2Fmq     wband         start_TsTcp2Fmq.wband  snuff_inst
 #
 ###############################################################################
 # COPY TIME SERIES TO ARCHIVER
-#Fmq2Fmq       time_series  start_Fmq2Fmq.time_series  snuff_inst  localhost
+#Fmq2Fmq       time_series  start_Fmq2Fmq.time_series  snuff_inst
 #
 ###############################################################################
 # COPY CMIGITS TO ARCHIVER
-#Fmq2Fmq       cmigits start_Fmq2Fmq.cmigits  snuff_inst  localhost
+#Fmq2Fmq       cmigits start_Fmq2Fmq.cmigits  snuff_inst
 #
 ###############################################################################
 # Max power for safety monitor
 #
-#TsPrint  power_server  start_TsPrint.power_server   snuff_inst        localhost
+#TsPrint  power_server  start_TsPrint.power_server   snuff_inst
