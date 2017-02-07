@@ -2,12 +2,12 @@
 #
 # Start script for C-MIGITS acting as the secondary INS
 
-set devName = "/dev/ttyS2"
-#set devName = "/dev/ttyUSB0"
+#set devName = "/dev/ttyS2"
+set devName = "/dev/ttyUSB0"
 
 # Select INS-to-antenna offset for either inboard or outboard INS
-set antennaOffset = "-20,-6,-18"	# outboard
-#set antennaOffset = "-20,5,-18"		# inboard
+#set antennaOffset = "-20,-6,-18"	# outboard
+set antennaOffset = "-20,5,-18"		# inboard
 
 cd /home/hcr/git/HCR_instrument/src/cmigitsDaemon/
 
