@@ -1,6 +1,6 @@
 #! /bin/csh -f
 #
-# Start script for C-MIGITS acting as the secondary INS
+# Start script for C-MIGITS acting as the primary INS
 
 set devName = "/dev/ttyS2"
 #set devName = "/dev/ttyUSB0"
