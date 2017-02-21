@@ -6,7 +6,7 @@
 
 # GV test flights
 
-setenv PROJECT_NAME               "SOCTEST"
+setenv PROJECT_NAME               "ARISTO-17"
 setenv SITE_NAME                  "GV"
 setenv RADAR_LAT                  40.03794
 setenv RADAR_LON                  -105.24127
