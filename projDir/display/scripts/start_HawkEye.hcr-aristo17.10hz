@@ -2,7 +2,7 @@
 
 rehash
 
-setenv PROJ_DIR /opt/local/hcr/projDir
+setenv PROJ_DIR /opt/local/git/HCR_configuration/projDir
 setenv DATA_DIR /scr/eldora1/rsfdata
 cd $PROJ_DIR/display/params
 
