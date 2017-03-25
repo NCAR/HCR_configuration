@@ -366,7 +366,7 @@ def doPlotPosition():
 
     #configTimeAxis(ax1, -9999, -9999, "latitude", 'upper right')
     #configTimeAxis(ax2, -9999, -9999, "longitude", 'upper right')
-    configTimeAxis(ax1, 39, 41, "latitude", 'upper right')
+    configTimeAxis(ax1, 39, 43, "latitude", 'upper right')
     configTimeAxis(ax2, -106, -100, "longitude", 'upper right')
     configTimeAxis(ax3, -9999, -9999, "altitude", 'upper right')
 

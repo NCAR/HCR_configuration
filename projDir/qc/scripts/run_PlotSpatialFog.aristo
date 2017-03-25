@@ -1,0 +1,42 @@
+#! /bin/csh
+
+setenv PROJ_DIR ~/hcrProjDir
+cd $PROJ_DIR/qc/scripts
+
+# flightNum: rf01
+# startTime: 2017/02/22 21:10:00
+# endTime:   2017/02/22 23:55:00
+
+
+# flightNum: rf02
+# startTime: 2017/02/24 19:30:00
+# endTime:   2017/02/24 22:25:00
+
+
+# flightNum: rf03
+# startTime: 2017/03/01 19:45:00
+# endTime:   2017/03/01 23:20:00
+
+PlotSpatialFog.aristo.py --file ~/hcrDataDir/ascii/ac_georef/ARISTO_FOG_rf03_20170301_201919.txt --start "2017 03 01 20 55 00" --end "2017 03 01 23 20 00"
+
+# flightNum: rf04
+# startTime: 2017/03/02 15:40:00
+# endTime:   2017/03/03 01:30:00
+
+PlotSpatialFog.aristo.py --file ~/hcrDataDir/ascii/ac_georef/ARISTO_FOG_rf04a_20170302_153522.txt --start "2017 03 02 16 20 00" --end "2017 03 02 18 30 00"
+
+PlotSpatialFog.aristo.py --file ~/hcrDataDir/ascii/ac_georef/ARISTO_FOG_rf04b_20170302_192527.txt  --start "2017 03 02 20 00 00" --end "2017 03 03 01 30 00"
+
+# flightNum: rf05
+# startTime: 2017/03/09 16:50:00
+# endTime:   2017/03/09 19:00:00
+
+PlotSpatialFog.aristo.py --file ~/hcrDataDir/ascii/ac_georef/ARISTO_FOG_rf05_20170309_164846.txt --start "2017 03 09 17 20 00" --end "2017 03 09 19 00 00"
+
+# flightNum: rf06
+# startTime: 2017/03/10 15:30:00
+# endTime:   2017/03/10 20:15:00
+
+PlotSpatialFog.aristo.py --file ~/hcrDataDir/ascii/ac_georef/ARISTO_FOG_rf06_20170310_175146.txt --start "2017 03 10 17 55 00" --end "2017 03 10 20 15 00"
+
+

@@ -51,7 +51,7 @@ def main():
                       help='File path for comparison results')
     parser.add_option('--widthMain',
                       dest='mainWidthMm',
-                      default=400,
+                      default=300,
                       help='Width of main figure in mm')
     parser.add_option('--heightMain',
                       dest='mainHeightMm',
@@ -474,10 +474,10 @@ def doPlotPitchRoll():
     ax4.plot(ctimes, rollDiff3Sm, \
              label='rollDiffIns3', color='black', linewidth=1)
 
-    configTimeAxis(ax1, -3, 10, "Pitch", 'upper right')
-    configTimeAxis(ax2, -10, 10, "Roll", 'upper right')
+    configTimeAxis(ax1, -3, 12, "Pitch", 'upper right')
+    configTimeAxis(ax2, -20, 20, "Roll", 'upper right')
     configTimeAxis(ax3, -1, 1.5, "PitchDiffs", 'upper right')
-    configTimeAxis(ax4, -1, 1, "RollDiffs", 'upper right')
+    configTimeAxis(ax4, -1, 1.5, "RollDiffs", 'upper right')
 
     fig.autofmt_xdate()
     fig.tight_layout()
@@ -544,7 +544,7 @@ def doPlotDiffs():
     configTimeAxis(ax1, -3, 3.0, "diffs", 'upper right')
     configTimeAxis(ax2, -0.5, 3, "diffs", 'upper right')
     configTimeAxis(ax3, -9999, -9999, "SurfaceVel", 'upper right')
-    configTimeAxis(ax4, -0.25, 0.25, "Err", 'upper right')
+    configTimeAxis(ax4, -0.5, 0.5, "Err", 'upper right')
     
     fig.autofmt_xdate()
     fig.tight_layout()
@@ -691,8 +691,8 @@ def doPlotEstPitchDiff():
     ax2.plot(ctimes, surfaceVelSm, \
              label='surfaceVel', color='blue', linewidth=1)
 
-    configTimeAxis(ax1, -0.5, 1, "diffs", 'upper right')
-    configTimeAxis(ax2, -1.5, 1, "SurfaceVel", 'upper right')
+    configTimeAxis(ax1, -1.5, 1.5, "diffs", 'upper right')
+    configTimeAxis(ax2, -1.5, 1.5, "SurfaceVel", 'upper right')
     
     fig.autofmt_xdate()
     fig.tight_layout()
