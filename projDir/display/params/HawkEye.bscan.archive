@@ -149,7 +149,7 @@ archive_initial_time = "2014 12 01 18 40 00";
 // Type: string
 //
 
-archive_data_url = "/scr/eldora1/hcr-test/cfradial/moments/wband";
+archive_data_url = "/scr/eldora2/hcr-test/cfradial/moments/wband";
 
 //======================================================================
 //

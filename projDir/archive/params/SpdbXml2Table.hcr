@@ -1,5 +1,5 @@
 /**********************************************************************
- * TDRP params for SpdbXml2Table
+ * TDRP params for ./SpdbXml2Table
  **********************************************************************/
 
 //======================================================================
@@ -19,7 +19,9 @@
 ///////////// debug ///////////////////////////////////
 //
 // Debug option.
+//
 // If set, debug messages will be printed appropriately.
+//
 //
 // Type: enum
 // Options:
@@ -40,11 +42,14 @@ debug = DEBUG_OFF;
 ///////////// input_url ///////////////////////////////
 //
 // URL to spdb data.
+//
 // This can either be (a) the path to the directory or (b) a url of the 
 //   form 'spdbp:://hostname::dir'. For (a), if the path starts with '/' 
 //   or '.', it will be treated as an absolute path. If not, it will be 
 //   relative to DATA_DIR. For (b) the dir is relative to DATA_DIR on the 
 //   host specified by hostname.
+//
+//
 // Type: string
 //
 
@@ -53,7 +58,9 @@ input_url = "/tmp/spdb/test";
 ///////////// start_time //////////////////////////////
 //
 // The start time for extracting the data.
+//
 // Can be overridden by specifying -start on the command line.
+//
 //
 // Type: struct
 //   typedef struct {
@@ -79,7 +86,9 @@ start_time = {
 ///////////// end_time ////////////////////////////////
 //
 // The end time for extracting the data.
+//
 // Can be overridden by specifying -end on the command line.
+//
 //
 // Type: struct
 //   typedef struct {
@@ -105,7 +114,10 @@ end_time = {
 ///////////// data_type ///////////////////////////////
 //
 // Spdb data type, for constraining search.
+//
 // If non-zero, only entries with this data_type will be retrieved.
+//
+//
 // Type: int
 //
 
@@ -114,7 +126,10 @@ data_type = 0;
 ///////////// data_type_2 /////////////////////////////
 //
 // Spdb data type 2, for constraining search.
+//
 // If non-zero, only entries with this data_type_2 will be retrieved.
+//
+//
 // Type: int
 //
 
@@ -129,6 +144,7 @@ data_type_2 = 0;
 ///////////// xml_entries /////////////////////////////
 //
 // Specify which XML entries to include in table.
+//
 // 	xml_tag_list: list of XML tags used to identify entry. These should 
 //   be delimited in xml format, using < and >
 // 	specify_label: do you want to use a label instead of the tags to 
@@ -136,11 +152,13 @@ data_type_2 = 0;
 // 	label: the label to use if specify_label is true
 // .
 //
+//
 // Type: struct
 //   typedef struct {
 //      string xml_tag_list;
 //      boolean specify_label;
 //      string label;
+//      boolean required;
 //   }
 //
 // 1D array - variable length.
@@ -150,697 +168,813 @@ xml_entries = {
   {
     xml_tag_list = "<HcrTransmitterStatus><SerialConnected>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
   ,
   {
     xml_tag_list = "<HcrTransmitterStatus><BadChecksumReceived>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
   ,
   {
     xml_tag_list = "<HcrTransmitterStatus><FilamentOn>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
   ,
   {
     xml_tag_list = "<HcrTransmitterStatus><HighVoltageOn>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
   ,
   {
     xml_tag_list = "<HcrTransmitterStatus><RfOn>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
   ,
   {
     xml_tag_list = "<HcrTransmitterStatus><ModPulseExternal>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
   ,
   {
     xml_tag_list = "<HcrTransmitterStatus><SyncPulseExternal>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
   ,
   {
     xml_tag_list = "<HcrTransmitterStatus><FilamentDelayActive>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
   ,
   {
     xml_tag_list = "<HcrTransmitterStatus><PsmPowerOn>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
   ,
   {
     xml_tag_list = "<HcrTransmitterStatus><FrontPanelCtlEnabled>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
   ,
   {
     xml_tag_list = "<HcrTransmitterStatus><Rs232CtlEnabled>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
   ,
   {
     xml_tag_list = "<HcrTransmitterStatus><RdsCtlEnabled>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
   ,
   {
     xml_tag_list = "<HcrTransmitterStatus><SummaryFault>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
   ,
   {
     xml_tag_list = "<HcrTransmitterStatus><ModulatorFault>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
   ,
   {
     xml_tag_list = "<HcrTransmitterStatus><SyncFault>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
   ,
   {
     xml_tag_list = "<HcrTransmitterStatus><XmitterTempFault>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
   ,
   {
     xml_tag_list = "<HcrTransmitterStatus><WaveguideArcFault>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
   ,
   {
     xml_tag_list = "<HcrTransmitterStatus><CollectorCurrentFault>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
   ,
   {
     xml_tag_list = "<HcrTransmitterStatus><BodyCurrentFault>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
   ,
   {
     xml_tag_list = "<HcrTransmitterStatus><FilamentLorFault>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
   ,
   {
     xml_tag_list = "<HcrTransmitterStatus><FocusElectrodeLorFault>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
   ,
   {
     xml_tag_list = "<HcrTransmitterStatus><CathodeLorFault>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
   ,
   {
     xml_tag_list = "<HcrTransmitterStatus><InverterOverloadFault>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
   ,
   {
     xml_tag_list = "<HcrTransmitterStatus><ExternalInterlockFault>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
   ,
   {
     xml_tag_list = "<HcrTransmitterStatus><EikInterlockFault>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
   ,
   {
     xml_tag_list = "<HcrTransmitterStatus><CathodeVoltage>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
   ,
   {
     xml_tag_list = "<HcrTransmitterStatus><BodyCurrent>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
   ,
   {
     xml_tag_list = "<HcrTransmitterStatus><CollectorCurrent>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
   ,
   {
     xml_tag_list = "<HcrTransmitterStatus><XmitterTemp>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
   ,
   {
     xml_tag_list = "<HcrTransmitterStatus><SummaryFaultCount>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
   ,
   {
     xml_tag_list = "<HcrTransmitterStatus><ModulatorFaultCount>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
   ,
   {
     xml_tag_list = "<HcrTransmitterStatus><SyncFaultCount>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
   ,
   {
     xml_tag_list = "<HcrTransmitterStatus><XmitterTempFaultCount>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
   ,
   {
     xml_tag_list = "<HcrTransmitterStatus><WaveguideArcFaultCount>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
   ,
   {
     xml_tag_list = "<HcrTransmitterStatus><CollectorCurrentFaultCount>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
   ,
   {
     xml_tag_list = "<HcrTransmitterStatus><BodyCurrentFaultCount>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
   ,
   {
     xml_tag_list = "<HcrTransmitterStatus><FilamentLorFaultCount>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
   ,
   {
     xml_tag_list = "<HcrTransmitterStatus><FocusElectrodeLorFaultCount>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
   ,
   {
     xml_tag_list = "<HcrTransmitterStatus><CathodeLorFaultCount>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
   ,
   {
     xml_tag_list = "<HcrTransmitterStatus><InverterOverloadFaultCount>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
   ,
   {
     xml_tag_list = "<HcrTransmitterStatus><ExternalInterlockFaultCount>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
   ,
   {
     xml_tag_list = "<HcrTransmitterStatus><EikInterlockFaultCount>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
   ,
   {
     xml_tag_list = "<HcrTransmitterStatus><SummaryFaultTime>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
   ,
   {
     xml_tag_list = "<HcrTransmitterStatus><ModulatorFaultTime>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
   ,
   {
     xml_tag_list = "<HcrTransmitterStatus><SyncFaultTime>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
   ,
   {
     xml_tag_list = "<HcrTransmitterStatus><XmitterTempFaultTime>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
   ,
   {
     xml_tag_list = "<HcrTransmitterStatus><WaveguideArcFaultTime>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
   ,
   {
     xml_tag_list = "<HcrTransmitterStatus><CollectorCurrentFaultTime>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
   ,
   {
     xml_tag_list = "<HcrTransmitterStatus><BodyCurrentFaultTime>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
   ,
   {
     xml_tag_list = "<HcrTransmitterStatus><FilamentLorFaultTime>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
   ,
   {
     xml_tag_list = "<HcrTransmitterStatus><FocusElectrodeLorFaultTime>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
   ,
   {
     xml_tag_list = "<HcrTransmitterStatus><CathodeLorFaultTime>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
   ,
   {
     xml_tag_list = "<HcrTransmitterStatus><InverterOverloadFaultTime>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
   ,
   {
     xml_tag_list = "<HcrTransmitterStatus><ExternalInterlockFaultTime>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
   ,
   {
     xml_tag_list = "<HcrTransmitterStatus><EikInterlockFaultTime>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
   ,
   {
     xml_tag_list = "<HcrReceiverStatus><DetectedRfPower>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
   ,
   {
     xml_tag_list = "<HcrReceiverStatus><PvForePressure>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
   ,
   {
     xml_tag_list = "<HcrReceiverStatus><PvAftPressure>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
   ,
   {
     xml_tag_list = "<HcrReceiverStatus><PloTemp>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
   ,
   {
     xml_tag_list = "<HcrReceiverStatus><EikTemp>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
   ,
   {
     xml_tag_list = "<HcrReceiverStatus><VLnaTemp>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
   ,
   {
     xml_tag_list = "<HcrReceiverStatus><HLnaTemp>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
   ,
   {
     xml_tag_list = "<HcrReceiverStatus><PolarizationSwitchTemp>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
   ,
   {
     xml_tag_list = "<HcrReceiverStatus><RfDetectorTemp>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
   ,
   {
     xml_tag_list = "<HcrReceiverStatus><NoiseSourceTemp>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
   ,
   {
     xml_tag_list = "<HcrReceiverStatus><Ps28VTemp>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
   ,
   {
     xml_tag_list = "<HcrReceiverStatus><RdsInDuctTemp>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
   ,
   {
     xml_tag_list = "<HcrReceiverStatus><RotationMotorTemp>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
   ,
   {
     xml_tag_list = "<HcrReceiverStatus><TiltMotorTemp>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
   ,
   {
     xml_tag_list = "<HcrCmigitsData><CmigitsTemp>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
   ,
   {
     xml_tag_list = "<HcrReceiverStatus><TailconeTemp>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
   ,
   {
     xml_tag_list = "<HcrReceiverStatus><PsVoltage>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
   ,
   {
     xml_tag_list = "<HcrReceiverStatus><PentekFpgaTemp>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
   ,
   {
     xml_tag_list = "<HcrReceiverStatus><PentekBoardTemp>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
   ,
   {
     xml_tag_list = "<HcrReceiverStatus><Locked15_5GHzPLO>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
   ,
   {
     xml_tag_list = "<HcrReceiverStatus><Locked1250MHzPLO>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
   ,
   {
     xml_tag_list = "<HcrReceiverStatus><ModPulseDisabled>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
   ,
   {
     xml_tag_list = "<HcrReceiverStatus><EmsPowerError>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
   ,
   {
     xml_tag_list = "<HcrCmigitsData><Cmigits3500Time>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
   ,
   {
     xml_tag_list = "<HcrCmigitsData><Cmigits3500CurrentMode>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
   ,
   {
     xml_tag_list = "<HcrCmigitsData><Cmigits3500InsAvailable>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
   ,
   {
     xml_tag_list = "<HcrCmigitsData><Cmigits3500GpsAvailable>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
   ,
   {
     xml_tag_list = "<HcrCmigitsData><Cmigits3500NSats>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
   ,
   {
     xml_tag_list = "<HcrCmigitsData><Cmigits3500PositionFOM>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
   ,
   {
     xml_tag_list = "<HcrCmigitsData><Cmigits3500VelocityFOM>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
   ,
   {
     xml_tag_list = "<HcrCmigitsData><Cmigits3500HeadingFOM>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
   ,
   {
     xml_tag_list = "<HcrCmigitsData><Cmigits3500TimeFOM>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
   ,
   {
     xml_tag_list = "<HcrCmigitsData><Cmigits3500HPosError>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
   ,
   {
     xml_tag_list = "<HcrCmigitsData><Cmigits3500VPosError>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
   ,
   {
     xml_tag_list = "<HcrCmigitsData><Cmigits3500VelocityError>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
   ,
   {
     xml_tag_list = "<HcrCmigitsData><Cmigits3501Time>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
   ,
   {
     xml_tag_list = "<HcrCmigitsData><Cmigits3501Latitude>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
   ,
   {
     xml_tag_list = "<HcrCmigitsData><Cmigits3501Longitude>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
   ,
   {
     xml_tag_list = "<HcrCmigitsData><Cmigits3501Altitude>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
   ,
   {
     xml_tag_list = "<HcrCmigitsData><Cmigits3512Time>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
   ,
   {
     xml_tag_list = "<HcrCmigitsData><Cmigits3512Pitch>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
   ,
   {
     xml_tag_list = "<HcrCmigitsData><Cmigits3512Roll>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
   ,
   {
     xml_tag_list = "<HcrCmigitsData><Cmigits3512Heading>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
   ,
   {
     xml_tag_list = "<HcrCmigitsData><Cmigits3512VelNorth>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
   ,
   {
     xml_tag_list = "<HcrCmigitsData><Cmigits3512VelEast>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
   ,
   {
     xml_tag_list = "<HcrCmigitsData><Cmigits3512VelUp>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
   ,
   {
     xml_tag_list = "<HcrReceiverStatus><HmcMode>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
   ,
   {
     xml_tag_list = "<HcrReceiverStatus><RdsXmitterFilamentOn>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
   ,
   {
     xml_tag_list = "<HcrReceiverStatus><RdsXmitterHvOn>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
   ,
   {
     xml_tag_list = "<HcrReceiverStatus><RadarPowerError>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
   ,
   {
     xml_tag_list = "<HcrReceiverStatus><EmsErrorCount>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
   ,
   {
     xml_tag_list = "<HcrReceiverStatus><EmsError1>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
   ,
   {
     xml_tag_list = "<HcrReceiverStatus><EmsError2>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
   ,
   {
     xml_tag_list = "<HcrReceiverStatus><EmsError3>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
   ,
   {
     xml_tag_list = "<HcrReceiverStatus><EmsError4Or5>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
   ,
   {
     xml_tag_list = "<HcrReceiverStatus><EmsError16Or7>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
   ,
   {
     xml_tag_list = "<HcrReceiverStatus><WaveguideSwitchError>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
   ,
   {
     xml_tag_list = "<HcrReceiverStatus><EmsPowerError>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
   ,
   {
     xml_tag_list = "<HcrReceiverStatus><ApsValveOpen>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
   ,
   {
     xml_tag_list = "<HcrReceiverStatus><ApsLowSidePressure>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
   ,
   {
     xml_tag_list = "<HcrReceiverStatus><ApsHighSidePressure>",
     specify_label = FALSE,
-    label = "notset"
+    label = "notset",
+    required = FALSE
   }
 };
 
@@ -853,6 +987,8 @@ xml_entries = {
 ///////////// add_commented_header ////////////////////
 //
 // If true, write a commented header at the start of the output.
+//
+//
 // Type: boolean
 //
 
@@ -861,7 +997,10 @@ add_commented_header = TRUE;
 ///////////// comment_character ///////////////////////
 //
 // Character at start of comment lines.
+//
 // Each comment line will be start with this character.
+//
+//
 // Type: string
 //
 
@@ -870,6 +1009,8 @@ comment_character = "#";
 ///////////// column_delimiter ////////////////////////
 //
 // Delimiter between columns.
+//
+//
 // Type: string
 //
 
@@ -879,8 +1020,58 @@ column_delimiter = ",";
 //
 // If true, a 'false' value will be converted to 0, and a 'true' value 
 //   to 1.
+//
+//
 // Type: boolean
 //
 
 convert_boolean_to_integer = TRUE;
+
+///////////// ignore_if_all_nans //////////////////////
+//
+// Do not print a line if all string values are 'nan'.
+//
+//
+// Type: boolean
+//
+
+ignore_if_all_nans = FALSE;
+
+///////////// replace_string_in_output ////////////////
+//
+// If true, change the specified string to the given replacement.
+//
+// This is done in the output, prior to the values being written to the 
+//   table. It allows you to replace strings that might be problematic for 
+//   processes that use the table for analysis.
+//
+//
+// Type: boolean
+//
+
+replace_string_in_output = FALSE;
+
+///////////// old_string //////////////////////////////
+//
+// String to be replaced in output table.
+//
+// See 'replace_string_in_output'.
+//
+//
+// Type: string
+//
+
+old_string = " ";
+
+///////////// new_string //////////////////////////////
+//
+// 'new_string' will replace 'old_string'.
+//
+// See 'replace_string_in_output'.
+//
+//
+// Type: string
+//
+
+new_string = "_";
 

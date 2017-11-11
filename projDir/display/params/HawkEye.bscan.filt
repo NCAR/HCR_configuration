@@ -204,7 +204,7 @@ archive_end_time = "2015 02 02 18 02 00";
 // Type: string
 //
 
-archive_data_url = "/scr/eldora1/hcr-test/cfradial/moments/filt/";
+archive_data_url = "/scr/eldora2/hcr-test/cfradial/moments/filt/";
 
 //======================================================================
 //
