@@ -932,7 +932,7 @@ bscan_realtime_fraction_saved = 0.5;
 // Type: double
 //
 
-bscan_min_secs_between_reading_beams = 0.1;
+bscan_min_secs_between_reading_beams = 0.01;
 
 ///////////// bscan_min_secs_between_rendering_beams //
 //

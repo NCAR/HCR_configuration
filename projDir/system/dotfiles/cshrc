@@ -28,7 +28,7 @@ setenv LANG C
 #  DARWIN
 #  CYGWIN
 
-setenv HOST_OS LINUX_64
+setenv HOST_OS LINUX_CX11
 
 setenv LROSE_CORE_DIR $HOME/git/lrose-core
 setenv LROSE_INSTALL_DIR $HOME/lrose
@@ -215,6 +215,8 @@ if ($?prompt) then
 
   alias gate 'ssh -a -XY -C -L 2401:cvs.rap.ucar.edu:2401 -L 8888:svn.eol.ucar.edu:80 -L 2200:tikal.eol.ucar.edu:22 burghart@gate.ucar.edu'
   alias gated 'ssh -a -XY -C -L 2401:cvs.rap.ucar.edu:2401 -L 8888:svn.eol.ucar.edu:80 dixon@gate.ucar.edu'
+
+  alias acserver 'ssh ads@acserver'
 
   alias psg 'ps axww | sed -n "1p; \|sed .*/\!*/|d; /\!*/p"'
   alias pslg 'ps alxww | sed -n "1p; \|sed .*/\!*/|d; /\!*/p"'

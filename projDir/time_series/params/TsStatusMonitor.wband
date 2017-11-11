@@ -1,5 +1,5 @@
 /**********************************************************************
- * TDRP params for TsStatusMonitor
+ * TDRP params for ./TsStatusMonitor
  **********************************************************************/
 
 //======================================================================
@@ -104,7 +104,10 @@ data_valid_interval_secs = 300;
 // 	graph_min_val: minimum value for history graph
 // 	graph_max_val: maximim value for history graph
 // 	comment: if set, appears at end of status line
-// 	add_to_catalog_stats: add this entry to the catalog stats
+// 	include_in_catalog_stats: add this entry to the catalog stats
+// 	catalog_omit_if_zero: do not report in catalog if all values are 
+//   zero or false
+// 	catalog_interpret_as_time: treat this value as a time or time string
 // .
 //
 //
@@ -129,7 +132,9 @@ data_valid_interval_secs = 300;
 //      double graph_min_val;
 //      double graph_max_val;
 //      string comment;
-//      boolean add_to_catalog_stats;
+//      boolean include_in_catalog_stats;
+//      boolean catalog_omit_if_zero;
+//      boolean catalog_interpret_as_time;
 //   }
 //
 // 1D array - variable length.
@@ -151,7 +156,9 @@ xml_entries = {
     graph_min_val = 10,
     graph_max_val = 20,
     comment = "",
-    add_to_catalog_stats = TRUE
+    include_in_catalog_stats = TRUE,
+    catalog_omit_if_zero = FALSE,
+    catalog_interpret_as_time = FALSE
   }
   ,
   {
@@ -169,7 +176,9 @@ xml_entries = {
     graph_min_val = 0,
     graph_max_val = 1,
     comment = "",
-    add_to_catalog_stats = TRUE
+    include_in_catalog_stats = TRUE,
+    catalog_omit_if_zero = FALSE,
+    catalog_interpret_as_time = FALSE
   }
   ,
   {
@@ -187,7 +196,9 @@ xml_entries = {
     graph_min_val = 0,
     graph_max_val = 12,
     comment = "",
-    add_to_catalog_stats = TRUE
+    include_in_catalog_stats = TRUE,
+    catalog_omit_if_zero = FALSE,
+    catalog_interpret_as_time = FALSE
   }
   ,
   {
@@ -205,7 +216,9 @@ xml_entries = {
     graph_min_val = -20,
     graph_max_val = 60,
     comment = "",
-    add_to_catalog_stats = TRUE
+    include_in_catalog_stats = TRUE,
+    catalog_omit_if_zero = FALSE,
+    catalog_interpret_as_time = FALSE
   }
   ,
   {
@@ -223,7 +236,9 @@ xml_entries = {
     graph_min_val = 0,
     graph_max_val = 1400,
     comment = "",
-    add_to_catalog_stats = TRUE
+    include_in_catalog_stats = TRUE,
+    catalog_omit_if_zero = FALSE,
+    catalog_interpret_as_time = FALSE
   }
   ,
   {
@@ -241,709 +256,9 @@ xml_entries = {
     graph_min_val = 0,
     graph_max_val = 1400,
     comment = "",
-    add_to_catalog_stats = TRUE
-  }
-  ,
-  {
-    xml_outer_tag = "HcrReceiverStatus",
-    xml_inner_tag = "PloTemp",
-    entry_type = XML_ENTRY_DOUBLE,
-    ok_boolean = TRUE,
-    boolean_failure_is_critical = TRUE,
-    ok_value_lower_limit = 0,
-    ok_value_upper_limit = 50,
-    impaired_value_lower_limit = -10,
-    impaired_value_upper_limit = 55,
-    label = "",
-    units = "C",
-    graph_min_val = -10,
-    graph_max_val = 60,
-    comment = "",
-    add_to_catalog_stats = TRUE
-  }
-  ,
-  {
-    xml_outer_tag = "HcrReceiverStatus",
-    xml_inner_tag = "EikTemp",
-    entry_type = XML_ENTRY_DOUBLE,
-    ok_boolean = TRUE,
-    boolean_failure_is_critical = TRUE,
-    ok_value_lower_limit = 0,
-    ok_value_upper_limit = 45,
-    impaired_value_lower_limit = -10,
-    impaired_value_upper_limit = 55,
-    label = "",
-    units = "C",
-    graph_min_val = -10,
-    graph_max_val = 60,
-    comment = "",
-    add_to_catalog_stats = TRUE
-  }
-  ,
-  {
-    xml_outer_tag = "HcrReceiverStatus",
-    xml_inner_tag = "VLnaTemp",
-    entry_type = XML_ENTRY_DOUBLE,
-    ok_boolean = TRUE,
-    boolean_failure_is_critical = TRUE,
-    ok_value_lower_limit = 0,
-    ok_value_upper_limit = 40,
-    impaired_value_lower_limit = -10,
-    impaired_value_upper_limit = 55,
-    label = "",
-    units = "C",
-    graph_min_val = -10,
-    graph_max_val = 60,
-    comment = "",
-    add_to_catalog_stats = TRUE
-  }
-  ,
-  {
-    xml_outer_tag = "HcrReceiverStatus",
-    xml_inner_tag = "HLnaTemp",
-    entry_type = XML_ENTRY_DOUBLE,
-    ok_boolean = TRUE,
-    boolean_failure_is_critical = TRUE,
-    ok_value_lower_limit = 0,
-    ok_value_upper_limit = 40,
-    impaired_value_lower_limit = -10,
-    impaired_value_upper_limit = 55,
-    label = "",
-    units = "C",
-    graph_min_val = -10,
-    graph_max_val = 60,
-    comment = "",
-    add_to_catalog_stats = TRUE
-  }
-  ,
-  {
-    xml_outer_tag = "HcrReceiverStatus",
-    xml_inner_tag = "PolarizationSwitchTemp",
-    entry_type = XML_ENTRY_DOUBLE,
-    ok_boolean = TRUE,
-    boolean_failure_is_critical = TRUE,
-    ok_value_lower_limit = 0,
-    ok_value_upper_limit = 40,
-    impaired_value_lower_limit = -10,
-    impaired_value_upper_limit = 55,
-    label = "",
-    units = "C",
-    graph_min_val = -10,
-    graph_max_val = 60,
-    comment = "",
-    add_to_catalog_stats = TRUE
-  }
-  ,
-  {
-    xml_outer_tag = "HcrReceiverStatus",
-    xml_inner_tag = "NoiseSourceTemp",
-    entry_type = XML_ENTRY_DOUBLE,
-    ok_boolean = TRUE,
-    boolean_failure_is_critical = TRUE,
-    ok_value_lower_limit = -9999,
-    ok_value_upper_limit = 9999,
-    impaired_value_lower_limit = -9999,
-    impaired_value_upper_limit = 9999,
-    label = "",
-    units = "C",
-    graph_min_val = -9999,
-    graph_max_val = 9999,
-    comment = "",
-    add_to_catalog_stats = TRUE
-  }
-  ,
-  {
-    xml_outer_tag = "HcrReceiverStatus",
-    xml_inner_tag = "Ps28VTemp",
-    entry_type = XML_ENTRY_DOUBLE,
-    ok_boolean = TRUE,
-    boolean_failure_is_critical = TRUE,
-    ok_value_lower_limit = 0,
-    ok_value_upper_limit = 60,
-    impaired_value_lower_limit = -10,
-    impaired_value_upper_limit = 70,
-    label = "",
-    units = "C",
-    graph_min_val = -10,
-    graph_max_val = 75,
-    comment = "",
-    add_to_catalog_stats = TRUE
-  }
-  ,
-  {
-    xml_outer_tag = "HcrReceiverStatus",
-    xml_inner_tag = "RdsInDuctTemp",
-    entry_type = XML_ENTRY_DOUBLE,
-    ok_boolean = TRUE,
-    boolean_failure_is_critical = TRUE,
-    ok_value_lower_limit = 0,
-    ok_value_upper_limit = 50,
-    impaired_value_lower_limit = -10,
-    impaired_value_upper_limit = 60,
-    label = "",
-    units = "C",
-    graph_min_val = -10,
-    graph_max_val = 70,
-    comment = "",
-    add_to_catalog_stats = TRUE
-  }
-  ,
-  {
-    xml_outer_tag = "HcrReceiverStatus",
-    xml_inner_tag = "RotationMotorTemp",
-    entry_type = XML_ENTRY_DOUBLE,
-    ok_boolean = TRUE,
-    boolean_failure_is_critical = TRUE,
-    ok_value_lower_limit = -9999,
-    ok_value_upper_limit = 9999,
-    impaired_value_lower_limit = -9999,
-    impaired_value_upper_limit = 9999,
-    label = "",
-    units = "C",
-    graph_min_val = -9999,
-    graph_max_val = 9999,
-    comment = "",
-    add_to_catalog_stats = TRUE
-  }
-  ,
-  {
-    xml_outer_tag = "HcrReceiverStatus",
-    xml_inner_tag = "TiltMotorTemp",
-    entry_type = XML_ENTRY_DOUBLE,
-    ok_boolean = TRUE,
-    boolean_failure_is_critical = TRUE,
-    ok_value_lower_limit = -9999,
-    ok_value_upper_limit = 9999,
-    impaired_value_lower_limit = -9999,
-    impaired_value_upper_limit = 9999,
-    label = "",
-    units = "C",
-    graph_min_val = -9999,
-    graph_max_val = 9999,
-    comment = "",
-    add_to_catalog_stats = TRUE
-  }
-  ,
-  {
-    xml_outer_tag = "HcrReceiverStatus",
-    xml_inner_tag = "CmigitsTemp",
-    entry_type = XML_ENTRY_DOUBLE,
-    ok_boolean = TRUE,
-    boolean_failure_is_critical = TRUE,
-    ok_value_lower_limit = -30,
-    ok_value_upper_limit = 60,
-    impaired_value_lower_limit = -40,
-    impaired_value_upper_limit = 70,
-    label = "",
-    units = "C",
-    graph_min_val = -40,
-    graph_max_val = 70,
-    comment = "",
-    add_to_catalog_stats = TRUE
-  }
-  ,
-  {
-    xml_outer_tag = "HcrReceiverStatus",
-    xml_inner_tag = "TailconeTemp",
-    entry_type = XML_ENTRY_DOUBLE,
-    ok_boolean = TRUE,
-    boolean_failure_is_critical = TRUE,
-    ok_value_lower_limit = -9999,
-    ok_value_upper_limit = 9999,
-    impaired_value_lower_limit = -9999,
-    impaired_value_upper_limit = 9999,
-    label = "",
-    units = "C",
-    graph_min_val = -9999,
-    graph_max_val = 9999,
-    comment = "",
-    add_to_catalog_stats = TRUE
-  }
-  ,
-  {
-    xml_outer_tag = "HcrReceiverStatus",
-    xml_inner_tag = "PsVoltage",
-    entry_type = XML_ENTRY_DOUBLE,
-    ok_boolean = TRUE,
-    boolean_failure_is_critical = TRUE,
-    ok_value_lower_limit = 4.75,
-    ok_value_upper_limit = 5.25,
-    impaired_value_lower_limit = 4.5,
-    impaired_value_upper_limit = 5.5,
-    label = "",
-    units = "V",
-    graph_min_val = 4,
-    graph_max_val = 6,
-    comment = "",
-    add_to_catalog_stats = TRUE
-  }
-  ,
-  {
-    xml_outer_tag = "HcrTransmitterStatus",
-    xml_inner_tag = "SerialConnected",
-    entry_type = XML_ENTRY_BOOLEAN,
-    ok_boolean = TRUE,
-    boolean_failure_is_critical = TRUE,
-    ok_value_lower_limit = 0,
-    ok_value_upper_limit = 0,
-    impaired_value_lower_limit = 0,
-    impaired_value_upper_limit = 0,
-    label = "",
-    units = "",
-    graph_min_val = 0,
-    graph_max_val = 1,
-    comment = "",
-    add_to_catalog_stats = TRUE
-  }
-  ,
-  {
-    xml_outer_tag = "HcrReceiverStatus",
-    xml_inner_tag = "RdsXmitterFilamentOn",
-    entry_type = XML_ENTRY_BOOLEAN,
-    ok_boolean = TRUE,
-    boolean_failure_is_critical = FALSE,
-    ok_value_lower_limit = 0,
-    ok_value_upper_limit = 0,
-    impaired_value_lower_limit = 0,
-    impaired_value_upper_limit = 0,
-    label = "",
-    units = "",
-    graph_min_val = 0,
-    graph_max_val = 1,
-    comment = "",
-    add_to_catalog_stats = TRUE
-  }
-  ,
-  {
-    xml_outer_tag = "HcrReceiverStatus",
-    xml_inner_tag = "RdsXmitterHvOn",
-    entry_type = XML_ENTRY_BOOLEAN,
-    ok_boolean = TRUE,
-    boolean_failure_is_critical = FALSE,
-    ok_value_lower_limit = 0,
-    ok_value_upper_limit = 0,
-    impaired_value_lower_limit = 0,
-    impaired_value_upper_limit = 0,
-    label = "",
-    units = "",
-    graph_min_val = 0,
-    graph_max_val = 1,
-    comment = "",
-    add_to_catalog_stats = TRUE
-  }
-  ,
-  {
-    xml_outer_tag = "HcrTransmitterStatus",
-    xml_inner_tag = "ModPulseExternal",
-    entry_type = XML_ENTRY_BOOLEAN,
-    ok_boolean = TRUE,
-    boolean_failure_is_critical = FALSE,
-    ok_value_lower_limit = 0,
-    ok_value_upper_limit = 0,
-    impaired_value_lower_limit = 0,
-    impaired_value_upper_limit = 0,
-    label = "",
-    units = "",
-    graph_min_val = 0,
-    graph_max_val = 1,
-    comment = "",
-    add_to_catalog_stats = TRUE
-  }
-  ,
-  {
-    xml_outer_tag = "HcrTransmitterStatus",
-    xml_inner_tag = "FilamentDelayActive",
-    entry_type = XML_ENTRY_BOOLEAN,
-    ok_boolean = FALSE,
-    boolean_failure_is_critical = FALSE,
-    ok_value_lower_limit = 0,
-    ok_value_upper_limit = 0,
-    impaired_value_lower_limit = 0,
-    impaired_value_upper_limit = 0,
-    label = "",
-    units = "",
-    graph_min_val = 0,
-    graph_max_val = 1,
-    comment = "",
-    add_to_catalog_stats = TRUE
-  }
-  ,
-  {
-    xml_outer_tag = "HcrTransmitterStatus",
-    xml_inner_tag = "PsmPowerOn",
-    entry_type = XML_ENTRY_BOOLEAN,
-    ok_boolean = TRUE,
-    boolean_failure_is_critical = TRUE,
-    ok_value_lower_limit = 0,
-    ok_value_upper_limit = 0,
-    impaired_value_lower_limit = 0,
-    impaired_value_upper_limit = 0,
-    label = "",
-    units = "",
-    graph_min_val = 0,
-    graph_max_val = 1,
-    comment = "",
-    add_to_catalog_stats = TRUE
-  }
-  ,
-  {
-    xml_outer_tag = "HcrTransmitterStatus",
-    xml_inner_tag = "SummaryFault",
-    entry_type = XML_ENTRY_BOOLEAN,
-    ok_boolean = FALSE,
-    boolean_failure_is_critical = TRUE,
-    ok_value_lower_limit = 0,
-    ok_value_upper_limit = 0,
-    impaired_value_lower_limit = 0,
-    impaired_value_upper_limit = 0,
-    label = "",
-    units = "",
-    graph_min_val = 0,
-    graph_max_val = 1,
-    comment = "",
-    add_to_catalog_stats = TRUE
-  }
-  ,
-  {
-    xml_outer_tag = "HcrTransmitterStatus",
-    xml_inner_tag = "FrontPanelCtlEnabled",
-    entry_type = XML_ENTRY_BOOLEAN,
-    ok_boolean = FALSE,
-    boolean_failure_is_critical = FALSE,
-    ok_value_lower_limit = 0,
-    ok_value_upper_limit = 0,
-    impaired_value_lower_limit = 0,
-    impaired_value_upper_limit = 0,
-    label = "",
-    units = "",
-    graph_min_val = 0,
-    graph_max_val = 1,
-    comment = "",
-    add_to_catalog_stats = TRUE
-  }
-  ,
-  {
-    xml_outer_tag = "HcrTransmitterStatus",
-    xml_inner_tag = "Rs232CtlEnabled",
-    entry_type = XML_ENTRY_BOOLEAN,
-    ok_boolean = FALSE,
-    boolean_failure_is_critical = FALSE,
-    ok_value_lower_limit = 0,
-    ok_value_upper_limit = 0,
-    impaired_value_lower_limit = 0,
-    impaired_value_upper_limit = 0,
-    label = "",
-    units = "",
-    graph_min_val = 0,
-    graph_max_val = 1,
-    comment = "",
-    add_to_catalog_stats = TRUE
-  }
-  ,
-  {
-    xml_outer_tag = "HcrTransmitterStatus",
-    xml_inner_tag = "RdsCtlEnabled",
-    entry_type = XML_ENTRY_BOOLEAN,
-    ok_boolean = TRUE,
-    boolean_failure_is_critical = TRUE,
-    ok_value_lower_limit = 0,
-    ok_value_upper_limit = 0,
-    impaired_value_lower_limit = 0,
-    impaired_value_upper_limit = 0,
-    label = "",
-    units = "",
-    graph_min_val = 0,
-    graph_max_val = 1,
-    comment = "",
-    add_to_catalog_stats = TRUE
-  }
-  ,
-  {
-    xml_outer_tag = "HcrTransmitterStatus",
-    xml_inner_tag = "ModulatorFault",
-    entry_type = XML_ENTRY_BOOLEAN,
-    ok_boolean = FALSE,
-    boolean_failure_is_critical = TRUE,
-    ok_value_lower_limit = 0,
-    ok_value_upper_limit = 0,
-    impaired_value_lower_limit = 0,
-    impaired_value_upper_limit = 0,
-    label = "",
-    units = "",
-    graph_min_val = 0,
-    graph_max_val = 1,
-    comment = "",
-    add_to_catalog_stats = TRUE
-  }
-  ,
-  {
-    xml_outer_tag = "HcrTransmitterStatus",
-    xml_inner_tag = "SyncFault",
-    entry_type = XML_ENTRY_BOOLEAN,
-    ok_boolean = FALSE,
-    boolean_failure_is_critical = TRUE,
-    ok_value_lower_limit = 0,
-    ok_value_upper_limit = 0,
-    impaired_value_lower_limit = 0,
-    impaired_value_upper_limit = 0,
-    label = "",
-    units = "",
-    graph_min_val = 0,
-    graph_max_val = 1,
-    comment = "",
-    add_to_catalog_stats = TRUE
-  }
-  ,
-  {
-    xml_outer_tag = "HcrTransmitterStatus",
-    xml_inner_tag = "XmitterTempFault",
-    entry_type = XML_ENTRY_BOOLEAN,
-    ok_boolean = FALSE,
-    boolean_failure_is_critical = TRUE,
-    ok_value_lower_limit = 0,
-    ok_value_upper_limit = 0,
-    impaired_value_lower_limit = 0,
-    impaired_value_upper_limit = 0,
-    label = "",
-    units = "",
-    graph_min_val = 0,
-    graph_max_val = 1,
-    comment = "",
-    add_to_catalog_stats = TRUE
-  }
-  ,
-  {
-    xml_outer_tag = "HcrTransmitterStatus",
-    xml_inner_tag = "WaveguideArcFault",
-    entry_type = XML_ENTRY_BOOLEAN,
-    ok_boolean = FALSE,
-    boolean_failure_is_critical = TRUE,
-    ok_value_lower_limit = 0,
-    ok_value_upper_limit = 0,
-    impaired_value_lower_limit = 0,
-    impaired_value_upper_limit = 0,
-    label = "",
-    units = "",
-    graph_min_val = 0,
-    graph_max_val = 1,
-    comment = "",
-    add_to_catalog_stats = TRUE
-  }
-  ,
-  {
-    xml_outer_tag = "HcrTransmitterStatus",
-    xml_inner_tag = "CollectorCurrentFault",
-    entry_type = XML_ENTRY_BOOLEAN,
-    ok_boolean = FALSE,
-    boolean_failure_is_critical = TRUE,
-    ok_value_lower_limit = 0,
-    ok_value_upper_limit = 0,
-    impaired_value_lower_limit = 0,
-    impaired_value_upper_limit = 0,
-    label = "",
-    units = "",
-    graph_min_val = 0,
-    graph_max_val = 1,
-    comment = "",
-    add_to_catalog_stats = TRUE
-  }
-  ,
-  {
-    xml_outer_tag = "HcrTransmitterStatus",
-    xml_inner_tag = "BodyCurrentFault",
-    entry_type = XML_ENTRY_BOOLEAN,
-    ok_boolean = FALSE,
-    boolean_failure_is_critical = TRUE,
-    ok_value_lower_limit = 0,
-    ok_value_upper_limit = 0,
-    impaired_value_lower_limit = 0,
-    impaired_value_upper_limit = 0,
-    label = "",
-    units = "",
-    graph_min_val = 0,
-    graph_max_val = 1,
-    comment = "",
-    add_to_catalog_stats = TRUE
-  }
-  ,
-  {
-    xml_outer_tag = "HcrTransmitterStatus",
-    xml_inner_tag = "FilamentLorFault",
-    entry_type = XML_ENTRY_BOOLEAN,
-    ok_boolean = FALSE,
-    boolean_failure_is_critical = TRUE,
-    ok_value_lower_limit = 0,
-    ok_value_upper_limit = 0,
-    impaired_value_lower_limit = 0,
-    impaired_value_upper_limit = 0,
-    label = "",
-    units = "",
-    graph_min_val = 0,
-    graph_max_val = 1,
-    comment = "",
-    add_to_catalog_stats = TRUE
-  }
-  ,
-  {
-    xml_outer_tag = "HcrTransmitterStatus",
-    xml_inner_tag = "FocusElectrodeLorFault",
-    entry_type = XML_ENTRY_BOOLEAN,
-    ok_boolean = FALSE,
-    boolean_failure_is_critical = TRUE,
-    ok_value_lower_limit = 0,
-    ok_value_upper_limit = 0,
-    impaired_value_lower_limit = 0,
-    impaired_value_upper_limit = 0,
-    label = "",
-    units = "",
-    graph_min_val = 0,
-    graph_max_val = 1,
-    comment = "",
-    add_to_catalog_stats = TRUE
-  }
-  ,
-  {
-    xml_outer_tag = "HcrTransmitterStatus",
-    xml_inner_tag = "InverterOverloadFault",
-    entry_type = XML_ENTRY_BOOLEAN,
-    ok_boolean = FALSE,
-    boolean_failure_is_critical = TRUE,
-    ok_value_lower_limit = 0,
-    ok_value_upper_limit = 0,
-    impaired_value_lower_limit = 0,
-    impaired_value_upper_limit = 0,
-    label = "",
-    units = "",
-    graph_min_val = 0,
-    graph_max_val = 1,
-    comment = "",
-    add_to_catalog_stats = TRUE
-  }
-  ,
-  {
-    xml_outer_tag = "HcrTransmitterStatus",
-    xml_inner_tag = "ExternalInterlockFault",
-    entry_type = XML_ENTRY_BOOLEAN,
-    ok_boolean = FALSE,
-    boolean_failure_is_critical = TRUE,
-    ok_value_lower_limit = 0,
-    ok_value_upper_limit = 0,
-    impaired_value_lower_limit = 0,
-    impaired_value_upper_limit = 0,
-    label = "",
-    units = "",
-    graph_min_val = 0,
-    graph_max_val = 1,
-    comment = "",
-    add_to_catalog_stats = TRUE
-  }
-  ,
-  {
-    xml_outer_tag = "HcrTransmitterStatus",
-    xml_inner_tag = "EikInterlockFault",
-    entry_type = XML_ENTRY_BOOLEAN,
-    ok_boolean = FALSE,
-    boolean_failure_is_critical = TRUE,
-    ok_value_lower_limit = 0,
-    ok_value_upper_limit = 0,
-    impaired_value_lower_limit = 0,
-    impaired_value_upper_limit = 0,
-    label = "",
-    units = "",
-    graph_min_val = 0,
-    graph_max_val = 1,
-    comment = "",
-    add_to_catalog_stats = TRUE
-  }
-  ,
-  {
-    xml_outer_tag = "HcrReceiverStatus",
-    xml_inner_tag = "Locked15_5GHzPLO",
-    entry_type = XML_ENTRY_BOOLEAN,
-    ok_boolean = TRUE,
-    boolean_failure_is_critical = TRUE,
-    ok_value_lower_limit = 0,
-    ok_value_upper_limit = 10,
-    impaired_value_lower_limit = 11,
-    impaired_value_upper_limit = 20,
-    label = "",
-    units = "",
-    graph_min_val = 0,
-    graph_max_val = 1,
-    comment = "",
-    add_to_catalog_stats = TRUE
-  }
-  ,
-  {
-    xml_outer_tag = "HcrReceiverStatus",
-    xml_inner_tag = "Locked1250MHzPLO",
-    entry_type = XML_ENTRY_BOOLEAN,
-    ok_boolean = TRUE,
-    boolean_failure_is_critical = TRUE,
-    ok_value_lower_limit = 0,
-    ok_value_upper_limit = 10,
-    impaired_value_lower_limit = 11,
-    impaired_value_upper_limit = 20,
-    label = "",
-    units = "",
-    graph_min_val = 0,
-    graph_max_val = 1,
-    comment = "",
-    add_to_catalog_stats = TRUE
-  }
-  ,
-  {
-    xml_outer_tag = "HcrReceiverStatus",
-    xml_inner_tag = "ModPulseDisabled",
-    entry_type = XML_ENTRY_BOOLEAN,
-    ok_boolean = FALSE,
-    boolean_failure_is_critical = TRUE,
-    ok_value_lower_limit = 0,
-    ok_value_upper_limit = 10,
-    impaired_value_lower_limit = 11,
-    impaired_value_upper_limit = 20,
-    label = "",
-    units = "",
-    graph_min_val = 0,
-    graph_max_val = 1,
-    comment = "",
-    add_to_catalog_stats = TRUE
-  }
-  ,
-  {
-    xml_outer_tag = "HcrReceiverStatus",
-    xml_inner_tag = "EmsPowerError",
-    entry_type = XML_ENTRY_BOOLEAN,
-    ok_boolean = FALSE,
-    boolean_failure_is_critical = TRUE,
-    ok_value_lower_limit = -0.1,
-    ok_value_upper_limit = 0.1,
-    impaired_value_lower_limit = -10,
-    impaired_value_upper_limit = 10,
-    label = "",
-    units = "",
-    graph_min_val = -2,
-    graph_max_val = 2,
-    comment = "",
-    add_to_catalog_stats = TRUE
-  }
-  ,
-  {
-    xml_outer_tag = "HcrReceiverStatus",
-    xml_inner_tag = "ApsValveOpen",
-    entry_type = XML_ENTRY_BOOLEAN,
-    ok_boolean = FALSE,
-    boolean_failure_is_critical = FALSE,
-    ok_value_lower_limit = -0.1,
-    ok_value_upper_limit = 0.1,
-    impaired_value_lower_limit = -10,
-    impaired_value_upper_limit = 10,
-    label = "",
-    units = "",
-    graph_min_val = -2,
-    graph_max_val = 2,
-    comment = "",
-    add_to_catalog_stats = TRUE
+    include_in_catalog_stats = TRUE,
+    catalog_omit_if_zero = FALSE,
+    catalog_interpret_as_time = FALSE
   }
   ,
   {
@@ -961,7 +276,9 @@ xml_entries = {
     graph_min_val = 0,
     graph_max_val = 1500,
     comment = "",
-    add_to_catalog_stats = TRUE
+    include_in_catalog_stats = TRUE,
+    catalog_omit_if_zero = FALSE,
+    catalog_interpret_as_time = FALSE
   }
   ,
   {
@@ -979,7 +296,249 @@ xml_entries = {
     graph_min_val = 0,
     graph_max_val = 150000,
     comment = "",
-    add_to_catalog_stats = TRUE
+    include_in_catalog_stats = TRUE,
+    catalog_omit_if_zero = FALSE,
+    catalog_interpret_as_time = FALSE
+  }
+  ,
+  {
+    xml_outer_tag = "HcrReceiverStatus",
+    xml_inner_tag = "PloTemp",
+    entry_type = XML_ENTRY_DOUBLE,
+    ok_boolean = TRUE,
+    boolean_failure_is_critical = TRUE,
+    ok_value_lower_limit = 0,
+    ok_value_upper_limit = 50,
+    impaired_value_lower_limit = -10,
+    impaired_value_upper_limit = 55,
+    label = "",
+    units = "C",
+    graph_min_val = -10,
+    graph_max_val = 60,
+    comment = "",
+    include_in_catalog_stats = TRUE,
+    catalog_omit_if_zero = FALSE,
+    catalog_interpret_as_time = FALSE
+  }
+  ,
+  {
+    xml_outer_tag = "HcrReceiverStatus",
+    xml_inner_tag = "EikTemp",
+    entry_type = XML_ENTRY_DOUBLE,
+    ok_boolean = TRUE,
+    boolean_failure_is_critical = TRUE,
+    ok_value_lower_limit = 0,
+    ok_value_upper_limit = 45,
+    impaired_value_lower_limit = -10,
+    impaired_value_upper_limit = 55,
+    label = "",
+    units = "C",
+    graph_min_val = -10,
+    graph_max_val = 60,
+    comment = "",
+    include_in_catalog_stats = TRUE,
+    catalog_omit_if_zero = FALSE,
+    catalog_interpret_as_time = FALSE
+  }
+  ,
+  {
+    xml_outer_tag = "HcrReceiverStatus",
+    xml_inner_tag = "VLnaTemp",
+    entry_type = XML_ENTRY_DOUBLE,
+    ok_boolean = TRUE,
+    boolean_failure_is_critical = TRUE,
+    ok_value_lower_limit = 0,
+    ok_value_upper_limit = 40,
+    impaired_value_lower_limit = -10,
+    impaired_value_upper_limit = 55,
+    label = "",
+    units = "C",
+    graph_min_val = -10,
+    graph_max_val = 60,
+    comment = "",
+    include_in_catalog_stats = TRUE,
+    catalog_omit_if_zero = FALSE,
+    catalog_interpret_as_time = FALSE
+  }
+  ,
+  {
+    xml_outer_tag = "HcrReceiverStatus",
+    xml_inner_tag = "HLnaTemp",
+    entry_type = XML_ENTRY_DOUBLE,
+    ok_boolean = TRUE,
+    boolean_failure_is_critical = TRUE,
+    ok_value_lower_limit = 0,
+    ok_value_upper_limit = 40,
+    impaired_value_lower_limit = -10,
+    impaired_value_upper_limit = 55,
+    label = "",
+    units = "C",
+    graph_min_val = -10,
+    graph_max_val = 60,
+    comment = "",
+    include_in_catalog_stats = TRUE,
+    catalog_omit_if_zero = FALSE,
+    catalog_interpret_as_time = FALSE
+  }
+  ,
+  {
+    xml_outer_tag = "HcrReceiverStatus",
+    xml_inner_tag = "PolarizationSwitchTemp",
+    entry_type = XML_ENTRY_DOUBLE,
+    ok_boolean = TRUE,
+    boolean_failure_is_critical = TRUE,
+    ok_value_lower_limit = 0,
+    ok_value_upper_limit = 40,
+    impaired_value_lower_limit = -10,
+    impaired_value_upper_limit = 55,
+    label = "",
+    units = "C",
+    graph_min_val = -10,
+    graph_max_val = 60,
+    comment = "",
+    include_in_catalog_stats = TRUE,
+    catalog_omit_if_zero = FALSE,
+    catalog_interpret_as_time = FALSE
+  }
+  ,
+  {
+    xml_outer_tag = "HcrReceiverStatus",
+    xml_inner_tag = "NoiseSourceTemp",
+    entry_type = XML_ENTRY_DOUBLE,
+    ok_boolean = TRUE,
+    boolean_failure_is_critical = TRUE,
+    ok_value_lower_limit = -9999,
+    ok_value_upper_limit = 9999,
+    impaired_value_lower_limit = -9999,
+    impaired_value_upper_limit = 9999,
+    label = "",
+    units = "C",
+    graph_min_val = -9999,
+    graph_max_val = 9999,
+    comment = "",
+    include_in_catalog_stats = TRUE,
+    catalog_omit_if_zero = FALSE,
+    catalog_interpret_as_time = FALSE
+  }
+  ,
+  {
+    xml_outer_tag = "HcrReceiverStatus",
+    xml_inner_tag = "Ps28VTemp",
+    entry_type = XML_ENTRY_DOUBLE,
+    ok_boolean = TRUE,
+    boolean_failure_is_critical = TRUE,
+    ok_value_lower_limit = 0,
+    ok_value_upper_limit = 60,
+    impaired_value_lower_limit = -10,
+    impaired_value_upper_limit = 70,
+    label = "",
+    units = "C",
+    graph_min_val = -10,
+    graph_max_val = 75,
+    comment = "",
+    include_in_catalog_stats = TRUE,
+    catalog_omit_if_zero = FALSE,
+    catalog_interpret_as_time = FALSE
+  }
+  ,
+  {
+    xml_outer_tag = "HcrReceiverStatus",
+    xml_inner_tag = "RdsInDuctTemp",
+    entry_type = XML_ENTRY_DOUBLE,
+    ok_boolean = TRUE,
+    boolean_failure_is_critical = TRUE,
+    ok_value_lower_limit = 0,
+    ok_value_upper_limit = 50,
+    impaired_value_lower_limit = -10,
+    impaired_value_upper_limit = 60,
+    label = "",
+    units = "C",
+    graph_min_val = -10,
+    graph_max_val = 70,
+    comment = "",
+    include_in_catalog_stats = TRUE,
+    catalog_omit_if_zero = FALSE,
+    catalog_interpret_as_time = FALSE
+  }
+  ,
+  {
+    xml_outer_tag = "HcrReceiverStatus",
+    xml_inner_tag = "RotationMotorTemp",
+    entry_type = XML_ENTRY_DOUBLE,
+    ok_boolean = TRUE,
+    boolean_failure_is_critical = TRUE,
+    ok_value_lower_limit = -9999,
+    ok_value_upper_limit = 9999,
+    impaired_value_lower_limit = -9999,
+    impaired_value_upper_limit = 9999,
+    label = "",
+    units = "C",
+    graph_min_val = -9999,
+    graph_max_val = 9999,
+    comment = "",
+    include_in_catalog_stats = TRUE,
+    catalog_omit_if_zero = FALSE,
+    catalog_interpret_as_time = FALSE
+  }
+  ,
+  {
+    xml_outer_tag = "HcrReceiverStatus",
+    xml_inner_tag = "TiltMotorTemp",
+    entry_type = XML_ENTRY_DOUBLE,
+    ok_boolean = TRUE,
+    boolean_failure_is_critical = TRUE,
+    ok_value_lower_limit = -9999,
+    ok_value_upper_limit = 9999,
+    impaired_value_lower_limit = -9999,
+    impaired_value_upper_limit = 9999,
+    label = "",
+    units = "C",
+    graph_min_val = -9999,
+    graph_max_val = 9999,
+    comment = "",
+    include_in_catalog_stats = TRUE,
+    catalog_omit_if_zero = FALSE,
+    catalog_interpret_as_time = FALSE
+  }
+  ,
+  {
+    xml_outer_tag = "HcrReceiverStatus",
+    xml_inner_tag = "CmigitsTemp",
+    entry_type = XML_ENTRY_DOUBLE,
+    ok_boolean = TRUE,
+    boolean_failure_is_critical = TRUE,
+    ok_value_lower_limit = -30,
+    ok_value_upper_limit = 60,
+    impaired_value_lower_limit = -40,
+    impaired_value_upper_limit = 70,
+    label = "",
+    units = "C",
+    graph_min_val = -40,
+    graph_max_val = 70,
+    comment = "",
+    include_in_catalog_stats = TRUE,
+    catalog_omit_if_zero = FALSE,
+    catalog_interpret_as_time = FALSE
+  }
+  ,
+  {
+    xml_outer_tag = "HcrReceiverStatus",
+    xml_inner_tag = "TailconeTemp",
+    entry_type = XML_ENTRY_DOUBLE,
+    ok_boolean = TRUE,
+    boolean_failure_is_critical = TRUE,
+    ok_value_lower_limit = -9999,
+    ok_value_upper_limit = 9999,
+    impaired_value_lower_limit = -9999,
+    impaired_value_upper_limit = 9999,
+    label = "",
+    units = "C",
+    graph_min_val = -9999,
+    graph_max_val = 9999,
+    comment = "",
+    include_in_catalog_stats = TRUE,
+    catalog_omit_if_zero = FALSE,
+    catalog_interpret_as_time = FALSE
   }
   ,
   {
@@ -997,7 +556,9 @@ xml_entries = {
     graph_min_val = 5,
     graph_max_val = 90,
     comment = "",
-    add_to_catalog_stats = TRUE
+    include_in_catalog_stats = TRUE,
+    catalog_omit_if_zero = FALSE,
+    catalog_interpret_as_time = FALSE
   }
   ,
   {
@@ -1015,7 +576,1009 @@ xml_entries = {
     graph_min_val = 0,
     graph_max_val = 60,
     comment = "",
-    add_to_catalog_stats = TRUE
+    include_in_catalog_stats = TRUE,
+    catalog_omit_if_zero = FALSE,
+    catalog_interpret_as_time = FALSE
+  }
+  ,
+  {
+    xml_outer_tag = "HcrReceiverStatus",
+    xml_inner_tag = "PsVoltage",
+    entry_type = XML_ENTRY_DOUBLE,
+    ok_boolean = TRUE,
+    boolean_failure_is_critical = TRUE,
+    ok_value_lower_limit = 4.75,
+    ok_value_upper_limit = 5.25,
+    impaired_value_lower_limit = 4.5,
+    impaired_value_upper_limit = 5.5,
+    label = "",
+    units = "V",
+    graph_min_val = 4,
+    graph_max_val = 6,
+    comment = "",
+    include_in_catalog_stats = TRUE,
+    catalog_omit_if_zero = FALSE,
+    catalog_interpret_as_time = FALSE
+  }
+  ,
+  {
+    xml_outer_tag = "HcrTransmitterStatus",
+    xml_inner_tag = "SerialConnected",
+    entry_type = XML_ENTRY_BOOLEAN,
+    ok_boolean = TRUE,
+    boolean_failure_is_critical = TRUE,
+    ok_value_lower_limit = 0,
+    ok_value_upper_limit = 0,
+    impaired_value_lower_limit = 0,
+    impaired_value_upper_limit = 0,
+    label = "",
+    units = "",
+    graph_min_val = 0,
+    graph_max_val = 1,
+    comment = "",
+    include_in_catalog_stats = TRUE,
+    catalog_omit_if_zero = FALSE,
+    catalog_interpret_as_time = FALSE
+  }
+  ,
+  {
+    xml_outer_tag = "HcrTransmitterStatus",
+    xml_inner_tag = "FilamentOn",
+    entry_type = XML_ENTRY_BOOLEAN,
+    ok_boolean = TRUE,
+    boolean_failure_is_critical = FALSE,
+    ok_value_lower_limit = 0,
+    ok_value_upper_limit = 0,
+    impaired_value_lower_limit = 0,
+    impaired_value_upper_limit = 0,
+    label = "",
+    units = "",
+    graph_min_val = 0,
+    graph_max_val = 1,
+    comment = "",
+    include_in_catalog_stats = TRUE,
+    catalog_omit_if_zero = FALSE,
+    catalog_interpret_as_time = FALSE
+  }
+  ,
+  {
+    xml_outer_tag = "HcrTransmitterStatus",
+    xml_inner_tag = "HighVoltageOn",
+    entry_type = XML_ENTRY_BOOLEAN,
+    ok_boolean = TRUE,
+    boolean_failure_is_critical = FALSE,
+    ok_value_lower_limit = 0,
+    ok_value_upper_limit = 0,
+    impaired_value_lower_limit = 0,
+    impaired_value_upper_limit = 0,
+    label = "",
+    units = "",
+    graph_min_val = 0,
+    graph_max_val = 1,
+    comment = "",
+    include_in_catalog_stats = TRUE,
+    catalog_omit_if_zero = FALSE,
+    catalog_interpret_as_time = FALSE
+  }
+  ,
+  {
+    xml_outer_tag = "HcrTransmitterStatus",
+    xml_inner_tag = "RfOn",
+    entry_type = XML_ENTRY_BOOLEAN,
+    ok_boolean = TRUE,
+    boolean_failure_is_critical = FALSE,
+    ok_value_lower_limit = 0,
+    ok_value_upper_limit = 0,
+    impaired_value_lower_limit = 0,
+    impaired_value_upper_limit = 0,
+    label = "",
+    units = "",
+    graph_min_val = 0,
+    graph_max_val = 1,
+    comment = "",
+    include_in_catalog_stats = TRUE,
+    catalog_omit_if_zero = FALSE,
+    catalog_interpret_as_time = FALSE
+  }
+  ,
+  {
+    xml_outer_tag = "HcrTransmitterStatus",
+    xml_inner_tag = "ModPulseExternal",
+    entry_type = XML_ENTRY_BOOLEAN,
+    ok_boolean = TRUE,
+    boolean_failure_is_critical = FALSE,
+    ok_value_lower_limit = 0,
+    ok_value_upper_limit = 0,
+    impaired_value_lower_limit = 0,
+    impaired_value_upper_limit = 0,
+    label = "",
+    units = "",
+    graph_min_val = 0,
+    graph_max_val = 1,
+    comment = "",
+    include_in_catalog_stats = TRUE,
+    catalog_omit_if_zero = FALSE,
+    catalog_interpret_as_time = FALSE
+  }
+  ,
+  {
+    xml_outer_tag = "HcrTransmitterStatus",
+    xml_inner_tag = "SyncPulseExternal",
+    entry_type = XML_ENTRY_BOOLEAN,
+    ok_boolean = TRUE,
+    boolean_failure_is_critical = FALSE,
+    ok_value_lower_limit = 0,
+    ok_value_upper_limit = 0,
+    impaired_value_lower_limit = 0,
+    impaired_value_upper_limit = 0,
+    label = "",
+    units = "",
+    graph_min_val = 0,
+    graph_max_val = 1,
+    comment = "",
+    include_in_catalog_stats = TRUE,
+    catalog_omit_if_zero = FALSE,
+    catalog_interpret_as_time = FALSE
+  }
+  ,
+  {
+    xml_outer_tag = "HcrTransmitterStatus",
+    xml_inner_tag = "FilamentDelayActive",
+    entry_type = XML_ENTRY_BOOLEAN,
+    ok_boolean = FALSE,
+    boolean_failure_is_critical = FALSE,
+    ok_value_lower_limit = 0,
+    ok_value_upper_limit = 0,
+    impaired_value_lower_limit = 0,
+    impaired_value_upper_limit = 0,
+    label = "",
+    units = "",
+    graph_min_val = 0,
+    graph_max_val = 1,
+    comment = "",
+    include_in_catalog_stats = TRUE,
+    catalog_omit_if_zero = FALSE,
+    catalog_interpret_as_time = FALSE
+  }
+  ,
+  {
+    xml_outer_tag = "HcrTransmitterStatus",
+    xml_inner_tag = "PsmPowerOn",
+    entry_type = XML_ENTRY_BOOLEAN,
+    ok_boolean = TRUE,
+    boolean_failure_is_critical = TRUE,
+    ok_value_lower_limit = 0,
+    ok_value_upper_limit = 0,
+    impaired_value_lower_limit = 0,
+    impaired_value_upper_limit = 0,
+    label = "",
+    units = "",
+    graph_min_val = 0,
+    graph_max_val = 1,
+    comment = "",
+    include_in_catalog_stats = TRUE,
+    catalog_omit_if_zero = FALSE,
+    catalog_interpret_as_time = FALSE
+  }
+  ,
+  {
+    xml_outer_tag = "HcrTransmitterStatus",
+    xml_inner_tag = "FrontPanelCtlEnabled",
+    entry_type = XML_ENTRY_BOOLEAN,
+    ok_boolean = TRUE,
+    boolean_failure_is_critical = TRUE,
+    ok_value_lower_limit = 0,
+    ok_value_upper_limit = 0,
+    impaired_value_lower_limit = 0,
+    impaired_value_upper_limit = 0,
+    label = "",
+    units = "",
+    graph_min_val = 0,
+    graph_max_val = 1,
+    comment = "",
+    include_in_catalog_stats = TRUE,
+    catalog_omit_if_zero = TRUE,
+    catalog_interpret_as_time = FALSE
+  }
+  ,
+  {
+    xml_outer_tag = "HcrTransmitterStatus",
+    xml_inner_tag = "Rs232CtlEnabled",
+    entry_type = XML_ENTRY_BOOLEAN,
+    ok_boolean = TRUE,
+    boolean_failure_is_critical = TRUE,
+    ok_value_lower_limit = 0,
+    ok_value_upper_limit = 0,
+    impaired_value_lower_limit = 0,
+    impaired_value_upper_limit = 0,
+    label = "",
+    units = "",
+    graph_min_val = 0,
+    graph_max_val = 1,
+    comment = "",
+    include_in_catalog_stats = TRUE,
+    catalog_omit_if_zero = TRUE,
+    catalog_interpret_as_time = FALSE
+  }
+  ,
+  {
+    xml_outer_tag = "HcrTransmitterStatus",
+    xml_inner_tag = "RdsCtlEnabled",
+    entry_type = XML_ENTRY_BOOLEAN,
+    ok_boolean = TRUE,
+    boolean_failure_is_critical = TRUE,
+    ok_value_lower_limit = 0,
+    ok_value_upper_limit = 0,
+    impaired_value_lower_limit = 0,
+    impaired_value_upper_limit = 0,
+    label = "",
+    units = "",
+    graph_min_val = 0,
+    graph_max_val = 1,
+    comment = "",
+    include_in_catalog_stats = TRUE,
+    catalog_omit_if_zero = TRUE,
+    catalog_interpret_as_time = FALSE
+  }
+  ,
+  {
+    xml_outer_tag = "HcrTransmitterStatus",
+    xml_inner_tag = "SummaryFault",
+    entry_type = XML_ENTRY_BOOLEAN,
+    ok_boolean = FALSE,
+    boolean_failure_is_critical = TRUE,
+    ok_value_lower_limit = 0,
+    ok_value_upper_limit = 0,
+    impaired_value_lower_limit = 0,
+    impaired_value_upper_limit = 0,
+    label = "",
+    units = "",
+    graph_min_val = 0,
+    graph_max_val = 1,
+    comment = "",
+    include_in_catalog_stats = TRUE,
+    catalog_omit_if_zero = FALSE,
+    catalog_interpret_as_time = FALSE
+  }
+  ,
+  {
+    xml_outer_tag = "HcrTransmitterStatus",
+    xml_inner_tag = "ModulatorFault",
+    entry_type = XML_ENTRY_BOOLEAN,
+    ok_boolean = FALSE,
+    boolean_failure_is_critical = TRUE,
+    ok_value_lower_limit = 0,
+    ok_value_upper_limit = 0,
+    impaired_value_lower_limit = 0,
+    impaired_value_upper_limit = 0,
+    label = "",
+    units = "",
+    graph_min_val = 0,
+    graph_max_val = 1,
+    comment = "",
+    include_in_catalog_stats = TRUE,
+    catalog_omit_if_zero = FALSE,
+    catalog_interpret_as_time = FALSE
+  }
+  ,
+  {
+    xml_outer_tag = "HcrTransmitterStatus",
+    xml_inner_tag = "SyncFault",
+    entry_type = XML_ENTRY_BOOLEAN,
+    ok_boolean = FALSE,
+    boolean_failure_is_critical = TRUE,
+    ok_value_lower_limit = 0,
+    ok_value_upper_limit = 0,
+    impaired_value_lower_limit = 0,
+    impaired_value_upper_limit = 0,
+    label = "",
+    units = "",
+    graph_min_val = 0,
+    graph_max_val = 1,
+    comment = "",
+    include_in_catalog_stats = TRUE,
+    catalog_omit_if_zero = FALSE,
+    catalog_interpret_as_time = FALSE
+  }
+  ,
+  {
+    xml_outer_tag = "HcrTransmitterStatus",
+    xml_inner_tag = "XmitterTempFault",
+    entry_type = XML_ENTRY_BOOLEAN,
+    ok_boolean = FALSE,
+    boolean_failure_is_critical = TRUE,
+    ok_value_lower_limit = 0,
+    ok_value_upper_limit = 0,
+    impaired_value_lower_limit = 0,
+    impaired_value_upper_limit = 0,
+    label = "",
+    units = "",
+    graph_min_val = 0,
+    graph_max_val = 1,
+    comment = "",
+    include_in_catalog_stats = TRUE,
+    catalog_omit_if_zero = FALSE,
+    catalog_interpret_as_time = FALSE
+  }
+  ,
+  {
+    xml_outer_tag = "HcrTransmitterStatus",
+    xml_inner_tag = "WaveguideArcFault",
+    entry_type = XML_ENTRY_BOOLEAN,
+    ok_boolean = FALSE,
+    boolean_failure_is_critical = TRUE,
+    ok_value_lower_limit = 0,
+    ok_value_upper_limit = 0,
+    impaired_value_lower_limit = 0,
+    impaired_value_upper_limit = 0,
+    label = "",
+    units = "",
+    graph_min_val = 0,
+    graph_max_val = 1,
+    comment = "",
+    include_in_catalog_stats = TRUE,
+    catalog_omit_if_zero = FALSE,
+    catalog_interpret_as_time = FALSE
+  }
+  ,
+  {
+    xml_outer_tag = "HcrTransmitterStatus",
+    xml_inner_tag = "CollectorCurrentFault",
+    entry_type = XML_ENTRY_BOOLEAN,
+    ok_boolean = FALSE,
+    boolean_failure_is_critical = TRUE,
+    ok_value_lower_limit = 0,
+    ok_value_upper_limit = 0,
+    impaired_value_lower_limit = 0,
+    impaired_value_upper_limit = 0,
+    label = "",
+    units = "",
+    graph_min_val = 0,
+    graph_max_val = 1,
+    comment = "",
+    include_in_catalog_stats = TRUE,
+    catalog_omit_if_zero = FALSE,
+    catalog_interpret_as_time = FALSE
+  }
+  ,
+  {
+    xml_outer_tag = "HcrTransmitterStatus",
+    xml_inner_tag = "BodyCurrentFault",
+    entry_type = XML_ENTRY_BOOLEAN,
+    ok_boolean = FALSE,
+    boolean_failure_is_critical = TRUE,
+    ok_value_lower_limit = 0,
+    ok_value_upper_limit = 0,
+    impaired_value_lower_limit = 0,
+    impaired_value_upper_limit = 0,
+    label = "",
+    units = "",
+    graph_min_val = 0,
+    graph_max_val = 1,
+    comment = "",
+    include_in_catalog_stats = TRUE,
+    catalog_omit_if_zero = FALSE,
+    catalog_interpret_as_time = FALSE
+  }
+  ,
+  {
+    xml_outer_tag = "HcrTransmitterStatus",
+    xml_inner_tag = "FilamentLorFault",
+    entry_type = XML_ENTRY_BOOLEAN,
+    ok_boolean = FALSE,
+    boolean_failure_is_critical = TRUE,
+    ok_value_lower_limit = 0,
+    ok_value_upper_limit = 0,
+    impaired_value_lower_limit = 0,
+    impaired_value_upper_limit = 0,
+    label = "",
+    units = "",
+    graph_min_val = 0,
+    graph_max_val = 1,
+    comment = "",
+    include_in_catalog_stats = TRUE,
+    catalog_omit_if_zero = TRUE,
+    catalog_interpret_as_time = FALSE
+  }
+  ,
+  {
+    xml_outer_tag = "HcrTransmitterStatus",
+    xml_inner_tag = "FocusElectrodeLorFault",
+    entry_type = XML_ENTRY_BOOLEAN,
+    ok_boolean = FALSE,
+    boolean_failure_is_critical = TRUE,
+    ok_value_lower_limit = 0,
+    ok_value_upper_limit = 0,
+    impaired_value_lower_limit = 0,
+    impaired_value_upper_limit = 0,
+    label = "",
+    units = "",
+    graph_min_val = 0,
+    graph_max_val = 1,
+    comment = "",
+    include_in_catalog_stats = TRUE,
+    catalog_omit_if_zero = TRUE,
+    catalog_interpret_as_time = FALSE
+  }
+  ,
+  {
+    xml_outer_tag = "HcrTransmitterStatus",
+    xml_inner_tag = "InverterOverloadFault",
+    entry_type = XML_ENTRY_BOOLEAN,
+    ok_boolean = FALSE,
+    boolean_failure_is_critical = TRUE,
+    ok_value_lower_limit = 0,
+    ok_value_upper_limit = 0,
+    impaired_value_lower_limit = 0,
+    impaired_value_upper_limit = 0,
+    label = "",
+    units = "",
+    graph_min_val = 0,
+    graph_max_val = 1,
+    comment = "",
+    include_in_catalog_stats = TRUE,
+    catalog_omit_if_zero = TRUE,
+    catalog_interpret_as_time = FALSE
+  }
+  ,
+  {
+    xml_outer_tag = "HcrTransmitterStatus",
+    xml_inner_tag = "ExternalInterlockFault",
+    entry_type = XML_ENTRY_BOOLEAN,
+    ok_boolean = FALSE,
+    boolean_failure_is_critical = TRUE,
+    ok_value_lower_limit = 0,
+    ok_value_upper_limit = 0,
+    impaired_value_lower_limit = 0,
+    impaired_value_upper_limit = 0,
+    label = "",
+    units = "",
+    graph_min_val = 0,
+    graph_max_val = 1,
+    comment = "",
+    include_in_catalog_stats = TRUE,
+    catalog_omit_if_zero = FALSE,
+    catalog_interpret_as_time = FALSE
+  }
+  ,
+  {
+    xml_outer_tag = "HcrTransmitterStatus",
+    xml_inner_tag = "EikInterlockFault",
+    entry_type = XML_ENTRY_BOOLEAN,
+    ok_boolean = FALSE,
+    boolean_failure_is_critical = TRUE,
+    ok_value_lower_limit = 0,
+    ok_value_upper_limit = 0,
+    impaired_value_lower_limit = 0,
+    impaired_value_upper_limit = 0,
+    label = "",
+    units = "",
+    graph_min_val = 0,
+    graph_max_val = 1,
+    comment = "",
+    include_in_catalog_stats = TRUE,
+    catalog_omit_if_zero = FALSE,
+    catalog_interpret_as_time = FALSE
+  }
+  ,
+  {
+    xml_outer_tag = "HcrTransmitterStatus",
+    xml_inner_tag = "SummaryFaultCount",
+    entry_type = XML_ENTRY_INT,
+    ok_boolean = FALSE,
+    boolean_failure_is_critical = TRUE,
+    ok_value_lower_limit = 0,
+    ok_value_upper_limit = 5,
+    impaired_value_lower_limit = 1,
+    impaired_value_upper_limit = 4,
+    label = "",
+    units = "",
+    graph_min_val = 0,
+    graph_max_val = 20,
+    comment = "",
+    include_in_catalog_stats = TRUE,
+    catalog_omit_if_zero = TRUE,
+    catalog_interpret_as_time = FALSE
+  }
+  ,
+  {
+    xml_outer_tag = "HcrTransmitterStatus",
+    xml_inner_tag = "ModulatorFaultCount",
+    entry_type = XML_ENTRY_INT,
+    ok_boolean = FALSE,
+    boolean_failure_is_critical = TRUE,
+    ok_value_lower_limit = 0,
+    ok_value_upper_limit = 5,
+    impaired_value_lower_limit = 1,
+    impaired_value_upper_limit = 4,
+    label = "",
+    units = "",
+    graph_min_val = 0,
+    graph_max_val = 20,
+    comment = "",
+    include_in_catalog_stats = TRUE,
+    catalog_omit_if_zero = TRUE,
+    catalog_interpret_as_time = FALSE
+  }
+  ,
+  {
+    xml_outer_tag = "HcrTransmitterStatus",
+    xml_inner_tag = "SyncFaultCount",
+    entry_type = XML_ENTRY_INT,
+    ok_boolean = FALSE,
+    boolean_failure_is_critical = TRUE,
+    ok_value_lower_limit = 0,
+    ok_value_upper_limit = 5,
+    impaired_value_lower_limit = 1,
+    impaired_value_upper_limit = 4,
+    label = "",
+    units = "",
+    graph_min_val = 0,
+    graph_max_val = 20,
+    comment = "",
+    include_in_catalog_stats = TRUE,
+    catalog_omit_if_zero = TRUE,
+    catalog_interpret_as_time = FALSE
+  }
+  ,
+  {
+    xml_outer_tag = "HcrTransmitterStatus",
+    xml_inner_tag = "XmitterTempFaultCount",
+    entry_type = XML_ENTRY_INT,
+    ok_boolean = FALSE,
+    boolean_failure_is_critical = TRUE,
+    ok_value_lower_limit = 0,
+    ok_value_upper_limit = 5,
+    impaired_value_lower_limit = 1,
+    impaired_value_upper_limit = 4,
+    label = "",
+    units = "",
+    graph_min_val = 0,
+    graph_max_val = 20,
+    comment = "",
+    include_in_catalog_stats = TRUE,
+    catalog_omit_if_zero = TRUE,
+    catalog_interpret_as_time = FALSE
+  }
+  ,
+  {
+    xml_outer_tag = "HcrTransmitterStatus",
+    xml_inner_tag = "WaveguideArcFaultCount",
+    entry_type = XML_ENTRY_INT,
+    ok_boolean = FALSE,
+    boolean_failure_is_critical = TRUE,
+    ok_value_lower_limit = 0,
+    ok_value_upper_limit = 5,
+    impaired_value_lower_limit = 1,
+    impaired_value_upper_limit = 4,
+    label = "",
+    units = "",
+    graph_min_val = 0,
+    graph_max_val = 20,
+    comment = "",
+    include_in_catalog_stats = TRUE,
+    catalog_omit_if_zero = TRUE,
+    catalog_interpret_as_time = FALSE
+  }
+  ,
+  {
+    xml_outer_tag = "HcrTransmitterStatus",
+    xml_inner_tag = "CollectorCurrentFaultCount",
+    entry_type = XML_ENTRY_INT,
+    ok_boolean = FALSE,
+    boolean_failure_is_critical = TRUE,
+    ok_value_lower_limit = 0,
+    ok_value_upper_limit = 5,
+    impaired_value_lower_limit = 1,
+    impaired_value_upper_limit = 4,
+    label = "",
+    units = "",
+    graph_min_val = 0,
+    graph_max_val = 20,
+    comment = "",
+    include_in_catalog_stats = TRUE,
+    catalog_omit_if_zero = TRUE,
+    catalog_interpret_as_time = FALSE
+  }
+  ,
+  {
+    xml_outer_tag = "HcrTransmitterStatus",
+    xml_inner_tag = "BodyCurrentFaultCount",
+    entry_type = XML_ENTRY_INT,
+    ok_boolean = FALSE,
+    boolean_failure_is_critical = TRUE,
+    ok_value_lower_limit = 0,
+    ok_value_upper_limit = 5,
+    impaired_value_lower_limit = 1,
+    impaired_value_upper_limit = 4,
+    label = "",
+    units = "",
+    graph_min_val = 0,
+    graph_max_val = 20,
+    comment = "",
+    include_in_catalog_stats = TRUE,
+    catalog_omit_if_zero = TRUE,
+    catalog_interpret_as_time = FALSE
+  }
+  ,
+  {
+    xml_outer_tag = "HcrTransmitterStatus",
+    xml_inner_tag = "FilamentLorFaultCount",
+    entry_type = XML_ENTRY_INT,
+    ok_boolean = FALSE,
+    boolean_failure_is_critical = TRUE,
+    ok_value_lower_limit = 0,
+    ok_value_upper_limit = 5,
+    impaired_value_lower_limit = 1,
+    impaired_value_upper_limit = 4,
+    label = "",
+    units = "",
+    graph_min_val = 0,
+    graph_max_val = 20,
+    comment = "",
+    include_in_catalog_stats = TRUE,
+    catalog_omit_if_zero = TRUE,
+    catalog_interpret_as_time = FALSE
+  }
+  ,
+  {
+    xml_outer_tag = "HcrTransmitterStatus",
+    xml_inner_tag = "FocusElectrodeLorFaultCount",
+    entry_type = XML_ENTRY_INT,
+    ok_boolean = FALSE,
+    boolean_failure_is_critical = TRUE,
+    ok_value_lower_limit = 0,
+    ok_value_upper_limit = 5,
+    impaired_value_lower_limit = 1,
+    impaired_value_upper_limit = 4,
+    label = "",
+    units = "",
+    graph_min_val = 0,
+    graph_max_val = 20,
+    comment = "",
+    include_in_catalog_stats = TRUE,
+    catalog_omit_if_zero = TRUE,
+    catalog_interpret_as_time = FALSE
+  }
+  ,
+  {
+    xml_outer_tag = "HcrTransmitterStatus",
+    xml_inner_tag = "CathodeLorFaultCount",
+    entry_type = XML_ENTRY_INT,
+    ok_boolean = FALSE,
+    boolean_failure_is_critical = TRUE,
+    ok_value_lower_limit = 0,
+    ok_value_upper_limit = 5,
+    impaired_value_lower_limit = 1,
+    impaired_value_upper_limit = 4,
+    label = "",
+    units = "",
+    graph_min_val = 0,
+    graph_max_val = 20,
+    comment = "",
+    include_in_catalog_stats = TRUE,
+    catalog_omit_if_zero = TRUE,
+    catalog_interpret_as_time = FALSE
+  }
+  ,
+  {
+    xml_outer_tag = "HcrTransmitterStatus",
+    xml_inner_tag = "InverterOverloadFaultCount",
+    entry_type = XML_ENTRY_INT,
+    ok_boolean = FALSE,
+    boolean_failure_is_critical = TRUE,
+    ok_value_lower_limit = 0,
+    ok_value_upper_limit = 5,
+    impaired_value_lower_limit = 1,
+    impaired_value_upper_limit = 4,
+    label = "",
+    units = "",
+    graph_min_val = 0,
+    graph_max_val = 20,
+    comment = "",
+    include_in_catalog_stats = TRUE,
+    catalog_omit_if_zero = TRUE,
+    catalog_interpret_as_time = FALSE
+  }
+  ,
+  {
+    xml_outer_tag = "HcrTransmitterStatus",
+    xml_inner_tag = "ExternalInterlockFaultCount",
+    entry_type = XML_ENTRY_INT,
+    ok_boolean = FALSE,
+    boolean_failure_is_critical = TRUE,
+    ok_value_lower_limit = 0,
+    ok_value_upper_limit = 5,
+    impaired_value_lower_limit = 1,
+    impaired_value_upper_limit = 4,
+    label = "",
+    units = "",
+    graph_min_val = 0,
+    graph_max_val = 20,
+    comment = "",
+    include_in_catalog_stats = TRUE,
+    catalog_omit_if_zero = TRUE,
+    catalog_interpret_as_time = FALSE
+  }
+  ,
+  {
+    xml_outer_tag = "HcrTransmitterStatus",
+    xml_inner_tag = "EikInterlockFaultCount",
+    entry_type = XML_ENTRY_INT,
+    ok_boolean = FALSE,
+    boolean_failure_is_critical = TRUE,
+    ok_value_lower_limit = 0,
+    ok_value_upper_limit = 5,
+    impaired_value_lower_limit = 1,
+    impaired_value_upper_limit = 4,
+    label = "",
+    units = "",
+    graph_min_val = 0,
+    graph_max_val = 20,
+    comment = "",
+    include_in_catalog_stats = TRUE,
+    catalog_omit_if_zero = TRUE,
+    catalog_interpret_as_time = FALSE
+  }
+  ,
+  {
+    xml_outer_tag = "HcrReceiverStatus",
+    xml_inner_tag = "HmcMode",
+    entry_type = XML_ENTRY_INT,
+    ok_boolean = TRUE,
+    boolean_failure_is_critical = TRUE,
+    ok_value_lower_limit = 0,
+    ok_value_upper_limit = 10,
+    impaired_value_lower_limit = 11,
+    impaired_value_upper_limit = 20,
+    label = "",
+    units = "",
+    graph_min_val = 0,
+    graph_max_val = 10,
+    comment = "",
+    include_in_catalog_stats = TRUE,
+    catalog_omit_if_zero = FALSE,
+    catalog_interpret_as_time = FALSE
+  }
+  ,
+  {
+    xml_outer_tag = "HcrReceiverStatus",
+    xml_inner_tag = "Locked15_5GHzPLO",
+    entry_type = XML_ENTRY_BOOLEAN,
+    ok_boolean = TRUE,
+    boolean_failure_is_critical = TRUE,
+    ok_value_lower_limit = 0,
+    ok_value_upper_limit = 10,
+    impaired_value_lower_limit = 11,
+    impaired_value_upper_limit = 20,
+    label = "",
+    units = "",
+    graph_min_val = 0,
+    graph_max_val = 1,
+    comment = "",
+    include_in_catalog_stats = TRUE,
+    catalog_omit_if_zero = FALSE,
+    catalog_interpret_as_time = FALSE
+  }
+  ,
+  {
+    xml_outer_tag = "HcrReceiverStatus",
+    xml_inner_tag = "Locked1250MHzPLO",
+    entry_type = XML_ENTRY_BOOLEAN,
+    ok_boolean = TRUE,
+    boolean_failure_is_critical = TRUE,
+    ok_value_lower_limit = 0,
+    ok_value_upper_limit = 10,
+    impaired_value_lower_limit = 11,
+    impaired_value_upper_limit = 20,
+    label = "",
+    units = "",
+    graph_min_val = 0,
+    graph_max_val = 1,
+    comment = "",
+    include_in_catalog_stats = TRUE,
+    catalog_omit_if_zero = FALSE,
+    catalog_interpret_as_time = FALSE
+  }
+  ,
+  {
+    xml_outer_tag = "HcrReceiverStatus",
+    xml_inner_tag = "ModPulseDisabled",
+    entry_type = XML_ENTRY_BOOLEAN,
+    ok_boolean = FALSE,
+    boolean_failure_is_critical = TRUE,
+    ok_value_lower_limit = 0,
+    ok_value_upper_limit = 10,
+    impaired_value_lower_limit = 11,
+    impaired_value_upper_limit = 20,
+    label = "",
+    units = "",
+    graph_min_val = 0,
+    graph_max_val = 1,
+    comment = "",
+    include_in_catalog_stats = TRUE,
+    catalog_omit_if_zero = FALSE,
+    catalog_interpret_as_time = FALSE
+  }
+  ,
+  {
+    xml_outer_tag = "HcrReceiverStatus",
+    xml_inner_tag = "EmsPowerError",
+    entry_type = XML_ENTRY_BOOLEAN,
+    ok_boolean = FALSE,
+    boolean_failure_is_critical = TRUE,
+    ok_value_lower_limit = -0.1,
+    ok_value_upper_limit = 0.1,
+    impaired_value_lower_limit = -10,
+    impaired_value_upper_limit = 10,
+    label = "",
+    units = "",
+    graph_min_val = -2,
+    graph_max_val = 2,
+    comment = "",
+    include_in_catalog_stats = TRUE,
+    catalog_omit_if_zero = TRUE,
+    catalog_interpret_as_time = FALSE
+  }
+  ,
+  {
+    xml_outer_tag = "HcrReceiverStatus",
+    xml_inner_tag = "EmsErrorCount",
+    entry_type = XML_ENTRY_INT,
+    ok_boolean = FALSE,
+    boolean_failure_is_critical = TRUE,
+    ok_value_lower_limit = 0,
+    ok_value_upper_limit = 5,
+    impaired_value_lower_limit = 1,
+    impaired_value_upper_limit = 4,
+    label = "",
+    units = "",
+    graph_min_val = 0,
+    graph_max_val = 20,
+    comment = "",
+    include_in_catalog_stats = TRUE,
+    catalog_omit_if_zero = TRUE,
+    catalog_interpret_as_time = FALSE
+  }
+  ,
+  {
+    xml_outer_tag = "HcrReceiverStatus",
+    xml_inner_tag = "EmsError1",
+    entry_type = XML_ENTRY_BOOLEAN,
+    ok_boolean = FALSE,
+    boolean_failure_is_critical = TRUE,
+    ok_value_lower_limit = -0.1,
+    ok_value_upper_limit = 0.1,
+    impaired_value_lower_limit = -10,
+    impaired_value_upper_limit = 10,
+    label = "",
+    units = "",
+    graph_min_val = -2,
+    graph_max_val = 2,
+    comment = "",
+    include_in_catalog_stats = TRUE,
+    catalog_omit_if_zero = TRUE,
+    catalog_interpret_as_time = FALSE
+  }
+  ,
+  {
+    xml_outer_tag = "HcrReceiverStatus",
+    xml_inner_tag = "EmsError2",
+    entry_type = XML_ENTRY_BOOLEAN,
+    ok_boolean = FALSE,
+    boolean_failure_is_critical = TRUE,
+    ok_value_lower_limit = -0.1,
+    ok_value_upper_limit = 0.1,
+    impaired_value_lower_limit = -10,
+    impaired_value_upper_limit = 10,
+    label = "",
+    units = "",
+    graph_min_val = -2,
+    graph_max_val = 2,
+    comment = "",
+    include_in_catalog_stats = TRUE,
+    catalog_omit_if_zero = TRUE,
+    catalog_interpret_as_time = FALSE
+  }
+  ,
+  {
+    xml_outer_tag = "HcrReceiverStatus",
+    xml_inner_tag = "EmsError3",
+    entry_type = XML_ENTRY_BOOLEAN,
+    ok_boolean = FALSE,
+    boolean_failure_is_critical = TRUE,
+    ok_value_lower_limit = -0.1,
+    ok_value_upper_limit = 0.1,
+    impaired_value_lower_limit = -10,
+    impaired_value_upper_limit = 10,
+    label = "",
+    units = "",
+    graph_min_val = -2,
+    graph_max_val = 2,
+    comment = "",
+    include_in_catalog_stats = TRUE,
+    catalog_omit_if_zero = TRUE,
+    catalog_interpret_as_time = FALSE
+  }
+  ,
+  {
+    xml_outer_tag = "HcrReceiverStatus",
+    xml_inner_tag = "EmsError4Or5",
+    entry_type = XML_ENTRY_BOOLEAN,
+    ok_boolean = FALSE,
+    boolean_failure_is_critical = TRUE,
+    ok_value_lower_limit = -0.1,
+    ok_value_upper_limit = 0.1,
+    impaired_value_lower_limit = -10,
+    impaired_value_upper_limit = 10,
+    label = "",
+    units = "",
+    graph_min_val = -2,
+    graph_max_val = 2,
+    comment = "",
+    include_in_catalog_stats = TRUE,
+    catalog_omit_if_zero = TRUE,
+    catalog_interpret_as_time = FALSE
+  }
+  ,
+  {
+    xml_outer_tag = "HcrReceiverStatus",
+    xml_inner_tag = "EmsError6Or7",
+    entry_type = XML_ENTRY_BOOLEAN,
+    ok_boolean = FALSE,
+    boolean_failure_is_critical = TRUE,
+    ok_value_lower_limit = -0.1,
+    ok_value_upper_limit = 0.1,
+    impaired_value_lower_limit = -10,
+    impaired_value_upper_limit = 10,
+    label = "",
+    units = "",
+    graph_min_val = -2,
+    graph_max_val = 2,
+    comment = "",
+    include_in_catalog_stats = TRUE,
+    catalog_omit_if_zero = TRUE,
+    catalog_interpret_as_time = FALSE
+  }
+  ,
+  {
+    xml_outer_tag = "HcrReceiverStatus",
+    xml_inner_tag = "WaveguideSwitchError",
+    entry_type = XML_ENTRY_BOOLEAN,
+    ok_boolean = FALSE,
+    boolean_failure_is_critical = TRUE,
+    ok_value_lower_limit = -0.1,
+    ok_value_upper_limit = 0.1,
+    impaired_value_lower_limit = -10,
+    impaired_value_upper_limit = 10,
+    label = "",
+    units = "",
+    graph_min_val = -2,
+    graph_max_val = 2,
+    comment = "",
+    include_in_catalog_stats = TRUE,
+    catalog_omit_if_zero = TRUE,
+    catalog_interpret_as_time = FALSE
+  }
+  ,
+  {
+    xml_outer_tag = "HcrReceiverStatus",
+    xml_inner_tag = "ApsValveOpen",
+    entry_type = XML_ENTRY_BOOLEAN,
+    ok_boolean = FALSE,
+    boolean_failure_is_critical = FALSE,
+    ok_value_lower_limit = -0.1,
+    ok_value_upper_limit = 0.1,
+    impaired_value_lower_limit = -10,
+    impaired_value_upper_limit = 10,
+    label = "",
+    units = "",
+    graph_min_val = -2,
+    graph_max_val = 2,
+    comment = "",
+    include_in_catalog_stats = TRUE,
+    catalog_omit_if_zero = FALSE,
+    catalog_interpret_as_time = FALSE
   }
   ,
   {
@@ -1033,7 +1596,9 @@ xml_entries = {
     graph_min_val = 0,
     graph_max_val = 2e+10,
     comment = "",
-    add_to_catalog_stats = FALSE
+    include_in_catalog_stats = FALSE,
+    catalog_omit_if_zero = TRUE,
+    catalog_interpret_as_time = TRUE
   }
   ,
   {
@@ -1051,7 +1616,9 @@ xml_entries = {
     graph_min_val = 0,
     graph_max_val = 10,
     comment = "",
-    add_to_catalog_stats = TRUE
+    include_in_catalog_stats = TRUE,
+    catalog_omit_if_zero = TRUE,
+    catalog_interpret_as_time = FALSE
   }
   ,
   {
@@ -1069,7 +1636,9 @@ xml_entries = {
     graph_min_val = 0,
     graph_max_val = 10,
     comment = "",
-    add_to_catalog_stats = TRUE
+    include_in_catalog_stats = TRUE,
+    catalog_omit_if_zero = TRUE,
+    catalog_interpret_as_time = FALSE
   }
   ,
   {
@@ -1087,7 +1656,9 @@ xml_entries = {
     graph_min_val = 0,
     graph_max_val = 10,
     comment = "",
-    add_to_catalog_stats = TRUE
+    include_in_catalog_stats = TRUE,
+    catalog_omit_if_zero = TRUE,
+    catalog_interpret_as_time = FALSE
   }
   ,
   {
@@ -1105,7 +1676,9 @@ xml_entries = {
     graph_min_val = 0,
     graph_max_val = 20,
     comment = "",
-    add_to_catalog_stats = TRUE
+    include_in_catalog_stats = TRUE,
+    catalog_omit_if_zero = TRUE,
+    catalog_interpret_as_time = FALSE
   }
   ,
   {
@@ -1123,7 +1696,9 @@ xml_entries = {
     graph_min_val = 0,
     graph_max_val = 10,
     comment = "",
-    add_to_catalog_stats = TRUE
+    include_in_catalog_stats = TRUE,
+    catalog_omit_if_zero = TRUE,
+    catalog_interpret_as_time = FALSE
   }
   ,
   {
@@ -1141,7 +1716,9 @@ xml_entries = {
     graph_min_val = 0,
     graph_max_val = 10,
     comment = "",
-    add_to_catalog_stats = TRUE
+    include_in_catalog_stats = TRUE,
+    catalog_omit_if_zero = TRUE,
+    catalog_interpret_as_time = FALSE
   }
   ,
   {
@@ -1159,7 +1736,9 @@ xml_entries = {
     graph_min_val = 0,
     graph_max_val = 9,
     comment = "",
-    add_to_catalog_stats = TRUE
+    include_in_catalog_stats = TRUE,
+    catalog_omit_if_zero = TRUE,
+    catalog_interpret_as_time = FALSE
   }
   ,
   {
@@ -1177,7 +1756,9 @@ xml_entries = {
     graph_min_val = 0,
     graph_max_val = 10,
     comment = "",
-    add_to_catalog_stats = TRUE
+    include_in_catalog_stats = TRUE,
+    catalog_omit_if_zero = TRUE,
+    catalog_interpret_as_time = FALSE
   }
   ,
   {
@@ -1195,7 +1776,9 @@ xml_entries = {
     graph_min_val = -2000,
     graph_max_val = 2000,
     comment = "",
-    add_to_catalog_stats = TRUE
+    include_in_catalog_stats = TRUE,
+    catalog_omit_if_zero = TRUE,
+    catalog_interpret_as_time = FALSE
   }
   ,
   {
@@ -1213,7 +1796,9 @@ xml_entries = {
     graph_min_val = -500,
     graph_max_val = 500,
     comment = "",
-    add_to_catalog_stats = TRUE
+    include_in_catalog_stats = TRUE,
+    catalog_omit_if_zero = TRUE,
+    catalog_interpret_as_time = FALSE
   }
   ,
   {
@@ -1231,7 +1816,9 @@ xml_entries = {
     graph_min_val = 0,
     graph_max_val = 100,
     comment = "",
-    add_to_catalog_stats = TRUE
+    include_in_catalog_stats = TRUE,
+    catalog_omit_if_zero = TRUE,
+    catalog_interpret_as_time = FALSE
   }
   ,
   {
@@ -1249,7 +1836,9 @@ xml_entries = {
     graph_min_val = 0,
     graph_max_val = 2e+10,
     comment = "",
-    add_to_catalog_stats = FALSE
+    include_in_catalog_stats = FALSE,
+    catalog_omit_if_zero = TRUE,
+    catalog_interpret_as_time = FALSE
   }
   ,
   {
@@ -1267,7 +1856,9 @@ xml_entries = {
     graph_min_val = 20,
     graph_max_val = 50,
     comment = "",
-    add_to_catalog_stats = TRUE
+    include_in_catalog_stats = TRUE,
+    catalog_omit_if_zero = TRUE,
+    catalog_interpret_as_time = FALSE
   }
   ,
   {
@@ -1285,7 +1876,9 @@ xml_entries = {
     graph_min_val = -180,
     graph_max_val = -90,
     comment = "",
-    add_to_catalog_stats = TRUE
+    include_in_catalog_stats = TRUE,
+    catalog_omit_if_zero = TRUE,
+    catalog_interpret_as_time = FALSE
   }
   ,
   {
@@ -1303,7 +1896,9 @@ xml_entries = {
     graph_min_val = 0,
     graph_max_val = 15000,
     comment = "",
-    add_to_catalog_stats = TRUE
+    include_in_catalog_stats = TRUE,
+    catalog_omit_if_zero = TRUE,
+    catalog_interpret_as_time = FALSE
   }
   ,
   {
@@ -1321,7 +1916,9 @@ xml_entries = {
     graph_min_val = 0,
     graph_max_val = 2e+10,
     comment = "",
-    add_to_catalog_stats = FALSE
+    include_in_catalog_stats = FALSE,
+    catalog_omit_if_zero = TRUE,
+    catalog_interpret_as_time = FALSE
   }
   ,
   {
@@ -1339,7 +1936,9 @@ xml_entries = {
     graph_min_val = -5,
     graph_max_val = 5,
     comment = "",
-    add_to_catalog_stats = TRUE
+    include_in_catalog_stats = TRUE,
+    catalog_omit_if_zero = TRUE,
+    catalog_interpret_as_time = FALSE
   }
   ,
   {
@@ -1357,7 +1956,9 @@ xml_entries = {
     graph_min_val = -20,
     graph_max_val = 20,
     comment = "",
-    add_to_catalog_stats = TRUE
+    include_in_catalog_stats = TRUE,
+    catalog_omit_if_zero = TRUE,
+    catalog_interpret_as_time = FALSE
   }
   ,
   {
@@ -1375,7 +1976,9 @@ xml_entries = {
     graph_min_val = -200,
     graph_max_val = 200,
     comment = "",
-    add_to_catalog_stats = TRUE
+    include_in_catalog_stats = TRUE,
+    catalog_omit_if_zero = TRUE,
+    catalog_interpret_as_time = FALSE
   }
   ,
   {
@@ -1393,7 +1996,9 @@ xml_entries = {
     graph_min_val = -300,
     graph_max_val = 300,
     comment = "",
-    add_to_catalog_stats = TRUE
+    include_in_catalog_stats = TRUE,
+    catalog_omit_if_zero = TRUE,
+    catalog_interpret_as_time = FALSE
   }
   ,
   {
@@ -1411,7 +2016,9 @@ xml_entries = {
     graph_min_val = -300,
     graph_max_val = 300,
     comment = "",
-    add_to_catalog_stats = TRUE
+    include_in_catalog_stats = TRUE,
+    catalog_omit_if_zero = TRUE,
+    catalog_interpret_as_time = FALSE
   }
   ,
   {
@@ -1429,7 +2036,269 @@ xml_entries = {
     graph_min_val = -30,
     graph_max_val = 30,
     comment = "",
-    add_to_catalog_stats = TRUE
+    include_in_catalog_stats = TRUE,
+    catalog_omit_if_zero = TRUE,
+    catalog_interpret_as_time = FALSE
+  }
+  ,
+  {
+    xml_outer_tag = "HcrTransmitterStatus",
+    xml_inner_tag = "SummaryFaultTime",
+    entry_type = XML_ENTRY_STRING,
+    ok_boolean = FALSE,
+    boolean_failure_is_critical = TRUE,
+    ok_value_lower_limit = 0,
+    ok_value_upper_limit = 5,
+    impaired_value_lower_limit = 1,
+    impaired_value_upper_limit = 4,
+    label = "",
+    units = "",
+    graph_min_val = 0,
+    graph_max_val = 20,
+    comment = "",
+    include_in_catalog_stats = TRUE,
+    catalog_omit_if_zero = FALSE,
+    catalog_interpret_as_time = TRUE
+  }
+  ,
+  {
+    xml_outer_tag = "HcrTransmitterStatus",
+    xml_inner_tag = "ModulatorFaultTime",
+    entry_type = XML_ENTRY_STRING,
+    ok_boolean = FALSE,
+    boolean_failure_is_critical = TRUE,
+    ok_value_lower_limit = 0,
+    ok_value_upper_limit = 5,
+    impaired_value_lower_limit = 1,
+    impaired_value_upper_limit = 4,
+    label = "",
+    units = "",
+    graph_min_val = 0,
+    graph_max_val = 20,
+    comment = "",
+    include_in_catalog_stats = TRUE,
+    catalog_omit_if_zero = FALSE,
+    catalog_interpret_as_time = TRUE
+  }
+  ,
+  {
+    xml_outer_tag = "HcrTransmitterStatus",
+    xml_inner_tag = "SyncFaultTime",
+    entry_type = XML_ENTRY_STRING,
+    ok_boolean = FALSE,
+    boolean_failure_is_critical = TRUE,
+    ok_value_lower_limit = 0,
+    ok_value_upper_limit = 5,
+    impaired_value_lower_limit = 1,
+    impaired_value_upper_limit = 4,
+    label = "",
+    units = "",
+    graph_min_val = 0,
+    graph_max_val = 20,
+    comment = "",
+    include_in_catalog_stats = TRUE,
+    catalog_omit_if_zero = FALSE,
+    catalog_interpret_as_time = TRUE
+  }
+  ,
+  {
+    xml_outer_tag = "HcrTransmitterStatus",
+    xml_inner_tag = "XmitterTempFaultTime",
+    entry_type = XML_ENTRY_STRING,
+    ok_boolean = FALSE,
+    boolean_failure_is_critical = TRUE,
+    ok_value_lower_limit = 0,
+    ok_value_upper_limit = 5,
+    impaired_value_lower_limit = 1,
+    impaired_value_upper_limit = 4,
+    label = "",
+    units = "",
+    graph_min_val = 0,
+    graph_max_val = 20,
+    comment = "",
+    include_in_catalog_stats = TRUE,
+    catalog_omit_if_zero = FALSE,
+    catalog_interpret_as_time = TRUE
+  }
+  ,
+  {
+    xml_outer_tag = "HcrTransmitterStatus",
+    xml_inner_tag = "WaveguideArcFaultTime",
+    entry_type = XML_ENTRY_STRING,
+    ok_boolean = FALSE,
+    boolean_failure_is_critical = TRUE,
+    ok_value_lower_limit = 0,
+    ok_value_upper_limit = 5,
+    impaired_value_lower_limit = 1,
+    impaired_value_upper_limit = 4,
+    label = "",
+    units = "",
+    graph_min_val = 0,
+    graph_max_val = 20,
+    comment = "",
+    include_in_catalog_stats = TRUE,
+    catalog_omit_if_zero = FALSE,
+    catalog_interpret_as_time = TRUE
+  }
+  ,
+  {
+    xml_outer_tag = "HcrTransmitterStatus",
+    xml_inner_tag = "CollectorCurrentFaultTime",
+    entry_type = XML_ENTRY_STRING,
+    ok_boolean = FALSE,
+    boolean_failure_is_critical = TRUE,
+    ok_value_lower_limit = 0,
+    ok_value_upper_limit = 5,
+    impaired_value_lower_limit = 1,
+    impaired_value_upper_limit = 4,
+    label = "",
+    units = "",
+    graph_min_val = 0,
+    graph_max_val = 20,
+    comment = "",
+    include_in_catalog_stats = TRUE,
+    catalog_omit_if_zero = FALSE,
+    catalog_interpret_as_time = TRUE
+  }
+  ,
+  {
+    xml_outer_tag = "HcrTransmitterStatus",
+    xml_inner_tag = "BodyCurrentFaultTime",
+    entry_type = XML_ENTRY_STRING,
+    ok_boolean = FALSE,
+    boolean_failure_is_critical = TRUE,
+    ok_value_lower_limit = 0,
+    ok_value_upper_limit = 5,
+    impaired_value_lower_limit = 1,
+    impaired_value_upper_limit = 4,
+    label = "",
+    units = "",
+    graph_min_val = 0,
+    graph_max_val = 20,
+    comment = "",
+    include_in_catalog_stats = TRUE,
+    catalog_omit_if_zero = FALSE,
+    catalog_interpret_as_time = TRUE
+  }
+  ,
+  {
+    xml_outer_tag = "HcrTransmitterStatus",
+    xml_inner_tag = "FilamentLorFaultTime",
+    entry_type = XML_ENTRY_STRING,
+    ok_boolean = FALSE,
+    boolean_failure_is_critical = TRUE,
+    ok_value_lower_limit = 0,
+    ok_value_upper_limit = 5,
+    impaired_value_lower_limit = 1,
+    impaired_value_upper_limit = 4,
+    label = "",
+    units = "",
+    graph_min_val = 0,
+    graph_max_val = 20,
+    comment = "",
+    include_in_catalog_stats = TRUE,
+    catalog_omit_if_zero = FALSE,
+    catalog_interpret_as_time = TRUE
+  }
+  ,
+  {
+    xml_outer_tag = "HcrTransmitterStatus",
+    xml_inner_tag = "FocusElectrodeLorFaultTime",
+    entry_type = XML_ENTRY_STRING,
+    ok_boolean = FALSE,
+    boolean_failure_is_critical = TRUE,
+    ok_value_lower_limit = 0,
+    ok_value_upper_limit = 5,
+    impaired_value_lower_limit = 1,
+    impaired_value_upper_limit = 4,
+    label = "",
+    units = "",
+    graph_min_val = 0,
+    graph_max_val = 20,
+    comment = "",
+    include_in_catalog_stats = TRUE,
+    catalog_omit_if_zero = FALSE,
+    catalog_interpret_as_time = TRUE
+  }
+  ,
+  {
+    xml_outer_tag = "HcrTransmitterStatus",
+    xml_inner_tag = "CathodeLorFaultTime",
+    entry_type = XML_ENTRY_STRING,
+    ok_boolean = FALSE,
+    boolean_failure_is_critical = TRUE,
+    ok_value_lower_limit = 0,
+    ok_value_upper_limit = 5,
+    impaired_value_lower_limit = 1,
+    impaired_value_upper_limit = 4,
+    label = "",
+    units = "",
+    graph_min_val = 0,
+    graph_max_val = 20,
+    comment = "",
+    include_in_catalog_stats = TRUE,
+    catalog_omit_if_zero = FALSE,
+    catalog_interpret_as_time = TRUE
+  }
+  ,
+  {
+    xml_outer_tag = "HcrTransmitterStatus",
+    xml_inner_tag = "InverterOverloadFaultTime",
+    entry_type = XML_ENTRY_STRING,
+    ok_boolean = FALSE,
+    boolean_failure_is_critical = TRUE,
+    ok_value_lower_limit = 0,
+    ok_value_upper_limit = 5,
+    impaired_value_lower_limit = 1,
+    impaired_value_upper_limit = 4,
+    label = "",
+    units = "",
+    graph_min_val = 0,
+    graph_max_val = 20,
+    comment = "",
+    include_in_catalog_stats = TRUE,
+    catalog_omit_if_zero = FALSE,
+    catalog_interpret_as_time = TRUE
+  }
+  ,
+  {
+    xml_outer_tag = "HcrTransmitterStatus",
+    xml_inner_tag = "ExternalInterlockFaultTime",
+    entry_type = XML_ENTRY_STRING,
+    ok_boolean = FALSE,
+    boolean_failure_is_critical = TRUE,
+    ok_value_lower_limit = 0,
+    ok_value_upper_limit = 5,
+    impaired_value_lower_limit = 1,
+    impaired_value_upper_limit = 4,
+    label = "",
+    units = "",
+    graph_min_val = 0,
+    graph_max_val = 20,
+    comment = "",
+    include_in_catalog_stats = TRUE,
+    catalog_omit_if_zero = FALSE,
+    catalog_interpret_as_time = TRUE
+  }
+  ,
+  {
+    xml_outer_tag = "HcrTransmitterStatus",
+    xml_inner_tag = "EikInterlockFaultTime",
+    entry_type = XML_ENTRY_STRING,
+    ok_boolean = FALSE,
+    boolean_failure_is_critical = TRUE,
+    ok_value_lower_limit = 0,
+    ok_value_upper_limit = 5,
+    impaired_value_lower_limit = 1,
+    impaired_value_upper_limit = 4,
+    label = "",
+    units = "",
+    graph_min_val = 0,
+    graph_max_val = 20,
+    comment = "",
+    include_in_catalog_stats = TRUE,
+    catalog_omit_if_zero = FALSE,
+    catalog_interpret_as_time = TRUE
   }
 };
 
@@ -1584,7 +2453,7 @@ g0_velocity_n_samples = 1024;
 // Type: boolean
 //
 
-write_to_nagios = FALSE;
+write_to_nagios = TRUE;
 
 ///////////// nagios_file_path ////////////////////////
 //
@@ -1731,7 +2600,7 @@ nagios_antenna_movement_label = "SBandAntennaMovement";
 // Type: boolean
 //
 
-write_to_spdb = FALSE;
+write_to_spdb = TRUE;
 
 ///////////// spdb_url ////////////////////////////////
 //
@@ -1796,7 +2665,7 @@ write_stats_files_to_catalog = TRUE;
 // Type: int
 //
 
-stats_interval_secs = 30;
+stats_interval_secs = 300;
 
 ///////////// stats_output_dir ////////////////////////
 //

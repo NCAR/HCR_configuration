@@ -1,0 +1,26 @@
+#! /bin/csh -f
+#
+# Start script for cmigitsDaemon talking to INS2
+
+## INS1 (inboard) serial port and antenna x,y,z offset in cm
+#set insNumArg = "--1"
+#set instanceName = "ins1"	# instance name used by "cmigitsDaemon --1 ..."
+#set ttyDev = "/dev/ttyS2"
+#set antennaOffset = "-18,+6,-16"
+
+# INS2 (outboard) serial port and antenna x,y,z offset in cm
+insNumArg = "--2"
+set instanceName = "ins2"	# instance name used by "cmigitsDaemon --2 ..."
+set devName = "/dev/ttyUSB0"
+set antennaOffset = "-18,-6,-16"
+
+cd /home/hcr/git/HCR_instrument/src/cmigitsDaemon/
+
+set cmd = "cmigitsDaemon $insNumArg --antennaOffset $antennaOffset $ttyDev"
+
+limit coredumpsize unlimited
+running "$cmd"
+if ($status == 1) then
+    $cmd |& LogFilter -d $ERRORS_LOG_DIR -p cmigitsDaemon -i $instanceName &
+endif
+
