@@ -88,8 +88,9 @@ HawkEye      catalog     start_HawkEye.catalog         snuff_inst
 LdataWatcher catalog     start_LdataWatcher.catalog    snuff_inst    
 #
 ###############################################################################
-# Monitoring - for nagios
+# Monitoring - for nagios and catalog
 #
-TsStatusMonitor wband    start_TsStatusMonitor.wband   snuff_inst
+TsStatusMonitor wband    start_TsStatusMonitor.wband    snuff_inst
+LdataWatcher  monitor    start_LdataWatcher.monitor     snuff_inst    
 #
 ###############################################################################

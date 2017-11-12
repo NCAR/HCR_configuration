@@ -97,10 +97,10 @@ setenv LDATA_FMQ_ACTIVE true
 setenv DS_COMM_TIMEOUT_MSECS 60000
 setenv DS_PING_TIMEOUT_MSECS 20000
 
-# --- site info --- 
+# --- project info --- 
 
-if (-f $PROJ_DIR/system/params/site_info) then
-  source $PROJ_DIR/system/params/site_info
+if (-f $PROJ_DIR/system/params/project_info) then
+  source $PROJ_DIR/system/params/project_info
 endif
 
 # -- Python --
