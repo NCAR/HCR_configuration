@@ -182,18 +182,6 @@ begin_in_archive_mode = FALSE;
 
 archive_start_time = "2014 12 01 18 40 00";
 
-///////////// archive_end_time ////////////////////////
-//
-// End time for archive mode.
-//
-// Generally this is applicable for image generation.
-//
-//
-// Type: string
-//
-
-archive_end_time = "2014 12 01 19 40 00";
-
 ///////////// archive_data_url ////////////////////////
 //
 // URL for archive data files.
