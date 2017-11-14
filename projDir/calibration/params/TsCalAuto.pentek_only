@@ -489,7 +489,7 @@ output_dir = "$(DATA_DIR)/cal/pentek";
 // Type: string
 //
 
-output_file_label = "Wband";
+output_file_label = "Pentek";
 
 ///////////// plot_script /////////////////////////////
 //
