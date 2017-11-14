@@ -686,7 +686,7 @@ output_dir = "$(PROJ_DIR)/calibration/data/wband_512ns";
 // Type: string
 //
 
-output_file_label = "Wband-HCR2-512ns";
+output_file_label = "Wband-HCR1-512ns";
 
 ///////////// plot_script /////////////////////////////
 //
