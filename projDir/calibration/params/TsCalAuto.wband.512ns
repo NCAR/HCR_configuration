@@ -17,13 +17,16 @@
 ///////////// debug ///////////////////////////////////
 //
 // Debug option.
+//
 // If set, debug messages will be printed appropriately.
+//
 //
 // Type: enum
 // Options:
 //     DEBUG_OFF
 //     DEBUG_NORM
 //     DEBUG_VERBOSE
+//     DEBUG_EXTRA
 //
 
 debug = DEBUG_NORM;
@@ -31,7 +34,10 @@ debug = DEBUG_NORM;
 ///////////// instance ////////////////////////////////
 //
 // Process instance.
+//
 // Used for registration with procmap.
+//
+//
 // Type: string
 //
 
@@ -40,8 +46,11 @@ instance = "wband_512ns";
 ///////////// register_with_procmap ///////////////////
 //
 // Option to register with the process mapper.
+//
 // If true, this application will try to register with procmap once per 
 //   minute. (If unable to do so, no error occurs.).
+//
+//
 // Type: boolean
 //
 
@@ -56,6 +65,8 @@ register_with_procmap = FALSE;
 ///////////// input_fmq_path //////////////////////////
 //
 // Path to time series FMQ.
+//
+//
 // Type: string
 //
 
@@ -64,6 +75,8 @@ input_fmq_path = "$(DATA_DIR)/fmq/ts/wband/shmem_10000";
 ///////////// n_samples ///////////////////////////////
 //
 // Number of pulse samples to average for cal data.
+//
+//
 // Type: int
 //
 
@@ -72,23 +85,30 @@ n_samples = 20000;
 ///////////// start_gate //////////////////////////////
 //
 // Gate number for start of averaging.
+//
+//
 // Type: int
 //
 
-start_gate = 50;
+start_gate = 100;
 
 ///////////// n_gates /////////////////////////////////
 //
 // Number of gates for averaging.
+//
+//
 // Type: int
 //
 
-n_gates = 100;
+n_gates = 300;
 
 ///////////// fast_alternating_mode ///////////////////
 //
 // Is the radar running in dual-pol fast alternating mode?.
+//
 // If not, set to FALSE.
+//
+//
 // Type: boolean
 //
 
@@ -97,12 +117,44 @@ fast_alternating_mode = FALSE;
 ///////////// switching_receivers /////////////////////
 //
 // Does the system have switching receivers?.
+//
 // If the receiver path switched every pulse, i.e. to operate in 
 //   co-polar and x-polar mode, set this to true.
+//
+//
 // Type: boolean
 //
 
 switching_receivers = FALSE;
+
+///////////// check_radar_id //////////////////////////
+//
+// Option to check the radar ID in the time series data stream.
+//
+// If TRUE, we will check that the radar_id in the header packet info is 
+//   either the specified radar_id, or is 0. This allows us to filter out 
+//   unwanted data from the time series stream. Mostly this is not 
+//   applicable. However, in some cases time series data from multiple 
+//   sources is included in a single stream, in which case we need to 
+//   filter it accordingly.
+//
+//
+// Type: boolean
+//
+
+check_radar_id = FALSE;
+
+///////////// radar_id ////////////////////////////////
+//
+// radar_id to be used for filtering incoming data.
+//
+// See 'check_radar_id' above.
+//
+//
+// Type: int
+//
+
+radar_id = 0;
 
 //======================================================================
 //
@@ -113,6 +165,8 @@ switching_receivers = FALSE;
 ///////////// siggen_tcp_port /////////////////////////
 //
 // TCP port for SIGGEN.
+//
+//
 // Type: int
 //
 
@@ -121,6 +175,8 @@ siggen_tcp_port = 5025;
 ///////////// siggen_ip_address ///////////////////////
 //
 // IP address for SIGGEN.
+//
+//
 // Type: string
 //
 
@@ -129,31 +185,83 @@ siggen_ip_address = "10.40.0.21";
 ///////////// siggen_max_power ////////////////////////
 //
 // Max power for siggen signal (dBm).
+//
+//
 // Type: double
 //
 
-siggen_max_power = -34.77;
+siggen_max_power = -34.65;
 
 ///////////// siggen_min_power ////////////////////////
 //
 // Min power for siggen signal (dBm).
+//
+//
 // Type: double
 //
 
-siggen_min_power = -114.77;
+siggen_min_power = -114.65;
 
 ///////////// siggen_delta_power //////////////////////
 //
 // Power step for siggen (dBm).
+//
+//
 // Type: double
 //
 
 siggen_delta_power = 5;
 
+///////////// siggen_specify_power_sequence ///////////
+//
+// Option to specify the power sequence to use in the cal.
+//
+// If true, the siggen_power_sequence will be used. If false, the power 
+//   will start at siggen_max_power and decrease to siggen_min_power, in 
+//   steps of siggen_delta_power.
+//
+//
+// Type: boolean
+//
+
+siggen_specify_power_sequence = TRUE;
+
+///////////// siggen_power_sequence ///////////////////
+//
+// Min power for siggen signal (dBm).
+//
+//
+// Type: double
+// 1D array - variable length.
+//
+
+siggen_power_sequence = {
+ -34.65,
+ -39.65,
+ -44.65,
+ -49.65,
+ -54.65,
+ -59.65,
+ -64.65,
+ -69.65,
+ -74.65,
+ -80.70,
+ -85.70,
+ -90.70,
+ -95.70,
+ -100.70,
+ -105.70,
+ -110.70,
+ -115.70
+};
+
 ///////////// set_sig_freq ////////////////////////////
 //
 // Switch to set the Frequency on the sig gen before starting.
+//
 // If the Test Pulse Manager is on, you probably don't want to reset it.
+//
+//
 // Type: boolean
 //
 
@@ -162,17 +270,23 @@ set_sig_freq = TRUE;
 ///////////// siggen_frequency ////////////////////////
 //
 // Siggen frequency (GHz).
+//
 // This should match the radar's frequency.
+//
+//
 // Type: double
 //
 
-siggen_frequency = 94.40625;
+siggen_frequency = 94.4062;
 
 ///////////// siggen_cmd_delay ////////////////////////
 //
 // Siggen command delay (msec).
+//
 // Delay this ammount after each command to give the siggen time to 
 //   stabilize a power change.
+//
+//
 // Type: int
 //
 
@@ -181,7 +295,10 @@ siggen_cmd_delay = 1000;
 ///////////// use_manual_siggen_control ///////////////
 //
 // Option to manually set the siggen.
+//
 // Use for testing etc.
+//
+//
 // Type: boolean
 //
 
@@ -190,7 +307,10 @@ use_manual_siggen_control = TRUE;
 ///////////// suspend_test_pulse //////////////////////
 //
 // Option to suspend the test pulse while the calibration is running.
+//
 // See TestPulse_pid_file.
+//
+//
 // Type: boolean
 //
 
@@ -199,9 +319,12 @@ suspend_test_pulse = FALSE;
 ///////////// TestPulse_pid_file //////////////////////
 //
 // File containing the process ID of the TestPulse Utility program.
+//
 // On Startup, this program suspends the operation of TestPulse by 
 //   sending it a SIGUSR1. After Finishing, it restores TestPulse 
 //   operation by sending it a SIGUSR2.
+//
+//
 // Type: string
 //
 
@@ -216,6 +339,8 @@ TestPulse_pid_file = "/tmp/TestPulse.pid";
 ///////////// radarName ///////////////////////////////
 //
 // Radar name.
+//
+//
 // Type: string
 //
 
@@ -224,7 +349,10 @@ radarName = "HCR";
 ///////////// radar_frequency /////////////////////////
 //
 // Radar frequency (GHz).
+//
 // If this is negative, the siggen_frequency will be used.
+//
+//
 // Type: double
 //
 
@@ -234,13 +362,16 @@ radar_frequency = -9999;
 //
 // Constant related to complex index of refraction, for water, at this 
 //   frequency.
+//
 // Suggested values are:
 // 	S-band: 0.93
 // 	C-band: 0.93
 // 	X-band: 0.92
 // 	Ku-band: 0.90
 // 	Ka-band: 0.88
-// 	W-band: 0.711.
+// 	W-band: 0.84.
+//
+//
 // Type: double
 //
 
@@ -249,6 +380,8 @@ k_squared = 0.711;
 ///////////// xmitPowerDbmH ///////////////////////////
 //
 // Transmitter peak power H (dBm).
+//
+//
 // Type: double
 //
 
@@ -257,6 +390,8 @@ xmitPowerDbmH = 59.34;
 ///////////// xmitPowerDbmV ///////////////////////////
 //
 // Transmitter peak power V (dBm).
+//
+//
 // Type: double
 //
 
@@ -265,6 +400,8 @@ xmitPowerDbmV = 59.99;
 ///////////// pulseWidthUs ////////////////////////////
 //
 // Transmit pulse width (micro_secs).
+//
+//
 // Type: double
 //
 
@@ -273,6 +410,8 @@ pulseWidthUs = 0.512;
 ///////////// beamWidthDegH ///////////////////////////
 //
 // Antenna 3dB beam width H (deg).
+//
+//
 // Type: double
 //
 
@@ -281,6 +420,8 @@ beamWidthDegH = 0.75;
 ///////////// beamWidthDegV ///////////////////////////
 //
 // Antenna 3dB beam width V (deg).
+//
+//
 // Type: double
 //
 
@@ -289,6 +430,8 @@ beamWidthDegV = 0.72;
 ///////////// antGainDbH //////////////////////////////
 //
 // Antenna gain H (dB).
+//
+//
 // Type: double
 //
 
@@ -297,6 +440,8 @@ antGainDbH = 46.5;
 ///////////// antGainDbV //////////////////////////////
 //
 // Antenna gain V (dB).
+//
+//
 // Type: double
 //
 
@@ -305,29 +450,38 @@ antGainDbV = 46.7;
 ///////////// twoWayWaveguideLossDbH //////////////////
 //
 // 2-way waveguide loss H (dB).
+//
 // This is the loss from the measurement plane to the feed-horn and 
 //   back. Sometimes it is set to 0 and the loss is incorporated in the 
 //   antenna gain.
+//
+//
 // Type: double
 //
 
-twoWayWaveguideLossDbH = 0;
+twoWayWaveguideLossDbH = 4.6;
 
 ///////////// twoWayWaveguideLossDbV //////////////////
 //
 // 2-way waveguide loss V (dB).
+//
 // This is the loss from the measurement plane to the feed-horn and 
 //   back. Sometimes it is set to 0 and the loss is incorporated in the 
 //   antenna gain.
+//
+//
 // Type: double
 //
 
-twoWayWaveguideLossDbV = 0;
+twoWayWaveguideLossDbV = 4.6;
 
 ///////////// twoWayRadomeLossDbH /////////////////////
 //
 // 2-way loss through the radome - H.
+//
 // Set to 0 if no radome.
+//
+//
 // Type: double
 //
 
@@ -336,7 +490,10 @@ twoWayRadomeLossDbH = 0.6;
 ///////////// twoWayRadomeLossDbV /////////////////////
 //
 // 2-way loss through the radome - V.
+//
 // Set to 0 if no radome.
+//
+//
 // Type: double
 //
 
@@ -345,12 +502,15 @@ twoWayRadomeLossDbV = 0.6;
 ///////////// receiverMismatchLossDb //////////////////
 //
 // Receiver mismatch loss - (dB).
+//
 // This is the loss which results from the fact that the receiver 
 //   bandwidth is not exactly the same as the pulse width. The calibration 
 //   procedure is carries out with a CW signal, so the redeiver bandwidth 
 //   is not a factor. However, during operations, the receiver loses some 
 //   power because of the bandwidth mismatch. This loss must be taken into 
 //   account.
+//
+//
 // Type: double
 //
 
@@ -359,8 +519,11 @@ receiverMismatchLossDb = 1.1;
 ///////////// noiseSourcePowerDbmH ////////////////////
 //
 // Noise source power - H (dBm).
+//
 // Some operational calibrations are computed with a calbrated noise 
 //   source of known power.
+//
+//
 // Type: double
 //
 
@@ -369,8 +532,11 @@ noiseSourcePowerDbmH = -9999;
 ///////////// noiseSourcePowerDbmV ////////////////////
 //
 // Noise source power - V (dBm).
+//
 // Some operational calibrations are computed with a calbrated noise 
 //   source of known power.
+//
+//
 // Type: double
 //
 
@@ -379,8 +545,11 @@ noiseSourcePowerDbmV = -9999;
 ///////////// powerMeasLossDbH ////////////////////////
 //
 // Power measurement loss - H (dBm).
+//
 // This is the power loss from the signal generator to the waveguide 
 //   coupler.
+//
+//
 // Type: double
 //
 
@@ -389,8 +558,11 @@ powerMeasLossDbH = 0;
 ///////////// powerMeasLossDbV ////////////////////////
 //
 // Power measurement loss - V (dBm).
+//
 // This is the power loss from the signal generator to the waveguide 
 //   coupler.
+//
+//
 // Type: double
 //
 
@@ -399,7 +571,10 @@ powerMeasLossDbV = 0;
 ///////////// couplerForwardLossDbH ///////////////////
 //
 // Coupler loss - H (dB).
+//
 // This is the power loss in the directional coupler itself.
+//
+//
 // Type: double
 //
 
@@ -408,7 +583,10 @@ couplerForwardLossDbH = 0;
 ///////////// couplerForwardLossDbV ///////////////////
 //
 // Coupler loss - V (dB).
+//
 // This is the power loss in the directional coupler itself.
+//
+//
 // Type: double
 //
 
@@ -417,10 +595,13 @@ couplerForwardLossDbV = 0;
 ///////////// systemPhidpDeg //////////////////////////
 //
 // System PHIDP (deg).
+//
 // This is the approximate PHIDP value in the meteorlogical echo closest 
 //   to the radar. Compute PHIDP is corrected using this value, so that 
 //   the computed PHIDP closest to the radar is set to a value which 
 //   minimizes the chance of folding.
+//
+//
 // Type: double
 //
 
@@ -435,32 +616,41 @@ systemPhidpDeg = 0;
 ///////////// linear_region_min_power /////////////////
 //
 // power value at lower end of linear region (dBm).
+//
+//
 // Type: double
 //
 
-linear_region_min_power = -85;
+linear_region_min_power = -82;
 
 ///////////// linear_region_max_power /////////////////
 //
 // power value at upper end of linear region (dBm).
+//
+//
 // Type: double
 //
 
-linear_region_max_power = -45;
+linear_region_max_power = -42;
 
 ///////////// noise_region_max_power //////////////////
 //
 // power value at upper end of noise region (dBm).
+//
+//
 // Type: double
 //
 
-noise_region_max_power = -115;
+noise_region_max_power = -120;
 
 ///////////// snr_for_mds /////////////////////////////
 //
 // SNR for minimum detectable signal (dB).
+//
 // The minimum detectable signal is generally well below the noise. This 
 //   is the SNR value for the MDS.
+//
+//
 // Type: double
 //
 
@@ -475,27 +665,37 @@ snr_for_mds = -6;
 ///////////// output_dir //////////////////////////////
 //
 // Dir for output files.
+//
 // The results will be written to sub-directories named from the cal 
 //   time.
+//
+//
 // Type: string
 //
 
-output_dir = "$(DATA_DIR)/cal/wband_512ns";
+// output_dir = "$(DATA_DIR)/cal/wband_512ns";
+output_dir = "$(PROJ_DIR)/calibration/data/wband_512ns";
 
 ///////////// output_file_label ///////////////////////
 //
 // Label imbedded in the file name.
+//
 // Ignored if empty.
+//
+//
 // Type: string
 //
 
-output_file_label = "Wband-512ns";
+output_file_label = "Wband-HCR2-512ns";
 
 ///////////// plot_script /////////////////////////////
 //
 // If set, program will call script passing the output file names as the 
 //   first argument.
+//
 // Typically, this script generates a plot and saves the output.
+//
+//
 // Type: string
 //
 
@@ -510,10 +710,13 @@ plot_script = "do_calplot.dyn_range";
 ///////////// read_data_in_alt_column_order ///////////
 //
 // Option to read data file with alternative column order.
+//
 // TsCalAuto writes out the power data in the following order: hc, vc, 
 //   hx, vx. Some systems, such as the SPOL ATE, writes out the data in 
 //   hc, hx, vc, vx. If you set this option to true, the latter column 
 //   order will be used to read in previously-stored data.
+//
+//
 // Type: boolean
 //
 
