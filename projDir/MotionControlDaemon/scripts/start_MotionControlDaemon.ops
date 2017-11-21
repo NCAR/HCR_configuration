@@ -10,8 +10,21 @@ endif
 snuff MotionControlDaemon
 
 limit coredumpsize unlimited
-set rotBeamCorr="-3.04"		# value used at the end of CSET
-set tiltBeamCorr="-0.58"	# value used at the end of CSET
+
+set rotBeamCorr="-3.04"	# beginning of SOCRATES
+#set rotBeamCorr="-3.04"	# end of ARISTO-17
+#set rotBeamCorr="-2.04"	# ARISTO RF04 test 1
+#set rotBeamCorr="-3.04"	# end of CSET
+
+set tiltBeamCorr="-0.66"	# beginning of SOCRATES
+#set tiltBeamCorr="-0.66"	# end of ARISTO-17
+#set tiltBeamCorr="-0.63"	# ARISTO-17 RF04 test 3
+#set tiltBeamCorr="-0.66"	# ARISTO-17 RF04 test 2
+#set tiltBeamCorr="-0.54"	# ARISTO-17 RF04 test 1
+#set tiltBeamCorr="-0.56"	# ARISTO-17 RF01 post-processing tweak
+#set tiltBeamCorr="-0.60"	# ARISTO-17 RF01 2nd in-flight tweak
+#set tiltBeamCorr="-0.56"	# ARISTO-17 RF01 1st in-flight tweak
+#set tiltBeamCorr="-0.58"	# end of CSET
 MotionControlDaemon \
     --rotBeamAngleCorrection $rotBeamCorr \
     --tiltBeamAngleCorrection $tiltBeamCorr |& \
