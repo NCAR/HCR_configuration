@@ -1,0 +1,7 @@
+#! /bin/csh -f
+
+cd $PROJ_DIR/display/params
+
+HawkEye -params HawkEye.wband >& /dev/null &
+
+
