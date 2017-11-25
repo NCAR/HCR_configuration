@@ -1,0 +1,14 @@
+GNOME WORKSPACE SHORTCUTS
+
+Switch to next workspace                    Windows+PgDown
+
+Switch to previous workspace                Windows+PgUp
+
+Switch to first workspace                   Windows+Home
+
+Switch to last workspace                    Windows+End
+
+Move Window to next workspace               Windows+Shift+PgDown
+
+Move Window to previous workspace           Windows+Shift+PgUp
+
