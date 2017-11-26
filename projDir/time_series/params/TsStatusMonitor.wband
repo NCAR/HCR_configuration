@@ -1582,7 +1582,147 @@ xml_entries = {
   }
   ,
   {
-    xml_outer_tag = "HcrCmigitsData",
+    xml_outer_tag = "HcrInsDelta",
+    xml_inner_tag = "CmigitsDeltaTime",
+    entry_type = XML_ENTRY_DOUBLE,
+    ok_boolean = TRUE,
+    boolean_failure_is_critical = TRUE,
+    ok_value_lower_limit = 0,
+    ok_value_upper_limit = 2.0,
+    impaired_value_lower_limit = 0,
+    impaired_value_upper_limit = 1.0,
+    label = "",
+    units = "secs",
+    graph_min_val = 0,
+    graph_max_val = 5,
+    comment = "",
+    include_in_catalog_stats = TRUE,
+    catalog_omit_if_zero = FALSE,
+    catalog_interpret_as_time = FALSE
+  }
+  ,
+  {
+    xml_outer_tag = "HcrInsDelta",
+    xml_inner_tag = "CmigitsDeltaLatitude",
+    entry_type = XML_ENTRY_DOUBLE,
+    ok_boolean = TRUE,
+    boolean_failure_is_critical = TRUE,
+    ok_value_lower_limit = 0,
+    ok_value_upper_limit = 0.001,
+    impaired_value_lower_limit = 0,
+    impaired_value_upper_limit = 0.002,
+    label = "",
+    units = "deg",
+    graph_min_val = 0,
+    graph_max_val = 0.1,
+    comment = "",
+    include_in_catalog_stats = TRUE,
+    catalog_omit_if_zero = FALSE,
+    catalog_interpret_as_time = FALSE
+  }
+  ,
+  {
+    xml_outer_tag = "HcrInsDelta",
+    xml_inner_tag = "CmigitsDeltaLongitude",
+    entry_type = XML_ENTRY_DOUBLE,
+    ok_boolean = TRUE,
+    boolean_failure_is_critical = TRUE,
+    ok_value_lower_limit = 0,
+    ok_value_upper_limit = 0.001,
+    impaired_value_lower_limit = 0,
+    impaired_value_upper_limit = 0.002,
+    label = "",
+    units = "deg",
+    graph_min_val = 0,
+    graph_max_val = 0.1,
+    comment = "",
+    include_in_catalog_stats = TRUE,
+    catalog_omit_if_zero = FALSE,
+    catalog_interpret_as_time = FALSE
+  }
+  ,
+  {
+    xml_outer_tag = "HcrInsDelta",
+    xml_inner_tag = "CmigitsDeltaAltitude",
+    entry_type = XML_ENTRY_DOUBLE,
+    ok_boolean = TRUE,
+    boolean_failure_is_critical = TRUE,
+    ok_value_lower_limit = 0,
+    ok_value_upper_limit = 5.0,
+    impaired_value_lower_limit = 0,
+    impaired_value_upper_limit = 10.0,
+    label = "",
+    units = "m",
+    graph_min_val = 0,
+    graph_max_val = 20,
+    comment = "",
+    include_in_catalog_stats = TRUE,
+    catalog_omit_if_zero = FALSE,
+    catalog_interpret_as_time = FALSE
+  }
+  ,
+  {
+    xml_outer_tag = "HcrInsDelta",
+    xml_inner_tag = "CmigitsDeltaPitch",
+    entry_type = XML_ENTRY_DOUBLE,
+    ok_boolean = TRUE,
+    boolean_failure_is_critical = TRUE,
+    ok_value_lower_limit = 0,
+    ok_value_upper_limit = 0.01,
+    impaired_value_lower_limit = 0,
+    impaired_value_upper_limit = 0.02,
+    label = "",
+    units = "deg",
+    graph_min_val = 0,
+    graph_max_val = 0.2,
+    comment = "",
+    include_in_catalog_stats = TRUE,
+    catalog_omit_if_zero = FALSE,
+    catalog_interpret_as_time = FALSE
+  }
+  ,
+  {
+    xml_outer_tag = "HcrInsDelta",
+    xml_inner_tag = "CmigitsDeltaRoll",
+    entry_type = XML_ENTRY_DOUBLE,
+    ok_boolean = TRUE,
+    boolean_failure_is_critical = TRUE,
+    ok_value_lower_limit = 0,
+    ok_value_upper_limit = 0.01,
+    impaired_value_lower_limit = 0,
+    impaired_value_upper_limit = 0.02,
+    label = "",
+    units = "deg",
+    graph_min_val = 0,
+    graph_max_val = 0.2,
+    comment = "",
+    include_in_catalog_stats = TRUE,
+    catalog_omit_if_zero = FALSE,
+    catalog_interpret_as_time = FALSE
+  }
+  ,
+  {
+    xml_outer_tag = "HcrInsDelta",
+    xml_inner_tag = "CmigitsDeltaHeading",
+    entry_type = XML_ENTRY_DOUBLE,
+    ok_boolean = TRUE,
+    boolean_failure_is_critical = TRUE,
+    ok_value_lower_limit = 0,
+    ok_value_upper_limit = 2,
+    impaired_value_lower_limit = 0,
+    impaired_value_upper_limit = 4,
+    label = "",
+    units = "deg",
+    graph_min_val = 0,
+    graph_max_val = 10,
+    comment = "",
+    include_in_catalog_stats = TRUE,
+    catalog_omit_if_zero = FALSE,
+    catalog_interpret_as_time = FALSE
+  }
+  ,
+  {
+    xml_outer_tag = "HcrIns1Data",
     xml_inner_tag = "Cmigits3500Time",
     entry_type = XML_ENTRY_DOUBLE,
     ok_boolean = TRUE,
@@ -1602,7 +1742,7 @@ xml_entries = {
   }
   ,
   {
-    xml_outer_tag = "HcrCmigitsData",
+    xml_outer_tag = "HcrIns1Data",
     xml_inner_tag = "Cmigits3500CurrentMode",
     entry_type = XML_ENTRY_INT,
     ok_boolean = TRUE,
@@ -1616,13 +1756,13 @@ xml_entries = {
     graph_min_val = 0,
     graph_max_val = 10,
     comment = "",
-    include_in_catalog_stats = TRUE,
+    include_in_catalog_stats = FALSE,
     catalog_omit_if_zero = TRUE,
     catalog_interpret_as_time = FALSE
   }
   ,
   {
-    xml_outer_tag = "HcrCmigitsData",
+    xml_outer_tag = "HcrIns1Data",
     xml_inner_tag = "Cmigits3500InsAvailable",
     entry_type = XML_ENTRY_BOOLEAN,
     ok_boolean = TRUE,
@@ -1642,7 +1782,7 @@ xml_entries = {
   }
   ,
   {
-    xml_outer_tag = "HcrCmigitsData",
+    xml_outer_tag = "HcrIns1Data",
     xml_inner_tag = "Cmigits3500GpsAvailable",
     entry_type = XML_ENTRY_BOOLEAN,
     ok_boolean = TRUE,
@@ -1662,7 +1802,7 @@ xml_entries = {
   }
   ,
   {
-    xml_outer_tag = "HcrCmigitsData",
+    xml_outer_tag = "HcrIns1Data",
     xml_inner_tag = "Cmigits3500NSats",
     entry_type = XML_ENTRY_INT,
     ok_boolean = TRUE,
@@ -1682,7 +1822,7 @@ xml_entries = {
   }
   ,
   {
-    xml_outer_tag = "HcrCmigitsData",
+    xml_outer_tag = "HcrIns1Data",
     xml_inner_tag = "Cmigits3500PositionFOM",
     entry_type = XML_ENTRY_INT,
     ok_boolean = TRUE,
@@ -1696,13 +1836,13 @@ xml_entries = {
     graph_min_val = 0,
     graph_max_val = 10,
     comment = "",
-    include_in_catalog_stats = TRUE,
+    include_in_catalog_stats = FALSE,
     catalog_omit_if_zero = TRUE,
     catalog_interpret_as_time = FALSE
   }
   ,
   {
-    xml_outer_tag = "HcrCmigitsData",
+    xml_outer_tag = "HcrIns1Data",
     xml_inner_tag = "Cmigits3500VelocityFOM",
     entry_type = XML_ENTRY_INT,
     ok_boolean = TRUE,
@@ -1716,13 +1856,13 @@ xml_entries = {
     graph_min_val = 0,
     graph_max_val = 10,
     comment = "",
-    include_in_catalog_stats = TRUE,
+    include_in_catalog_stats = FALSE,
     catalog_omit_if_zero = TRUE,
     catalog_interpret_as_time = FALSE
   }
   ,
   {
-    xml_outer_tag = "HcrCmigitsData",
+    xml_outer_tag = "HcrIns1Data",
     xml_inner_tag = "Cmigits3500HeadingFOM",
     entry_type = XML_ENTRY_INT,
     ok_boolean = TRUE,
@@ -1736,13 +1876,13 @@ xml_entries = {
     graph_min_val = 0,
     graph_max_val = 9,
     comment = "",
-    include_in_catalog_stats = TRUE,
+    include_in_catalog_stats = FALSE,
     catalog_omit_if_zero = TRUE,
     catalog_interpret_as_time = FALSE
   }
   ,
   {
-    xml_outer_tag = "HcrCmigitsData",
+    xml_outer_tag = "HcrIns1Data",
     xml_inner_tag = "Cmigits3500TimeFOM",
     entry_type = XML_ENTRY_INT,
     ok_boolean = TRUE,
@@ -1756,13 +1896,13 @@ xml_entries = {
     graph_min_val = 0,
     graph_max_val = 10,
     comment = "",
-    include_in_catalog_stats = TRUE,
+    include_in_catalog_stats = FALSE,
     catalog_omit_if_zero = TRUE,
     catalog_interpret_as_time = FALSE
   }
   ,
   {
-    xml_outer_tag = "HcrCmigitsData",
+    xml_outer_tag = "HcrIns1Data",
     xml_inner_tag = "Cmigits3500HPosError",
     entry_type = XML_ENTRY_DOUBLE,
     ok_boolean = TRUE,
@@ -1776,13 +1916,13 @@ xml_entries = {
     graph_min_val = -2000,
     graph_max_val = 2000,
     comment = "",
-    include_in_catalog_stats = TRUE,
+    include_in_catalog_stats = FALSE,
     catalog_omit_if_zero = TRUE,
     catalog_interpret_as_time = FALSE
   }
   ,
   {
-    xml_outer_tag = "HcrCmigitsData",
+    xml_outer_tag = "HcrIns1Data",
     xml_inner_tag = "Cmigits3500VPosError",
     entry_type = XML_ENTRY_DOUBLE,
     ok_boolean = TRUE,
@@ -1796,13 +1936,13 @@ xml_entries = {
     graph_min_val = -500,
     graph_max_val = 500,
     comment = "",
-    include_in_catalog_stats = TRUE,
+    include_in_catalog_stats = FALSE,
     catalog_omit_if_zero = TRUE,
     catalog_interpret_as_time = FALSE
   }
   ,
   {
-    xml_outer_tag = "HcrCmigitsData",
+    xml_outer_tag = "HcrIns1Data",
     xml_inner_tag = "Cmigits3500VelocityError",
     entry_type = XML_ENTRY_DOUBLE,
     ok_boolean = TRUE,
@@ -1816,13 +1956,13 @@ xml_entries = {
     graph_min_val = 0,
     graph_max_val = 100,
     comment = "",
-    include_in_catalog_stats = TRUE,
+    include_in_catalog_stats = FALSE,
     catalog_omit_if_zero = TRUE,
     catalog_interpret_as_time = FALSE
   }
   ,
   {
-    xml_outer_tag = "HcrCmigitsData",
+    xml_outer_tag = "HcrIns1Data",
     xml_inner_tag = "Cmigits3501Time",
     entry_type = XML_ENTRY_DOUBLE,
     ok_boolean = TRUE,
@@ -1842,7 +1982,7 @@ xml_entries = {
   }
   ,
   {
-    xml_outer_tag = "HcrCmigitsData",
+    xml_outer_tag = "HcrIns1Data",
     xml_inner_tag = "Cmigits3501Latitude",
     entry_type = XML_ENTRY_DOUBLE,
     ok_boolean = TRUE,
@@ -1856,13 +1996,13 @@ xml_entries = {
     graph_min_val = 20,
     graph_max_val = 50,
     comment = "",
-    include_in_catalog_stats = TRUE,
+    include_in_catalog_stats = FALSE,
     catalog_omit_if_zero = TRUE,
     catalog_interpret_as_time = FALSE
   }
   ,
   {
-    xml_outer_tag = "HcrCmigitsData",
+    xml_outer_tag = "HcrIns1Data",
     xml_inner_tag = "Cmigits3501Longitude",
     entry_type = XML_ENTRY_DOUBLE,
     ok_boolean = TRUE,
@@ -1882,7 +2022,7 @@ xml_entries = {
   }
   ,
   {
-    xml_outer_tag = "HcrCmigitsData",
+    xml_outer_tag = "HcrIns1Data",
     xml_inner_tag = "Cmigits3501Altitude",
     entry_type = XML_ENTRY_DOUBLE,
     ok_boolean = TRUE,
@@ -1902,7 +2042,7 @@ xml_entries = {
   }
   ,
   {
-    xml_outer_tag = "HcrCmigitsData",
+    xml_outer_tag = "HcrIns1Data",
     xml_inner_tag = "Cmigits3512Time",
     entry_type = XML_ENTRY_DOUBLE,
     ok_boolean = TRUE,
@@ -1922,7 +2062,7 @@ xml_entries = {
   }
   ,
   {
-    xml_outer_tag = "HcrCmigitsData",
+    xml_outer_tag = "HcrIns1Data",
     xml_inner_tag = "Cmigits3512Pitch",
     entry_type = XML_ENTRY_DOUBLE,
     ok_boolean = TRUE,
@@ -1936,13 +2076,13 @@ xml_entries = {
     graph_min_val = -5,
     graph_max_val = 5,
     comment = "",
-    include_in_catalog_stats = TRUE,
+    include_in_catalog_stats = FALSE,
     catalog_omit_if_zero = TRUE,
     catalog_interpret_as_time = FALSE
   }
   ,
   {
-    xml_outer_tag = "HcrCmigitsData",
+    xml_outer_tag = "HcrIns1Data",
     xml_inner_tag = "Cmigits3512Roll",
     entry_type = XML_ENTRY_DOUBLE,
     ok_boolean = TRUE,
@@ -1962,7 +2102,7 @@ xml_entries = {
   }
   ,
   {
-    xml_outer_tag = "HcrCmigitsData",
+    xml_outer_tag = "HcrIns1Data",
     xml_inner_tag = "Cmigits3512Heading",
     entry_type = XML_ENTRY_DOUBLE,
     ok_boolean = TRUE,
@@ -1982,7 +2122,7 @@ xml_entries = {
   }
   ,
   {
-    xml_outer_tag = "HcrCmigitsData",
+    xml_outer_tag = "HcrIns1Data",
     xml_inner_tag = "Cmigits3512VelNorth",
     entry_type = XML_ENTRY_DOUBLE,
     ok_boolean = TRUE,
@@ -1996,13 +2136,13 @@ xml_entries = {
     graph_min_val = -300,
     graph_max_val = 300,
     comment = "",
-    include_in_catalog_stats = TRUE,
+    include_in_catalog_stats = FALSE,
     catalog_omit_if_zero = TRUE,
     catalog_interpret_as_time = FALSE
   }
   ,
   {
-    xml_outer_tag = "HcrCmigitsData",
+    xml_outer_tag = "HcrIns1Data",
     xml_inner_tag = "Cmigits3512VelEast",
     entry_type = XML_ENTRY_DOUBLE,
     ok_boolean = TRUE,
@@ -2016,13 +2156,13 @@ xml_entries = {
     graph_min_val = -300,
     graph_max_val = 300,
     comment = "",
-    include_in_catalog_stats = TRUE,
+    include_in_catalog_stats = FALSE,
     catalog_omit_if_zero = TRUE,
     catalog_interpret_as_time = FALSE
   }
   ,
   {
-    xml_outer_tag = "HcrCmigitsData",
+    xml_outer_tag = "HcrIns1Data",
     xml_inner_tag = "Cmigits3512VelUp",
     entry_type = XML_ENTRY_DOUBLE,
     ok_boolean = TRUE,
@@ -2036,7 +2176,7 @@ xml_entries = {
     graph_min_val = -30,
     graph_max_val = 30,
     comment = "",
-    include_in_catalog_stats = TRUE,
+    include_in_catalog_stats = FALSE,
     catalog_omit_if_zero = TRUE,
     catalog_interpret_as_time = FALSE
   }
