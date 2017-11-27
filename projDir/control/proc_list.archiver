@@ -78,7 +78,6 @@ Dsr2Radx         moments.10hz   start_Dsr2Radx.moments.10hz           snuff_inst
 # Aircraft georef data
 #
 AcGeoref2Spdb    iwg1           start_AcGeoref2Spdb.iwg1             snuff_inst    
-AcGeoref2Spdb    fog            start_AcGeoref2Spdb.fog              snuff_inst    
 AcGeoref2Spdb    moments_10hz   start_AcGeoref2Spdb.moments_10hz     snuff_inst
 AcGeorefCompare  ops            start_AcGeorefCompare.ops            snuff_inst
 ###############################################################################
