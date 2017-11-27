@@ -1,24 +1,35 @@
-# HCR_configuration
+# HCR Run-Time configuration
 
-Configuration files and scripts for HCR real-time operations.
+HCR is the NCAR/EOL HIAPER Cloud Radar. It operates in the W-band.
 
-### Setting up the LINUX environment
+See [EOL instruments](https://www.eol.ucar.edu/ground-based-airborne-remote-sensing-platforms)
 
-  See [README_LINUX_SETUP.md](./docs/README_LINUX_SETUP.md)
+The HCR run-time system includes 2 computers:
 
-### Checking out the HCR repositories
+* The instrument computer (rds)
+* The archiver computer (archiver)
 
-  See [README_HCR_CHECKOUT.md](./docs/README_HCR_CHECKOUT.md)
+The following document shows the data flow on/between these computers:
 
-### Installing the HCR configuration
+  [HCR_Block_Diagram.pdf](./docs/HCR_Block_Diagram.pdf)
 
-  See [README_INSTALL_HCR_CONFIGS.md](./docs/README_INSTALL_HCR_CONFIGS.md)
+The instrument setup resides in GitHub at:
 
-### Building LROSE
+  [GitHub/NCAR/HCR_instrument](https://github.com/NCAR/HCR_instrument)
 
-  See [README_LROSE_BUILD.md](./docs/README_LROSE_BUILD.md)
+The operations manual for starting up and running HSRL is at:
 
-### Running HCR
+  [HCR_Ops_Manual.pdf](./docs/HCR_Ops_Manual.pdf)
 
-  See [README_RUN_HCR.md](./docs/README_RUN_HCR.md)
+The manual for running the HawkEye display is at:
+
+  [HCR_HawkEye_Manual.pdf](./docs/HCR_HawkEye_Manual.pdf)
+
+To set up and configure the archiver computer, see:
+
+  [ConfigureHost.md](./docs/ConfigureHost.md)
+
+This page is published at:
+
+  [https://ncar.github.io/HCR_configuration](https://ncar.github.io/HCR_configuration)
 
