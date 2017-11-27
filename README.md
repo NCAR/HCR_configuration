@@ -17,7 +17,7 @@ The instrument setup resides in GitHub at:
 
   [GitHub/NCAR/HCR_instrument](https://github.com/NCAR/HCR_instrument)
 
-The operations manual for starting up and running HSRL is at:
+The operations manual for starting up and running HCR is at:
 
   [HCR_Ops_Manual.pdf](./docs/HCR_Ops_Manual.pdf)
 
