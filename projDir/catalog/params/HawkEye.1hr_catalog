@@ -315,7 +315,7 @@ color_scale_dir = "$(PROJ_DIR)/display/color_scales";
 
 fields = {
   {
-    label = "1hr_DBZ",
+    label = "1Hr_DBZ",
     raw_name = "DBZ",
     filtered_name = "",
     units = "dBZ",
@@ -324,7 +324,7 @@ fields = {
   }
   ,
   {
-    label = "1hr_VEL",
+    label = "1Hr_VEL",
     raw_name = "VEL",
     filtered_name = "",
     units = "m/s",
@@ -333,7 +333,7 @@ fields = {
   }
   ,
   {
-    label = "1hr_WIDTH",
+    label = "1Hr_WIDTH",
     raw_name = "WIDTH",
     filtered_name = "",
     units = "m/s",
@@ -342,7 +342,7 @@ fields = {
   }
   ,
   {
-    label = "1hr_LDR",
+    label = "1Hr_LDR",
     raw_name = "LDR",
     filtered_name = "",
     units = "dB",
