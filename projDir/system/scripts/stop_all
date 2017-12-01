@@ -15,8 +15,8 @@ stop_hcrdrx
 
 # on rds, stop cmigitsDaemon, MotionControlDaemon, 
 # HcrPmc730Daemon, and HcrMonitor
-stop_cmigitsDaemon.ops
-stop_cmigitsDaemon.secondary
+stop_cmigitsDaemon.ins1
+stop_cmigitsDaemon.ins2
 stop_MotionControlDaemon
 stop_HcrPmc730Daemon
 stop_HcrMonitor
