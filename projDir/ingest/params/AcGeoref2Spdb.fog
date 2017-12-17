@@ -101,7 +101,7 @@ input_mode = IWRF_FMQ;
 // Type: string
 //
 
-input_fmq_name = "$(DATA_DIR)/fmq/ts/wband/shmem_10000";
+input_fmq_name = "/tmp/fmq/ts/wband/shmem_10000";
 
 ///////////// seek_to_end_of_input ////////////////////
 //

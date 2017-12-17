@@ -70,5 +70,5 @@ no_threads = FALSE;
 // Type: string
 //
 
-fmq_path = "$(DATA_DIR)/fmq/ts/wband/shmem_10000";
+fmq_path = "/tmp/fmq/ts/wband/shmem_10000";
 

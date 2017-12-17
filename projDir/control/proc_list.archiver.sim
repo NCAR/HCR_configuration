@@ -1,0 +1,96 @@
+###############################################################################
+# SYSTEM processes
+#
+DsServerMgr   primary    start_DsServerMgr         snuff_inst        
+DsFmqServer   manager    start_DsFmqServer         snuff_inst        
+Janitor       logs       start_Janitor.logs        kill_Janitor      
+Scout         primary    start_Scout               kill_Scout        
+DataMapper    primary    start_DataMapper          kill_DataMapper   
+#
+###############################################################################
+# HCR transmitter daemon
+#
+#hcr_xmitd     ops        start_hcr_xmitd.ops       snuff_inst        
+#
+###############################################################################
+# Terrain height server
+#
+#TerrainHtServer  ops   start_TerrainHtServer.ops   snuff_inst        
+#
+###############################################################################
+# daemon to monitor the FireFly-IIA GPS-disciplined 10 MHz oscillator / 1 PPS
+# source
+#
+#fireflyd      ops        start_fireflyd.ops        snuff_inst        
+#
+###############################################################################
+# daemon to monitor the Spectracom SecureSync GPS-disciplined clock /
+# 10 MHz oscillator / 1 PPS source
+#
+#SpectracomDaemon      ops        start_SpectracomDaemon.ops        snuff_inst        
+#
+###############################################################################
+# TIME SERIES FROM WBAND
+#TsTcp2Fmq     wband         start_TsTcp2Fmq.wband  snuff_inst    
+#
+###############################################################################
+# Max power for safety monitor
+#
+TsPrint  power_server  start_TsPrint.power_server   snuff_inst        
+###############################################################################
+# Displays
+#
+RadMon  wband           start_RadMon.wband           snuff_inst        
+TsPrint max_power       start_TsPrint.max_power      snuff_inst        
+#
+###############################################################################
+# SIMULATE MODE
+#
+# (a) Comment out TsTcp2Fmq above
+# (b) Uncomment TsFile2Fmq below
+#
+# TsFile2Fmq reads data from files, and simulates the data stream
+# from the drx
+#
+TsFile2Fmq     sim        start_TsFile2Fmq.sim   snuff_inst    
+#
+###############################################################################
+# Time series data for tcpscope
+# Only needed for testing, not needed for ops
+#
+#TsFmq2Tcp     wband      start_TsFmq2Tcp.wband     snuff_inst    
+#
+###############################################################################
+# Saving time series data
+#
+#TsSmartSave   wband      start_TsSmartSave.wband   snuff_inst    
+#
+###############################################################################
+# Moments
+#
+Iq2Dsr           100hz          start_Iq2Dsr.100hz                    snuff_inst    
+RadMon           log.100hz      start_RadMon.log.100hz                snuff_inst    
+RadxDwellCombine realtime.10hz  start_RadxDwellCombine.realtime.10hz  snuff_inst    
+Dsr2Radx         moments.100hz  start_Dsr2Radx.moments.100hz          snuff_inst    
+Dsr2Radx         moments.10hz   start_Dsr2Radx.moments.10hz           snuff_inst    
+#
+###############################################################################
+# Aircraft georef data
+#
+#AcGeoref2Spdb    iwg1           start_AcGeoref2Spdb.iwg1             snuff_inst    
+#AcGeoref2Spdb    moments_10hz   start_AcGeoref2Spdb.moments_10hz     snuff_inst
+#AcGeorefCompare  ops            start_AcGeorefCompare.ops            snuff_inst
+###############################################################################
+# Images for catalog
+#
+#HawkEye      catalog      start_HawkEye.catalog         snuff_inst    
+#HawkEye      1hr_catalog  start_HawkEye.1hr_catalog     snuff_inst    
+#LdataWatcher catalog      start_LdataWatcher.catalog    snuff_inst    
+#
+###############################################################################
+# Monitoring - for nagios and catalog
+#
+#TsStatusMonitor wband    start_TsStatusMonitor.wband    snuff_inst
+#LdataWatcher  monitor    start_LdataWatcher.monitor     snuff_inst    
+#
+###############################################################################

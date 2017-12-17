@@ -64,7 +64,7 @@ instance = "wband";
 // Type: string
 //
 
-fmq_name = "$(DATA_DIR)/fmq/ts/wband/shmem_10000";
+fmq_name = "/tmp/fmq/ts/wband/shmem_10000";
 
 ///////////// data_valid_interval_secs ////////////////
 //

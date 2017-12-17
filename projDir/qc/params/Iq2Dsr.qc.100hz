@@ -116,7 +116,7 @@ mode = FMQ;
 // Type: string
 //
 
-input_fmq = "$(DATA_DIR)/fmq/ts/wband/shmem_10000";
+input_fmq = "/tmp/fmq/ts/wband/shmem_10000";
 
 ///////////// position_fmq_at_start ///////////////////
 //
@@ -3171,7 +3171,7 @@ phidp_sdev_interest_weight = 1;
 // Type: string
 //
 
-output_fmq_url = "$(DATA_DIR)/fmq/qc_moments/100hz/shmem_30100";
+output_fmq_url = "/tmp/fmq/qc_moments/100hz/shmem_30100";
 
 ///////////// output_fmq_size /////////////////////////
 //

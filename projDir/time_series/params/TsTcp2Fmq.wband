@@ -99,7 +99,7 @@ ts_tcp_server_port = 12000;
 // Type: string
 //
 
-output_fmq_path = "$(DATA_DIR)/fmq/ts/wband/shmem_10000";
+output_fmq_path = "/tmp/fmq/ts/wband/shmem_10000";
 
 ///////////// output_fmq_size /////////////////////////
 //

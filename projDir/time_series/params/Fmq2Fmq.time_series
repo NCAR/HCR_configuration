@@ -54,7 +54,7 @@ instance = "time_series";
 // Type: string
 //
 
-input_url = "$(DATA_DIR)/fmq/ts/wband/shmem_10000";
+input_url = "/tmp/fmq/ts/wband/shmem_10000";
 
 ///////////// msecs_sleep_blocking ////////////////////
 //

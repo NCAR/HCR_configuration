@@ -245,7 +245,7 @@ gematronik_realtime_wait_secs = 5;
 // Type: string
 //
 
-input_fmq_url = "$(DATA_DIR)/fmq/moments/100hz/shmem_20100";
+input_fmq_url = "/tmp/fmq/moments/100hz/shmem_20100";
 
 ///////////// seek_to_end_of_input_fmq ////////////////
 //
@@ -1062,7 +1062,7 @@ write_latest_data_info = FALSE;
 // Type: string
 //
 
-output_fmq_url = "$(DATA_DIR)/fmq/moments/10hz/shmem_20020";
+output_fmq_url = "/tmp/fmq/moments/10hz/shmem_20020";
 
 ///////////// output_fmq_compress /////////////////////
 //

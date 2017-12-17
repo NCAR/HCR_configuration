@@ -70,7 +70,7 @@ register_with_procmap = FALSE;
 // Type: string
 //
 
-input_fmq_path = "$(DATA_DIR)/fmq/ts/wband/shmem_10000";
+input_fmq_path = "/tmp/fmq/ts/wband/shmem_10000";
 
 ///////////// n_samples ///////////////////////////////
 //

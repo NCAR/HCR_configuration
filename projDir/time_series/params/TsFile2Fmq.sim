@@ -125,7 +125,7 @@ max_realtime_valid_age = 360;
 // Type: string
 //
 
-output_fmq_path = "$(DATA_DIR)/fmq/ts/wband/shmem_10000";
+output_fmq_path = "/tmp/fmq/ts/wband/shmem_10000";
 
 ///////////// output_fmq_size /////////////////////////
 //
@@ -134,7 +134,7 @@ output_fmq_path = "$(DATA_DIR)/fmq/ts/wband/shmem_10000";
 // Type: int
 //
 
-output_fmq_size = 200000000;
+output_fmq_size = 1000000000;
 
 ///////////// output_fmq_nslots ///////////////////////
 //
@@ -157,7 +157,7 @@ output_fmq_nslots = 100;
 // Type: boolean
 //
 
-output_fmq_blocking = TRUE;
+output_fmq_blocking = FALSE;
 
 ///////////// write_latest_data_info //////////////////
 //
