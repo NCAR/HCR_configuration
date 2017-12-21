@@ -336,12 +336,16 @@ def processDir(sourceDir, targetDir, level):
     cmd += fileListStr
     cmd += " "
     cmd += targetDir
+    cmd += "; sync;"
     # for now, run in foreground
     # cmd += " &"
 
     # run the command
     
     runCommand(cmd)
+
+    print >>sys.stderr, "============ DONE ============"
+    
 
 ########################################################################
 # compile file list archive
