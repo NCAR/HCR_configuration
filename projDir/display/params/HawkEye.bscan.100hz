@@ -1,5 +1,5 @@
 /**********************************************************************
- * TDRP params for HawkEye
+ * TDRP params for ./HawkEye
  **********************************************************************/
 
 //======================================================================
@@ -102,19 +102,19 @@ input_mode = IWRF_FMQ_INPUT;
 
 input_fmq_url = "fmqp:://localhost::fmq/moments/100hz/shmem_20100";
 
-///////////// seek_to_end_of_fmq //////////////////////
+///////////// seek_to_start_of_fmq ////////////////////
 //
-// Option to seek to the end of the input FMQ.
+// Option to seek to the start of the input FMQ.
 //
-// If TRUE, the program will seek to the end of the fmq and only read in 
-//   new data. If FALSE, it will start reading from the beginning of the 
-//   FMQ.
+// If TRUE, the program will seek to the start of the fmq and read the 
+//   entire contents at startup. If FALSE, it will read only new data as 
+//   it arrives.
 //
 //
 // Type: boolean
 //
 
-seek_to_end_of_fmq = TRUE;
+seek_to_start_of_fmq = FALSE;
 
 ///////////// input_tcp_host //////////////////////////
 //
@@ -174,7 +174,7 @@ begin_in_archive_mode = FALSE;
 //
 // Start time for archive mode.
 //
-// If this is set to 1 Jan 1970, the app will initialize at 'now'.
+// In archive mode, data retrieval starts at this time.
 //
 //
 // Type: string
@@ -182,17 +182,29 @@ begin_in_archive_mode = FALSE;
 
 archive_start_time = "2014 12 01 18 40 00";
 
-///////////// archive_end_time ////////////////////////
+///////////// archive_scan_interval_secs //////////////
 //
-// End time for archive mode.
+// Time between scans in archive mode (secs).
 //
-// Generally this is applicable for image generation.
+// Only applies to POLAR (PPI/RHI) mode, not BSCAN mode.
 //
 //
-// Type: string
+// Type: int
 //
 
-archive_end_time = "2014 12 01 19 40 00";
+archive_scan_interval_secs = 300;
+
+///////////// archive_n_scans /////////////////////////
+//
+// Number of scans in archive mode.
+//
+// Only applies to POLAR (PPI/RHI) mode, not BSCAN mode.
+//
+//
+// Type: int
+//
+
+archive_n_scans = 12;
 
 ///////////// archive_data_url ////////////////////////
 //
@@ -205,6 +217,19 @@ archive_end_time = "2014 12 01 19 40 00";
 //
 
 archive_data_url = "$(DATA_DIR)/cfradial/moments/100hz";
+
+///////////// archive_search_margin_secs //////////////
+//
+// Time margin for search in archive mode (secs).
+//
+// We search for data within this margin, on either side of the required 
+//   time.
+//
+//
+// Type: int
+//
+
+archive_search_margin_secs = 600;
 
 //======================================================================
 //
@@ -764,6 +789,53 @@ ppi_display_type = PPI_FULL;
 
 ppi_aspect_ratio = 1;
 
+///////////// ppi_grids_on_at_startup /////////////////
+//
+// Set PPI grids overlay on at startup.
+//
+//
+// Type: boolean
+//
+
+ppi_grids_on_at_startup = FALSE;
+
+///////////// ppi_range_rings_on_at_startup ///////////
+//
+// Set PPI range rings overlay on at startup.
+//
+//
+// Type: boolean
+//
+
+ppi_range_rings_on_at_startup = TRUE;
+
+///////////// ppi_azimuth_lines_on_at_startup /////////
+//
+// Set PPI azimuth lines overlay on at startup.
+//
+//
+// Type: boolean
+//
+
+ppi_azimuth_lines_on_at_startup = TRUE;
+
+///////////// ppi_main_legend_pos /////////////////////
+//
+// Position of main legend in the PPI plot window.
+//
+// This include time, field name and elevation angle.
+//
+//
+// Type: enum
+// Options:
+//     LEGEND_TOP_LEFT
+//     LEGEND_TOP_RIGHT
+//     LEGEND_BOTTOM_LEFT
+//     LEGEND_BOTTOM_RIGHT
+//
+
+ppi_main_legend_pos = LEGEND_TOP_LEFT;
+
 //======================================================================
 //
 // RHI MODE DISPLAY.
@@ -810,6 +882,94 @@ rhi_window_start_x = 1000;
 
 rhi_window_start_y = 0;
 
+///////////// rhi_top_margin //////////////////////////
+//
+// Height of top margin in RHI mode (pixels).
+//
+// Titles go in the top margin.
+//
+//
+// Type: int
+//
+
+rhi_top_margin = 20;
+
+///////////// rhi_bottom_margin ///////////////////////
+//
+// Height of bottom margin in RHI mode (pixels).
+//
+// Time scale goes in the bottom margin.
+//
+//
+// Type: int
+//
+
+rhi_bottom_margin = 20;
+
+///////////// rhi_left_margin /////////////////////////
+//
+// Width of left margin in RHI mode (pixels).
+//
+// Height scale goes in the left margin.
+//
+//
+// Type: int
+//
+
+rhi_left_margin = 20;
+
+///////////// rhi_right_margin ////////////////////////
+//
+// Width of right margin in RHI mode (pixels).
+//
+// Height scale goes in the right margin.
+//
+//
+// Type: int
+//
+
+rhi_right_margin = 20;
+
+///////////// rhi_label_font_size /////////////////////
+//
+// Font size for labels on range rings (pixels).
+//
+//
+// Type: int
+//
+
+rhi_label_font_size = 8;
+
+///////////// rhi_axis_tick_len ///////////////////////
+//
+// Length of ticks on axes (pixels).
+//
+//
+// Type: int
+//
+
+rhi_axis_tick_len = 7;
+
+///////////// rhi_n_ticks_ideal ///////////////////////
+//
+// Ideal number of ticks on axes.
+//
+//
+// Type: int
+//
+
+rhi_n_ticks_ideal = 7;
+
+///////////// rhi_text_margin /////////////////////////
+//
+// Margin around some text (pixels).
+//
+//
+// Type: int
+//
+
+rhi_text_margin = 5;
+
 ///////////// rhi_display_180_degrees /////////////////
 //
 // Flag indicating to display full 180 degrees in RHI window. If set to 
@@ -823,13 +983,80 @@ rhi_display_180_degrees = FALSE;
 
 ///////////// rhi_aspect_ratio ////////////////////////
 //
-// Aspect ratio (width/height) of PPI window.
+// Aspect ratio (width/height) of RHI window.
 //
 //
 // Type: double
 //
 
 rhi_aspect_ratio = 1;
+
+///////////// rhi_max_height_km ///////////////////////
+//
+// Max height of data in RHI window (km).
+//
+//
+// Type: double
+//
+
+rhi_max_height_km = 25;
+
+///////////// rhi_color_scale_width ///////////////////
+//
+// Width of color scale for RHI window (pixels).
+//
+//
+// Type: int
+//
+
+rhi_color_scale_width = 40;
+
+///////////// rhi_grids_on_at_startup /////////////////
+//
+// Set RHI grids overlay on at startup.
+//
+//
+// Type: boolean
+//
+
+rhi_grids_on_at_startup = TRUE;
+
+///////////// rhi_range_rings_on_at_startup ///////////
+//
+// Set RHI range rings overlay on at startup.
+//
+//
+// Type: boolean
+//
+
+rhi_range_rings_on_at_startup = FALSE;
+
+///////////// rhi_elevation_lines_on_at_startup ///////
+//
+// Set RHI elevation lines overlay on at startup.
+//
+//
+// Type: boolean
+//
+
+rhi_elevation_lines_on_at_startup = FALSE;
+
+///////////// rhi_main_legend_pos /////////////////////
+//
+// Position of main legend in the RHI plot window.
+//
+// This include time, field name and elevation angle.
+//
+//
+// Type: enum
+// Options:
+//     LEGEND_TOP_LEFT
+//     LEGEND_TOP_RIGHT
+//     LEGEND_BOTTOM_LEFT
+//     LEGEND_BOTTOM_RIGHT
+//
+
+rhi_main_legend_pos = LEGEND_TOP_LEFT;
 
 //======================================================================
 //
@@ -848,7 +1075,7 @@ rhi_aspect_ratio = 1;
 // Type: double
 //
 
-bscan_time_span_secs = 120;
+bscan_time_span_secs = 15;
 
 ///////////// bscan_truncate_start_time ///////////////
 //
@@ -996,6 +1223,16 @@ bscan_max_altitude_km = 10;
 
 bscan_altitude_in_feet = TRUE;
 
+///////////// bscan_range_in_feet /////////////////////
+//
+// Use feet for range units?.
+//
+//
+// Type: boolean
+//
+
+bscan_range_in_feet = FALSE;
+
 ///////////// bscan_range_axis_mode ///////////////////
 //
 // Options for plotting range in the vertical scale.
@@ -1068,6 +1305,20 @@ bscan_min_range_to_surface_km = 0.5;
 //
 
 bscan_surface_range_margin_km = 0.2;
+
+///////////// bscan_max_field_val_below_surface ///////
+//
+// Maximum value of the surface field, below the measured surface.
+//
+// After finding the range to the surface, we inspect the surface_field 
+//   values below the surface. If we find values that exceed this 
+//   parameter, we conclude that the surface cannot be reliably found.
+//
+//
+// Type: double
+//
+
+bscan_max_field_val_below_surface = 5;
 
 //======================================================================
 //
@@ -1607,6 +1858,62 @@ images_schedule_interval_secs = 60;
 //
 
 images_schedule_delay_secs = 10;
+
+///////////// images_archive_start_time ///////////////
+//
+// Start time for image generation in archive mode.
+//
+// Image generation starts with a seach at this time, and the proceeds 
+//   at increments of images_schedule_interval_secs.
+//
+//
+// Type: string
+//
+
+images_archive_start_time = "1970 01 01 00 00 00";
+
+///////////// images_archive_end_time /////////////////
+//
+// End time for image generation in archive mode.
+//
+// Image generation is terminated when the search time exceeds this end 
+//   time.
+//
+//
+// Type: string
+//
+
+images_archive_end_time = "1970 01 01 00 00 00";
+
+///////////// images_set_sweep_index_list /////////////
+//
+// Option to specify the sweep indexes for the image generation.
+//
+// If TRUE, only the specified sweeps will be processed.
+//
+//
+// Type: boolean
+//
+
+images_set_sweep_index_list = FALSE;
+
+///////////// images_sweep_index_list /////////////////
+//
+// List of valid sweep indexes for image generation.
+//
+// See 'images_set_sweep_index_list'. Images will only be generated for 
+//   the specified sweep indexes.
+//
+//
+// Type: int
+// 1D array - variable length.
+//
+
+images_sweep_index_list = {
+ 0,
+ 1,
+ 2
+};
 
 //======================================================================
 //

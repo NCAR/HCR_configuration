@@ -1,5 +1,7 @@
 #! /bin/csh -f
 
+source ~/projDir/system/params/project_info
+
 cd $PROJ_DIR/moments/params
 
 running "Iq2Dsr -params Iq2Dsr.100hz"
