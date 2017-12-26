@@ -210,6 +210,7 @@ if ($?prompt) then
 
 #  alias hsrl-archiver 'ssh -a -XY -R 2401:localhost:2401 eol-lidar@192.168.84.61'
 #  alias hsrl 'ssh -a -XY -R 2401:localhost:2401 dhsrl@192.168.84.120'
+  alias ahsrl 'ssh -a -XY hsrl@hsrl-archiver'
   alias hsrl-archiver 'ssh -a -XY hsrl@hsrl-archiver'
   alias hsrl 'ssh -a -XY hsrl@hsrl'
   
