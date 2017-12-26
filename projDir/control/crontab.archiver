@@ -13,7 +13,7 @@
 #
 # Delete history file - creating problems on scientific linux 6
 #
-*/1 * * * *  csh -c "remove_history"      1> /dev/null 2> /dev/null
+#*/1 * * * *  csh -c "remove_history"      1> /dev/null 2> /dev/null
 #####################################################################
 # ARCHIVE DATA TO USB
 # Restart every 5 mins

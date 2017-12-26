@@ -1,0 +1,19 @@
+127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
+::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
+
+#
+# Local DNS for the 192.168.2.x network is now provided via the HCR router
+#
+# 192.168.2.10	spider.hcr.net spider
+# 192.168.2.12	timeserver.hcr.net timeserver
+# 192.168.2.14	digi.hcr.net digi
+# 192.168.2.20	rds.hcr.net rds hcrdrx
+# 192.168.2.30	archiver.hcr.net archiver
+
+# SOCRATES: fixed IP addresses for the HSRL machines which are tied into the
+# HCR internal network
+192.168.2.200	hsrlarchiver hsrl-archiver
+192.168.2.201	hsrlinst hsrldrx hsrl
+192.168.2.204	hsrlspider hsrl-spider
+
+192.168.84.1	acserver
