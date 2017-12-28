@@ -43,7 +43,7 @@ altitude            1609
 
 # merge queue size
 
-merge_queue_size        20000   # size of queue which acts as buffer
+merge_queue_size        100000   # size of queue which acts as buffer
                                 # for the merge
 
 # IWRF data export
