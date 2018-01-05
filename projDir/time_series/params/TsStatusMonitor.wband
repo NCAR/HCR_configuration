@@ -1363,6 +1363,26 @@ xml_entries = {
   ,
   {
     xml_outer_tag = "HcrReceiverStatus",
+    xml_inner_tag = "Locked125MHzPLO",
+    entry_type = XML_ENTRY_BOOLEAN,
+    ok_boolean = TRUE,
+    boolean_failure_is_critical = TRUE,
+    ok_value_lower_limit = 0,
+    ok_value_upper_limit = 10,
+    impaired_value_lower_limit = 11,
+    impaired_value_upper_limit = 20,
+    label = "",
+    units = "",
+    graph_min_val = 0,
+    graph_max_val = 1,
+    comment = "",
+    include_in_catalog_stats = TRUE,
+    catalog_omit_if_zero = FALSE,
+    catalog_interpret_as_time = FALSE
+  }
+  ,
+  {
+    xml_outer_tag = "HcrReceiverStatus",
     xml_inner_tag = "ModPulseDisabled",
     entry_type = XML_ENTRY_BOOLEAN,
     ok_boolean = FALSE,
