@@ -1,0 +1,14 @@
+#! /bin/csh
+#
+# Use this script via ssh to get a remote HawkEye display on another aircraft
+# machine, e.g., the mission coordinator can get a display using:
+#
+#   $ ssh -Yf hcr@192.168.84.175 start_HawkEye_remote_display
+#
+# Note that 192.168.84.175 is the IP address of the HCR router, which forwards
+# SSH port 22 connections through to the HCR archiver.
+#
+cd $PROJ_DIR/display/params
+
+HawkEye -params HawkEye.bscan.10hz >& /dev/null
+
