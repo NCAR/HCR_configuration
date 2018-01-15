@@ -20,4 +20,9 @@
 #
 */5 * * * *  csh -c "run_archive" 1> /dev/null 2> /dev/null
 */5 * * * *  csh -c "run_rds_archive" 1> /dev/null 2> /dev/null
+#####################################################################
+# RSYNC CATALOG IMAGE FILES TO AIRCRAFT SERVER WEB DIRECTORIES
+# Restart every 1 min
+#
+*/1 * * * *  csh -c "rsyncImagesToAcserver.sh" 1> /dev/null 2> /dev/null
 #
