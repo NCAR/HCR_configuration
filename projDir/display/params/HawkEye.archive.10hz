@@ -102,20 +102,6 @@ input_mode = IWRF_FMQ_INPUT;
 
 input_fmq_url = "fmqp:://localhost::fmq/moments/10hz/shmem_20010";
 
-///////////// seek_to_end_of_fmq //////////////////////
-//
-// Option to seek to the end of the input FMQ.
-//
-// If TRUE, the program will seek to the end of the fmq and only read in 
-//   new data. If FALSE, it will start reading from the beginning of the 
-//   FMQ.
-//
-//
-// Type: boolean
-//
-
-seek_to_end_of_fmq = TRUE;
-
 ///////////// input_tcp_host //////////////////////////
 //
 // IWRF_TCP_INPUT: name of host running IWRF moments server.
@@ -180,19 +166,8 @@ begin_in_archive_mode = TRUE;
 // Type: string
 //
 
-archive_start_time = "2015 02 02 18 00 00";
-
-///////////// archive_end_time ////////////////////////
-//
-// End time for archive mode.
-//
-// Generally this is applicable for image generation.
-//
-//
-// Type: string
-//
-
-archive_end_time = "2015 02 02 18 15 00";
+archive_start_time = "2018 01 16 00 24 00";
+//archive_start_time = "2018 01 22 22 20 00";
 
 ///////////// archive_data_url ////////////////////////
 //
@@ -204,7 +179,7 @@ archive_end_time = "2015 02 02 18 15 00";
 // Type: string
 //
 
-archive_data_url = "$(DATA_DIR)/cfradial/moments/10hz";
+archive_data_url = "$(DATA_DIR)/hcr_synced/cfradial/moments/10hz";
 
 //======================================================================
 //
@@ -866,7 +841,7 @@ rhi_aspect_ratio = 1;
 // Type: double
 //
 
-bscan_time_span_secs = 120;
+bscan_time_span_secs = 300;
 
 ///////////// bscan_truncate_start_time ///////////////
 //

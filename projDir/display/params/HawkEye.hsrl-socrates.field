@@ -605,7 +605,7 @@ site_name = "GV";
 // Type: int
 //
 
-main_window_width = 1250;
+main_window_width = 1400;
 
 ///////////// main_window_height //////////////////////
 //
@@ -615,7 +615,7 @@ main_window_width = 1250;
 // Type: int
 //
 
-main_window_height = 650;
+main_window_height = 700;
 
 ///////////// main_window_start_x /////////////////////
 //
@@ -1148,7 +1148,7 @@ bscan_max_range_km = 15;
 // Type: double
 //
 
-bscan_min_altitude_km = 0;
+bscan_min_altitude_km = -1;
 
 ///////////// bscan_max_altitude_km ///////////////////
 //
@@ -1158,7 +1158,7 @@ bscan_min_altitude_km = 0;
 // Type: double
 //
 
-bscan_max_altitude_km = 20;
+bscan_max_altitude_km = 8;
 
 ///////////// bscan_altitude_in_feet //////////////////
 //
