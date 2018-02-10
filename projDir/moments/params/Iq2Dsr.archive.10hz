@@ -55,7 +55,7 @@ beam_count_for_debug_print = 30;
 // Type: string
 //
 
-instance = "archive.100hz";
+instance = "archive.10hz";
 
 //======================================================================
 //
@@ -835,7 +835,7 @@ moments_params = {
     antenna_rate_lower_limit = 0,
     antenna_rate_upper_limit = 90,
     beam_method = BEAM_SPECIFY_N_SAMPLES,
-    beam_n_samples = 100,
+    beam_n_samples = 1000,
     beam_angle_deg = 1,
     index_the_beams = FALSE,
     indexed_resolution = 1,
@@ -3378,7 +3378,7 @@ rhohv_improvement_factor_threshold = 4;
 // Type: string
 //
 
-output_fmq_url = "/tmp/fmq/moments/100hz/shmem_20100";
+output_fmq_url = "/tmp/fmq/moments/10hz/shmem_20110";
 
 ///////////// output_fmq_size /////////////////////////
 //
