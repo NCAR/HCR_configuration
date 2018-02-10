@@ -57,7 +57,7 @@ register_with_procmap = FALSE;
 // Type: string
 //
 
-instance = "hsrl-socrates.archive";
+instance = "hsrl-socrates.field";
 
 //======================================================================
 //
