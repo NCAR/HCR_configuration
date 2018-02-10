@@ -62,7 +62,7 @@ instance = "archive";
 // Type: string
 //
 
-input_dir = "$(DATA_DIR)/raw";
+input_dir = "$(DATA_DIR)/hdrl/raw";
 
 ///////////// mode ////////////////////////////////////
 //
@@ -295,7 +295,8 @@ read_georef_data_from_aircraft_system = TRUE;
 // Type: string
 //
 
-georef_data_spdb_url = "$(HOME)/data/socrates/spdb/ac_georef/raf_1hz";
+// georef_data_spdb_url = "$(HOME)/data/spdb/ac_georef/raf_1hz";
+georef_data_spdb_url = "$(DATA_DIR)/spdb/ac_georef/iwg1";
 
 ///////////// georef_data_search_margin_secs //////////
 //
@@ -520,7 +521,7 @@ cross_field_name = "cross";
 // Type: string
 //
 
-baseline_calibration_path = "$(HOME)/git/HSRL_configuration/projDir/calfiles/baseline_correction_20171019T2000.blc";
+baseline_calibration_path = "$(HOME)/git/hsrl_configuration/projDir/calfiles/baseline_correction_20171019T2000.blc";
 
 ///////////// diff_default_geofile_path ///////////////
 //
@@ -531,7 +532,7 @@ baseline_calibration_path = "$(HOME)/git/HSRL_configuration/projDir/calfiles/bas
 //
 
 // diff_default_geofile_path = "$(PROJ_DIR)/calfiles/diff_default_geofile_20180102T2154.geo";
-diff_default_geofile_path = "$(HOME)/git/HSRL_configuration/projDir/calfiles/diff_default_geofile_20180102T2154.geo";
+diff_default_geofile_path = "$(HOME)/git/hsrl_configuration/projDir/calfiles/diff_default_geofile_20180102T2154.geo";
 
 ///////////// geofile_default_path ////////////////////
 //
@@ -542,7 +543,7 @@ diff_default_geofile_path = "$(HOME)/git/HSRL_configuration/projDir/calfiles/dif
 //
 
 // geofile_default_path = "$(PROJ_DIR)/calfiles/geofile_default_20180104T1700.geo";
-geofile_default_path = "$(HOME)/git/HSRL_configuration/projDir/calfiles/geofile_default_20180104T1700.geo";
+geofile_default_path = "$(HOME)/git/hsrl_configuration/projDir/calfiles/geofile_default_20180104T1700.geo";
 
 ///////////// afterpulse_default_path /////////////////
 //
@@ -552,7 +553,7 @@ geofile_default_path = "$(HOME)/git/HSRL_configuration/projDir/calfiles/geofile_
 // Type: string
 //
 
-afterpulse_default_path = "$(HOME)/git/HSRL_configuration/projDir/calfiles/afterpulse_default_20061001T0000.ap";
+afterpulse_default_path = "$(HOME)/git/hsrl_configuration/projDir/calfiles/afterpulse_default_20061001T0000.ap";
 
 ///////////// calvals_gvhsrl_path /////////////////////
 //
@@ -562,7 +563,7 @@ afterpulse_default_path = "$(HOME)/git/HSRL_configuration/projDir/calfiles/after
 // Type: string
 //
 
-calvals_gvhsrl_path = "$(HOME)/git/HSRL_configuration/projDir/calfiles/calvals_gvhsrl.txt";
+calvals_gvhsrl_path = "$(HOME)/git/hsrl_configuration/projDir/calfiles/calvals_gvhsrl.txt";
 
 ///////////// combined_hi_dead_time_name //////////////
 //
@@ -698,7 +699,8 @@ optical_depth_n_reference_obs = 10;
 // Type: double
 //
 
-optical_depth_reference_value = 0.4;
+// optical_depth_reference_value = 0.4;
+optical_depth_reference_value = 4.5;
 
 ///////////// optical_depth_median_filter_len /////////
 //
@@ -711,7 +713,7 @@ optical_depth_reference_value = 0.4;
 // Type: int
 //
 
-optical_depth_median_filter_len = 5;
+optical_depth_median_filter_len = 1;
 
 ///////////// rate_censoring_threshold ////////////////
 //
@@ -723,7 +725,7 @@ optical_depth_median_filter_len = 5;
 // Type: double
 //
 
-rate_censoring_threshold = 1;
+rate_censoring_threshold = 0;
 
 ///////////// apply_speckle_filter ////////////////////
 //
@@ -736,7 +738,7 @@ rate_censoring_threshold = 1;
 // Type: boolean
 //
 
-apply_speckle_filter = TRUE;
+apply_speckle_filter = FALSE;
 
 ///////////// speckle_filter_len //////////////////////
 //
@@ -1029,7 +1031,7 @@ site_name = "unknown";
 // Type: string
 //
 
-output_dir = "$(HOME)/data/socrates/cfradial/hsrl_moments";
+output_dir = "$(DATA_DIR)/hsrl/cfradial/archive_moments";
 
 ///////////// output_filename_mode ////////////////////
 //
