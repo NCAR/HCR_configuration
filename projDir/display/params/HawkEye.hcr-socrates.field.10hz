@@ -217,8 +217,8 @@ archive_n_scans = 12;
 //
 
 // archive_data_url = "/scr/rain1/rsfdata/projects/socrates/hcr/cfradial/moments/10hz";
-// archive_data_url = "$(DATA_DIR)/hcr/cfradial/moments/10hz";
-archive_data_url = "/nas/data/data/SOCRATES/hcr_synced/cfradial/moments/10hz";
+archive_data_url = "$(DATA_DIR)/cfradial/moments/10hz";
+// archive_data_url = "/nas/data/data/SOCRATES/hcr_synced/cfradial/moments/10hz";
 
 ///////////// archive_search_margin_secs //////////////
 //
