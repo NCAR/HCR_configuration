@@ -1,5 +1,5 @@
 /**********************************************************************
- * TDRP params for Hsrl2Radx
+ * TDRP params for ./Hsrl2Radx
  **********************************************************************/
 
 //======================================================================
@@ -295,7 +295,6 @@ read_georef_data_from_aircraft_system = TRUE;
 // Type: string
 //
 
-// georef_data_spdb_url = "$(HOME)/data/spdb/ac_georef/raf_1hz";
 georef_data_spdb_url = "$(DATA_DIR)/spdb/ac_georef/iwg1";
 
 ///////////// georef_data_search_margin_secs //////////
@@ -531,7 +530,6 @@ baseline_calibration_path = "$(HOME)/git/hsrl_configuration/projDir/calfiles/bas
 // Type: string
 //
 
-// diff_default_geofile_path = "$(PROJ_DIR)/calfiles/diff_default_geofile_20180102T2154.geo";
 diff_default_geofile_path = "$(HOME)/git/hsrl_configuration/projDir/calfiles/diff_default_geofile_20180102T2154.geo";
 
 ///////////// geofile_default_path ////////////////////
@@ -542,7 +540,6 @@ diff_default_geofile_path = "$(HOME)/git/hsrl_configuration/projDir/calfiles/dif
 // Type: string
 //
 
-// geofile_default_path = "$(PROJ_DIR)/calfiles/geofile_default_20180104T1700.geo";
 geofile_default_path = "$(HOME)/git/hsrl_configuration/projDir/calfiles/geofile_default_20180104T1700.geo";
 
 ///////////// afterpulse_default_path /////////////////
@@ -638,6 +635,16 @@ bin_width_name = "binwidth";
 
 scan_adjustment_name = "i2_scan_adjustment";
 
+///////////// molecular_gain_name /////////////////////
+//
+// Name of molecular gain in CalVals file.
+//
+//
+// Type: string
+//
+
+molecular_gain_name = "molecular_gain";
+
 ///////////// ngates_for_background_correction ////////
 //
 // The background correction uses data from the end of each ray.
@@ -699,7 +706,6 @@ optical_depth_n_reference_obs = 10;
 // Type: double
 //
 
-// optical_depth_reference_value = 0.4;
 optical_depth_reference_value = 4.5;
 
 ///////////// optical_depth_median_filter_len /////////
@@ -752,6 +758,96 @@ apply_speckle_filter = FALSE;
 //
 
 speckle_filter_len = 2;
+
+//======================================================================
+//
+// READING TEMPERATURE AND PRESSURE PROFILE FROM MODEL FILES.
+//
+//======================================================================
+ 
+///////////// read_temp_and_pressure_profile_from_model_files 
+//
+// Option to read temperature and pressure profiles from model files.
+//
+// The model output has been converted into MDV/NetCDF, with temperature 
+//   and pressure fields on constant height vlevels. Vlevel units are km.
+//
+//
+// Type: boolean
+//
+
+read_temp_and_pressure_profile_from_model_files = TRUE;
+
+///////////// model_temperature_field_name ////////////
+//
+// Name of temperature field in model data.
+//
+//
+// Type: string
+//
+
+model_temperature_field_name = "TMP";
+
+///////////// temperature_profile_units ///////////////
+//
+// Units for temperature profile data.
+//
+//
+// Type: enum
+// Options:
+//     DEGREES_CELCIUS
+//     DEGREES_KELVIN
+//
+
+temperature_profile_units = DEGREES_CELCIUS;
+
+///////////// model_pressure_field_name ///////////////
+//
+// Name of pressure field in model data.
+//
+//
+// Type: string
+//
+
+model_pressure_field_name = "Pressure";
+
+///////////// pressure_profile_units //////////////////
+//
+// Units for pressure profile data.
+//
+//
+// Type: enum
+// Options:
+//     PA
+//     HPA
+//
+
+pressure_profile_units = HPA;
+
+///////////// model_profile_mdv_data_url //////////////
+//
+// Location for model data for temp and pressure profile.
+//
+// Data is in MDV or CF NetCDF format.
+//
+//
+// Type: string
+//
+
+model_profile_mdv_data_url = "$(DATA_DIR)/mdv/gfs";
+
+///////////// model_profile_search_margin_secs ////////
+//
+// The search margin when looking for suitable model data (secs).
+//
+// If a data file has previously been read, within this search margin, 
+//   then that file is used again.
+//
+//
+// Type: int
+//
+
+model_profile_search_margin_secs = 7200;
 
 //======================================================================
 //

@@ -452,6 +452,15 @@ fields = {
   }
   ,
   {
+    label = "BetaMSonde",
+    raw_name = "BetaMSonde",
+    filtered_name = "",
+    units = "",
+    color_map = "hsrl_beta_m_sonde.colors",
+    shortcut = "s"
+  }
+  ,
+  {
     label = "Temp",
     raw_name = "Temperature",
     filtered_name = "",
