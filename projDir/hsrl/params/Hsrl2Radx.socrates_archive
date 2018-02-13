@@ -295,7 +295,8 @@ read_georef_data_from_aircraft_system = TRUE;
 // Type: string
 //
 
-georef_data_spdb_url = "$(DATA_DIR)/spdb/ac_georef/iwg1";
+// georef_data_spdb_url = "$(DATA_DIR)/spdb/ac_georef/iwg1";
+georef_data_spdb_url = "$(DATA_DIR)/spdb/ac_georef/raf_1hz";
 
 ///////////// georef_data_search_margin_secs //////////
 //
