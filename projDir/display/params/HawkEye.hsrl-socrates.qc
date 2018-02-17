@@ -217,7 +217,7 @@ archive_n_scans = 12;
 // Type: string
 //
 
-archive_data_url = "$(DATA_DIR)/hsrl/cfradial/hsrl_moments";
+archive_data_url = "$(DATA_DIR)/hsrl/cfradial/archive_moments";
 
 ///////////// archive_search_margin_secs //////////////
 //
