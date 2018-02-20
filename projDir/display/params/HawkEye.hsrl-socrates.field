@@ -1659,7 +1659,7 @@ images_write_to_day_dir = TRUE;
 // Type: string
 //
 
-images_file_name_category = "radar";
+images_file_name_category = "lidar";
 
 ///////////// images_file_name_platform ///////////////
 //
