@@ -2,13 +2,13 @@
 
 rehash
 
-setenv PROJ_DIR /opt/local/hcr/projDir
+setenv PROJ_DIR /opt/local/git/HCR_configuration/projDir
 setenv DATA_DIR /scr/eldora2/rsfdata/cset/hcr
 cd $PROJ_DIR/display/params
 
 if ($#argv < 6) then
-  HawkEye -params HawkEye.hcr-cset.qc.10hz -start_time "2015 07 27 18 00 10 00" >& /dev/null &
+  /opt/local/lrose/bin/HawkEye -params HawkEye.hcr-cset.qc.10hz -start_time "2015 07 27 18 00 10 00" >& /dev/null &
 else
-  HawkEye -params HawkEye.hcr-cset.qc.10hz -start_time "$1 $2 $3 $4 $5 $6" >& /dev/null &
+  /opt/local/lrose/bin/HawkEye -params HawkEye.hcr-cset.qc.10hz -start_time "$1 $2 $3 $4 $5 $6" >& /dev/null &
 endif
 
