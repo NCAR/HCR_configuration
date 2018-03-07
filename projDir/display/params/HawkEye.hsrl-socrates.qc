@@ -57,7 +57,7 @@ register_with_procmap = FALSE;
 // Type: string
 //
 
-instance = "archive.10hz";
+instance = "hsrl-socrates.field";
 
 //======================================================================
 //
@@ -100,7 +100,21 @@ input_mode = IWRF_FMQ_INPUT;
 // Type: string
 //
 
-input_fmq_url = "fmqp:://localhost::fmq/moments/10hz/shmem_20010";
+input_fmq_url = "$(DATA_DIR)/fmq/ncar";
+
+///////////// seek_to_start_of_fmq ////////////////////
+//
+// Option to seek to the start of the input FMQ.
+//
+// If TRUE, the program will seek to the start of the fmq and read the 
+//   entire contents at startup. If FALSE, it will read only new data as 
+//   it arrives.
+//
+//
+// Type: boolean
+//
+
+seek_to_start_of_fmq = TRUE;
 
 ///////////// input_tcp_host //////////////////////////
 //
@@ -160,14 +174,38 @@ begin_in_archive_mode = TRUE;
 //
 // Start time for archive mode.
 //
-// If this is set to 1 Jan 1970, the app will initialize at 'now'.
+// In archive mode, data retrieval starts at this time.
 //
 //
 // Type: string
 //
 
-archive_start_time = "2018 01 16 00 24 00";
+archive_start_time = "2018 01 16 00 20 00";
 //archive_start_time = "2018 01 22 22 20 00";
+
+///////////// archive_scan_interval_secs //////////////
+//
+// Time between scans in archive mode (secs).
+//
+// Only applies to POLAR (PPI/RHI) mode, not BSCAN mode.
+//
+//
+// Type: int
+//
+
+archive_scan_interval_secs = 300;
+
+///////////// archive_n_scans /////////////////////////
+//
+// Number of scans in archive mode.
+//
+// Only applies to POLAR (PPI/RHI) mode, not BSCAN mode.
+//
+//
+// Type: int
+//
+
+archive_n_scans = 12;
 
 ///////////// archive_data_url ////////////////////////
 //
@@ -179,7 +217,20 @@ archive_start_time = "2018 01 16 00 24 00";
 // Type: string
 //
 
-archive_data_url = "$(DATA_DIR)/hcr_synced/cfradial/moments/10hz";
+archive_data_url = "$(DATA_DIR)/hsrl/cfradial/archive_moments";
+
+///////////// archive_search_margin_secs //////////////
+//
+// Time margin for search in archive mode (secs).
+//
+// We search for data within this margin, on either side of the required 
+//   time.
+//
+//
+// Type: int
+//
+
+archive_search_margin_secs = 600;
 
 //======================================================================
 //
@@ -230,25 +281,25 @@ archive_data_url = "$(DATA_DIR)/hcr_synced/cfradial/moments/10hz";
 //
 
 show_status_in_gui = {
-    azimuth = TRUE,
+    azimuth = FALSE,
     elevation = TRUE,
     fixed_angle = FALSE,
     volume_number = FALSE,
     sweep_number = FALSE,
-    n_samples = TRUE,
+    n_samples = FALSE,
     n_gates = TRUE,
     gate_length = TRUE,
-    pulse_width = TRUE,
-    prf_mode = TRUE,
-    prf = TRUE,
-    nyquist = TRUE,
+    pulse_width = FALSE,
+    prf_mode = FALSE,
+    prf = FALSE,
+    nyquist = FALSE,
     max_range = TRUE,
-    unambiguous_range = TRUE,
+    unambiguous_range = FALSE,
     measured_power_h = FALSE,
     measured_power_v = FALSE,
     scan_name = FALSE,
     scan_mode = FALSE,
-    polarization_mode = TRUE,
+    polarization_mode = FALSE,
     latitude = TRUE,
     longitude = TRUE,
     altitude = TRUE,
@@ -302,192 +353,129 @@ color_scale_dir = "$(PROJ_DIR)/display/color_scales";
 
 fields = {
   {
-    label = "DBZ",
-    raw_name = "DBZ",
+    label = "BackScatRatio",
+    raw_name = "BackScatterRatio",
     filtered_name = "",
-    units = "dBZ",
-    color_map = "dbz_w.colors",
-    shortcut = "0"
-  }
-  ,
-  {
-    label = "VEL",
-    raw_name = "VEL",
-    filtered_name = "",
-    units = "m/s",
-    color_map = "vel_w_4.colors",
+    units = "",
+    color_map = "backscatter_ratio.colors",
     shortcut = "1"
   }
   ,
   {
-    label = "VEL_RAW",
-    raw_name = "VEL_RAW",
+    label = "BackScatCoeff",
+    raw_name = "BackScatterCoeff",
     filtered_name = "",
-    units = "m/s",
-    color_map = "vel_w_4.colors",
+    units = "m-1.sr-1",
+    color_map = "hsrl_backscat_coeff.colors",
     shortcut = "2"
   }
   ,
   {
-    label = "VEL8",
-    raw_name = "VEL8",
+    label = "VolDepolRatio",
+    raw_name = "VolumeDepolRatio",
     filtered_name = "",
-    units = "m/s",
-    color_map = "vel_w_8.colors",
+    units = "",
+    color_map = "volume_depol_ratio.colors",
     shortcut = "3"
   }
   ,
   {
-    label = "VEL_RAW8",
-    raw_name = "VEL_RAW8",
+    label = "PartDepolRatio",
+    raw_name = "ParticleDepolRatio",
     filtered_name = "",
-    units = "m/s",
-    color_map = "vel_w_8.colors",
+    units = "",
+    color_map = "particle_depol_ratio.colors",
     shortcut = "4"
   }
   ,
   {
-    label = "WIDTH",
-    raw_name = "WIDTH",
+    label = "Extinction",
+    raw_name = "ExtinctionCoeff",
     filtered_name = "",
-    units = "m/s",
-    color_map = "width_w.colors",
+    units = "m-1",
+    color_map = "extinction_coeff.colors",
     shortcut = "5"
   }
   ,
   {
-    label = "SNR",
-    raw_name = "SNR",
+    label = "OptDepth",
+    raw_name = "OpticalDepth",
     filtered_name = "",
-    units = "dB",
-    color_map = "snr.colors",
+    units = "",
+    color_map = "optical_depth.colors",
     shortcut = "6"
   }
   ,
   {
-    label = "SNRHC",
-    raw_name = "SNRHC",
+    label = "HighCounts",
+    raw_name = "CombinedHighCounts",
     filtered_name = "",
-    units = "dB",
-    color_map = "snr.colors",
+    units = "counts",
+    color_map = "hsrl_combined_high.colors",
     shortcut = "7"
   }
   ,
   {
-    label = "SNRVC",
-    raw_name = "SNRVC",
+    label = "LowCounts",
+    raw_name = "CombinedLowCounts",
     filtered_name = "",
-    units = "dB",
-    color_map = "snr.colors",
+    units = "counts",
+    color_map = "hsrl_combined_low.colors",
     shortcut = "8"
   }
   ,
   {
-    label = "SNRHX",
-    raw_name = "SNRHX",
+    label = "XPolCounts",
+    raw_name = "CrossPolarCounts",
     filtered_name = "",
-    units = "dB",
-    color_map = "snr.colors",
+    units = "counts",
+    color_map = "hsrl_cross_polar.colors",
     shortcut = "9"
   }
   ,
   {
-    label = "SNRVX",
-    raw_name = "SNRVX",
+    label = "MolCounts",
+    raw_name = "MolecularCounts",
     filtered_name = "",
-    units = "dB",
-    color_map = "snr.colors",
+    units = "counts",
+    color_map = "hsrl_molecular.colors",
     shortcut = "a"
   }
   ,
   {
-    label = "DBMHC",
-    raw_name = "DBMHC",
+    label = "Height",
+    raw_name = "Height",
     filtered_name = "",
-    units = "dBm",
-    color_map = "dbm.colors",
+    units = "m",
+    color_map = "height_m.colors",
     shortcut = "b"
   }
   ,
   {
-    label = "DBMVC",
-    raw_name = "DBMVC",
+    label = "BetaMSonde",
+    raw_name = "BetaMSonde",
     filtered_name = "",
-    units = "dBm",
-    color_map = "dbm.colors",
+    units = "",
+    color_map = "hsrl_beta_m_sonde.colors",
+    shortcut = "s"
+  }
+  ,
+  {
+    label = "Temp",
+    raw_name = "Temperature",
+    filtered_name = "",
+    units = "K",
+    color_map = "tempK_xml.colors",
     shortcut = "c"
   }
   ,
   {
-    label = "DBMHX",
-    raw_name = "DBMHX",
+    label = "Press",
+    raw_name = "Pressure",
     filtered_name = "",
-    units = "dBm",
-    color_map = "dbm.colors",
+    units = "mb",
+    color_map = "pressure_xml.colors",
     shortcut = "d"
-  }
-  ,
-  {
-    label = "DBMVX",
-    raw_name = "DBMVX",
-    filtered_name = "",
-    units = "dBm",
-    color_map = "dbm.colors",
-    shortcut = "e"
-  }
-  ,
-  {
-    label = "NCP",
-    raw_name = "NCP",
-    filtered_name = "",
-    units = "",
-    color_map = "ncp.colors",
-    shortcut = "f"
-  }
-  ,
-  {
-    label = "LDR",
-    raw_name = "LDR",
-    filtered_name = "",
-    units = "dB",
-    color_map = "ldr.colors",
-    shortcut = "g"
-  }
-  ,
-  {
-    label = "LDRH",
-    raw_name = "LDRH",
-    filtered_name = "",
-    units = "dB",
-    color_map = "ldr.colors",
-    shortcut = "h"
-  }
-  ,
-  {
-    label = "LDRV",
-    raw_name = "LDRV",
-    filtered_name = "",
-    units = "dB",
-    color_map = "ldr.colors",
-    shortcut = "i"
-  }
-  ,
-  {
-    label = "NOISE_BIAS_DB_VC",
-    raw_name = "NOISE_BIAS_DB_VC",
-    filtered_name = "",
-    units = "dB",
-    color_map = "noise_bias.colors",
-    shortcut = "i"
-  }
-  ,
-  {
-    label = "NOISE_BIAS_DB_HX",
-    raw_name = "NOISE_BIAS_DB_HX",
-    filtered_name = "",
-    units = "dB",
-    color_map = "noise_bias.colors",
-    shortcut = "i"
   }
 };
 
@@ -580,7 +568,7 @@ override_radar_name = TRUE;
 // Type: string
 //
 
-radar_name = "HCR-10hz";
+radar_name = "GV_HSRL";
 
 ///////////// display_site_name ///////////////////////
 //
@@ -600,7 +588,7 @@ display_site_name = FALSE;
 // Type: boolean
 //
 
-override_site_name = FALSE;
+override_site_name = TRUE;
 
 ///////////// site_name ///////////////////////////////
 //
@@ -678,7 +666,7 @@ color_scale_width = 50;
 // Type: int
 //
 
-label_font_size = 12;
+label_font_size = 10;
 
 ///////////// background_color ////////////////////////
 //
@@ -757,6 +745,53 @@ ppi_display_type = PPI_FULL;
 
 ppi_aspect_ratio = 1;
 
+///////////// ppi_grids_on_at_startup /////////////////
+//
+// Set PPI grids overlay on at startup.
+//
+//
+// Type: boolean
+//
+
+ppi_grids_on_at_startup = FALSE;
+
+///////////// ppi_range_rings_on_at_startup ///////////
+//
+// Set PPI range rings overlay on at startup.
+//
+//
+// Type: boolean
+//
+
+ppi_range_rings_on_at_startup = TRUE;
+
+///////////// ppi_azimuth_lines_on_at_startup /////////
+//
+// Set PPI azimuth lines overlay on at startup.
+//
+//
+// Type: boolean
+//
+
+ppi_azimuth_lines_on_at_startup = TRUE;
+
+///////////// ppi_main_legend_pos /////////////////////
+//
+// Position of main legend in the PPI plot window.
+//
+// This include time, field name and elevation angle.
+//
+//
+// Type: enum
+// Options:
+//     LEGEND_TOP_LEFT
+//     LEGEND_TOP_RIGHT
+//     LEGEND_BOTTOM_LEFT
+//     LEGEND_BOTTOM_RIGHT
+//
+
+ppi_main_legend_pos = LEGEND_TOP_LEFT;
+
 //======================================================================
 //
 // RHI MODE DISPLAY.
@@ -803,6 +838,94 @@ rhi_window_start_x = 1000;
 
 rhi_window_start_y = 0;
 
+///////////// rhi_top_margin //////////////////////////
+//
+// Height of top margin in RHI mode (pixels).
+//
+// Titles go in the top margin.
+//
+//
+// Type: int
+//
+
+rhi_top_margin = 20;
+
+///////////// rhi_bottom_margin ///////////////////////
+//
+// Height of bottom margin in RHI mode (pixels).
+//
+// Time scale goes in the bottom margin.
+//
+//
+// Type: int
+//
+
+rhi_bottom_margin = 20;
+
+///////////// rhi_left_margin /////////////////////////
+//
+// Width of left margin in RHI mode (pixels).
+//
+// Height scale goes in the left margin.
+//
+//
+// Type: int
+//
+
+rhi_left_margin = 20;
+
+///////////// rhi_right_margin ////////////////////////
+//
+// Width of right margin in RHI mode (pixels).
+//
+// Height scale goes in the right margin.
+//
+//
+// Type: int
+//
+
+rhi_right_margin = 20;
+
+///////////// rhi_label_font_size /////////////////////
+//
+// Font size for labels on range rings (pixels).
+//
+//
+// Type: int
+//
+
+rhi_label_font_size = 8;
+
+///////////// rhi_axis_tick_len ///////////////////////
+//
+// Length of ticks on axes (pixels).
+//
+//
+// Type: int
+//
+
+rhi_axis_tick_len = 7;
+
+///////////// rhi_n_ticks_ideal ///////////////////////
+//
+// Ideal number of ticks on axes.
+//
+//
+// Type: int
+//
+
+rhi_n_ticks_ideal = 7;
+
+///////////// rhi_text_margin /////////////////////////
+//
+// Margin around some text (pixels).
+//
+//
+// Type: int
+//
+
+rhi_text_margin = 5;
+
 ///////////// rhi_display_180_degrees /////////////////
 //
 // Flag indicating to display full 180 degrees in RHI window. If set to 
@@ -816,13 +939,80 @@ rhi_display_180_degrees = FALSE;
 
 ///////////// rhi_aspect_ratio ////////////////////////
 //
-// Aspect ratio (width/height) of PPI window.
+// Aspect ratio (width/height) of RHI window.
 //
 //
 // Type: double
 //
 
 rhi_aspect_ratio = 1;
+
+///////////// rhi_max_height_km ///////////////////////
+//
+// Max height of data in RHI window (km).
+//
+//
+// Type: double
+//
+
+rhi_max_height_km = 25;
+
+///////////// rhi_color_scale_width ///////////////////
+//
+// Width of color scale for RHI window (pixels).
+//
+//
+// Type: int
+//
+
+rhi_color_scale_width = 40;
+
+///////////// rhi_grids_on_at_startup /////////////////
+//
+// Set RHI grids overlay on at startup.
+//
+//
+// Type: boolean
+//
+
+rhi_grids_on_at_startup = TRUE;
+
+///////////// rhi_range_rings_on_at_startup ///////////
+//
+// Set RHI range rings overlay on at startup.
+//
+//
+// Type: boolean
+//
+
+rhi_range_rings_on_at_startup = FALSE;
+
+///////////// rhi_elevation_lines_on_at_startup ///////
+//
+// Set RHI elevation lines overlay on at startup.
+//
+//
+// Type: boolean
+//
+
+rhi_elevation_lines_on_at_startup = FALSE;
+
+///////////// rhi_main_legend_pos /////////////////////
+//
+// Position of main legend in the RHI plot window.
+//
+// This include time, field name and elevation angle.
+//
+//
+// Type: enum
+// Options:
+//     LEGEND_TOP_LEFT
+//     LEGEND_TOP_RIGHT
+//     LEGEND_BOTTOM_LEFT
+//     LEGEND_BOTTOM_RIGHT
+//
+
+rhi_main_legend_pos = LEGEND_TOP_LEFT;
 
 //======================================================================
 //
@@ -957,7 +1147,7 @@ bscan_min_range_km = 0;
 // Type: double
 //
 
-bscan_max_range_km = 25;
+bscan_max_range_km = 15;
 
 ///////////// bscan_min_altitude_km ///////////////////
 //
@@ -967,7 +1157,7 @@ bscan_max_range_km = 25;
 // Type: double
 //
 
-bscan_min_altitude_km = 0;
+bscan_min_altitude_km = -1;
 
 ///////////// bscan_max_altitude_km ///////////////////
 //
@@ -977,7 +1167,7 @@ bscan_min_altitude_km = 0;
 // Type: double
 //
 
-bscan_max_altitude_km = 10;
+bscan_max_altitude_km = 8;
 
 ///////////// bscan_altitude_in_feet //////////////////
 //
@@ -988,6 +1178,16 @@ bscan_max_altitude_km = 10;
 //
 
 bscan_altitude_in_feet = TRUE;
+
+///////////// bscan_range_in_feet /////////////////////
+//
+// Use feet for range units?.
+//
+//
+// Type: boolean
+//
+
+bscan_range_in_feet = FALSE;
 
 ///////////// bscan_range_axis_mode ///////////////////
 //
@@ -1022,7 +1222,7 @@ bscan_range_axis_mode = RANGE_AXIS_ALTITUDE;
 // Type: boolean
 //
 
-bscan_censor_data_below_surface = TRUE;
+bscan_censor_data_below_surface = FALSE;
 
 ///////////// bscan_surface_field /////////////////////
 //
@@ -1061,6 +1261,20 @@ bscan_min_range_to_surface_km = 0.5;
 //
 
 bscan_surface_range_margin_km = 0.2;
+
+///////////// bscan_max_field_val_below_surface ///////
+//
+// Maximum value of the surface field, below the measured surface.
+//
+// After finding the range to the surface, we inspect the surface_field 
+//   values below the surface. If we find values that exceed this 
+//   parameter, we conclude that the surface cannot be reliably found.
+//
+//
+// Type: double
+//
+
+bscan_max_field_val_below_surface = 5;
 
 //======================================================================
 //
@@ -1170,7 +1384,7 @@ bscan_title_font_size = 12;
 // Type: int
 //
 
-bscan_axis_label_font_size = 10;
+bscan_axis_label_font_size = 8;
 
 ///////////// bscan_axis_values_font_size /////////////
 //
@@ -1423,7 +1637,7 @@ bscan_dwell_stats = DWELL_STATS_MIDDLE;
 // Type: string
 //
 
-images_output_dir = "/tmp/images/HawkEye";
+images_output_dir = "/tmp/images/HSRL";
 
 ///////////// images_write_to_day_dir /////////////////
 //
@@ -1457,7 +1671,7 @@ images_file_name_category = "radar";
 // Type: string
 //
 
-images_file_name_platform = "NSF_NCAR_GV_HCR";
+images_file_name_platform = "NSF_NCAR_GV_HSRL";
 
 ///////////// images_file_name_extension //////////////
 //
@@ -1600,6 +1814,62 @@ images_schedule_interval_secs = 60;
 //
 
 images_schedule_delay_secs = 10;
+
+///////////// images_archive_start_time ///////////////
+//
+// Start time for image generation in archive mode.
+//
+// Image generation starts with a seach at this time, and the proceeds 
+//   at increments of images_schedule_interval_secs.
+//
+//
+// Type: string
+//
+
+images_archive_start_time = "1970 01 01 00 00 00";
+
+///////////// images_archive_end_time /////////////////
+//
+// End time for image generation in archive mode.
+//
+// Image generation is terminated when the search time exceeds this end 
+//   time.
+//
+//
+// Type: string
+//
+
+images_archive_end_time = "1970 01 01 00 00 00";
+
+///////////// images_set_sweep_index_list /////////////
+//
+// Option to specify the sweep indexes for the image generation.
+//
+// If TRUE, only the specified sweeps will be processed.
+//
+//
+// Type: boolean
+//
+
+images_set_sweep_index_list = FALSE;
+
+///////////// images_sweep_index_list /////////////////
+//
+// List of valid sweep indexes for image generation.
+//
+// See 'images_set_sweep_index_list'. Images will only be generated for 
+//   the specified sweep indexes.
+//
+//
+// Type: int
+// 1D array - variable length.
+//
+
+images_sweep_index_list = {
+ 0,
+ 1,
+ 2
+};
 
 //======================================================================
 //

@@ -253,7 +253,7 @@ ngates_for_surface_echo = 1;
 // Type: string
 //
 
-nc_varname_altitude_msl = "ALT";
+nc_varname_altitude_msl = "GGALT";
 
 ///////////// nc_varname_altitude_pres ////////////////
 //

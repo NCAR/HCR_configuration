@@ -6,5 +6,6 @@ cfradial/moments/100hz
 cfradial/moments/10hz
 cfradial/covar/100hz
 images/catalog
+monitoring/catalog
 logs/status
 time_series/wband/save
