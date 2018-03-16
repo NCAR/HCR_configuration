@@ -1,0 +1,17 @@
+#! /bin/csh
+
+cd ~/git/HCR_configuration/projDir/qc/params
+
+#foreach day (20180126 20180203)
+#  AcGeoref2Spdb -params AcGeoref2Spdb.cfradial_10hz -debug -f /scr/rain1/rsfdata/projects/socrates/hc#r/cfradial/moments/10hz/${day}/cfrad.*.nc
+#end
+
+foreach day (20180108 20180109 20180110 20180111 20180115 20180116 20180119 \
+    20180122 20180123 20180124 20180125 20180126 20180128 20180129 20180130 20180131\
+    20180203 20180204 20180205 20180206 20180207 20180208 20180216 20180217 \
+    20180218 20180219 20180220 20180221 20180222 20180224)
+  AcGeoref2Spdb -params AcGeoref2Spdb.cfradial_10hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/cfradial/moments/10hz/${day}/cfrad.*.nc
+end
+
+
+

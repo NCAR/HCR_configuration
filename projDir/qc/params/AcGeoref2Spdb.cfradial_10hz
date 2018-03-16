@@ -53,7 +53,7 @@ reg_with_procmap = FALSE;
 // Type: string
 //
 
-instance = "raf.1hz";
+instance = "cfradial_10hz";
 
 //======================================================================
 //
@@ -90,7 +90,7 @@ instance = "raf.1hz";
 //     RAF_NETCDF
 //
 
-input_mode = RAF_NETCDF;
+input_mode = CFRADIAL;
 
 //======================================================================
 //
@@ -130,7 +130,7 @@ aircraft_callsign = "N677F";
 // Type: string
 //
 
-output_spdb_url = "/scr/rain1/rsfdata/projects/socrates/hcr/spdb/ac_georef/raf_1hz";
+output_spdb_url = "/scr/rain1/rsfdata/projects/socrates/hcr/spdb/ac_georef/cfradial_10hz";
 
 ///////////// spdb_nchunks_per_write //////////////////
 //
@@ -289,7 +289,7 @@ udp_sleep_secs = 5;
 // Type: string
 //
 
-nc_varname_altitude_msl = "GGALT";
+nc_varname_altitude_msl = "ALT";
 
 ///////////// nc_varname_altitude_pres ////////////////
 //
@@ -512,7 +512,7 @@ nc_varname_longitudinal_accel = "BLONGA";
 // Type: boolean
 //
 
-nc_specify_custom_fields = TRUE;
+nc_specify_custom_fields = FALSE;
 
 ///////////// nc_varname_custom_fields ////////////////
 //
@@ -525,12 +525,7 @@ nc_specify_custom_fields = TRUE;
 
 nc_varname_custom_fields = {
  "PITCH_IRS2",
- "PITCH_IRS3",
- "ROLL_IRS2",
- "ROLL_IRS3",
- "DRFTA_IRS2",
- "DRFTA_IRS3",
- "NOSETMP"
+ "PITCH_IRS3"
 };
 
 //======================================================================
@@ -550,7 +545,7 @@ nc_varname_custom_fields = {
 // Type: boolean
 //
 
-get_hcr_temps_from_cfradial = FALSE;
+get_hcr_temps_from_cfradial = TRUE;
 
 //======================================================================
 //
@@ -571,7 +566,7 @@ get_hcr_temps_from_cfradial = FALSE;
 // Type: boolean
 //
 
-compute_surface_vel_in_cfradial = FALSE;
+compute_surface_vel_in_cfradial = TRUE;
 
 ///////////// cfradial_vel_field_name /////////////////
 //
