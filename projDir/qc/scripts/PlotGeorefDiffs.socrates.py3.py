@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 #===========================================================================
 #
@@ -47,7 +47,7 @@ def main():
                       help='Set verbose debugging on')
     parser.add_option('--file',
                       dest='compFilePath',
-                      default='/scr/sci/dixon/data/cset/qc/data/cset/CSET.rf05.20150714_164000.to.20150715_002000.txt',
+                      default='/scr/rain1/rsfdata/projects/socrates/hcr/qc/data/socrates/SOCRATES.rf01.20180115_215100.to.20180116_052600.txt',
                       help='File path for comparison results')
     parser.add_option('--widthMain',
                       dest='mainWidthMm',
@@ -90,11 +90,11 @@ def main():
         timeLimitsSet = True
 
     if (options.debug == True):
-        print >>sys.stderr, "Running %prog"
-        print >>sys.stderr, "  compFilePath: ", options.compFilePath
+        print("Running %prog", file=sys.stderr)
+        print("  compFilePath: ", options.compFilePath, file=sys.stderr)
         if (timeLimitsSet):
-            print >>sys.stderr, "  startTime: ", startTime
-            print >>sys.stderr, "  endTime: ", endTime
+            print("  startTime: ", startTime, file=sys.stderr)
+            print("  endTime: ", endTime, file=sys.stderr)
 
 
     # read in column headers for bias results
@@ -124,7 +124,7 @@ def main():
 
     plt.show()
 
-    sys.exit(0)
+    exit
     
 ########################################################################
 # Read columm headers for the data
@@ -144,10 +144,10 @@ def readColumnHeaders(filePath):
         # header
         colHeaders = line.lstrip("# ").rstrip("\n").split()
         if (options.debug == True):
-            print >>sys.stderr, "colHeaders: ", colHeaders
+            print("colHeaders: ", colHeaders, file=sys.stderr)
     else:
-        print >>sys.stderr, "ERROR - readColumnHeaders"
-        print >>sys.stderr, "  First line does not start with #"
+        print("ERROR - readColumnHeaders", file=sys.stderr)
+        print("  First line does not start with #", file=sys.stderr)
         return -1, colHeaders, colData
     
     for index, var in enumerate(colHeaders, start=0):
@@ -177,7 +177,7 @@ def readInputData(filePath, colHeaders, colData):
         data = line.strip().split()
         if (len(data) != len(colHeaders)):
             if (options.debug == True):
-                print >>sys.stderr, "skipping line: ", line
+                print("skipping line: ", line, file=sys.stderr)
             continue;
 
         for index, var in enumerate(colHeaders, start=0):
@@ -275,7 +275,7 @@ def loadDataArrays(compData, compTimes):
     global pitchDiffSm, rollDiffSm, trackDiffSm, hdgDiffSm, vVelDiffSm
     global driftDiff, driftDiffSm
 
-    altDiff = np.array(compData["altDiff"]).astype(np.double)
+    altDiff = np.array(compData["altKmDiff"]).astype(np.double)
     altDiffSm = movingAverage(altDiff, filtLen)
 
     pitchDiff = np.array(compData["pitchDiff"]).astype(np.double)
@@ -542,7 +542,8 @@ def doPlotDiffs():
 
 
     configTimeAxis(ax1, -3, 3.0, "diffs", 'upper right')
-    configTimeAxis(ax2, -0.5, 3, "diffs", 'upper right')
+    # configTimeAxis(ax2, -0.5, 3, "diffs", 'upper right')
+    configTimeAxis(ax2, -9999, -9999, "diffs", 'upper right')
     configTimeAxis(ax3, -9999, -9999, "SurfaceVel", 'upper right')
     configTimeAxis(ax4, -0.25, 0.25, "Err", 'upper right')
     
@@ -730,17 +731,17 @@ def configTimeAxis(ax, miny, maxy, ylabel, legendLoc):
 def runCommand(cmd):
 
     if (options.debug == True):
-        print >>sys.stderr, "running cmd:",cmd
+        print("running cmd:",cmd, file=sys.stderr)
     
     try:
         retcode = subprocess.call(cmd, shell=True)
         if retcode < 0:
-            print >>sys.stderr, "Child was terminated by signal: ", -retcode
+            print("Child was terminated by signal: ", -retcode, file=sys.stderr)
         else:
             if (options.debug == True):
-                print >>sys.stderr, "Child returned code: ", retcode
-    except OSError, e:
-        print >>sys.stderr, "Execution failed:", e
+                print("Child returned code: ", retcode, file=sys.stderr)
+    except OSError as e:
+        print("Execution failed:", e, file=sys.stderr)
 
 ########################################################################
 # Run - entry point
