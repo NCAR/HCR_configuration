@@ -19,6 +19,7 @@ from matplotlib import dates
 import math
 import datetime
 import contextlib
+import pathlib
 
 def main():
 
@@ -32,7 +33,7 @@ def main():
     timeLimitsSet = False
     global figNum
     figNum = 0
-
+    
     # parse the command line
 
     usage = "usage: %prog [options]"
@@ -69,6 +70,11 @@ def main():
                       dest='endTime',
                       default='1970 01 01 00 00 00',
                       help='End time for XY plot')
+    parser.add_option('--figDir',
+                      dest='figureDir',
+                      default='/figs/',
+                      help='Directory for output figures')
+    
     
     (options, args) = parser.parse_args()
     
@@ -110,21 +116,37 @@ def main():
     # load up the data arrays
 
     loadDataArrays(compData, compTimes)
+    
+    # make output figure name sting
+    
+    if options.figureDir == '/figs/':
+        options.figureDir=os.path.split(options.compFilePath)[0] + '/figs/'
+        
+    outFile=options.figureDir + os.path.splitext(os.path.split(options.compFilePath)[1])[0]
+    
+    # create figure directory if necessary
+    
+    pathlib.Path(options.figureDir).mkdir(parents=False, exist_ok=True)
+    
+    # close all existing figures
+    
+    mpl.pyplot.close("all")
 
     # render the plots
     
     #doPlotOverview()
-    doPlotPitchRoll()
-    doPlotDiffs()
-    doPlotEstPitchDiff()
+    doPlotPitchRoll(outFile)
+    doPlotDiffs(outFile)
+    doPlotEstPitchDiff(outFile)
     #doPlotRadarAngles()
     #doPlot2DHist()
 
     # show them
-
-    plt.show()
-
-    exit
+    
+    # plt.show()
+   
+    sys.exit()
+   
     
 ########################################################################
 # Read columm headers for the data
@@ -429,7 +451,7 @@ def doPlotOverview():
 ########################################################################
 # Plot INS and diffs
 
-def doPlotPitchRoll():
+def doPlotPitchRoll(outFile):
 
     # set up plots
 
@@ -486,13 +508,15 @@ def doPlotPitchRoll():
     # title name
 
     fig.suptitle("ROLL and PITCH - file " + os.path.basename(options.compFilePath))
+    
+    plt.savefig(outFile + '.rollPitch.png')
 
     return
 
 ########################################################################
 # Plot the diffs
 
-def doPlotDiffs():
+def doPlotDiffs(outFile):
 
     # set up plots
 
@@ -552,6 +576,8 @@ def doPlotDiffs():
     fig.subplots_adjust(bottom=0.08, left=0.06, right=0.97, top=0.96)
 
     fig.suptitle("DIFFS GV minus CMIGITS - file " + os.path.basename(options.compFilePath))
+    
+    plt.savefig(outFile + '.diffs.png')
 
     return
 
@@ -668,7 +694,7 @@ def doPlotRadarAngles():
 ########################################################################
 # Plot the estimated pitch difference, using surface vel to estimate it
 
-def doPlotEstPitchDiff():
+def doPlotEstPitchDiff(outFile):
 
     # set up plots
 
@@ -700,6 +726,8 @@ def doPlotEstPitchDiff():
     fig.subplots_adjust(bottom=0.08, left=0.06, right=0.97, top=0.96)
 
     fig.suptitle("ESTIMATED PITCH DIFF: GV-CMIGITS - file " + os.path.basename(options.compFilePath))
+    
+    plt.savefig(outFile + '.estPitchDiff.png')
     
     return
 
