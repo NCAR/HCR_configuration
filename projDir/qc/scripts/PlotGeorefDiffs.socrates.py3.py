@@ -141,9 +141,10 @@ def main():
     #doPlotRadarAngles()
     #doPlot2DHist()
 
-    # show them
+    # If you want to show the plots, uncomment the following line
+    # Showing the plots will stop the script so it does not work when run as script
     
-    # plt.show()
+    #plt.show()
    
     sys.exit()
    
@@ -262,8 +263,8 @@ def loadDataArrays(compData, compTimes):
 
     temp = np.array(compData["temp"]).astype(np.double)
     tempCmigits = np.array(compData["tempSec"]).astype(np.double)
-    tempTailcone = np.array(compData["custom0Sec"]).astype(np.double)
-    tempNose = np.array(compData["custom6"]).astype(np.double)
+    tempTailcone = np.array(compData["tail_cone_temp"]).astype(np.double)
+    tempNose = np.array(compData["nose_temp"]).astype(np.double)
     tempAtf1 = np.array(compData["custom7"]).astype(np.double)
     pressure = np.array(compData["pressure"]).astype(np.double)
     rh = np.array(compData["rh"]).astype(np.double)
@@ -322,9 +323,9 @@ def loadDataArrays(compData, compTimes):
     global pitchDiff2, pitchDiff2Sm, pitchDiff3, pitchDiff3Sm
     pitch = np.array(compData["pitch"]).astype(np.double)
     pitchSm = movingAverage(pitch, filtLen)
-    pitch2 = np.array(compData["custom0"]).astype(np.double)
+    pitch2 = np.array(compData["pitch_irs2"]).astype(np.double)
     pitch2Sm = movingAverage(pitch2, filtLen)
-    pitch3 = np.array(compData["custom1"]).astype(np.double)
+    pitch3 = np.array(compData["pitch_irs3"]).astype(np.double)
     pitch3Sm = movingAverage(pitch3, filtLen)
     pitchDiff2 = pitch - pitch2
     pitchDiff2Sm = movingAverage(pitchDiff2, filtLen)
@@ -341,9 +342,9 @@ def loadDataArrays(compData, compTimes):
     global rollDiff2, rollDiff2Sm, rollDiff3, rollDiff3Sm
     roll = np.array(compData["roll"]).astype(np.double)
     rollSm = movingAverage(roll, filtLen)
-    roll2 = np.array(compData["custom2"]).astype(np.double)
+    roll2 = np.array(compData["roll_irs2"]).astype(np.double)
     roll2Sm = movingAverage(roll2, filtLen)
-    roll3 = np.array(compData["custom3"]).astype(np.double)
+    roll3 = np.array(compData["roll_irs3"]).astype(np.double)
     roll3Sm = movingAverage(roll3, filtLen)
     rollDiff2 = roll - roll2
     rollDiff2Sm = movingAverage(rollDiff2, filtLen)
@@ -356,22 +357,22 @@ def loadDataArrays(compData, compTimes):
 
     global drift, drift2, drift3, driftDiff2, driftDiff2Sm, driftDiff3, driftDiff3Sm
     drift = np.array(compData["drift"]).astype(np.double)
-    drift2 = np.array(compData["custom4"]).astype(np.double)
-    drift3 = np.array(compData["custom5"]).astype(np.double)
+    drift2 = np.array(compData["drift_irs2"]).astype(np.double)
+    drift3 = np.array(compData["drift_irs3"]).astype(np.double)
     driftDiff2 = drift - drift2
     driftDiff2Sm = movingAverage(driftDiff2, filtLen)
     driftDiff3 = drift - drift3
     driftDiff3Sm = movingAverage(driftDiff3, filtLen)
 
     global surfaceVel, surfaceVelSm
-    surfaceVel = np.array(compData["custom1Sec"]).astype(np.double)
+    surfaceVel = np.array(compData["surface_vel"]).astype(np.double)
     surfaceVelSm = movingAverage(surfaceVel, filtLen * 5)
 
     global azimuth, elevation, rotation, tilt
-    azimuth = np.array(compData["custom2Sec"]).astype(np.double)
-    elevation = np.array(compData["custom3Sec"]).astype(np.double)
-    rotation = np.array(compData["custom4Sec"]).astype(np.double)
-    tilt = np.array(compData["custom5Sec"]).astype(np.double)
+    azimuth = np.array(compData["azimuth"]).astype(np.double)
+    elevation = np.array(compData["elevation"]).astype(np.double)
+    rotation = np.array(compData["rotation"]).astype(np.double)
+    tilt = np.array(compData["tilt"]).astype(np.double)
 
     global elevErr, elevErrSm, tiltErr, tiltErrSm
     elevErr = elevation
@@ -463,9 +464,9 @@ def doPlotPitchRoll(outFile):
     figNum = figNum + 1
     
     ax1 = fig.add_subplot(4,1,1,xmargin=0.0)
-    ax2 = fig.add_subplot(4,1,2,xmargin=0.0)
-    ax3 = fig.add_subplot(4,1,3,xmargin=0.0)
-    ax4 = fig.add_subplot(4,1,4,xmargin=0.0)
+    ax2 = fig.add_subplot(4,1,2,xmargin=0.0, sharex=ax1)
+    ax3 = fig.add_subplot(4,1,3,xmargin=0.0, sharex=ax1)
+    ax4 = fig.add_subplot(4,1,4,xmargin=0.0, sharex=ax1)
     
     ax1.plot(ctimes, pitch3Sm, label='PitchIns3', color='orange', linewidth=1)
     ax1.plot(ctimes, pitch2Sm, label='PitchIns2', color='blue', linewidth=1)
@@ -498,7 +499,7 @@ def doPlotPitchRoll(outFile):
 
     configTimeAxis(ax1, -3, 10, "Pitch", 'upper right')
     configTimeAxis(ax2, -10, 10, "Roll", 'upper right')
-    configTimeAxis(ax3, -1, 1.5, "PitchDiffs", 'upper right')
+    configTimeAxis(ax3, -0.5, 1, "PitchDiffs", 'upper right')
     configTimeAxis(ax4, -1, 1, "RollDiffs", 'upper right')
 
     fig.autofmt_xdate()
@@ -528,9 +529,9 @@ def doPlotDiffs(outFile):
     figNum = figNum + 1
     
     ax1 = fig.add_subplot(4,1,1,xmargin=0.0)
-    ax2 = fig.add_subplot(4,1,2,xmargin=0.0)
-    ax3 = fig.add_subplot(4,1,3,xmargin=0.0)
-    ax4 = fig.add_subplot(4,1,4,xmargin=0.0)
+    ax2 = fig.add_subplot(4,1,2,xmargin=0.0, sharex=ax1)
+    ax3 = fig.add_subplot(4,1,3,xmargin=0.0, sharex=ax1)
+    ax4 = fig.add_subplot(4,1,4,xmargin=0.0, sharex=ax1)
     
     ax1.plot(ctimes, driftDiffSm, \
              label='driftDiff', color='black', linewidth=1)
@@ -567,7 +568,7 @@ def doPlotDiffs(outFile):
 
     configTimeAxis(ax1, -3, 3.0, "diffs", 'upper right')
     # configTimeAxis(ax2, -0.5, 3, "diffs", 'upper right')
-    configTimeAxis(ax2, -9999, -9999, "diffs", 'upper right')
+    configTimeAxis(ax2, -3, 8, "diffs", 'upper right')
     configTimeAxis(ax3, -9999, -9999, "SurfaceVel", 'upper right')
     configTimeAxis(ax4, -0.25, 0.25, "Err", 'upper right')
     
@@ -706,7 +707,7 @@ def doPlotEstPitchDiff(outFile):
     figNum = figNum + 1
     
     ax1 = fig.add_subplot(2,1,1,xmargin=0.0)
-    ax2 = fig.add_subplot(2,1,2,xmargin=0.0)
+    ax2 = fig.add_subplot(2,1,2,xmargin=0.0, sharex=ax1)
     
     ax1.plot(ctimes, estPitchDiffSm, \
              label='estPitchDiff', color='red', linewidth=1)
@@ -718,7 +719,7 @@ def doPlotEstPitchDiff(outFile):
     ax2.plot(ctimes, surfaceVelSm, \
              label='surfaceVel', color='blue', linewidth=1)
 
-    configTimeAxis(ax1, -0.5, 1, "diffs", 'upper right')
+    configTimeAxis(ax1, -1, 1, "diffs", 'upper right')
     configTimeAxis(ax2, -1.5, 1, "SurfaceVel", 'upper right')
     
     fig.autofmt_xdate()
