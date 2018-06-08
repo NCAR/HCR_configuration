@@ -364,30 +364,6 @@ secondary_label = "secondary";
 
 print_primary_custom_variables = FALSE;
 
-///////////// primary_custom_labels ///////////////////
-//
-// Labels for primary custom variables.
-//
-// If the label is left empty, the variable is not printed.
-//
-//
-// Type: string
-// 1D array - fixed length - 10 elements.
-//
-
-primary_custom_labels = {
- "custom0",
- "custom1",
- "custom2",
- "custom3",
- "custom4",
- "custom5",
- "custom6",
- "custom7",
- "custom8",
- "custom9"
-};
-
 ///////////// print_secondary_custom_variables ////////
 //
 // If true, write the custom variables for secondary data set.
@@ -397,30 +373,6 @@ primary_custom_labels = {
 //
 
 print_secondary_custom_variables = FALSE;
-
-///////////// secondary_custom_labels /////////////////
-//
-// Labels for secondary custom variables.
-//
-// If the label is left empty, the variable is not printed.
-//
-//
-// Type: string
-// 1D array - fixed length - 10 elements.
-//
-
-secondary_custom_labels = {
- "custom0",
- "custom1",
- "custom2",
- "custom3",
- "custom4",
- "custom5",
- "custom6",
- "custom7",
- "custom8",
- "custom9"
-};
 
 ///////////// print_surface_velocity_stats ////////////
 //
@@ -445,4 +397,58 @@ print_surface_velocity_stats = FALSE;
 //
 
 surface_velocity_custom_index = 1;
+
+//======================================================================
+//
+// Specify the custom field labels.
+//
+//======================================================================
+ 
+///////////// primary_custom_labels ///////////////////
+//
+// Labels for primary custom variables.
+//
+// If the label is left empty, the variable is not printed.
+//
+//
+// Type: string
+// 1D array - fixed length - 10 elements.
+//
+
+primary_custom_labels = {
+ "pitch_irs2",
+ "pitch_irs3",
+ "roll_irs2",
+ "roll_irs3",
+ "drift_irs2",
+ "drift_irs3",
+ "nose_temp",
+ "custom7",
+ "custom8",
+ "custom9"
+};
+
+///////////// secondary_custom_labels /////////////////
+//
+// Labels for secondary custom variables.
+//
+// If the label is left empty, the variable is not printed.
+//
+//
+// Type: string
+// 1D array - fixed length - 10 elements.
+//
+
+secondary_custom_labels = {
+ "tail_cone_temp",
+ "surface_vel",
+ "azimuth",
+ "elevation",
+ "rotation",
+ "tilt",
+ "custom6",
+ "custom7",
+ "custom8",
+ "custom9"
+};
 
