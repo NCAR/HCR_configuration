@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 #===========================================================================
 #
@@ -19,6 +19,7 @@ from matplotlib import dates
 import math
 import datetime
 import contextlib
+import pathlib
 
 def main():
 
@@ -32,7 +33,7 @@ def main():
     timeLimitsSet = False
     global figNum
     figNum = 0
-
+    
     # parse the command line
 
     usage = "usage: %prog [options]"
@@ -47,7 +48,7 @@ def main():
                       help='Set verbose debugging on')
     parser.add_option('--file',
                       dest='compFilePath',
-                      default='/scr/sci/dixon/data/cset/qc/data/cset/CSET.rf05.20150714_164000.to.20150715_002000.txt',
+                      default='/scr/rain1/rsfdata/projects/socrates/hcr/qc/data/socrates/SOCRATES.rf01.20180115_215100.to.20180116_052600.txt',
                       help='File path for comparison results')
     parser.add_option('--widthMain',
                       dest='mainWidthMm',
@@ -69,6 +70,11 @@ def main():
                       dest='endTime',
                       default='1970 01 01 00 00 00',
                       help='End time for XY plot')
+    parser.add_option('--figDir',
+                      dest='figureDir',
+                      default='/figs/',
+                      help='Directory for output figures')
+    
     
     (options, args) = parser.parse_args()
     
@@ -90,11 +96,11 @@ def main():
         timeLimitsSet = True
 
     if (options.debug == True):
-        print >>sys.stderr, "Running %prog"
-        print >>sys.stderr, "  compFilePath: ", options.compFilePath
+        print("Running %prog", file=sys.stderr)
+        print("  compFilePath: ", options.compFilePath, file=sys.stderr)
         if (timeLimitsSet):
-            print >>sys.stderr, "  startTime: ", startTime
-            print >>sys.stderr, "  endTime: ", endTime
+            print("  startTime: ", startTime, file=sys.stderr)
+            print("  endTime: ", endTime, file=sys.stderr)
 
 
     # read in column headers for bias results
@@ -110,21 +116,38 @@ def main():
     # load up the data arrays
 
     loadDataArrays(compData, compTimes)
+    
+    # make output figure name sting
+    
+    if options.figureDir == '/figs/':
+        options.figureDir=os.path.split(options.compFilePath)[0] + '/figs/'
+        
+    outFile=options.figureDir + os.path.splitext(os.path.split(options.compFilePath)[1])[0]
+    
+    # create figure directory if necessary
+    
+    pathlib.Path(options.figureDir).mkdir(parents=False, exist_ok=True)
+    
+    # close all existing figures
+    
+    mpl.pyplot.close("all")
 
     # render the plots
     
     #doPlotOverview()
-    doPlotPitchRoll()
-    doPlotDiffs()
-    doPlotEstPitchDiff()
+    doPlotPitchRoll(outFile)
+    doPlotDiffs(outFile)
+    doPlotEstPitchDiff(outFile)
     #doPlotRadarAngles()
     #doPlot2DHist()
 
-    # show them
-
-    plt.show()
-
-    sys.exit(0)
+    # If you want to show the plots, uncomment the following line
+    # Showing the plots will stop the script so it does not work when run as script
+    
+    #plt.show()
+   
+    sys.exit()
+   
     
 ########################################################################
 # Read columm headers for the data
@@ -144,10 +167,10 @@ def readColumnHeaders(filePath):
         # header
         colHeaders = line.lstrip("# ").rstrip("\n").split()
         if (options.debug == True):
-            print >>sys.stderr, "colHeaders: ", colHeaders
+            print("colHeaders: ", colHeaders, file=sys.stderr)
     else:
-        print >>sys.stderr, "ERROR - readColumnHeaders"
-        print >>sys.stderr, "  First line does not start with #"
+        print("ERROR - readColumnHeaders", file=sys.stderr)
+        print("  First line does not start with #", file=sys.stderr)
         return -1, colHeaders, colData
     
     for index, var in enumerate(colHeaders, start=0):
@@ -177,7 +200,7 @@ def readInputData(filePath, colHeaders, colData):
         data = line.strip().split()
         if (len(data) != len(colHeaders)):
             if (options.debug == True):
-                print >>sys.stderr, "skipping line: ", line
+                print("skipping line: ", line, file=sys.stderr)
             continue;
 
         for index, var in enumerate(colHeaders, start=0):
@@ -240,8 +263,8 @@ def loadDataArrays(compData, compTimes):
 
     temp = np.array(compData["temp"]).astype(np.double)
     tempCmigits = np.array(compData["tempSec"]).astype(np.double)
-    tempTailcone = np.array(compData["custom0Sec"]).astype(np.double)
-    tempNose = np.array(compData["custom6"]).astype(np.double)
+    tempTailcone = np.array(compData["tail_cone_temp"]).astype(np.double)
+    tempNose = np.array(compData["nose_temp"]).astype(np.double)
     tempAtf1 = np.array(compData["custom7"]).astype(np.double)
     pressure = np.array(compData["pressure"]).astype(np.double)
     rh = np.array(compData["rh"]).astype(np.double)
@@ -275,7 +298,7 @@ def loadDataArrays(compData, compTimes):
     global pitchDiffSm, rollDiffSm, trackDiffSm, hdgDiffSm, vVelDiffSm
     global driftDiff, driftDiffSm
 
-    altDiff = np.array(compData["altDiff"]).astype(np.double)
+    altDiff = np.array(compData["altKmDiff"]).astype(np.double)
     altDiffSm = movingAverage(altDiff, filtLen)
 
     pitchDiff = np.array(compData["pitchDiff"]).astype(np.double)
@@ -300,9 +323,9 @@ def loadDataArrays(compData, compTimes):
     global pitchDiff2, pitchDiff2Sm, pitchDiff3, pitchDiff3Sm
     pitch = np.array(compData["pitch"]).astype(np.double)
     pitchSm = movingAverage(pitch, filtLen)
-    pitch2 = np.array(compData["custom0"]).astype(np.double)
+    pitch2 = np.array(compData["pitch_irs2"]).astype(np.double)
     pitch2Sm = movingAverage(pitch2, filtLen)
-    pitch3 = np.array(compData["custom1"]).astype(np.double)
+    pitch3 = np.array(compData["pitch_irs3"]).astype(np.double)
     pitch3Sm = movingAverage(pitch3, filtLen)
     pitchDiff2 = pitch - pitch2
     pitchDiff2Sm = movingAverage(pitchDiff2, filtLen)
@@ -319,9 +342,9 @@ def loadDataArrays(compData, compTimes):
     global rollDiff2, rollDiff2Sm, rollDiff3, rollDiff3Sm
     roll = np.array(compData["roll"]).astype(np.double)
     rollSm = movingAverage(roll, filtLen)
-    roll2 = np.array(compData["custom2"]).astype(np.double)
+    roll2 = np.array(compData["roll_irs2"]).astype(np.double)
     roll2Sm = movingAverage(roll2, filtLen)
-    roll3 = np.array(compData["custom3"]).astype(np.double)
+    roll3 = np.array(compData["roll_irs3"]).astype(np.double)
     roll3Sm = movingAverage(roll3, filtLen)
     rollDiff2 = roll - roll2
     rollDiff2Sm = movingAverage(rollDiff2, filtLen)
@@ -334,22 +357,22 @@ def loadDataArrays(compData, compTimes):
 
     global drift, drift2, drift3, driftDiff2, driftDiff2Sm, driftDiff3, driftDiff3Sm
     drift = np.array(compData["drift"]).astype(np.double)
-    drift2 = np.array(compData["custom4"]).astype(np.double)
-    drift3 = np.array(compData["custom5"]).astype(np.double)
+    drift2 = np.array(compData["drift_irs2"]).astype(np.double)
+    drift3 = np.array(compData["drift_irs3"]).astype(np.double)
     driftDiff2 = drift - drift2
     driftDiff2Sm = movingAverage(driftDiff2, filtLen)
     driftDiff3 = drift - drift3
     driftDiff3Sm = movingAverage(driftDiff3, filtLen)
 
     global surfaceVel, surfaceVelSm
-    surfaceVel = np.array(compData["custom1Sec"]).astype(np.double)
+    surfaceVel = np.array(compData["surface_vel"]).astype(np.double)
     surfaceVelSm = movingAverage(surfaceVel, filtLen * 5)
 
     global azimuth, elevation, rotation, tilt
-    azimuth = np.array(compData["custom2Sec"]).astype(np.double)
-    elevation = np.array(compData["custom3Sec"]).astype(np.double)
-    rotation = np.array(compData["custom4Sec"]).astype(np.double)
-    tilt = np.array(compData["custom5Sec"]).astype(np.double)
+    azimuth = np.array(compData["azimuth"]).astype(np.double)
+    elevation = np.array(compData["elevation"]).astype(np.double)
+    rotation = np.array(compData["rotation"]).astype(np.double)
+    tilt = np.array(compData["tilt"]).astype(np.double)
 
     global elevErr, elevErrSm, tiltErr, tiltErrSm
     elevErr = elevation
@@ -429,7 +452,7 @@ def doPlotOverview():
 ########################################################################
 # Plot INS and diffs
 
-def doPlotPitchRoll():
+def doPlotPitchRoll(outFile):
 
     # set up plots
 
@@ -441,9 +464,9 @@ def doPlotPitchRoll():
     figNum = figNum + 1
     
     ax1 = fig.add_subplot(4,1,1,xmargin=0.0)
-    ax2 = fig.add_subplot(4,1,2,xmargin=0.0)
-    ax3 = fig.add_subplot(4,1,3,xmargin=0.0)
-    ax4 = fig.add_subplot(4,1,4,xmargin=0.0)
+    ax2 = fig.add_subplot(4,1,2,xmargin=0.0, sharex=ax1)
+    ax3 = fig.add_subplot(4,1,3,xmargin=0.0, sharex=ax1)
+    ax4 = fig.add_subplot(4,1,4,xmargin=0.0, sharex=ax1)
     
     ax1.plot(ctimes, pitch3Sm, label='PitchIns3', color='orange', linewidth=1)
     ax1.plot(ctimes, pitch2Sm, label='PitchIns2', color='blue', linewidth=1)
@@ -476,7 +499,7 @@ def doPlotPitchRoll():
 
     configTimeAxis(ax1, -3, 10, "Pitch", 'upper right')
     configTimeAxis(ax2, -10, 10, "Roll", 'upper right')
-    configTimeAxis(ax3, -1, 1.5, "PitchDiffs", 'upper right')
+    configTimeAxis(ax3, -0.5, 1, "PitchDiffs", 'upper right')
     configTimeAxis(ax4, -1, 1, "RollDiffs", 'upper right')
 
     fig.autofmt_xdate()
@@ -486,13 +509,15 @@ def doPlotPitchRoll():
     # title name
 
     fig.suptitle("ROLL and PITCH - file " + os.path.basename(options.compFilePath))
+    
+    plt.savefig(outFile + '.rollPitch.png')
 
     return
 
 ########################################################################
 # Plot the diffs
 
-def doPlotDiffs():
+def doPlotDiffs(outFile):
 
     # set up plots
 
@@ -504,9 +529,9 @@ def doPlotDiffs():
     figNum = figNum + 1
     
     ax1 = fig.add_subplot(4,1,1,xmargin=0.0)
-    ax2 = fig.add_subplot(4,1,2,xmargin=0.0)
-    ax3 = fig.add_subplot(4,1,3,xmargin=0.0)
-    ax4 = fig.add_subplot(4,1,4,xmargin=0.0)
+    ax2 = fig.add_subplot(4,1,2,xmargin=0.0, sharex=ax1)
+    ax3 = fig.add_subplot(4,1,3,xmargin=0.0, sharex=ax1)
+    ax4 = fig.add_subplot(4,1,4,xmargin=0.0, sharex=ax1)
     
     ax1.plot(ctimes, driftDiffSm, \
              label='driftDiff', color='black', linewidth=1)
@@ -542,7 +567,8 @@ def doPlotDiffs():
 
 
     configTimeAxis(ax1, -3, 3.0, "diffs", 'upper right')
-    configTimeAxis(ax2, -0.5, 3, "diffs", 'upper right')
+    # configTimeAxis(ax2, -0.5, 3, "diffs", 'upper right')
+    configTimeAxis(ax2, -3, 8, "diffs", 'upper right')
     configTimeAxis(ax3, -9999, -9999, "SurfaceVel", 'upper right')
     configTimeAxis(ax4, -0.25, 0.25, "Err", 'upper right')
     
@@ -551,6 +577,8 @@ def doPlotDiffs():
     fig.subplots_adjust(bottom=0.08, left=0.06, right=0.97, top=0.96)
 
     fig.suptitle("DIFFS GV minus CMIGITS - file " + os.path.basename(options.compFilePath))
+    
+    plt.savefig(outFile + '.diffs.png')
 
     return
 
@@ -667,7 +695,7 @@ def doPlotRadarAngles():
 ########################################################################
 # Plot the estimated pitch difference, using surface vel to estimate it
 
-def doPlotEstPitchDiff():
+def doPlotEstPitchDiff(outFile):
 
     # set up plots
 
@@ -679,7 +707,7 @@ def doPlotEstPitchDiff():
     figNum = figNum + 1
     
     ax1 = fig.add_subplot(2,1,1,xmargin=0.0)
-    ax2 = fig.add_subplot(2,1,2,xmargin=0.0)
+    ax2 = fig.add_subplot(2,1,2,xmargin=0.0, sharex=ax1)
     
     ax1.plot(ctimes, estPitchDiffSm, \
              label='estPitchDiff', color='red', linewidth=1)
@@ -691,7 +719,7 @@ def doPlotEstPitchDiff():
     ax2.plot(ctimes, surfaceVelSm, \
              label='surfaceVel', color='blue', linewidth=1)
 
-    configTimeAxis(ax1, -0.5, 1, "diffs", 'upper right')
+    configTimeAxis(ax1, -1, 1, "diffs", 'upper right')
     configTimeAxis(ax2, -1.5, 1, "SurfaceVel", 'upper right')
     
     fig.autofmt_xdate()
@@ -699,6 +727,8 @@ def doPlotEstPitchDiff():
     fig.subplots_adjust(bottom=0.08, left=0.06, right=0.97, top=0.96)
 
     fig.suptitle("ESTIMATED PITCH DIFF: GV-CMIGITS - file " + os.path.basename(options.compFilePath))
+    
+    plt.savefig(outFile + '.estPitchDiff.png')
     
     return
 
@@ -730,17 +760,17 @@ def configTimeAxis(ax, miny, maxy, ylabel, legendLoc):
 def runCommand(cmd):
 
     if (options.debug == True):
-        print >>sys.stderr, "running cmd:",cmd
+        print("running cmd:",cmd, file=sys.stderr)
     
     try:
         retcode = subprocess.call(cmd, shell=True)
         if retcode < 0:
-            print >>sys.stderr, "Child was terminated by signal: ", -retcode
+            print("Child was terminated by signal: ", -retcode, file=sys.stderr)
         else:
             if (options.debug == True):
-                print >>sys.stderr, "Child returned code: ", retcode
-    except OSError, e:
-        print >>sys.stderr, "Execution failed:", e
+                print("Child returned code: ", retcode, file=sys.stderr)
+    except OSError as e:
+        print("Execution failed:", e, file=sys.stderr)
 
 ########################################################################
 # Run - entry point

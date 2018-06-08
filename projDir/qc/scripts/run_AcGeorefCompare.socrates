@@ -1,7 +1,7 @@
 #! /bin/csh
 
 setenv PROJ_DIR $HOME/git/HCR_configuration/projDir
-setenv DATA_DIR  /scr/rain1/rsfdata/projects/socrates/hcr/qc/data/socrates/
+setenv DATA_DIR  /scr/rain1/rsfdata/projects/socrates/hcr/qc/data/socrates
 mkdir -p $DATA_DIR
 
 cd $PROJ_DIR/qc/params
