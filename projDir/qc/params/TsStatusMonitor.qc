@@ -1,5 +1,5 @@
 /**********************************************************************
- * TDRP params for ./TsStatusMonitor
+ * TDRP params for TsStatusMonitor
  **********************************************************************/
 
 //======================================================================
@@ -52,6 +52,26 @@ instance = "qc";
 //
 //======================================================================
  
+///////////// mode ////////////////////////////////////
+//
+// Operating mode.
+//
+// In FMQ realtime mode, we open the input_fmq, and read the time series 
+//   data from the queue. In ARCHIVE mode, we specify a start and end 
+//   time, and read in the files in this time interval from the input_dir. 
+//   In FILELIST mode, we move through a list of file names specified on 
+//   the command line. .
+//
+//
+// Type: enum
+// Options:
+//     FMQ
+//     ARCHIVE
+//     FILELIST
+//
+
+mode = ARCHIVE;
+
 ///////////// fmq_name ////////////////////////////////
 //
 // FMQ name. For FMQ input_mode only.
@@ -78,6 +98,42 @@ fmq_name = "/tmp/fmq/ts/wband/shmem_10000";
 //
 
 data_valid_interval_secs = 300;
+
+///////////// archive_data_dir ////////////////////////
+//
+// Input directory for time series files.
+//
+// ARCHIVE mode.
+//
+//
+// Type: string
+//
+
+archive_data_dir = "/scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save";
+
+///////////// archive_start_time //////////////////////
+//
+// Start time for archive mode.
+//
+// In ARCHIVE mode, data retrieval starts at this time.
+//
+//
+// Type: string
+//
+
+archive_start_time = "2018 01 15 00 00 00";
+
+///////////// archive_end_time ////////////////////////
+//
+// End time for archive mode.
+//
+// In ARCHIVE mode, data retrieval ends at this time.
+//
+//
+// Type: string
+//
+
+archive_end_time = "2018 02 28 00 00 00";
 
 //======================================================================
 //
@@ -1588,9 +1644,9 @@ xml_entries = {
     ok_boolean = TRUE,
     boolean_failure_is_critical = TRUE,
     ok_value_lower_limit = 0,
-    ok_value_upper_limit = 2.0,
+    ok_value_upper_limit = 2,
     impaired_value_lower_limit = 0,
-    impaired_value_upper_limit = 1.0,
+    impaired_value_upper_limit = 1,
     label = "",
     units = "secs",
     graph_min_val = 0,
@@ -1648,9 +1704,9 @@ xml_entries = {
     ok_boolean = TRUE,
     boolean_failure_is_critical = TRUE,
     ok_value_lower_limit = 0,
-    ok_value_upper_limit = 5.0,
+    ok_value_upper_limit = 5,
     impaired_value_lower_limit = 0,
-    impaired_value_upper_limit = 10.0,
+    impaired_value_upper_limit = 10,
     label = "",
     units = "m",
     graph_min_val = 0,
@@ -2593,7 +2649,7 @@ g0_velocity_n_samples = 1024;
 // Type: boolean
 //
 
-write_to_nagios = TRUE;
+write_to_nagios = FALSE;
 
 ///////////// nagios_file_path ////////////////////////
 //
@@ -2752,7 +2808,6 @@ write_to_spdb = TRUE;
 // Type: string
 //
 
-// spdb_url = "spdbp:://localhost::spdb/monitor/hcr/qc";
 spdb_url = "/scr/rain1/rsfdata/projects/socrates/hcr/spdb/monitor/qc";
 
 ///////////// spdb_interval_secs //////////////////////
@@ -2763,7 +2818,7 @@ spdb_url = "/scr/rain1/rsfdata/projects/socrates/hcr/spdb/monitor/qc";
 // Type: int
 //
 
-spdb_interval_secs = 0;
+spdb_interval_secs = 1;
 
 ///////////// compress_spdb ///////////////////////////
 //
