@@ -4,7 +4,7 @@ cd ~hcr/git/HCR_instrument/src/hcr_xmit
 
 running "hcr_xmitd"
 if ($status == 1) then
-  ./hcr_xmitd /dev/ttyS1 --foreground --instance ops |& \
+  ./hcr_xmitd /dev/ttyS0 --foreground --instance ops |& \
 	LogFilter -d $ERRORS_LOG_DIR -p hcr_xmitd -i ops >& /dev/null &
 endif
 
