@@ -48,7 +48,7 @@ instance = "qc";
 
 //======================================================================
 //
-// DATA INPUT - from file message queue (FMQ).
+// DATA INPUT MODES.
 //
 //======================================================================
  
@@ -65,7 +65,7 @@ instance = "qc";
 //
 // Type: enum
 // Options:
-//     FMQ
+//     REALTIME_FMQ
 //     ARCHIVE
 //     FILELIST
 //
@@ -74,7 +74,7 @@ mode = ARCHIVE;
 
 ///////////// fmq_name ////////////////////////////////
 //
-// FMQ name. For FMQ input_mode only.
+// FMQ name. For REALTIME_FMQ input_mode only.
 //
 // Path to FMQ files. There are 2 files, one with a .buf extension and 
 //   one with a .stat extention. This path does not include the 
@@ -2818,7 +2818,7 @@ spdb_url = "/scr/rain1/rsfdata/projects/socrates/hcr/spdb/monitor/qc";
 // Type: int
 //
 
-spdb_interval_secs = 1;
+spdb_interval_secs = 0;
 
 ///////////// compress_spdb ///////////////////////////
 //
@@ -2829,6 +2829,29 @@ spdb_interval_secs = 1;
 //
 
 compress_spdb = FALSE;
+
+///////////// spdb_put_mode ///////////////////////////
+//
+// Put mode for SPDB data base.
+//
+// PUT_OVER - new data will overwrite a previously-stored data for the 
+//   same time. PUT_ADD: a chunk will be added to the list of chunks 
+//   stored at a given valid_time. PUT_ADD_UNIQUE: a chunk will be added 
+//   to the list of data stored at a given valid_time, provided identical 
+//   data has not already been added. PUT_ONCE: you can only put data for 
+//   a given time once. Trying to put at the same valid_time again will 
+//   generate an error. .
+//
+//
+// Type: enum
+// Options:
+//     PUT_OVER
+//     PUT_ADD
+//     PUT_ADD_UNIQUE
+//     PUT_ONCE
+//
+
+spdb_put_mode = PUT_ADD_UNIQUE;
 
 //======================================================================
 //
