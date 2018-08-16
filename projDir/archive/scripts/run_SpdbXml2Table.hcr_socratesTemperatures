@@ -1,25 +1,25 @@
 #! /bin/csh
 
 cd $HOME/git/HCR_configuration/projDir/archive/params
-setenv DATA_DIR  /scr/rain1/rsfdata/projects/socrates/hcr/qc/data/socrates
+setenv DATA_DIR  /scr/rain1/rsfdata/projects/socrates/hcr/qc/data/socrates/temperatures1s
 
 # flightNum: ff01
 # startTime: 2018/01/08 16:00:00
 # endTime: 2018/01/09 00:10:00
 
-SpdbXml2Table -params SpdbXml2Table.hcr_socratesTemperatures -debug -start "2018 01 08 16 00 00" -end "2018 01 09 00 10 00" > $DATA_DIR/SOCRATES.rf01.20180108_160000.to.20180109_001000_temperatures.txt
+SpdbXml2Table -params SpdbXml2Table.hcr_socratesTemperatures -debug -start "2018 01 08 16 00 00" -end "2018 01 09 00 10 00" > $DATA_DIR/SOCRATES.ff01.20180108_160000.to.20180109_001000_temperatures.txt
 
 # flightNum: ff02
 # startTime: 2018/01/09 19:55:00
 # endTime: 2018/01/10 01:51:00
 
-SpdbXml2Table -params SpdbXml2Table.hcr_socratesTemperatures -debug -start "2018 01 09 19 55 00" -end "2018 01 10 01 51 00" > $DATA_DIR/SOCRATES.rf01.20180109_195500.to.20180110_015100_temperatures.txt
+SpdbXml2Table -params SpdbXml2Table.hcr_socratesTemperatures -debug -start "2018 01 09 19 55 00" -end "2018 01 10 01 51 00" > $DATA_DIR/SOCRATES.ff02.20180109_195500.to.20180110_015100_temperatures.txt
 
 # flightNum: ff03
 # startTime: 2018/01/10 20:47:00
 # endTime: 2018/01/11 03:04:00
 
-SpdbXml2Table -params SpdbXml2Table.hcr_socratesTemperatures -debug -start "2018 01 10 20 47 00" -end "2018 01 11 03 04 00" > $DATA_DIR/SOCRATES.rf01.20180110_204700.to.20180111_030400_temperatures.txt
+SpdbXml2Table -params SpdbXml2Table.hcr_socratesTemperatures -debug -start "2018 01 10 20 47 00" -end "2018 01 11 03 04 00" > $DATA_DIR/SOCRATES.ff03.20180110_204700.to.20180111_030400_temperatures.txt
 
 # flightNum: rf01
 # startTime: 2018/01/15 21:51:00
