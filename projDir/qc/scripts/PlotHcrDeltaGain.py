@@ -47,7 +47,7 @@ def main():
                       help='Set verbose debugging on')
     parser.add_option('--file',
                       dest='gainFilePath',
-                      default='/tmp/hcr/deltaGains.txt',
+                      default='/scr/rain1/rsfdata/projects/socrates/hcr/qc/data/socrates/tempVsGain/deltaGains.txt',
                       help='File path for delta gains')
     parser.add_option('--widthMain',
                       dest='mainWidthMm',
@@ -59,11 +59,11 @@ def main():
                       help='Height of main figure in mm')
     parser.add_option('--start',
                       dest='startTime',
-                      default='1970 01 01 00 00 00',
+                      default='2018 02 07 19 30 00',
                       help='Start time for XY plot')
     parser.add_option('--end',
                       dest='endTime',
-                      default='1970 01 01 00 00 00',
+                      default='2018 02 07 19 40 00',
                       help='End time for XY plot')
     
     (options, args) = parser.parse_args()
