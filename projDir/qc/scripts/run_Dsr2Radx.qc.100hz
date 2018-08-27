@@ -10,7 +10,7 @@ source ~/git/HCR_configuration/projDir/qc/scripts/set_env_qc
 
 cd $PROJ_DIR/qc/params
 
-Dsr2Radx -params Dsr2Radx.qc.100hz -debug >& /tmp/Dsr2Radx.qc.100hz.log &
+Dsr2Radx -params Dsr2Radx.qc.100hz -verbose >& /tmp/Dsr2Radx.qc.100hz.log &
 
 tail -f /tmp/Dsr2Radx.qc.100hz.log
 

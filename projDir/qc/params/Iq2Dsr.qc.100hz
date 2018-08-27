@@ -1578,7 +1578,7 @@ correct_hcr_v_rx_gain_for_temperature = TRUE;
 // Type: string
 //
 
-hcr_delta_gain_spdb_url = "/scr/rain1/rsfdata/projects/socrates/hcr/qc/data/socrates/spdb/tempVsGain";
+hcr_delta_gain_spdb_url = "$(DATA_DIR)/spdb/tempVsGain";
 
 ///////////// hcr_delta_gain_search_margin_secs ///////
 //
