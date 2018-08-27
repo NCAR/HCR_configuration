@@ -8,17 +8,19 @@ source ~/git/HCR_configuration/projDir/qc/scripts/set_env_qc
 
 cd $PROJ_DIR/qc/params
 
-Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/2018011[5,6,7,8,9]*/*iwrf_ts >& $DATA_DIR/logs/Iq2Dsr.qc.100hz
+Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/2018012[5,6]/*iwrf_ts >>& $DATA_DIR/logs/Iq2Dsr.qc.100hz
 
-Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/2018012*/*iwrf_ts >>& $DATA_DIR/logs/Iq2Dsr.qc.100hz
+#Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/2018011[5,6,7,8,9]*/*iwrf_ts >& $DATA_DIR/logs/Iq2Dsr.qc.100hz
 
-Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/2018013*/*iwrf_ts >>& $DATA_DIR/logs/Iq2Dsr.qc.100hz
+#Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/2018012*/*iwrf_ts >>& $DATA_DIR/logs/Iq2Dsr.qc.100hz
 
-Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/2018020*/*iwrf_ts >>& $DATA_DIR/logs/Iq2Dsr.qc.100hz
+#Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/2018013*/*iwrf_ts >>& $DATA_DIR/logs/Iq2Dsr.qc.100hz
 
-Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/2018021*/*iwrf_ts >>& $DATA_DIR/logs/Iq2Dsr.qc.100hz
+#Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/2018020*/*iwrf_ts >>& $DATA_DIR/logs/Iq2Dsr.qc.100hz
 
-Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/2018022*/*iwrf_ts >>& $DATA_DIR/logs/Iq2Dsr.qc.100hz
+#Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/2018021*/*iwrf_ts >>& $DATA_DIR/logs/Iq2Dsr.qc.100hz
+
+#Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/2018022*/*iwrf_ts >>& $DATA_DIR/logs/Iq2Dsr.qc.100hz
 
 
 

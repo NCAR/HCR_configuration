@@ -59,8 +59,7 @@ tail -f $DATA_DIR/logs/Iq2Dsr.qc.100hz
 
 # NOTE: to kill this step run:
 
-snuff ./run_Iq2Dsr.qc.100hz
-snuff Iq2Dsr
+snuff run_Iq2Dsr.qc.100hz Iq2Dsr
 
 #################################################################
 # RadxMon - use to see moments are flowing
