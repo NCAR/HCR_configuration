@@ -32,6 +32,19 @@
 
 debug = DEBUG_OFF;
 
+///////////// beam_count_for_debug_print //////////////
+//
+// Interval at which beam data is printed in debug mode.
+//
+// We print out beam details in debug mode - this is the number of beams 
+//   between each print.
+//
+//
+// Type: int
+//
+
+beam_count_for_debug_print = 30;
+
 ///////////// instance ////////////////////////////////
 //
 // Process instance.
@@ -104,7 +117,7 @@ n_compute_threads = 20;
 //     FMQ
 //
 
-mode = FMQ;
+mode = ARCHIVE;
 
 ///////////// input_fmq ///////////////////////////////
 //
@@ -262,6 +275,22 @@ compute_prt_from_interpulse_periods = FALSE;
 
 change_velocity_sign_staggered = FALSE;
 
+///////////// use_pulse_width_from_ts_proc ////////////
+//
+// Option to use the pulse width in the ts_processing headers.
+//
+// The default mode is to use the pulse width from the pulse headers. 
+//   However, for some radar systems the pulse width is correct in the 
+//   ts_processing headers, but not correct in the pulse headers. So this 
+//   option allows you to override the pulse width in the pulse headers by 
+//   copying it over from the ts_processing header.
+//
+//
+// Type: boolean
+//
+
+use_pulse_width_from_ts_proc = FALSE;
+
 ///////////// override_primary_prt ////////////////////
 //
 // Option to override the prt in the time series.
@@ -303,6 +332,49 @@ primary_prt_secs = 0.001;
 //
 
 georef_time_margin_secs = 1;
+
+///////////// use_secondary_georeference //////////////
+//
+// If true, use the secondary georeference packet.
+//
+// By default, we use the primary georeference packet. And most mobile 
+//   radars only have one georeference. For those radars that have 2 
+//   georef devices, set this to true to use the secondary reference.
+//
+//
+// Type: boolean
+//
+
+use_secondary_georeference = FALSE;
+
+///////////// check_radar_id //////////////////////////
+//
+// Option to check the radar ID in the time series data stream.
+//
+// If TRUE, we will check that the radar_id in the header packet info is 
+//   either the specified radar_id, or is 0. This allows us to filter out 
+//   unwanted data from the time series stream. Mostly this is not 
+//   applicable. However, in some cases time series data from multiple 
+//   sources is included in a single stream, in which case we need to 
+//   filter it accordingly.
+//
+//
+// Type: boolean
+//
+
+check_radar_id = FALSE;
+
+///////////// radar_id ////////////////////////////////
+//
+// radar_id to be used for filtering incoming data.
+//
+// See 'check_radar_id' above.
+//
+//
+// Type: int
+//
+
+radar_id = 0;
 
 //======================================================================
 //
@@ -617,6 +689,43 @@ apply_elevation_offset = FALSE;
 //
 
 elevation_offset = 0;
+
+///////////// override_scan_mode //////////////////////
+//
+// Option to override the scan mode in the time series data.
+//
+// Set this to TRUE if the scan_mode is incorrect in the time series, 
+//   and you can override to a constant scan mode.
+//
+//
+// Type: boolean
+//
+
+override_scan_mode = TRUE;
+
+///////////// scan_mode_for_override //////////////////
+//
+// Select the scan mode for override.
+//
+// See 'override_scan_mode'.
+//
+//
+// Type: enum
+// Options:
+//     SCAN_MODE_UNKNOWN
+//     SCAN_MODE_SECTOR
+//     SCAN_MODE_COPLANE
+//     SCAN_MODE_RHI
+//     SCAN_MODE_VERTICAL_POINTING
+//     SCAN_MODE_IDLE
+//     SCAN_MODE_SURVEILLANCE
+//     SCAN_MODE_SUNSCAN
+//     SCAN_MODE_POINTING
+//     SCAN_MODE_MANUAL_PPI
+//     SCAN_MODE_MANUAL_RHI
+//
+
+scan_mode_for_override = SCAN_MODE_VERTICAL_POINTING;
 
 //======================================================================
 //
@@ -1206,6 +1315,32 @@ override_cal_zdr_correction = FALSE;
 
 zdr_correction_db = 0;
 
+///////////// threshold_zdr_using_snr /////////////////
+//
+// Option to threshold ZDR using SNR.
+//
+// If true, we will only compute ZDR if the SNR in both the H and V 
+//   co-polar channels exceeds this value. See 'min_snr_db_for_zdr'.
+//
+//
+// Type: boolean
+//
+
+threshold_zdr_using_snr = FALSE;
+
+///////////// min_snr_db_for_zdr //////////////////////
+//
+// Min SNR for computing ZDR (dB).
+//
+// If the SNR is below this threshold for either the H or V co-polar 
+//   channels, ZDR will be set to missing. See 'threshold_zdr_using_snr'.
+//
+//
+// Type: double
+//
+
+min_snr_db_for_zdr = -7;
+
 ///////////// override_cal_ldr_corrections ////////////
 //
 // Option to override the LDR corrections in the calibration data.
@@ -1242,6 +1377,36 @@ ldr_correction_db_h = 0;
 //
 
 ldr_correction_db_v = 0;
+
+///////////// threshold_ldr_using_snr /////////////////
+//
+// Option to threshold LDR using SNR.
+//
+// If true, we will only compute LDR if the SNR in both the co- and 
+//   cross-polar channels exceeds this value. Since the cross-polar 
+//   channel is generally the weaker channel, it is the SNR on the 
+//   cross-polar channel that will be limiting. See 'min_snr_db_for_ldr'.
+//
+//
+// Type: boolean
+//
+
+threshold_ldr_using_snr = FALSE;
+
+///////////// min_snr_db_for_ldr //////////////////////
+//
+// Min SNR for computing LDR (dB).
+//
+// For LDR, the cross polar channel is the weaker return. Therefore 
+//   effectively this threshold will be applied to the cross channel. If 
+//   the SNR is below this threshold for either the co- or cross-polar 
+//   channels, LDR will be set to missing. See 'threshold_ldr_using_snr'.
+//
+//
+// Type: double
+//
+
+min_snr_db_for_ldr = -7;
 
 ///////////// override_cal_system_phidp ///////////////
 //
@@ -1282,11 +1447,11 @@ change_phidp_sign = FALSE;
 
 //======================================================================
 //
-// CORRECT RECEIVER GAINS BASED ON MEASURED TEMPERATURE.
+// CORRECT RECEIVER GAINS BASED ON MEASURED TEMPERATURE IN STATUS XML.
 //
 //======================================================================
  
-///////////// correct_receiver_gains_for_temperature //
+///////////// correct_rx_gains_for_temperature ////////
 //
 // Option to correct the calibration receiver gains based on 
 //   temperature.
@@ -1301,62 +1466,21 @@ change_phidp_sign = FALSE;
 // Type: boolean
 //
 
-correct_receiver_gains_for_temperature = TRUE;
+correct_rx_gains_for_temperature = FALSE;
 
-///////////// rx_gain_correction //////////////////////
+///////////// rx_temp_gain_corrections ////////////////
 //
 // Correction to be applied to the gain in each receiver channel.
 //
+
+//
 // The correction is computed as:
 //
-//     correction = intercept + temperature * slope.
+//     correction = intercept + temperature * slope. 
 //
-//
-// Type: struct
-//   typedef struct {
-//      rx_channel_t rx_channel;
-//        Options:
-//          RX_CHANNEL_HC
-//          RX_CHANNEL_VC
-//          RX_CHANNEL_HX
-//          RX_CHANNEL_VX
-//      double slope;
-//      double intercept;
-//   }
-//
-// 1D array - variable length.
-//
-
-rx_gain_correction = {
-  {
-    rx_channel = RX_CHANNEL_HC,
-    slope = -0.0776,
-    intercept = 1.661
-  }
-  ,
-  {
-    rx_channel = RX_CHANNEL_VC,
-    slope = -0.0776,
-    intercept = 1.661
-  }
-  ,
-  {
-    rx_channel = RX_CHANNEL_HX,
-    slope = -0.0776,
-    intercept = 1.661
-  }
-  ,
-  {
-    rx_channel = RX_CHANNEL_VX,
-    slope = -0.0776,
-    intercept = 1.661
-  }
-};
-
-///////////// temperature_tags_in_status_xml //////////
-//
-// Specify the tag list for locating the temperature. These should be 
-//   delimited in xml format, using '<' and '>'.
+//  The tag list allows us to find the temperature in the status xml 
+//   block in the time series. These should be delimited in xml format, 
+//   using '<' and '>'. 
 //
 // The temperature will be searched for in the status_xml section of the 
 //   time series data. These tags specify how to find the temperature 
@@ -1379,10 +1503,105 @@ rx_gain_correction = {
 //   <HcrStatus><HcrReceiverStatus><EikTemp>.
 //
 //
+// Type: struct
+//   typedef struct {
+//      rx_channel_t rx_channel;
+//        Options:
+//          RX_CHANNEL_HC
+//          RX_CHANNEL_VC
+//          RX_CHANNEL_HX
+//          RX_CHANNEL_VX
+//      double slope;
+//      double intercept;
+//      string temp_tag_list_in_status_xml;
+//   }
+//
+// 1D array - variable length.
+//
+
+rx_temp_gain_corrections = {
+  {
+    rx_channel = RX_CHANNEL_HC,
+    slope = -0.0776,
+    intercept = 1.5564,
+    temp_tag_list_in_status_xml = "<HcrStatus><HcrReceiverStatus><EikTemp>"
+  }
+  ,
+  {
+    rx_channel = RX_CHANNEL_VC,
+    slope = -0.0776,
+    intercept = 1.5564,
+    temp_tag_list_in_status_xml = "<HcrStatus><HcrReceiverStatus><EikTemp>"
+  }
+  ,
+  {
+    rx_channel = RX_CHANNEL_HX,
+    slope = -0.0776,
+    intercept = 1.5564,
+    temp_tag_list_in_status_xml = "<HcrStatus><HcrReceiverStatus><EikTemp>"
+  }
+  ,
+  {
+    rx_channel = RX_CHANNEL_VX,
+    slope = -0.0776,
+    intercept = 1.5564,
+    temp_tag_list_in_status_xml = "<HcrStatus><HcrReceiverStatus><EikTemp>"
+  }
+};
+
+//======================================================================
+//
+// FOR HCR, CORRECT RECEIVER GAIN FOR TEMPERATURE USING VALUES FROM SPDB.
+//
+//======================================================================
+ 
+///////////// correct_hcr_v_rx_gain_for_temperature ///
+//
+// Option to correct the HCR V-channel receiver gain for temperature.
+//
+// Computing the HCR receiver gain correction is complicated. Therefore 
+//   this is done offline, and the results are stored as XML in SPDB. Here 
+//   we retrieve the values from SPDB and apply them to correct the 
+//   receiver gain.
+//
+//
+// Type: boolean
+//
+
+correct_hcr_v_rx_gain_for_temperature = TRUE;
+
+///////////// hcr_delta_gain_spdb_url /////////////////
+//
+// URL for HCR gain correction from SPDB.
+//
+//
 // Type: string
 //
 
-temperature_tags_in_status_xml = "<HcrStatus><HcrReceiverStatus><EikTemp>";
+hcr_delta_gain_spdb_url = "/scr/rain1/rsfdata/projects/socrates/hcr/qc/data/socrates/spdb/tempVsGain";
+
+///////////// hcr_delta_gain_search_margin_secs ///////
+//
+// Search margin when finding gain correction data (secs).
+//
+// We search for the value closest in time to the beam time. This is the 
+//   search margin on either side of the search time.
+//
+//
+// Type: int
+//
+
+hcr_delta_gain_search_margin_secs = 3600;
+
+///////////// hcr_v_rx_delta_gain_tag_list ////////////
+//
+// URL for HCR gain correction from SPDB.
+//
+//
+// Type: string
+//
+
+hcr_v_rx_delta_gain_tag_list = "<HcrTempGainCorrection><v_delta_gain>";
 
 //======================================================================
 //
@@ -2055,6 +2274,20 @@ noise_method = NOISE_RAY_BY_RAY;
 //
 
 noise_ngates_for_running_median = 2500;
+
+///////////// set_equal_noise_bias_in_all_channels ////
+//
+// Option to force the noise bias to be the same in all channels.
+//
+// The H co-polar channel is used as the master, if available, and the 
+//   noise bias in all channels is set to that for Hc. If Hc is not 
+//   available, Vc is used.
+//
+//
+// Type: boolean
+//
+
+set_equal_noise_bias_in_all_channels = FALSE;
 
 //======================================================================
 //
@@ -3159,6 +3392,70 @@ phidp_sdev_interest_weight = 1;
 
 //======================================================================
 //
+// RHOHV TEST to AUGMENT CMD.
+//
+// If clutter is present the RHOHV value should increase after 
+//   application of the clutter filter. We can use a RHOHV test to locate 
+//   gates at which CMD fails to identify weak clutter. This allows us to 
+//   improve clutter identification in cases with low CSR.
+//
+//======================================================================
+ 
+///////////// apply_rhohv_test_after_cmd //////////////
+//
+// Apply the RHOHV test after filtering based on CMD.
+//
+// This allows us to identify areas of weak clutter contamination that 
+//   CMD missed.
+//
+//
+// Type: boolean
+//
+
+apply_rhohv_test_after_cmd = FALSE;
+
+///////////// rhohv_test_min_rhohv ////////////////////
+//
+// Min RHOHV for application of the RHOHV test.
+//
+// If RHOHV is less than this, no weather is likely to be present. 
+//   Therefore do not apply the test to this gate.
+//
+//
+// Type: double
+//
+
+rhohv_test_min_rhohv = 0.5;
+
+///////////// rhohv_test_max_rhohv ////////////////////
+//
+// Max RHOHV for application of the RHOHV test.
+//
+// If RHOHV is greater than this, the weather return is highly coherent, 
+//   so clutter contamination is unlikely.
+//
+//
+// Type: double
+//
+
+rhohv_test_max_rhohv = 0.98;
+
+///////////// rhohv_improvement_factor_threshold //////
+//
+// The RHOHV improvment factor is a measure of the change in RHOHV 
+//   towards 1.0.
+//
+// The RHOHV test identifies clutter if the improvement factor exceeds 
+//   this value.
+//
+//
+// Type: double
+//
+
+rhohv_improvement_factor_threshold = 4;
+
+//======================================================================
+//
 // OUTPUT TO DSRADAR FMQ.
 //
 //======================================================================
@@ -3253,80 +3550,6 @@ write_blocking = TRUE;
 
 beam_wait_msecs = 0;
 
-///////////// set_end_of_vol_from_elev_angle //////////
-//
-// Option to set the end of vol flag based on elevation angle.
-//
-// If true, the program will look for changes in antenna angle to 
-//   compute the end of volume.
-//
-//
-// Type: boolean
-//
-
-set_end_of_vol_from_elev_angle = FALSE;
-
-///////////// vol_starts_at_bottom ////////////////////
-//
-// Flag to indicate that elevation angles increase in the volume.
-//
-// If the volume starts at the top, i.e. elevations decrease during the 
-//   volume, set this to FALSE.
-//
-//
-// Type: boolean
-//
-
-vol_starts_at_bottom = TRUE;
-
-///////////// elev_change_for_end_of_vol //////////////
-//
-// Change in elevation which triggers and end of volume.
-//
-// If the elevation angle changes by this amount, and end of volume flag 
-//   will be set.
-//
-// Minimum val: 0.1
-//
-// Type: double
-//
-
-elev_change_for_end_of_vol = 1.5;
-
-///////////// min_beams_per_vol ///////////////////////
-//
-// Min number of beams per volume.
-//
-// Used to prevent end-of-volume conditions being determined during 
-//   antenna transition to the start of the next volume. Only used for 
-//   set_end_of_vol_from_elev_angle.
-//
-//
-// Type: int
-//
-
-min_beams_per_vol = 360;
-
-///////////// set_end_of_vol_on_prf_change ////////////
-//
-// Option to set the end-of-vol flag when the PRF changes.
-//
-//
-// Type: boolean
-//
-
-set_end_of_vol_on_prf_change = TRUE;
-
-///////////// set_end_of_vol_on_pulse_width_change ////
-//
-// Option to set the end-of-vol flag when the pulse width changes.
-//
-//
-// Type: boolean
-//
-
-set_end_of_vol_on_pulse_width_change = FALSE;
-
 ///////////// output_fields ///////////////////////////
 //
 // Indicate which fields should be written to the Dsr FMQ.
@@ -3367,6 +3590,8 @@ set_end_of_vol_on_pulse_width_change = FALSE;
 //          WIDTH_PPLS
 //          WIDTH_H_ONLY
 //          WIDTH_V_ONLY
+//          WIDTH_PRT_LONG
+//          WIDTH_PRT_SHORT
 //          NCP
 //          NCP_H_ONLY
 //          NCP_V_ONLY
@@ -3467,8 +3692,6 @@ set_end_of_vol_on_pulse_width_change = FALSE;
 //          LAG0_VCHX_PHASE
 //          LAG0_HCVX_DB
 //          LAG0_HCVX_PHASE
-//          LAG0_VXHX_DB
-//          LAG0_VXHX_PHASE
 //          LAG1_HC_DB
 //          LAG1_HC_PHASE
 //          LAG1_VC_DB
@@ -3722,10 +3945,10 @@ output_fields = {
 
 //======================================================================
 //
-// SWEEP INFORMATION.
+// SWEEP TRANSITIONS.
 //
-// Option to read volume and tilt numbers from sweep information in the 
-//   incoming pulse data.
+// We can modify the end-of-sweep and start-of-sweep conditions found in 
+//   the time series.
 //
 //======================================================================
  
@@ -3741,15 +3964,6 @@ output_fields = {
 
 use_sweep_info_from_time_series = FALSE;
 
-//======================================================================
-//
-// SWEEP TRANSITIONS.
-//
-// We can modify the end-of-sweep and start-of-sweep conditions found in 
-//   the time series.
-//
-//======================================================================
- 
 ///////////// delay_tilt_start_msg_during_ant_trans ///
 //
 // Option to delay start of tilt message if antenna transition from time 
@@ -3778,6 +3992,33 @@ delay_tilt_start_msg_during_ant_trans = FALSE;
 
 set_end_of_sweep_when_antenna_changes_direction = FALSE;
 
+///////////// required_delta_angle_for_antenna_direction_change 
+//
+// The required angle difference for detecting direction change (deg).
+//
+// We examine the antenna angles for reversal in motion direction. The 
+//   antenna must move by at least this amount for deducing the direction.
+//
+//
+// Type: double
+//
+
+required_delta_angle_for_antenna_direction_change = 0.25;
+
+///////////// min_rays_in_sweep_for_antenna_direction_change 
+//
+// Min number of rays in a sweep when finding end of sweep from dirn 
+//   change.
+//
+// If the number of rays is less than this at the time of a direction 
+//   change, a change in sweep number is not triggered.
+//
+//
+// Type: int
+//
+
+min_rays_in_sweep_for_antenna_direction_change = 45;
+
 ///////////// max_sweeps_in_vol_for_antenna_direction_change 
 //
 // Max number of sweeps in volume when finding end of sweep from dirn 
@@ -3791,6 +4032,110 @@ set_end_of_sweep_when_antenna_changes_direction = FALSE;
 //
 
 max_sweeps_in_vol_for_antenna_direction_change = 32;
+
+//======================================================================
+//
+// VOLUME TRANSITIONS.
+//
+// We can modify the end-of-volume conditions found in the time series. 
+//   This section only applies if 'use_volume_info_from_time_series' is 
+//   set to FALSE.
+//
+//======================================================================
+ 
+///////////// use_volume_info_from_time_series ////////
+//
+// Option to read volume info from time series data.
+//
+// If not, we need to deduce the end of volume conditions. The options 
+//   that follow only apply if this parameter is set to false.
+//
+//
+// Type: boolean
+//
+
+use_volume_info_from_time_series = TRUE;
+
+///////////// set_end_of_vol_from_elev_angle //////////
+//
+// Option to set the end of vol flag based on elevation angle.
+//
+// If true, the program will look for changes in antenna angle to 
+//   compute the end of volume. Only applies if 
+//   'use_volume_info_from_time_series' is false.
+//
+//
+// Type: boolean
+//
+
+set_end_of_vol_from_elev_angle = FALSE;
+
+///////////// vol_starts_at_bottom ////////////////////
+//
+// Flag to indicate that elevation angles increase in the volume.
+//
+// If the volume starts at the top, i.e. elevations decrease during the 
+//   volume, set this to FALSE. Only applies if 
+//   'use_volume_info_from_time_series' is false.
+//
+//
+// Type: boolean
+//
+
+vol_starts_at_bottom = TRUE;
+
+///////////// elev_change_for_end_of_vol //////////////
+//
+// Change in elevation which triggers and end of volume.
+//
+// If the elevation angle changes by this amount, and end of volume flag 
+//   will be set. Only applies if 'use_volume_info_from_time_series' is 
+//   false.
+//
+// Minimum val: 0.1
+//
+// Type: double
+//
+
+elev_change_for_end_of_vol = 1.5;
+
+///////////// min_beams_per_vol ///////////////////////
+//
+// Min number of beams per volume.
+//
+// Used to prevent end-of-volume conditions being determined during 
+//   antenna transition to the start of the next volume. Only used for 
+//   set_end_of_vol_from_elev_angle.
+//
+//
+// Type: int
+//
+
+min_beams_per_vol = 360;
+
+///////////// set_end_of_vol_on_prf_change ////////////
+//
+// Option to set the end-of-vol flag when the PRF changes.
+//
+// Only applies if 'use_volume_info_from_time_series' is false.
+//
+//
+// Type: boolean
+//
+
+set_end_of_vol_on_prf_change = TRUE;
+
+///////////// set_end_of_vol_on_pulse_width_change ////
+//
+// Option to set the end-of-vol flag when the pulse width changes.
+//
+// Only applies if 'use_volume_info_from_time_series' is false.
+//
+//
+// Type: boolean
+//
+
+set_end_of_vol_on_pulse_width_change = FALSE;
 
 //======================================================================
 //

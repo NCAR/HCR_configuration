@@ -1,0 +1,27 @@
+#! /bin/csh -f
+
+# notes on running scripts for QC processes
+
+#################################################################
+# Iq2Dsr
+#
+# Open terminal
+# run
+
+source ~/git/HCR_configuration/projDir/qc/scripts/set_env_qc
+cd ~/git/HCR_configuration/projDir/qc/scripts
+./run_Iq2Dsr.qc.100hz &
+
+#################################################################
+# RadxMon - use to see moments are flowing
+#
+# Don't do this when re-processing the data, only as a test.
+# Iq2Dsr is writing the FMQ in blocking mode, and only 1 reader is allowed
+#
+# Open terminal
+
+RadxMon -fmq /tmp/fmq/qc_moments/100hz/shmem_30100 -summary -update -5
+
+
+
+
