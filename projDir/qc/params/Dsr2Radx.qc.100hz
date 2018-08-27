@@ -76,7 +76,7 @@ procmap_register_interval = 60;
 // Type: string
 //
 
-input_fmq_url = "fmqp:://localhost::fmq/qc_moments/100hz/shmem_30100";
+input_fmq_url = "/tmp/fmq/qc_moments/100hz/shmem_30100";
 
 ///////////// seek_to_end_of_input ////////////////////
 //
@@ -1452,7 +1452,7 @@ output_fields = {
 
 output_data_set = {
   {
-    output_dir = "$(DATA_DIR)/qc/cfradial/moments/100hz",
+    output_dir = "$(DATA_DIR)/cfradial/moments/100hz",
     format = OUTPUT_FORMAT_CFRADIAL
   }
 };

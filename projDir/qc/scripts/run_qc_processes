@@ -22,6 +22,16 @@ cd ~/git/HCR_configuration/projDir/qc/scripts
 
 RadxMon -fmq /tmp/fmq/qc_moments/100hz/shmem_30100 -summary -update -5
 
+#################################################################
+# Dsr2Radx - 100 hz
+#
+# Save out 100Hz moments files in CfRadial
+# Open terminal
+
+source ~/git/HCR_configuration/projDir/qc/scripts/set_env_qc
+cd ~/git/HCR_configuration/projDir/qc/scripts
+./run_Dsr2Radx.qc.100hz
+
 
 
 
