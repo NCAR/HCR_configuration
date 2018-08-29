@@ -50,6 +50,9 @@ cd ~/git/HCR_configuration/projDir/qc/scripts
 # This reads time series, computes moments, corrects gain for
 # temperatures, writes 100hz moments data to FMQ (file message queue)
 #
+# NOTE: the velocity in these moments are only corrected for the
+# vertical motion of the aircraft.
+#
 # Open terminal
 # run
 
@@ -62,6 +65,15 @@ tail -f $DATA_DIR/logs/Iq2Dsr.qc.100hz
 snuff run_Iq2Dsr.qc.100hz Iq2Dsr
 
 #################################################################
+# RadxDwellCombine - combine 100hz data into 10hz dwells
+#
+# NOTE: the velocity in these moments are only corrected for the
+# vertical motion of the aircraft.
+
+cd ~/git/HCR_configuration/projDir/qc/scripts
+./run_RadxDwellCombine.qc.10hz
+
+#################################################################
 # RadxMon - use to see moments are flowing
 #
 # Don't do this when re-processing the data, only as a test.
@@ -70,5 +82,4 @@ snuff run_Iq2Dsr.qc.100hz Iq2Dsr
 # Open terminal
 
 # RadxMon -fmq /tmp/fmq/qc_moments/100hz/shmem_30100 -summary -update -5
-
 

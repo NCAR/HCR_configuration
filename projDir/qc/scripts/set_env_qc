@@ -3,7 +3,7 @@
 # set up the environment for HCR QC processing
 
 setenv PROJ_DIR ~/git/HCR_configuration/projDir
-setenv DATA_DIR  /scr/rain1/rsfdata/projects/socrates/hcr/qc
+setenv DATA_DIR  /scr/rain1/rsfdata/projects/socrates/hcr
 
 # make sure the output dirs exist
 

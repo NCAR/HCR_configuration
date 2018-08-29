@@ -214,7 +214,7 @@ archive_time_span_secs = 600;
 // Type: string
 //
 
-archive_data_url = "$(DATA_DIR)/cfradial/moments/100hz";
+archive_data_url = "$(DATA_DIR)/qc/cfradial/moments/100hz";
 
 //======================================================================
 //
