@@ -6,8 +6,8 @@
 
 # GV test flights
 
-setenv PROJECT_NAME               "socrates"
-setenv SITE_NAME                  "NCAR-GV"
+setenv PROJECT_NAME               "SOCRATES"
+setenv SITE_NAME                  "SOCRATES"
 setenv RADAR_LAT                  40.03794
 setenv RADAR_LON                  -105.24127
 setenv RADAR_ALT_KM               1.609
