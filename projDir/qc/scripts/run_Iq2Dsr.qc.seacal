@@ -7,96 +7,96 @@
 source ~/git/HCR_configuration/projDir/qc/scripts/set_env_qc
 cd $PROJ_DIR/qc/params
 
-Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180116/20180116_000*iwrf_ts  >& $DATA_DIR/logs/Iq2Dsr.qc.seacal
-Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180116/20180116_001*iwrf_ts  >& $DATA_DIR/logs/Iq2Dsr.qc.seacal
+Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180116/20180116_000*iwrf_ts  >& /tmp/Iq2Dsr.qc.seacal
+Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180116/20180116_001*iwrf_ts  >& /tmp/Iq2Dsr.qc.seacal
 
-Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180116/20180116_031*iwrf_ts >>& $DATA_DIR/logs/Iq2Dsr.qc.seacal
-Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180116/20180116_032*iwrf_ts >>& $DATA_DIR/logs/Iq2Dsr.qc.seacal
-Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180116/20180116_033*iwrf_ts >>& $DATA_DIR/logs/Iq2Dsr.qc.seacal
-Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180116/20180116_034*iwrf_ts >>& $DATA_DIR/logs/Iq2Dsr.qc.seacal
+Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180116/20180116_031*iwrf_ts >>& /tmp/Iq2Dsr.qc.seacal
+Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180116/20180116_032*iwrf_ts >>& /tmp/Iq2Dsr.qc.seacal
+Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180116/20180116_033*iwrf_ts >>& /tmp/Iq2Dsr.qc.seacal
+Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180116/20180116_034*iwrf_ts >>& /tmp/Iq2Dsr.qc.seacal
 
-Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180119/20180119_012*iwrf_ts >>& $DATA_DIR/logs/Iq2Dsr.qc.seacal
-Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180119/20180119_013*iwrf_ts >>& $DATA_DIR/logs/Iq2Dsr.qc.seacal
-Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180119/20180119_014*iwrf_ts >>& $DATA_DIR/logs/Iq2Dsr.qc.seacal
+Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180119/20180119_012*iwrf_ts >>& /tmp/Iq2Dsr.qc.seacal
+Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180119/20180119_013*iwrf_ts >>& /tmp/Iq2Dsr.qc.seacal
+Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180119/20180119_014*iwrf_ts >>& /tmp/Iq2Dsr.qc.seacal
 
-Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180122/20180122_212*iwrf_ts >>& $DATA_DIR/logs/Iq2Dsr.qc.seacal
-Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180122/20180122_213*iwrf_ts >>& $DATA_DIR/logs/Iq2Dsr.qc.seacal
-Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180122/20180122_214*iwrf_ts >>& $DATA_DIR/logs/Iq2Dsr.qc.seacal
-Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180122/20180122_215*iwrf_ts >>& $DATA_DIR/logs/Iq2Dsr.qc.seacal
+Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180122/20180122_212*iwrf_ts >>& /tmp/Iq2Dsr.qc.seacal
+Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180122/20180122_213*iwrf_ts >>& /tmp/Iq2Dsr.qc.seacal
+Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180122/20180122_214*iwrf_ts >>& /tmp/Iq2Dsr.qc.seacal
+Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180122/20180122_215*iwrf_ts >>& /tmp/Iq2Dsr.qc.seacal
 
-Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180124/20180124_000*iwrf_ts >>& $DATA_DIR/logs/Iq2Dsr.qc.seacal
-Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180124/20180124_001*iwrf_ts >>& $DATA_DIR/logs/Iq2Dsr.qc.seacal
+Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180124/20180124_000*iwrf_ts >>& /tmp/Iq2Dsr.qc.seacal
+Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180124/20180124_001*iwrf_ts >>& /tmp/Iq2Dsr.qc.seacal
 
-Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180125/20180125_229*iwrf_ts >>& $DATA_DIR/logs/Iq2Dsr.qc.seacal
-Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180125/20180125_230*iwrf_ts >>& $DATA_DIR/logs/Iq2Dsr.qc.seacal
-Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180125/20180125_231*iwrf_ts >>& $DATA_DIR/logs/Iq2Dsr.qc.seacal
-Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180125/20180125_232*iwrf_ts >>& $DATA_DIR/logs/Iq2Dsr.qc.seacal
-Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180125/20180125_233*iwrf_ts >>& $DATA_DIR/logs/Iq2Dsr.qc.seacal
-Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180125/20180125_234*iwrf_ts >>& $DATA_DIR/logs/Iq2Dsr.qc.seacal
-Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180125/20180125_235*iwrf_ts >>& $DATA_DIR/logs/Iq2Dsr.qc.seacal
-Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180125/20180125_236*iwrf_ts >>& $DATA_DIR/logs/Iq2Dsr.qc.seacal
+Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180125/20180125_229*iwrf_ts >>& /tmp/Iq2Dsr.qc.seacal
+Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180125/20180125_230*iwrf_ts >>& /tmp/Iq2Dsr.qc.seacal
+Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180125/20180125_231*iwrf_ts >>& /tmp/Iq2Dsr.qc.seacal
+Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180125/20180125_232*iwrf_ts >>& /tmp/Iq2Dsr.qc.seacal
+Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180125/20180125_233*iwrf_ts >>& /tmp/Iq2Dsr.qc.seacal
+Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180125/20180125_234*iwrf_ts >>& /tmp/Iq2Dsr.qc.seacal
+Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180125/20180125_235*iwrf_ts >>& /tmp/Iq2Dsr.qc.seacal
+Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180125/20180125_236*iwrf_ts >>& /tmp/Iq2Dsr.qc.seacal
 
-Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180126/20180126_000*iwrf_ts >>& $DATA_DIR/logs/Iq2Dsr.qc.seacal
-Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180126/20180126_001*iwrf_ts >>& $DATA_DIR/logs/Iq2Dsr.qc.seacal
-Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180126/20180126_002*iwrf_ts >>& $DATA_DIR/logs/Iq2Dsr.qc.seacal
+Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180126/20180126_000*iwrf_ts >>& /tmp/Iq2Dsr.qc.seacal
+Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180126/20180126_001*iwrf_ts >>& /tmp/Iq2Dsr.qc.seacal
+Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180126/20180126_002*iwrf_ts >>& /tmp/Iq2Dsr.qc.seacal
 
-Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180128/20180128_232*iwrf_ts >>& $DATA_DIR/logs/Iq2Dsr.qc.seacal
-Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180128/20180128_233*iwrf_ts >>& $DATA_DIR/logs/Iq2Dsr.qc.seacal
-Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180128/20180128_234*iwrf_ts >>& $DATA_DIR/logs/Iq2Dsr.qc.seacal
-Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180128/20180128_235*iwrf_ts >>& $DATA_DIR/logs/Iq2Dsr.qc.seacal
+Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180128/20180128_232*iwrf_ts >>& /tmp/Iq2Dsr.qc.seacal
+Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180128/20180128_233*iwrf_ts >>& /tmp/Iq2Dsr.qc.seacal
+Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180128/20180128_234*iwrf_ts >>& /tmp/Iq2Dsr.qc.seacal
+Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180128/20180128_235*iwrf_ts >>& /tmp/Iq2Dsr.qc.seacal
 
-Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180131/20180131_012*iwrf_ts >>& $DATA_DIR/logs/Iq2Dsr.qc.seacal
-Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180131/20180131_013*iwrf_ts >>& $DATA_DIR/logs/Iq2Dsr.qc.seacal
-Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180131/20180131_014*iwrf_ts >>& $DATA_DIR/logs/Iq2Dsr.qc.seacal
-Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180131/20180131_015*iwrf_ts >>& $DATA_DIR/logs/Iq2Dsr.qc.seacal
+Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180131/20180131_012*iwrf_ts >>& /tmp/Iq2Dsr.qc.seacal
+Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180131/20180131_013*iwrf_ts >>& /tmp/Iq2Dsr.qc.seacal
+Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180131/20180131_014*iwrf_ts >>& /tmp/Iq2Dsr.qc.seacal
+Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180131/20180131_015*iwrf_ts >>& /tmp/Iq2Dsr.qc.seacal
 
-Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180131/20180131_020*iwrf_ts >>& $DATA_DIR/logs/Iq2Dsr.qc.seacal
-Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180131/20180131_021*iwrf_ts >>& $DATA_DIR/logs/Iq2Dsr.qc.seacal
-Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180131/20180131_022*iwrf_ts >>& $DATA_DIR/logs/Iq2Dsr.qc.seacal
-Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180131/20180131_023*iwrf_ts >>& $DATA_DIR/logs/Iq2Dsr.qc.seacal
+Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180131/20180131_020*iwrf_ts >>& /tmp/Iq2Dsr.qc.seacal
+Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180131/20180131_021*iwrf_ts >>& /tmp/Iq2Dsr.qc.seacal
+Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180131/20180131_022*iwrf_ts >>& /tmp/Iq2Dsr.qc.seacal
+Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180131/20180131_023*iwrf_ts >>& /tmp/Iq2Dsr.qc.seacal
 
-Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180204/20180204_000*iwrf_ts >>& $DATA_DIR/logs/Iq2Dsr.qc.seacal
-Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180204/20180204_001*iwrf_ts >>& $DATA_DIR/logs/Iq2Dsr.qc.seacal
-Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180204/20180204_002*iwrf_ts >>& $DATA_DIR/logs/Iq2Dsr.qc.seacal
-Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180204/20180204_003*iwrf_ts >>& $DATA_DIR/logs/Iq2Dsr.qc.seacal
+Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180204/20180204_000*iwrf_ts >>& /tmp/Iq2Dsr.qc.seacal
+Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180204/20180204_001*iwrf_ts >>& /tmp/Iq2Dsr.qc.seacal
+Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180204/20180204_002*iwrf_ts >>& /tmp/Iq2Dsr.qc.seacal
+Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180204/20180204_003*iwrf_ts >>& /tmp/Iq2Dsr.qc.seacal
 
-Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180204/20180204_231*iwrf_ts >>& $DATA_DIR/logs/Iq2Dsr.qc.seacal
-Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180204/20180204_232*iwrf_ts >>& $DATA_DIR/logs/Iq2Dsr.qc.seacal
-Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180204/20180204_233*iwrf_ts >>& $DATA_DIR/logs/Iq2Dsr.qc.seacal
+Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180204/20180204_231*iwrf_ts >>& /tmp/Iq2Dsr.qc.seacal
+Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180204/20180204_232*iwrf_ts >>& /tmp/Iq2Dsr.qc.seacal
+Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180204/20180204_233*iwrf_ts >>& /tmp/Iq2Dsr.qc.seacal
 
-Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180207/20180207_214*iwrf_ts >>& $DATA_DIR/logs/Iq2Dsr.qc.seacal
-Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180207/20180207_215*iwrf_ts >>& $DATA_DIR/logs/Iq2Dsr.qc.seacal
-Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180207/20180207_216*iwrf_ts >>& $DATA_DIR/logs/Iq2Dsr.qc.seacal
-Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180207/20180207_217*iwrf_ts >>& $DATA_DIR/logs/Iq2Dsr.qc.seacal
-Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180207/20180207_218*iwrf_ts >>& $DATA_DIR/logs/Iq2Dsr.qc.seacal
-Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180207/20180207_219*iwrf_ts >>& $DATA_DIR/logs/Iq2Dsr.qc.seacal
-Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180207/20180207_220*iwrf_ts >>& $DATA_DIR/logs/Iq2Dsr.qc.seacal
-Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180207/20180207_221*iwrf_ts >>& $DATA_DIR/logs/Iq2Dsr.qc.seacal
+Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180207/20180207_214*iwrf_ts >>& /tmp/Iq2Dsr.qc.seacal
+Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180207/20180207_215*iwrf_ts >>& /tmp/Iq2Dsr.qc.seacal
+Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180207/20180207_216*iwrf_ts >>& /tmp/Iq2Dsr.qc.seacal
+Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180207/20180207_217*iwrf_ts >>& /tmp/Iq2Dsr.qc.seacal
+Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180207/20180207_218*iwrf_ts >>& /tmp/Iq2Dsr.qc.seacal
+Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180207/20180207_219*iwrf_ts >>& /tmp/Iq2Dsr.qc.seacal
+Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180207/20180207_220*iwrf_ts >>& /tmp/Iq2Dsr.qc.seacal
+Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180207/20180207_221*iwrf_ts >>& /tmp/Iq2Dsr.qc.seacal
 
-Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180217/20180217_023*iwrf_ts >>& $DATA_DIR/logs/Iq2Dsr.qc.seacal
-Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180217/20180217_024*iwrf_ts >>& $DATA_DIR/logs/Iq2Dsr.qc.seacal
-Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180217/20180217_025*iwrf_ts >>& $DATA_DIR/logs/Iq2Dsr.qc.seacal
+Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180217/20180217_023*iwrf_ts >>& /tmp/Iq2Dsr.qc.seacal
+Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180217/20180217_024*iwrf_ts >>& /tmp/Iq2Dsr.qc.seacal
+Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180217/20180217_025*iwrf_ts >>& /tmp/Iq2Dsr.qc.seacal
 
-Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180218/20180218_002*iwrf_ts >>& $DATA_DIR/logs/Iq2Dsr.qc.seacal
-Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180218/20180218_003*iwrf_ts >>& $DATA_DIR/logs/Iq2Dsr.qc.seacal
-Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180218/20180218_004*iwrf_ts >>& $DATA_DIR/logs/Iq2Dsr.qc.seacal
-Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180218/20180218_005*iwrf_ts >>& $DATA_DIR/logs/Iq2Dsr.qc.seacal
-Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180218/20180218_006*iwrf_ts >>& $DATA_DIR/logs/Iq2Dsr.qc.seacal
-Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180218/20180218_007*iwrf_ts >>& $DATA_DIR/logs/Iq2Dsr.qc.seacal
-Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180218/20180218_008*iwrf_ts >>& $DATA_DIR/logs/Iq2Dsr.qc.seacal
-Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180218/20180218_009*iwrf_ts >>& $DATA_DIR/logs/Iq2Dsr.qc.seacal
-Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180218/20180218_010*iwrf_ts >>& $DATA_DIR/logs/Iq2Dsr.qc.seacal
-Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180218/20180218_011*iwrf_ts >>& $DATA_DIR/logs/Iq2Dsr.qc.seacal
+Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180218/20180218_002*iwrf_ts >>& /tmp/Iq2Dsr.qc.seacal
+Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180218/20180218_003*iwrf_ts >>& /tmp/Iq2Dsr.qc.seacal
+Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180218/20180218_004*iwrf_ts >>& /tmp/Iq2Dsr.qc.seacal
+Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180218/20180218_005*iwrf_ts >>& /tmp/Iq2Dsr.qc.seacal
+Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180218/20180218_006*iwrf_ts >>& /tmp/Iq2Dsr.qc.seacal
+Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180218/20180218_007*iwrf_ts >>& /tmp/Iq2Dsr.qc.seacal
+Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180218/20180218_008*iwrf_ts >>& /tmp/Iq2Dsr.qc.seacal
+Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180218/20180218_009*iwrf_ts >>& /tmp/Iq2Dsr.qc.seacal
+Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180218/20180218_010*iwrf_ts >>& /tmp/Iq2Dsr.qc.seacal
+Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180218/20180218_011*iwrf_ts >>& /tmp/Iq2Dsr.qc.seacal
 
-Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180218/20180218_064*iwrf_ts >>& $DATA_DIR/logs/Iq2Dsr.qc.seacal
-Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180218/20180218_065*iwrf_ts >>& $DATA_DIR/logs/Iq2Dsr.qc.seacal
-Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180218/20180218_066*iwrf_ts >>& $DATA_DIR/logs/Iq2Dsr.qc.seacal
+Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180218/20180218_064*iwrf_ts >>& /tmp/Iq2Dsr.qc.seacal
+Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180218/20180218_065*iwrf_ts >>& /tmp/Iq2Dsr.qc.seacal
+Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180218/20180218_066*iwrf_ts >>& /tmp/Iq2Dsr.qc.seacal
 
-Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180219/20180219_233*iwrf_ts >>& $DATA_DIR/logs/Iq2Dsr.qc.seacal
-Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180219/20180219_234*iwrf_ts >>& $DATA_DIR/logs/Iq2Dsr.qc.seacal
-Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180219/20180219_235*iwrf_ts >>& $DATA_DIR/logs/Iq2Dsr.qc.seacal
+Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180219/20180219_233*iwrf_ts >>& /tmp/Iq2Dsr.qc.seacal
+Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180219/20180219_234*iwrf_ts >>& /tmp/Iq2Dsr.qc.seacal
+Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180219/20180219_235*iwrf_ts >>& /tmp/Iq2Dsr.qc.seacal
 
-Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180224/20180224_023*iwrf_ts >>& $DATA_DIR/logs/Iq2Dsr.qc.seacal
-Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180224/20180224_024*iwrf_ts >>& $DATA_DIR/logs/Iq2Dsr.qc.seacal
-Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180224/20180224_025*iwrf_ts >>& $DATA_DIR/logs/Iq2Dsr.qc.seacal
+Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180224/20180224_023*iwrf_ts >>& /tmp/Iq2Dsr.qc.seacal
+Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180224/20180224_024*iwrf_ts >>& /tmp/Iq2Dsr.qc.seacal
+Iq2Dsr -params Iq2Dsr.qc.100hz -debug -f /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save/20180224/20180224_025*iwrf_ts >>& /tmp/Iq2Dsr.qc.seacal
 
