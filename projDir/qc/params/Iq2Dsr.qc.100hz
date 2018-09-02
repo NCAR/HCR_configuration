@@ -1280,7 +1280,7 @@ use_cal_from_time_series = FALSE;
 // Type: boolean
 //
 
-override_cal_dbz_correction = FALSE;
+override_cal_dbz_correction = TRUE;
 
 ///////////// dbz_correction //////////////////////////
 //
@@ -1292,7 +1292,7 @@ override_cal_dbz_correction = FALSE;
 // Type: double
 //
 
-dbz_correction = 0;
+dbz_correction = 2.1;
 
 ///////////// override_cal_zdr_correction /////////////
 //
