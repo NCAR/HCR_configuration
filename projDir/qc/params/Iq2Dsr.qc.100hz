@@ -1395,7 +1395,7 @@ ldr_correction_db_v = 0;
 // Type: boolean
 //
 
-threshold_ldr_using_snr = FALSE;
+threshold_ldr_using_snr = TRUE;
 
 ///////////// min_snr_db_for_ldr //////////////////////
 //
@@ -1410,7 +1410,7 @@ threshold_ldr_using_snr = FALSE;
 // Type: double
 //
 
-min_snr_db_for_ldr = -7;
+min_snr_db_for_ldr = -10;
 
 ///////////// override_cal_system_phidp ///////////////
 //
@@ -3485,7 +3485,7 @@ output_fmq_url = "/tmp/fmq/qc_moments/100hz/shmem_30100";
 // Type: int
 //
 
-output_fmq_size = 1000000000;
+output_fmq_size = 10000000000;
 
 ///////////// output_fmq_nslots ///////////////////////
 //
@@ -3499,7 +3499,7 @@ output_fmq_size = 1000000000;
 // Type: int
 //
 
-output_fmq_nslots = 100;
+output_fmq_nslots = 10;
 
 ///////////// output_fmq_compress /////////////////////
 //

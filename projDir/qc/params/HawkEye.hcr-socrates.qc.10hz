@@ -214,7 +214,8 @@ archive_time_span_secs = 600;
 // Type: string
 //
 
-archive_data_url = "$(DATA_DIR)/qc/cfradial/moments/10hz";
+// archive_data_url = "$(DATA_DIR)/qc/cfradial/moments/10hz";
+archive_data_url = "$(DATA_DIR)/qc/cfradial/velcorr/10hz";
 
 //======================================================================
 //
@@ -350,6 +351,24 @@ fields = {
     units = "dBZ",
     color_map = "dbz_w.colors",
     shortcut = "0"
+  }
+  ,
+  {
+    label = "VEL_CORR4",
+    raw_name = "VEL_CORR",
+    filtered_name = "",
+    units = "m/s",
+    color_map = "vel_w_4.colors",
+    shortcut = "1"
+  }
+  ,
+  {
+    label = "VEL_CORR8",
+    raw_name = "VEL_CORR",
+    filtered_name = "",
+    units = "m/s",
+    color_map = "vel_w_8.colors",
+    shortcut = "1"
   }
   ,
   {

@@ -575,7 +575,39 @@ output_fmq_data_mapper_report_interval = 5;
 
 //======================================================================
 //
-// FIR FILTERING.
+// WRITING SURFACE VEL RESULTS TO SPDB IN XML.
+//
+//======================================================================
+ 
+///////////// write_surface_vel_results_to_spdb ///////
+//
+// Option to write out surface velocity results to SPDB.
+//
+// The results will be written in XML, stored in SPDB. The data can then 
+//   be retrieved for plotting or other purposes.
+//
+//
+// Type: boolean
+//
+
+write_surface_vel_results_to_spdb = TRUE;
+
+///////////// surface_vel_results_spdb_output_url /////
+//
+// URL for writing surface vel results to SPDB XML.
+//
+// For local writes, specify the directory. For remote writes, specify 
+//   the full url: spdbp:://host::dir.
+//
+//
+// Type: string
+//
+
+surface_vel_results_spdb_output_url = "/scr/rain1/rsfdata/projects/socrates/hcr/qc/spdb/HcrVelCorrect";
+
+//======================================================================
+//
+// FIR FILTERING FOR VELOCITY ESTIMATES.
 //
 //======================================================================
  
@@ -596,5 +628,6 @@ output_fmq_data_mapper_report_interval = 5;
 // Type: double
 //
 
-spike_filter_difference_threshold = 0.11;
+// spike_filter_difference_threshold = 0.11;
+spike_filter_difference_threshold = 0.25;
 
