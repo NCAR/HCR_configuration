@@ -166,14 +166,42 @@ data_type_2 = 0;
 
 xml_entries = {
   {
-    xml_tag_list = "<HcrVelCorr><MeasVel>",
+    xml_tag_list = "<HcrVelCorr><VelMeas>",
     specify_label = TRUE,
-    label = "Vel",
+    label = "VelMeas",
     required = TRUE
   }
   ,
   {
-    xml_tag_list = "<HcrVelCorr><CorrVel>",
+    xml_tag_list = "<HcrVelCorr><VelStage1>",
+    specify_label = TRUE,
+    label = "VelStage1",
+    required = TRUE
+  }
+  ,
+  {
+    xml_tag_list = "<HcrVelCorr><VelSpike>",
+    specify_label = TRUE,
+    label = "VelSpike",
+    required = TRUE
+  }
+  ,
+  {
+    xml_tag_list = "<HcrVelCorr><VelCond>",
+    specify_label = TRUE,
+    label = "VelCond",
+    required = TRUE
+  }
+  ,
+  {
+    xml_tag_list = "<HcrVelCorr><VelFilt>",
+    specify_label = TRUE,
+    label = "VelFilt",
+    required = TRUE
+  }
+  ,
+  {
+    xml_tag_list = "<HcrVelCorr><VelCorr>",
     specify_label = TRUE,
     label = "VelCorr",
     required = TRUE
