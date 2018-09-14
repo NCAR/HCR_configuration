@@ -4,7 +4,7 @@ rehash
 
 source ~/git/HCR_configuration/projDir/qc/scripts/set_env_qc
 
-cd $PROJ_DIR/qc/params
+cd $PROJ_DIR/display/params
 
 if ($#argv < 6) then
   HawkEye -params HawkEye.hcr-socrates.qc.100hz -start_time "2018 01 15 23 00 00 " >& /dev/null &
