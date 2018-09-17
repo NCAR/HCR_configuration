@@ -340,6 +340,22 @@ dwell_time_secs = 0.1;
 
 dwell_stats_method = DWELL_STATS_MEAN;
 
+///////////// dwell_stats_max_fraction_missing ////////
+//
+// Specify the max fraction of the dwell that can have missing data.
+//
+// We compute how much of the dwell is missing for each field. If the 
+//   fraction exceeds this parameter, the combined value will be set to 
+//   missing.
+//
+// Minimum val: 0
+// Maximum val: 1
+//
+// Type: double
+//
+
+dwell_stats_max_fraction_missing = 0.3;
+
 //======================================================================
 //
 // OPTION TO OVERRIDE SELECTED GLOBAL ATTRIBUTES.
