@@ -190,7 +190,8 @@ siggen_ip_address = "10.40.0.21";
 // Type: double
 //
 
-siggen_max_power = -34.65;
+// siggen_max_power = -34.65;
+siggen_max_power = -34.30;
 
 ///////////// siggen_min_power ////////////////////////
 //
@@ -200,7 +201,8 @@ siggen_max_power = -34.65;
 // Type: double
 //
 
-siggen_min_power = -114.65;
+// siggen_min_power = -114.65;
+siggen_min_power = -115.08;
 
 ///////////// siggen_delta_power //////////////////////
 //
@@ -235,24 +237,44 @@ siggen_specify_power_sequence = TRUE;
 // 1D array - variable length.
 //
 
+// siggen_power_sequence = {
+//  -34.65,
+//  -39.65,
+//  -44.65,
+//  -49.65,
+//  -54.65,
+//  -59.65,
+//  -64.65,
+//  -69.65,
+//  -74.65,
+//  -80.70,
+//  -85.70,
+//  -90.70,
+//  -95.70,
+//  -100.70,
+//  -105.70,
+//  -110.70,
+//  -115.70
+// };
+
 siggen_power_sequence = {
- -34.65,
- -39.65,
- -44.65,
- -49.65,
- -54.65,
- -59.65,
- -64.65,
- -69.65,
- -74.65,
- -80.70,
- -85.70,
- -90.70,
- -95.70,
- -100.70,
- -105.70,
- -110.70,
- -115.70
+ -34.30,
+ -39.30,
+ -44.30,
+ -49.30,
+ -54.30,
+ -59.30,
+ -64.30,
+ -69.30,
+ -74.30,
+ -80.08,
+ -85.08,
+ -90.08,
+ -95.08,
+ -100.08,
+ -105.08,
+ -110.08,
+ -115.08
 };
 
 ///////////// set_sig_freq ////////////////////////////
@@ -621,7 +643,7 @@ systemPhidpDeg = 0;
 // Type: double
 //
 
-linear_region_min_power = -82;
+linear_region_min_power = -92;
 
 ///////////// linear_region_max_power /////////////////
 //
@@ -641,7 +663,7 @@ linear_region_max_power = -42;
 // Type: double
 //
 
-noise_region_max_power = -120;
+noise_region_max_power = -115;
 
 ///////////// snr_for_mds /////////////////////////////
 //
@@ -673,7 +695,6 @@ snr_for_mds = -6;
 // Type: string
 //
 
-// output_dir = "$(DATA_DIR)/cal/wband_256ns";
 output_dir = "$(PROJ_DIR)/calibration/data/wband_256ns";
 
 ///////////// output_file_label ///////////////////////
@@ -686,7 +707,7 @@ output_dir = "$(PROJ_DIR)/calibration/data/wband_256ns";
 // Type: string
 //
 
-output_file_label = "Wband-HCR2-256ns";
+output_file_label = "Wband-HCR-256ns";
 
 ///////////// plot_script /////////////////////////////
 //
