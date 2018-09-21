@@ -26,3 +26,10 @@
 #
 */1 * * * *  csh -c "rsyncImagesToAcserver.sh" 1> /dev/null 2> /dev/null
 #
+#####################################################################
+# Restart HAwkEye for catalog, since seems to have memory leak
+# This occurs once per hour,at 8 mins past the hour
+#
+8 * * * *  csh -c "restart_HawkEye.catalog" 1> /dev/null 2> /dev/null
+9 * * * *  csh -c "restart_HawkEye.1hr_catalog" 1> /dev/null 2> /dev/null
+#

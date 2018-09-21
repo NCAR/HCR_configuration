@@ -377,42 +377,42 @@ fields = {
     color_map = "vel_w_4.colors",
     shortcut = "2"
   }
-  ,
-  {
-    label = "VEL8",
-    raw_name = "VEL",
-    filtered_name = "",
-    units = "m/s",
-    color_map = "vel_w_8.colors",
-    shortcut = "3"
-  }
-  ,
-  {
-    label = "VEL_RAW8",
-    raw_name = "VEL_RAW",
-    filtered_name = "",
-    units = "m/s",
-    color_map = "vel_w_8.colors",
-    shortcut = "4"
-  }
-  ,
-  {
-    label = "VEL4",
-    raw_name = "VEL",
-    filtered_name = "",
-    units = "m/s",
-    color_map = "vel_w_4.colors",
-    shortcut = "3"
-  }
-  ,
-  {
-    label = "VEL_RAW4",
-    raw_name = "VEL",
-    filtered_name = "",
-    units = "m/s",
-    color_map = "vel_w_4.colors",
-    shortcut = "4"
-  }
+  // ,
+  // {
+  //   label = "VEL8",
+  //   raw_name = "VEL",
+  //   filtered_name = "",
+  //   units = "m/s",
+  //   color_map = "vel_w_8.colors",
+  //   shortcut = "3"
+  // }
+  // ,
+  // {
+  //   label = "VEL_RAW8",
+  //   raw_name = "VEL_RAW",
+  //   filtered_name = "",
+  //   units = "m/s",
+  //   color_map = "vel_w_8.colors",
+  //   shortcut = "4"
+  // }
+  // ,
+  // {
+  //   label = "VEL4",
+  //   raw_name = "VEL",
+  //   filtered_name = "",
+  //   units = "m/s",
+  //   color_map = "vel_w_4.colors",
+  //   shortcut = "3"
+  // }
+  // ,
+  // {
+  //   label = "VEL_RAW4",
+  //   raw_name = "VEL",
+  //   filtered_name = "",
+  //   units = "m/s",
+  //   color_map = "vel_w_4.colors",
+  //   shortcut = "4"
+  // }
   ,
   {
     label = "WIDTH",
@@ -422,24 +422,24 @@ fields = {
     color_map = "width_w.colors",
     shortcut = "5"
   }
-  ,
-  {
-    label = "SNR",
-    raw_name = "SNR",
-    filtered_name = "",
-    units = "dB",
-    color_map = "snr.colors",
-    shortcut = "6"
-  }
-  ,
-  {
-    label = "SNRHC",
-    raw_name = "SNRHC",
-    filtered_name = "",
-    units = "dB",
-    color_map = "snr.colors",
-    shortcut = "7"
-  }
+  // ,
+  // {
+  //   label = "SNR",
+  //   raw_name = "SNR",
+  //   filtered_name = "",
+  //   units = "dB",
+  //   color_map = "snr.colors",
+  //   shortcut = "6"
+  // }
+  // ,
+  // {
+  //   label = "SNRHC",
+  //   raw_name = "SNRHC",
+  //   filtered_name = "",
+  //   units = "dB",
+  //   color_map = "snr.colors",
+  //   shortcut = "7"
+  // }
   ,
   {
     label = "SNRVC",
@@ -458,24 +458,24 @@ fields = {
     color_map = "snr.colors",
     shortcut = "9"
   }
-  ,
-  {
-    label = "SNRVX",
-    raw_name = "SNRVX",
-    filtered_name = "",
-    units = "dB",
-    color_map = "snr.colors",
-    shortcut = "a"
-  }
-  ,
-  {
-    label = "DBMHC",
-    raw_name = "DBMHC",
-    filtered_name = "",
-    units = "dBm",
-    color_map = "dbm.colors",
-    shortcut = "b"
-  }
+  // ,
+  // {
+  //   label = "SNRVX",
+  //   raw_name = "SNRVX",
+  //   filtered_name = "",
+  //   units = "dB",
+  //   color_map = "snr.colors",
+  //   shortcut = "a"
+  // }
+  // ,
+  // {
+  //   label = "DBMHC",
+  //   raw_name = "DBMHC",
+  //   filtered_name = "",
+  //   units = "dBm",
+  //   color_map = "dbm.colors",
+  //   shortcut = "b"
+  // }
   ,
   {
     label = "DBMVC",
@@ -494,15 +494,15 @@ fields = {
     color_map = "dbm.colors",
     shortcut = "d"
   }
-  ,
-  {
-    label = "DBMVX",
-    raw_name = "DBMVX",
-    filtered_name = "",
-    units = "dBm",
-    color_map = "dbm.colors",
-    shortcut = "e"
-  }
+  // ,
+  // {
+  //   label = "DBMVX",
+  //   raw_name = "DBMVX",
+  //   filtered_name = "",
+  //   units = "dBm",
+  //   color_map = "dbm.colors",
+  //   shortcut = "e"
+  // }
   ,
   {
     label = "NCP",
@@ -512,24 +512,24 @@ fields = {
     color_map = "ncp.colors",
     shortcut = "f"
   }
-  ,
-  {
-    label = "LDR",
-    raw_name = "LDR",
-    filtered_name = "",
-    units = "dB",
-    color_map = "ldr.colors",
-    shortcut = "g"
-  }
-  ,
-  {
-    label = "LDRH",
-    raw_name = "LDRH",
-    filtered_name = "",
-    units = "dB",
-    color_map = "ldr.colors",
-    shortcut = "h"
-  }
+  // ,
+  // {
+  //   label = "LDR",
+  //   raw_name = "LDR",
+  //   filtered_name = "",
+  //   units = "dB",
+  //   color_map = "ldr.colors",
+  //   shortcut = "g"
+  // }
+  // ,
+  // {
+  //   label = "LDRH",
+  //   raw_name = "LDRH",
+  //   filtered_name = "",
+  //   units = "dB",
+  //   color_map = "ldr.colors",
+  //   shortcut = "h"
+  // }
   ,
   {
     label = "LDRV",
@@ -676,7 +676,7 @@ site_name = "GV";
 // Type: int
 //
 
-main_window_width = 1200;
+main_window_width = 1375;
 
 ///////////// main_window_height //////////////////////
 //
@@ -686,7 +686,7 @@ main_window_width = 1200;
 // Type: int
 //
 
-main_window_height = 600;
+main_window_height = 490;
 
 ///////////// main_window_start_x /////////////////////
 //
@@ -1093,7 +1093,7 @@ rhi_main_legend_pos = LEGEND_TOP_LEFT;
 // Type: double
 //
 
-bscan_time_span_secs = 90;
+bscan_time_span_secs = 180;
 
 ///////////// bscan_truncate_start_time ///////////////
 //
@@ -1229,7 +1229,7 @@ bscan_min_altitude_km = -0.5;
 // Type: double
 //
 
-bscan_max_altitude_km = 10;
+bscan_max_altitude_km = 7;
 
 ///////////// bscan_altitude_in_feet //////////////////
 //

@@ -1,0 +1,5 @@
+#! /bin/csh
+
+cd $PROJ_DIR/calibration/params
+
+TsCalAuto -params TsCalAuto.wband.h.256ns 
