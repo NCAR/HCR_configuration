@@ -900,7 +900,7 @@ compression_level = 4;
 // Type: string
 //
 
-output_dir = "$(DATA_DIR)/qc/cfradial/moments/2hz";
+output_dir = "$(DATA_DIR)/qc/cfradial/velcorr/2hz";
 
 ///////////// output_filename_mode ////////////////////
 //
