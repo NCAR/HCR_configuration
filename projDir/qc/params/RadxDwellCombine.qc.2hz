@@ -59,7 +59,7 @@ register_with_procmap = FALSE;
 // Type: string
 //
 
-instance = "qc.10hz";
+instance = "qc.2hz";
 
 //======================================================================
 //
@@ -108,7 +108,7 @@ mode = ARCHIVE;
 // Type: string
 //
 
-input_dir = "$(DATA_DIR)/qc/cfradial/moments/100hz";
+input_dir = "$(DATA_DIR)/qc/cfradial/velcorr/10hz";
 
 ///////////// max_realtime_data_age_secs //////////////
 //
@@ -320,7 +320,7 @@ max_range_km = 9999;
 // Type: double
 //
 
-dwell_time_secs = 0.1;
+dwell_time_secs = 0.5;
 
 ///////////// center_dwell_on_time ////////////////////
 //
@@ -335,7 +335,7 @@ dwell_time_secs = 0.1;
 // Type: boolean
 //
 
-center_dwell_on_time = FALSE;
+center_dwell_on_time = TRUE;
 
 ///////////// dwell_stats_method //////////////////////
 //
@@ -369,7 +369,7 @@ dwell_stats_method = DWELL_STATS_MEAN;
 // Type: double
 //
 
-dwell_stats_max_fraction_missing = 0.3;
+dwell_stats_max_fraction_missing = 0.5;
 
 //======================================================================
 //
@@ -516,7 +516,7 @@ author_override = "";
 // Type: boolean
 //
 
-apply_censoring = TRUE;
+apply_censoring = FALSE;
 
 ///////////// censoring_fields ////////////////////////
 //
@@ -900,7 +900,7 @@ compression_level = 4;
 // Type: string
 //
 
-output_dir = "$(DATA_DIR)/qc/cfradial/moments/10hz";
+output_dir = "$(DATA_DIR)/qc/cfradial/moments/2hz";
 
 ///////////// output_filename_mode ////////////////////
 //

@@ -1,0 +1,18 @@
+#! /bin/csh -f
+
+# HCR QC processing
+#
+# Run RadxDwellCombine
+# Reads 10 hz data in CfRadial files, combines into 2 hz dwells
+# Writes 2hz CfRadial data
+
+source ~/git/HCR_configuration/projDir/qc/scripts/set_env_qc
+
+cd $PROJ_DIR/qc/params
+
+# run for socrates
+
+RadxDwellCombine -params RadxDwellCombine.qc.2hz -start "2018 01 15 00 00 00" -end "2018 02 25 00 00 00" -debug >& /tmp/RadxDwellCombine.qc.2hz.log &
+
+tail -f /tmp/RadxDwellCombine.qc.2hz.log
+
