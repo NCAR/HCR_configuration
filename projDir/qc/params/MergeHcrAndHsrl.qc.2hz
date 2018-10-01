@@ -1,0 +1,359 @@
+/**********************************************************************
+ * TDRP params for MergeHcrAndHsrl
+ **********************************************************************/
+
+//======================================================================
+//
+// Merges field data from HCR and HSRL instruments. HCR is the primary 
+//   instrument, we merge the HSRL onto the HCR data.
+//
+//======================================================================
+ 
+//======================================================================
+//
+// DEBUGGING.
+//
+//======================================================================
+ 
+///////////// debug ///////////////////////////////////
+//
+// Debug option.
+//
+// If set, debug messages will be printed appropriately.
+//
+//
+// Type: enum
+// Options:
+//     DEBUG_OFF
+//     DEBUG_NORM
+//     DEBUG_VERBOSE
+//     DEBUG_EXTRA
+//
+
+debug = DEBUG_OFF;
+
+///////////// instance ////////////////////////////////
+//
+// Program instance for process registration.
+//
+// This application registers with procmap. This is the instance used 
+//   for registration.
+//
+//
+// Type: string
+//
+
+instance = "qc.2hz";
+
+//======================================================================
+//
+// DATA INPUT.
+//
+//======================================================================
+ 
+///////////// mode ////////////////////////////////////
+//
+// Operating mode.
+//
+// In REALTIME mode, the program waits for a new input file.  In ARCHIVE 
+//   mode, it moves through the data between the start and end times set 
+//   on the command line. In FILELIST mode, it moves through the list of 
+//   file names specified on the command line. Paths (in FILELIST mode, at 
+//   least) MUST contain a day-directory below the data file -- 
+//   ./data_file.ext will not work as a file path.
+//
+//
+// Type: enum
+// Options:
+//     REALTIME
+//     ARCHIVE
+//     FILELIST
+//
+
+mode = ARCHIVE;
+
+///////////// max_realtime_data_age_secs //////////////
+//
+// Maximum age of realtime data (secs).
+//
+// Only data less old than this will be used.
+//
+//
+// Type: int
+//
+
+max_realtime_data_age_secs = 300;
+
+//======================================================================
+//
+// DATA LOCATIONS.
+//
+// HCR is the primary data set, and the HCR data files are read in 
+//   first. Then the associate HSRL data is found, and merged into the HCR 
+//   data set.
+//
+//======================================================================
+ 
+///////////// hcr_data_dir ////////////////////////////
+//
+// Directory for HCR data files.
+//
+// These are in CfRadial format.
+//
+//
+// Type: string
+//
+
+hcr_data_dir = "/scr/rain1/rsfdata/projects/socrates/hcr/qc/cfradial/velcorr/2hz";
+
+///////////// hsrl_data_dir ///////////////////////////
+//
+// Directory for HSRL data files.
+//
+// These are in CfRadial format.
+//
+//
+// Type: string
+//
+
+hsrl_data_dir = "/scr/rain1/rsfdata/projects/socrates/hsrl/qc/cfradial/qc_moments";
+
+///////////// file_match_time_tolerance_sec ///////////
+//
+// Time tolerance for matching the HSRL files to the HCR files (secs).
+//
+// Only files within this tolerance will be matched.
+//
+//
+// Type: double
+//
+
+file_match_time_tolerance_sec = 900;
+
+///////////// ray_match_time_tolerance_sec ////////////
+//
+// Time tolerance for matching the HSRL rays to the HCR rays (secs).
+//
+// Only rays within this tolerance are used.
+//
+//
+// Type: double
+//
+
+ray_match_time_tolerance_sec = 0.25;
+
+///////////// ray_match_elevation_tolerance_deg ///////
+//
+// Angular elevation tolerance for matching the HSRL rays to the HCR 
+//   rays (deg).
+//
+// Only rays within this tolerance are used. The HSRL points 4 degrees 
+//   off vertical, so this values should always be > 4. Also, when the 
+//   aircraft banks, the HSRL elevation changes, whereas the HCR antenna 
+//   control should keep the beam vertical.
+//
+//
+// Type: double
+//
+
+ray_match_elevation_tolerance_deg = 7.5;
+
+//======================================================================
+//
+// SPECIFYING FIELDS TO COPY FROM EACH SOURCE.
+//
+//======================================================================
+ 
+///////////// hcr_fields //////////////////////////////
+//
+// Specs of HCR fields to be included.
+//
+
+//
+// input_field_name: name of field in input file.
+//
+// output_field_name: name of field in output file.
+//
+// encoding: output encoding for the field.
+//
+//
+// Type: struct
+//   typedef struct {
+//      string input_field_name;
+//      string output_field_name;
+//      output_encoding_t output_encoding;
+//        Options:
+//          ENCODING_FLOAT32
+//          ENCODING_INT32
+//          ENCODING_INT16
+//          ENCODING_INT08
+//   }
+//
+// 1D array - variable length.
+//
+
+hcr_fields = {
+  {
+    input_field_name = "DBZ",
+    output_field_name = "HCR_DBZ",
+    output_encoding = ENCODING_INT16
+  }
+  ,
+  {
+    input_field_name = "VEL_CORR",
+    output_field_name = "HCR_VEL",
+    output_encoding = ENCODING_INT16
+  }
+  ,
+  {
+    input_field_name = "WIDTH",
+    output_field_name = "HCR_WIDTH",
+    output_encoding = ENCODING_INT16
+  }
+  ,
+  {
+    input_field_name = "LDR",
+    output_field_name = "HCR_LDR",
+    output_encoding = ENCODING_INT16
+  }
+  ,
+  {
+    input_field_name = "NCP",
+    output_field_name = "HCR_NCP",
+    output_encoding = ENCODING_INT16
+  }
+  ,
+  {
+    input_field_name = "SNR",
+    output_field_name = "HCR_SNR",
+    output_encoding = ENCODING_INT16
+  }
+  ,
+  {
+    input_field_name = "DBMVC",
+    output_field_name = "HCR_DBM",
+    output_encoding = ENCODING_INT16
+  }
+};
+
+///////////// hsrl_fields /////////////////////////////
+//
+// Specs of HSRL fields to be included.
+//
+
+//
+// input_field_name: name of field in input file.
+//
+// output_field_name: name of field in output file.
+//
+// encoding: output encoding for the field.
+//
+//
+// Type: struct
+//   typedef struct {
+//      string input_field_name;
+//      string output_field_name;
+//      output_encoding_t output_encoding;
+//        Options:
+//          ENCODING_FLOAT32
+//          ENCODING_INT32
+//          ENCODING_INT16
+//          ENCODING_INT08
+//   }
+//
+// 1D array - variable length.
+//
+
+hsrl_fields = {
+  {
+    input_field_name = "Aerosol_Backscatter_Coefficient",
+    output_field_name = "Backscat_Coeff",
+    output_encoding = ENCODING_INT16
+  }
+  ,
+  {
+    input_field_name = "Particle_Linear_Depolarization_Ratio",
+    output_field_name = "Particle_LDR",
+    output_encoding = ENCODING_INT16
+  }
+  ,
+  {
+    input_field_name = "Volume_Linear_Depolarization_Ratio",
+    output_field_name = "Volume_LDR",
+    output_encoding = ENCODING_INT16
+  }
+  ,
+  {
+    input_field_name = "Optical_Depth",
+    output_field_name = "Optical_Depth",
+    output_encoding = ENCODING_INT16
+  }
+  ,
+  {
+    input_field_name = "Aerosol_Extinction_Coefficient",
+    output_field_name = "Extinction_Coeff",
+    output_encoding = ENCODING_INT16
+  }
+};
+
+//======================================================================
+//
+// OUTPUT DETAILS.
+//
+//======================================================================
+ 
+///////////// compression_level ///////////////////////
+//
+// Compression level for output, if compressed.
+//
+// Applies to netCDF only. Dorade compression is run-length encoding, 
+//   and has not options..
+//
+//
+// Type: int
+//
+
+compression_level = 4;
+
+//======================================================================
+//
+// OUTPUT DIRECTORY AND FILE NAME.
+//
+//======================================================================
+ 
+///////////// output_dir //////////////////////////////
+//
+// Output directory path.
+//
+// Files will be written to this directory.
+//
+//
+// Type: string
+//
+
+output_dir = "/scr/rain1/rsfdata/projects/socrates/hcr/qc/cfradial/hsrl_merge/2hz";
+
+///////////// append_day_dir_to_output_dir ////////////
+//
+// Add the day directory to the output directory.
+//
+// Path will be output_dir/yyyymmdd/filename.
+//
+//
+// Type: boolean
+//
+
+append_day_dir_to_output_dir = TRUE;
+
+///////////// append_year_dir_to_output_dir ///////////
+//
+// Add the year directory to the output directory.
+//
+// Path will be output_dir/yyyy/yyyymmdd/filename.
+//
+//
+// Type: boolean
+//
+
+append_year_dir_to_output_dir = FALSE;
+
