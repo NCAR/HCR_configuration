@@ -181,12 +181,6 @@ ray_match_elevation_tolerance_deg = 7.5;
 //   typedef struct {
 //      string input_field_name;
 //      string output_field_name;
-//      output_encoding_t output_encoding;
-//        Options:
-//          ENCODING_FLOAT32
-//          ENCODING_INT32
-//          ENCODING_INT16
-//          ENCODING_INT08
 //   }
 //
 // 1D array - variable length.
@@ -195,44 +189,37 @@ ray_match_elevation_tolerance_deg = 7.5;
 hcr_fields = {
   {
     input_field_name = "DBZ",
-    output_field_name = "HCR_DBZ",
-    output_encoding = ENCODING_INT16
+    output_field_name = "HCR_DBZ"
   }
   ,
   {
     input_field_name = "VEL_CORR",
-    output_field_name = "HCR_VEL",
-    output_encoding = ENCODING_INT16
+    output_field_name = "HCR_VEL"
   }
   ,
   {
     input_field_name = "WIDTH",
-    output_field_name = "HCR_WIDTH",
-    output_encoding = ENCODING_INT16
+    output_field_name = "HCR_WIDTH"
   }
   ,
   {
     input_field_name = "LDR",
-    output_field_name = "HCR_LDR",
-    output_encoding = ENCODING_INT16
+    output_field_name = "HCR_LDR"
   }
   ,
   {
     input_field_name = "NCP",
-    output_field_name = "HCR_NCP",
-    output_encoding = ENCODING_INT16
+    output_field_name = "HCR_NCP"
   }
   ,
   {
     input_field_name = "SNR",
-    output_field_name = "HCR_SNR",
-    output_encoding = ENCODING_INT16
+    output_field_name = "HCR_SNR"
   }
   ,
   {
     input_field_name = "DBMVC",
-    output_field_name = "HCR_DBM",
-    output_encoding = ENCODING_INT16
+    output_field_name = "HCR_DBM"
   }
 };
 
@@ -253,12 +240,6 @@ hcr_fields = {
 //   typedef struct {
 //      string input_field_name;
 //      string output_field_name;
-//      output_encoding_t output_encoding;
-//        Options:
-//          ENCODING_FLOAT32
-//          ENCODING_INT32
-//          ENCODING_INT16
-//          ENCODING_INT08
 //   }
 //
 // 1D array - variable length.
@@ -267,32 +248,27 @@ hcr_fields = {
 hsrl_fields = {
   {
     input_field_name = "Aerosol_Backscatter_Coefficient",
-    output_field_name = "Backscat_Coeff",
-    output_encoding = ENCODING_INT16
+    output_field_name = "Backscat_Coeff"
   }
   ,
   {
     input_field_name = "Particle_Linear_Depolarization_Ratio",
-    output_field_name = "Particle_LDR",
-    output_encoding = ENCODING_INT16
+    output_field_name = "Particle_LDR"
   }
   ,
   {
     input_field_name = "Volume_Linear_Depolarization_Ratio",
-    output_field_name = "Volume_LDR",
-    output_encoding = ENCODING_INT16
+    output_field_name = "Volume_LDR"
   }
   ,
   {
     input_field_name = "Optical_Depth",
-    output_field_name = "Optical_Depth",
-    output_encoding = ENCODING_INT16
+    output_field_name = "Optical_Depth"
   }
   ,
   {
     input_field_name = "Aerosol_Extinction_Coefficient",
-    output_field_name = "Extinction_Coeff",
-    output_encoding = ENCODING_INT16
+    output_field_name = "Extinction_Coeff"
   }
 };
 
@@ -314,6 +290,21 @@ hsrl_fields = {
 //
 
 compression_level = 4;
+
+///////////// output_encoding /////////////////////////
+//
+// Encoding for output fields.
+//
+// Encoding with smaller types improves compression.
+//
+//
+// Type: enum
+// Options:
+//     ENCODING_FLOAT32
+//     ENCODING_INT16
+//
+
+output_encoding = ENCODING_INT16;
 
 //======================================================================
 //
