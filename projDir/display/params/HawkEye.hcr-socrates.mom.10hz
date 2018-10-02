@@ -354,24 +354,6 @@ fields = {
   }
   ,
   {
-    label = "VEL_CORR4",
-    raw_name = "VEL_CORR",
-    filtered_name = "",
-    units = "m/s",
-    color_map = "vel_w_4.colors",
-    shortcut = "1"
-  }
-  ,
-  {
-    label = "VEL_CORR8",
-    raw_name = "VEL_CORR",
-    filtered_name = "",
-    units = "m/s",
-    color_map = "vel_w_8.colors",
-    shortcut = "1"
-  }
-  ,
-  {
     label = "VEL4",
     raw_name = "VEL",
     filtered_name = "",
