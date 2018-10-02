@@ -227,7 +227,6 @@ hcr_fields = {
 //
 // Specs of HSRL fields to be included.
 //
-
 //
 // input_field_name: name of field in input file.
 //
@@ -248,27 +247,62 @@ hcr_fields = {
 hsrl_fields = {
   {
     input_field_name = "Aerosol_Backscatter_Coefficient",
-    output_field_name = "Backscat_Coeff"
+    output_field_name = "HSRL_Backscatter_Coeff"
+  }
+  ,
+  {
+    input_field_name = "Backscatter_Ratio",
+    output_field_name = "HSRL_Backscatter_Ratio"
+  }
+  ,
+  {
+    input_field_name = "Particle_Depolarization",
+    output_field_name = "HSRL_Particle_CDR"
   }
   ,
   {
     input_field_name = "Particle_Linear_Depolarization_Ratio",
-    output_field_name = "Particle_LDR"
+    output_field_name = "HSRL_Particle_LDR"
+  }
+  ,
+  {
+    input_field_name = "Volume_Depolarization",
+    output_field_name = "HSRL_Volume_CDR"
   }
   ,
   {
     input_field_name = "Volume_Linear_Depolarization_Ratio",
-    output_field_name = "Volume_LDR"
+    output_field_name = "HSRL_Volume_LDR"
+  }
+  ,
+  {
+    input_field_name = "Molecular_Backscatter_Coefficient",
+    output_field_name = "HSRL_Molecular_Backscatter"
   }
   ,
   {
     input_field_name = "Optical_Depth",
-    output_field_name = "Optical_Depth"
+    output_field_name = "HSRL_Optical_Depth"
   }
   ,
   {
-    input_field_name = "Aerosol_Extinction_Coefficient",
-    output_field_name = "Extinction_Coeff"
+    input_field_name = "Merged_Combined_Channel",
+    output_field_name = "HSRL_Copol_Counts"
+  }
+  ,
+  {
+    input_field_name = "Raw_Cross_Polarization_Channel",
+    output_field_name = "HSRL_Xpol_Counts"
+  }
+  ,
+  {
+    input_field_name = "Temperature",
+    output_field_name = "Temperature"
+  }
+  ,
+  {
+    input_field_name = "Pressure",
+    output_field_name = "Pressure"
   }
 };
 
