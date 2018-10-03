@@ -339,7 +339,7 @@ width_correction_beamwidth_deg = 0.69;
 //     OUTPUT_ENCODING_INT08
 //
 
-output_encoding = OUTPUT_ENCODING_FLOAT32;
+output_encoding = OUTPUT_ENCODING_INT16;
 
 //======================================================================
 //
@@ -565,7 +565,7 @@ filter_type = WAVE_FILTER;
 // Type: double
 //
 
-noise_filter_length_secs = 5;
+noise_filter_length_secs = 3;
 
 ///////////// wave_filter_length_secs /////////////////
 //
