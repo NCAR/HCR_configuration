@@ -416,6 +416,15 @@ fields = {
   }
   ,
   {
+    label = "WIDTH_CORR",
+    raw_name = "WIDTH_CORR",
+    filtered_name = "",
+    units = "m/s",
+    color_map = "width_w.colors",
+    shortcut = "5"
+  }
+  ,
+  {
     label = "SNRVC",
     raw_name = "SNRVC",
     filtered_name = "",

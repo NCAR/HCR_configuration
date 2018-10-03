@@ -190,7 +190,7 @@ begin_in_archive_mode = TRUE;
 // Type: string
 //
 
-archive_start_time = "2018 01 15 23 00 00";
+archive_start_time = "2018 01 19 04 00 00";
 
 ///////////// archive_time_span_secs //////////////////
 //
