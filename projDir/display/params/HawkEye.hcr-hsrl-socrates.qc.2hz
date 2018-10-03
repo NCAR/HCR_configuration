@@ -190,7 +190,7 @@ begin_in_archive_mode = TRUE;
 // Type: string
 //
 
-archive_start_time = "2018 01 16 00 00 00";
+archive_start_time = "2018 01 19 04 00 00";
 
 ///////////// archive_time_span_secs //////////////////
 //
@@ -214,7 +214,7 @@ archive_time_span_secs = 900;
 // Type: string
 //
 
-archive_data_url = "$(DATA_DIR)/qc/cfradial/hsrl_merge/2hz";
+archive_data_url = "/scr/rain1/rsfdata/projects/socrates/hcr/qc/cfradial/hsrl_merge/2hz";
 
 //======================================================================
 //
@@ -372,6 +372,15 @@ fields = {
   }
   ,
   {
+    label = "HCR_LDR",
+    raw_name = "HCR_LDR",
+    filtered_name = "",
+    units = "dB",
+    color_map = "ldr.colors",
+    shortcut = "g"
+  }
+  ,
+  {
     label = "HCR_SNR",
     raw_name = "HCR_SNR",
     filtered_name = "",
@@ -390,15 +399,6 @@ fields = {
   }
   ,
   {
-    label = "HCR_LDR",
-    raw_name = "HCR_LDR",
-    filtered_name = "",
-    units = "dB",
-    color_map = "ldr.colors",
-    shortcut = "g"
-  }
-  ,
-  {
     label = "HCR_NCP",
     raw_name = "HCR_NCP",
     filtered_name = "",
@@ -408,8 +408,8 @@ fields = {
   }
   ,
   {
-    label = "Backscat_Coeff",
-    raw_name = "Backscat_Coeff",
+    label = "HSRL_Backscat_Coeff",
+    raw_name = "HSRL_Backscatter_Coeff",
     filtered_name = "",
     units = "m-1.sr-1",
     color_map = "hsrl_backscat_coeff.colors",
@@ -417,8 +417,17 @@ fields = {
   }
   ,
   {
-    label = "Volume_LDR",
-    raw_name = "Volume_LDR",
+    label = "HSRL_Backscat_Ratio",
+    raw_name = "HSRL_Backscatter_Ratio",
+    filtered_name = "",
+    units = "m-1.sr-1",
+    color_map = "hsrl_backscatter_ratio.colors",
+    shortcut = "0"
+  }
+  ,
+  {
+    label = "HSRL_Volume_LDR",
+    raw_name = "HSRL_Volume_LDR",
     filtered_name = "",
     units = "",
     color_map = "volume_linear_depol.colors",
@@ -426,8 +435,17 @@ fields = {
   }
   ,
   {
-    label = "Particle_LDR",
-    raw_name = "Particle_LDR",
+    label = "HSRL_Volume_CDR",
+    raw_name = "HSRL_Volume_CDR",
+    filtered_name = "",
+    units = "",
+    color_map = "volume_linear_depol.colors",
+    shortcut = "2"
+  }
+  ,
+  {
+    label = "HSRL_Particle_LDR",
+    raw_name = "HSRL_Particle_LDR",
     filtered_name = "",
     units = "",
     color_map = "particle_linear_depol.colors",
@@ -435,8 +453,26 @@ fields = {
   }
   ,
   {
-    label = "Extinction_Coeff",
-    raw_name = "Extinction_Coeff",
+    label = "HSRL_Particle_CDR",
+    raw_name = "HSRL_Particle_CDR",
+    filtered_name = "",
+    units = "",
+    color_map = "particle_linear_depol.colors",
+    shortcut = "3"
+  }
+  ,
+  {
+    label = "HSRL_Optical_Depth",
+    raw_name = "HSRL_Optical_Depth",
+    filtered_name = "",
+    units = "",
+    color_map = "hsrl_optical_depth.colors",
+    shortcut = "5"
+  }
+  ,
+  {
+    label = "HSRL_Extinction_Coeff",
+    raw_name = "HSRL_Extinction_Coefficient",
     filtered_name = "",
     units = "m-1",
     color_map = "hsrl_extinction_coeff.colors",
@@ -444,12 +480,48 @@ fields = {
   }
   ,
   {
-    label = "Optical_Depth",
-    raw_name = "Optical_Depth",
+    label = "HSRL_Copol_Counts",
+    raw_name = "HSRL_Copol_Counts",
+    filtered_name = "",
+    units = "counts",
+    color_map = "hsrl_combined_high.colors",
+    shortcut = "a"
+  }
+  ,
+  {
+    label = "HSRL_Xpol_Counts",
+    raw_name = "HSRL_Xpol_Counts",
+    filtered_name = "",
+    units = "counts",
+    color_map = "hsrl_cross_polar.colors",
+    shortcut = "b"
+  }
+  ,
+  {
+    label = "HSRL_Mol_Counts",
+    raw_name = "HSRL_Molecular_Counts",
     filtered_name = "",
     units = "",
-    color_map = "hsrl_optical_depth.colors",
-    shortcut = "5"
+    color_map = "hsrl_molecular.colors",
+    shortcut = "3"
+  }
+  ,
+  {
+    label = "Temperature",
+    raw_name = "Temperature",
+    filtered_name = "",
+    units = "K",
+    color_map = "tempK_xml.colors",
+    shortcut = "d"
+  }
+  ,
+  {
+    label = "Pressure",
+    raw_name = "Pressure",
+    filtered_name = "",
+    units = "hPa",
+    color_map = "pressure_xml.colors",
+    shortcut = "e"
   }
 };
 

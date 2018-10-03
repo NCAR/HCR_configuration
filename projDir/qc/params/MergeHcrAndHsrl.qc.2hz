@@ -198,7 +198,7 @@ hcr_fields = {
   }
   ,
   {
-    input_field_name = "WIDTH",
+    input_field_name = "WIDTH_CORR",
     output_field_name = "HCR_WIDTH"
   }
   ,
@@ -276,13 +276,13 @@ hsrl_fields = {
   }
   ,
   {
-    input_field_name = "Molecular_Backscatter_Coefficient",
-    output_field_name = "HSRL_Molecular_Backscatter"
+    input_field_name = "Optical_Depth",
+    output_field_name = "HSRL_Optical_Depth"
   }
   ,
   {
-    input_field_name = "Optical_Depth",
-    output_field_name = "HSRL_Optical_Depth"
+    input_field_name = "Aerosol_Extinction_Coefficient",
+    output_field_name = "HSRL_Extinction_Coefficient"
   }
   ,
   {
@@ -293,6 +293,11 @@ hsrl_fields = {
   {
     input_field_name = "Raw_Cross_Polarization_Channel",
     output_field_name = "HSRL_Xpol_Counts"
+  }
+  ,
+  {
+    input_field_name = "Raw_Molecular_Backscatter_Channel",
+    output_field_name = "HSRL_Molecular_Counts"
   }
   ,
   {
