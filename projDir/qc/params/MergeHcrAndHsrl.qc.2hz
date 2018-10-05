@@ -194,11 +194,21 @@ hcr_fields = {
   ,
   {
     input_field_name = "VEL_CORR",
+    output_field_name = "HCR_VEL_CORR"
+  }
+  ,
+  {
+    input_field_name = "VEL",
     output_field_name = "HCR_VEL"
   }
   ,
   {
     input_field_name = "WIDTH_CORR",
+    output_field_name = "HCR_WIDTH_CORR"
+  }
+  ,
+  {
+    input_field_name = "WIDTH",
     output_field_name = "HCR_WIDTH"
   }
   ,
@@ -213,13 +223,23 @@ hcr_fields = {
   }
   ,
   {
-    input_field_name = "SNR",
-    output_field_name = "HCR_SNR"
+    input_field_name = "SNRVC",
+    output_field_name = "HCR_SNRVC"
+  }
+  ,
+  {
+    input_field_name = "SNRHX",
+    output_field_name = "HCR_SNRHX"
   }
   ,
   {
     input_field_name = "DBMVC",
-    output_field_name = "HCR_DBM"
+    output_field_name = "HCR_DBMVC"
+  }
+  ,
+  {
+    input_field_name = "DBMHX",
+    output_field_name = "HCR_DBMHX"
   }
 };
 
@@ -247,7 +267,7 @@ hcr_fields = {
 hsrl_fields = {
   {
     input_field_name = "Aerosol_Backscatter_Coefficient",
-    output_field_name = "HSRL_Backscatter_Coeff"
+    output_field_name = "HSRL_Aerosol_Backscatter_Coefficient"
   }
   ,
   {
@@ -257,22 +277,22 @@ hsrl_fields = {
   ,
   {
     input_field_name = "Particle_Depolarization",
-    output_field_name = "HSRL_Particle_CDR"
+    output_field_name = "HSRL_Particle_Depolarization"
   }
   ,
   {
     input_field_name = "Particle_Linear_Depolarization_Ratio",
-    output_field_name = "HSRL_Particle_LDR"
+    output_field_name = "HSRL_Particle_Linear_Depolarization_Ratio"
   }
   ,
   {
     input_field_name = "Volume_Depolarization",
-    output_field_name = "HSRL_Volume_CDR"
+    output_field_name = "HSRL_Volume_Depolarization"
   }
   ,
   {
     input_field_name = "Volume_Linear_Depolarization_Ratio",
-    output_field_name = "HSRL_Volume_LDR"
+    output_field_name = "HSRL_Volume_Linear_Depolarization_Ratio"
   }
   ,
   {
@@ -282,22 +302,22 @@ hsrl_fields = {
   ,
   {
     input_field_name = "Aerosol_Extinction_Coefficient",
-    output_field_name = "HSRL_Extinction_Coefficient"
+    output_field_name = "HSRL_Aerosol_Extinction_Coefficient"
   }
   ,
   {
     input_field_name = "Merged_Combined_Channel",
-    output_field_name = "HSRL_Copol_Counts"
+    output_field_name = "HSRL_Merged_Combined_Channel"
   }
   ,
   {
     input_field_name = "Raw_Cross_Polarization_Channel",
-    output_field_name = "HSRL_Xpol_Counts"
+    output_field_name = "HSRL_Raw_Cross_Polarization_Channel"
   }
   ,
   {
     input_field_name = "Raw_Molecular_Backscatter_Channel",
-    output_field_name = "HSRL_Molecular_Counts"
+    output_field_name = "HSRL_Raw_Molecular_Backscatter_Channel"
   }
   ,
   {
