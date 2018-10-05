@@ -367,7 +367,16 @@ fields = {
     filtered_name = "",
     units = "m/s",
     color_map = "vel_w_8.colors",
-    shortcut = "1"
+    shortcut = "2"
+  }
+  ,
+  {
+    label = "VEL_DELTA",
+    raw_name = "VEL_DELTA",
+    filtered_name = "",
+    units = "m/s",
+    color_map = "vel_delta.colors",
+    shortcut = "3"
   }
   ,
   {
@@ -376,7 +385,7 @@ fields = {
     filtered_name = "",
     units = "m/s",
     color_map = "vel_w_4.colors",
-    shortcut = "1"
+    shortcut = "4"
   }
   ,
   {
@@ -385,7 +394,7 @@ fields = {
     filtered_name = "",
     units = "m/s",
     color_map = "vel_w_8.colors",
-    shortcut = "1"
+    shortcut = "5"
   }
   ,
   {
@@ -394,7 +403,7 @@ fields = {
     filtered_name = "",
     units = "m/s",
     color_map = "vel_w_4.colors",
-    shortcut = "4"
+    shortcut = "6"
   }
   ,
   {
@@ -403,7 +412,7 @@ fields = {
     filtered_name = "",
     units = "m/s",
     color_map = "vel_w_8.colors",
-    shortcut = "4"
+    shortcut = "7"
   }
   ,
   {
@@ -412,7 +421,7 @@ fields = {
     filtered_name = "",
     units = "m/s",
     color_map = "width_w.colors",
-    shortcut = "5"
+    shortcut = "8"
   }
   ,
   {
@@ -421,7 +430,7 @@ fields = {
     filtered_name = "",
     units = "m/s",
     color_map = "width_w.colors",
-    shortcut = "5"
+    shortcut = "9"
   }
   ,
   {
@@ -430,7 +439,7 @@ fields = {
     filtered_name = "",
     units = "dB",
     color_map = "snr.colors",
-    shortcut = "8"
+    shortcut = "a"
   }
   ,
   {
@@ -439,7 +448,7 @@ fields = {
     filtered_name = "",
     units = "dB",
     color_map = "snr.colors",
-    shortcut = "9"
+    shortcut = "b"
   }
   ,
   {
@@ -466,7 +475,7 @@ fields = {
     filtered_name = "",
     units = "",
     color_map = "ncp.colors",
-    shortcut = "f"
+    shortcut = "e"
   }
   ,
   {
@@ -475,7 +484,7 @@ fields = {
     filtered_name = "",
     units = "dB",
     color_map = "ldr.colors",
-    shortcut = "g"
+    shortcut = "f"
   }
 };
 

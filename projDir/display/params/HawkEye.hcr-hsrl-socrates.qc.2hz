@@ -354,12 +354,30 @@ fields = {
   }
   ,
   {
+    label = "HCR_VEL_CORR",
+    raw_name = "HCR_VEL_CORR",
+    filtered_name = "",
+    units = "m/s",
+    color_map = "vel_w_4.colors",
+    shortcut = "1"
+  }
+  ,
+  {
     label = "HCR_VEL",
     raw_name = "HCR_VEL",
     filtered_name = "",
     units = "m/s",
     color_map = "vel_w_4.colors",
     shortcut = "1"
+  }
+  ,
+  {
+    label = "HCR_WIDTH_CORR",
+    raw_name = "HCR_WIDTH_CORR",
+    filtered_name = "",
+    units = "m/s",
+    color_map = "width_w.colors",
+    shortcut = "5"
   }
   ,
   {
@@ -381,24 +399,6 @@ fields = {
   }
   ,
   {
-    label = "HCR_SNR",
-    raw_name = "HCR_SNR",
-    filtered_name = "",
-    units = "dB",
-    color_map = "snr.colors",
-    shortcut = "8"
-  }
-  ,
-  {
-    label = "HCR_DBM",
-    raw_name = "HCR_DBM",
-    filtered_name = "",
-    units = "dBm",
-    color_map = "dbm.colors",
-    shortcut = "c"
-  }
-  ,
-  {
     label = "HCR_NCP",
     raw_name = "HCR_NCP",
     filtered_name = "",
@@ -408,8 +408,44 @@ fields = {
   }
   ,
   {
+    label = "HCR_SNRVC",
+    raw_name = "HCR_SNRVC",
+    filtered_name = "",
+    units = "dB",
+    color_map = "snr.colors",
+    shortcut = "8"
+  }
+  ,
+  {
+    label = "HCR_SNRHX",
+    raw_name = "HCR_SNRHX",
+    filtered_name = "",
+    units = "dB",
+    color_map = "snr.colors",
+    shortcut = "8"
+  }
+  ,
+  {
+    label = "HCR_DBMVC",
+    raw_name = "HCR_DBMVC",
+    filtered_name = "",
+    units = "dBm",
+    color_map = "dbm.colors",
+    shortcut = "c"
+  }
+  ,
+  {
+    label = "HCR_DBMHX",
+    raw_name = "HCR_DBMHX",
+    filtered_name = "",
+    units = "dBm",
+    color_map = "dbm.colors",
+    shortcut = "c"
+  }
+  ,
+  {
     label = "HSRL_Backscat_Coeff",
-    raw_name = "HSRL_Backscatter_Coeff",
+    raw_name = "HSRL_Aerosol_Backscatter_Coefficient",
     filtered_name = "",
     units = "m-1.sr-1",
     color_map = "hsrl_backscat_coeff.colors",
@@ -426,26 +462,8 @@ fields = {
   }
   ,
   {
-    label = "HSRL_Volume_LDR",
-    raw_name = "HSRL_Volume_LDR",
-    filtered_name = "",
-    units = "",
-    color_map = "volume_linear_depol.colors",
-    shortcut = "2"
-  }
-  ,
-  {
-    label = "HSRL_Volume_CDR",
-    raw_name = "HSRL_Volume_CDR",
-    filtered_name = "",
-    units = "",
-    color_map = "volume_linear_depol.colors",
-    shortcut = "2"
-  }
-  ,
-  {
     label = "HSRL_Particle_LDR",
-    raw_name = "HSRL_Particle_LDR",
+    raw_name = "HSRL_Particle_Linear_Depolarization_Ratio",
     filtered_name = "",
     units = "",
     color_map = "particle_linear_depol.colors",
@@ -454,11 +472,29 @@ fields = {
   ,
   {
     label = "HSRL_Particle_CDR",
-    raw_name = "HSRL_Particle_CDR",
+    raw_name = "HSRL_Particle_Depolarization",
     filtered_name = "",
     units = "",
     color_map = "particle_linear_depol.colors",
     shortcut = "3"
+  }
+  ,
+  {
+    label = "HSRL_Volume_LDR",
+    raw_name = "HSRL_Volume_Linear_Depolarization_Ratio",
+    filtered_name = "",
+    units = "",
+    color_map = "volume_linear_depol.colors",
+    shortcut = "2"
+  }
+  ,
+  {
+    label = "HSRL_Volume_CDR",
+    raw_name = "HSRL_Volume_Depolarization",
+    filtered_name = "",
+    units = "",
+    color_map = "volume_linear_depol.colors",
+    shortcut = "2"
   }
   ,
   {
@@ -472,7 +508,7 @@ fields = {
   ,
   {
     label = "HSRL_Extinction_Coeff",
-    raw_name = "HSRL_Extinction_Coefficient",
+    raw_name = "HSRL_Aerosol_Extinction_Coefficient",
     filtered_name = "",
     units = "m-1",
     color_map = "hsrl_extinction_coeff.colors",
@@ -481,7 +517,7 @@ fields = {
   ,
   {
     label = "HSRL_Copol_Counts",
-    raw_name = "HSRL_Copol_Counts",
+    raw_name = "HSRL_Merged_Combined_Channel",
     filtered_name = "",
     units = "counts",
     color_map = "hsrl_combined_high.colors",
@@ -490,7 +526,7 @@ fields = {
   ,
   {
     label = "HSRL_Xpol_Counts",
-    raw_name = "HSRL_Xpol_Counts",
+    raw_name = "HSRL_Raw_Cross_Polarization_Channel",
     filtered_name = "",
     units = "counts",
     color_map = "hsrl_cross_polar.colors",
@@ -499,7 +535,7 @@ fields = {
   ,
   {
     label = "HSRL_Mol_Counts",
-    raw_name = "HSRL_Molecular_Counts",
+    raw_name = "HSRL_Raw_Molecular_Backscatter_Channel",
     filtered_name = "",
     units = "",
     color_map = "hsrl_molecular.colors",
