@@ -223,23 +223,13 @@ hcr_fields = {
   }
   ,
   {
-    input_field_name = "SNRVC",
-    output_field_name = "HCR_SNRVC"
-  }
-  ,
-  {
-    input_field_name = "SNRHX",
-    output_field_name = "HCR_SNRHX"
+    input_field_name = "SNR",
+    output_field_name = "HCR_SNR"
   }
   ,
   {
     input_field_name = "DBMVC",
     output_field_name = "HCR_DBMVC"
-  }
-  ,
-  {
-    input_field_name = "DBMHX",
-    output_field_name = "HCR_DBMHX"
   }
 };
 

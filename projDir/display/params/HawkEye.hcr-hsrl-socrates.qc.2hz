@@ -408,17 +408,8 @@ fields = {
   }
   ,
   {
-    label = "HCR_SNRVC",
-    raw_name = "HCR_SNRVC",
-    filtered_name = "",
-    units = "dB",
-    color_map = "snr.colors",
-    shortcut = "8"
-  }
-  ,
-  {
-    label = "HCR_SNRHX",
-    raw_name = "HCR_SNRHX",
+    label = "HCR_SNR",
+    raw_name = "HCR_SNR",
     filtered_name = "",
     units = "dB",
     color_map = "snr.colors",
@@ -428,15 +419,6 @@ fields = {
   {
     label = "HCR_DBMVC",
     raw_name = "HCR_DBMVC",
-    filtered_name = "",
-    units = "dBm",
-    color_map = "dbm.colors",
-    shortcut = "c"
-  }
-  ,
-  {
-    label = "HCR_DBMHX",
-    raw_name = "HCR_DBMHX",
     filtered_name = "",
     units = "dBm",
     color_map = "dbm.colors",

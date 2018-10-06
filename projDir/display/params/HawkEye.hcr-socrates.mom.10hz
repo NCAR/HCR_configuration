@@ -354,6 +354,24 @@ fields = {
   }
   ,
   {
+    label = "DBZHC",
+    raw_name = "DBZHC",
+    filtered_name = "",
+    units = "dBZ",
+    color_map = "dbz_w.colors",
+    shortcut = "0"
+  }
+  ,
+  {
+    label = "DBZVC",
+    raw_name = "DBZVC",
+    filtered_name = "",
+    units = "dBZ",
+    color_map = "dbz_w.colors",
+    shortcut = "0"
+  }
+  ,
+  {
     label = "VEL4",
     raw_name = "VEL",
     filtered_name = "",
@@ -399,6 +417,42 @@ fields = {
   }
   ,
   {
+    label = "NCP",
+    raw_name = "NCP",
+    filtered_name = "",
+    units = "",
+    color_map = "ncp.colors",
+    shortcut = "f"
+  }
+  ,
+  {
+    label = "LDR",
+    raw_name = "LDR",
+    filtered_name = "",
+    units = "dB",
+    color_map = "ldr.colors",
+    shortcut = "g"
+  }
+  ,
+  {
+    label = "SNR",
+    raw_name = "SNR",
+    filtered_name = "",
+    units = "dB",
+    color_map = "snr.colors",
+    shortcut = "8"
+  }
+  ,
+  {
+    label = "SNRHC",
+    raw_name = "SNRHC",
+    filtered_name = "",
+    units = "dB",
+    color_map = "snr.colors",
+    shortcut = "8"
+  }
+  ,
+  {
     label = "SNRVC",
     raw_name = "SNRVC",
     filtered_name = "",
@@ -414,6 +468,24 @@ fields = {
     units = "dB",
     color_map = "snr.colors",
     shortcut = "9"
+  }
+  ,
+  {
+    label = "SNRVX",
+    raw_name = "SNRVX",
+    filtered_name = "",
+    units = "dB",
+    color_map = "snr.colors",
+    shortcut = "9"
+  }
+  ,
+  {
+    label = "DBMHC",
+    raw_name = "DBMHC",
+    filtered_name = "",
+    units = "dBm",
+    color_map = "dbm.colors",
+    shortcut = "c"
   }
   ,
   {
@@ -435,21 +507,12 @@ fields = {
   }
   ,
   {
-    label = "NCP",
-    raw_name = "NCP",
+    label = "DBMVX",
+    raw_name = "DBMVX",
     filtered_name = "",
-    units = "",
-    color_map = "ncp.colors",
-    shortcut = "f"
-  }
-  ,
-  {
-    label = "LDR",
-    raw_name = "LDR",
-    filtered_name = "",
-    units = "dB",
-    color_map = "ldr.colors",
-    shortcut = "g"
+    units = "dBm",
+    color_map = "dbm.colors",
+    shortcut = "d"
   }
 };
 

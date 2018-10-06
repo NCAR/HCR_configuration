@@ -398,6 +398,33 @@ fields = {
   }
   ,
   {
+    label = "NCP",
+    raw_name = "NCP",
+    filtered_name = "",
+    units = "",
+    color_map = "ncp.colors",
+    shortcut = "f"
+  }
+  ,
+  {
+    label = "LDR",
+    raw_name = "LDR",
+    filtered_name = "",
+    units = "dB",
+    color_map = "ldr.colors",
+    shortcut = "g"
+  }
+  ,
+  {
+    label = "SNR",
+    raw_name = "SNR",
+    filtered_name = "",
+    units = "dB",
+    color_map = "snr.colors",
+    shortcut = "8"
+  }
+  ,
+  {
     label = "SNRVC",
     raw_name = "SNRVC",
     filtered_name = "",
@@ -431,24 +458,6 @@ fields = {
     units = "dBm",
     color_map = "dbm.colors",
     shortcut = "d"
-  }
-  ,
-  {
-    label = "NCP",
-    raw_name = "NCP",
-    filtered_name = "",
-    units = "",
-    color_map = "ncp.colors",
-    shortcut = "f"
-  }
-  ,
-  {
-    label = "LDR",
-    raw_name = "LDR",
-    filtered_name = "",
-    units = "dB",
-    color_map = "ldr.colors",
-    shortcut = "g"
   }
 };
 
