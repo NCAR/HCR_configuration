@@ -632,7 +632,7 @@ override_radar_name = TRUE;
 // Type: string
 //
 
-radar_name = "HCR-2hz";
+radar_name = "HCR/HSRL";
 
 ///////////// display_site_name ///////////////////////
 //
