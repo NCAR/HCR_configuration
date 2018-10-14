@@ -1158,11 +1158,7 @@ spectrum_width_method = WIDTH_METHOD_R0R1;
 // Type: string
 //
 
-// CSET
-// startup_cal_file = "$(PROJ_DIR)/moments/params/cal_256ns/hcr_cal_256ns_20140825_222458.xml";
-
-// SOCRATES
-startup_cal_file = "$(PROJ_DIR)/calibration/data/wband_256ns/TsCalAuto_Wband-HCR-256ns_20171113_231130.xml"; 
+startup_cal_file = "$(PROJ_DIR)/calibration/data/wband_256ns/TsCalAuto_Wband-HCR-256ns_20171113_231130.xml";
 
 ///////////// set_cal_by_pulse_width //////////////////
 //
@@ -3485,7 +3481,7 @@ output_fmq_url = "/tmp/fmq/qc_moments/100hz/shmem_30100";
 // Type: int
 //
 
-output_fmq_size = 10000000000;
+output_fmq_size = 1000000000;
 
 ///////////// output_fmq_nslots ///////////////////////
 //
@@ -3939,6 +3935,26 @@ output_fields = {
   {
     id = LDRVM,
     name = "LDRV",
+    units = "dB",
+    scale = 0.01,
+    bias = -320,
+    write_unfiltered = TRUE,
+    write_filtered = FALSE
+  }
+  ,
+  {
+    id = NOISE_BIAS_DB_VC,
+    name = "NOISE_BIAS_DB_VC",
+    units = "dB",
+    scale = 0.01,
+    bias = -320,
+    write_unfiltered = TRUE,
+    write_filtered = FALSE
+  }
+  ,
+  {
+    id = NOISE_BIAS_DB_HX,
+    name = "NOISE_BIAS_DB_HX",
     units = "dB",
     scale = 0.01,
     bias = -320,
