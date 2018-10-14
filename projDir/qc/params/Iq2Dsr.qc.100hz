@@ -1410,7 +1410,7 @@ threshold_ldr_using_snr = TRUE;
 // Type: double
 //
 
-min_snr_db_for_ldr = -10;
+min_snr_db_for_ldr = -8;
 
 ///////////// override_cal_system_phidp ///////////////
 //
