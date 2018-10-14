@@ -9,38 +9,38 @@
   <pulseWidthUs>0.256</pulseWidthUs>
   <xmitPowerDbmH>59.34</xmitPowerDbmH>
   <xmitPowerDbmV>59.99</xmitPowerDbmV>
-  <twoWayWaveguideLossDbH>4.6</twoWayWaveguideLossDbH>
-  <twoWayWaveguideLossDbV>4.6</twoWayWaveguideLossDbV>
+  <twoWayWaveguideLossDbH>6.7</twoWayWaveguideLossDbH>
+  <twoWayWaveguideLossDbV>6.7</twoWayWaveguideLossDbV>
   <twoWayRadomeLossDbH>0.6</twoWayRadomeLossDbH>
   <twoWayRadomeLossDbV>0.6</twoWayRadomeLossDbV>
   <receiverMismatchLossDb>1.1</receiverMismatchLossDb>
   <kSquaredWater>0.711</kSquaredWater>
-  <radarConstH>78.0624</radarConstH>
-  <radarConstV>77.0124</radarConstV>
+  <radarConstH>80.1624</radarConstH>
+  <radarConstV>79.1124</radarConstV>
   <noiseDbmHc>-60.0616</noiseDbmHc>
   <noiseDbmHx>-60.0616</noiseDbmHx>
   <noiseDbmVc>-60.7553</noiseDbmVc>
   <noiseDbmVx>-60.7553</noiseDbmVx>
-  <i0DbmHc>-101.556</i0DbmHc>
-  <i0DbmHx>-101.556</i0DbmHx>
-  <i0DbmVc>-101.152</i0DbmVc>
-  <i0DbmVx>-101.152</i0DbmVx>
-  <receiverGainDbHc>41.4944</receiverGainDbHc>
-  <receiverGainDbHx>41.4944</receiverGainDbHx>
-  <receiverGainDbVc>40.3963</receiverGainDbVc>
-  <receiverGainDbVx>40.3963</receiverGainDbVx>
-  <receiverSlopeDbHc>0.982654</receiverSlopeDbHc>
-  <receiverSlopeDbHx>0.982654</receiverSlopeDbHx>
-  <receiverSlopeDbVc>0.979455</receiverSlopeDbVc>
-  <receiverSlopeDbVx>0.979455</receiverSlopeDbVx>
+  <i0DbmHc>-101.722</i0DbmHc>
+  <i0DbmHx>-101.722</i0DbmHx>
+  <i0DbmVc>-101.18</i0DbmVc>
+  <i0DbmVx>-101.18</i0DbmVx>
+  <receiverGainDbHc>41.6606</receiverGainDbHc>
+  <receiverGainDbHx>41.6606</receiverGainDbHx>
+  <receiverGainDbVc>40.4249</receiverGainDbVc>
+  <receiverGainDbVx>40.4249</receiverGainDbVx>
+  <receiverSlopeDbHc>0.985128</receiverSlopeDbHc>
+  <receiverSlopeDbHx>0.985128</receiverSlopeDbHx>
+  <receiverSlopeDbVc>0.991981</receiverSlopeDbVc>
+  <receiverSlopeDbVx>0.991981</receiverSlopeDbVx>
   <dynamicRangeDbHc>71.6266</dynamicRangeDbHc>
   <dynamicRangeDbHx>71.6266</dynamicRangeDbHx>
   <dynamicRangeDbVc>71.6863</dynamicRangeDbVc>
   <dynamicRangeDbVx>71.6863</dynamicRangeDbVx>
-  <baseDbz1kmHc>-23.4861</baseDbz1kmHc>
-  <baseDbz1kmHx>-23.4861</baseDbz1kmHx>
-  <baseDbz1kmVc>-24.126</baseDbz1kmVc>
-  <baseDbz1kmVx>-24.126</baseDbz1kmVx>
+  <baseDbz1kmHc>-21.5537</baseDbz1kmHc>
+  <baseDbz1kmHx>-21.5537</baseDbz1kmHx>
+  <baseDbz1kmVc>-22.058</baseDbz1kmVc>
+  <baseDbz1kmVx>-22.058</baseDbz1kmVx>
   <sunPowerDbmHc>-9999</sunPowerDbmHc>
   <sunPowerDbmHx>-9999</sunPowerDbmHx>
   <sunPowerDbmVc>-9999</sunPowerDbmVc>

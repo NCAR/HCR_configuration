@@ -1162,7 +1162,7 @@ spectrum_width_method = WIDTH_METHOD_R0R1;
 // startup_cal_file = "$(PROJ_DIR)/moments/params/cal_256ns/hcr_cal_256ns_20140825_222458.xml";
 
 // SOCRATES
-startup_cal_file = "$(PROJ_DIR)/calibration/data/wband_256ns/TsCalAuto_Wband-HCR1-256ns_20171113_231130.xml"; 
+startup_cal_file = "$(PROJ_DIR)/calibration/data/wband_256ns/TsCalAuto_Wband-HCR-256ns_20171113_231130.xml"; 
 
 ///////////// set_cal_by_pulse_width //////////////////
 //
@@ -1180,7 +1180,7 @@ startup_cal_file = "$(PROJ_DIR)/calibration/data/wband_256ns/TsCalAuto_Wband-HCR
 // Type: boolean
 //
 
-set_cal_by_pulse_width = TRUE;
+set_cal_by_pulse_width = FALSE;
 
 ///////////// pulse_width_cals ////////////////////////
 //
