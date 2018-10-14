@@ -481,7 +481,8 @@ antGainDbV = 46.7;
 // Type: double
 //
 
-twoWayWaveguideLossDbH = 4.6;
+// twoWayWaveguideLossDbH = 4.6;
+twoWayWaveguideLossDbH = 6.7;
 
 ///////////// twoWayWaveguideLossDbV //////////////////
 //
@@ -495,7 +496,8 @@ twoWayWaveguideLossDbH = 4.6;
 // Type: double
 //
 
-twoWayWaveguideLossDbV = 4.6;
+// twoWayWaveguideLossDbV = 4.6;
+twoWayWaveguideLossDbV = 6.7;
 
 ///////////// twoWayRadomeLossDbH /////////////////////
 //
