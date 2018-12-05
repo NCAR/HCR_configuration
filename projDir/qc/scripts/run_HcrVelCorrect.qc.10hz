@@ -12,9 +12,27 @@ cd $PROJ_DIR/qc/params
 
 # run for socrates
 
-HcrVelCorrect -params HcrVelCorrect.qc.10hz -start "2018 01 15 00 00 00" -end "2018 02 25 00 00 00" -debug >& /tmp/HcrVelCorrect.qc.10hz.log &
+# entire field project
 
+HcrVelCorrect -params HcrVelCorrect.qc.10hz -start "2018 01 15 00 00 00" -end "2018 02 25 00 00 00" -debug >& /tmp/HcrVelCorrect.qc.10hz.log &
 tail -f /tmp/HcrVelCorrect.qc.10hz.log
+
+# flight by flight
+#HcrVelCorrect -params HcrVelCorrect.qc.10hz -debug -start "2018 01 15 00 00 00" -end "2018 01 16 23 00 00" >& /tmp/HcrVelCorrect.rf01.log &
+#HcrVelCorrect -params HcrVelCorrect.qc.10hz -debug -start "2018 01 19 00 00 00" -end "2018 01 19 23 00 00" >& /tmp/HcrVelCorrect.rf02.log &
+#HcrVelCorrect -params HcrVelCorrect.qc.10hz -debug -start "2018 01 22 00 00 00" -end "2018 01 23 12 00 00" >& /tmp/HcrVelCorrect.rf03.log &
+#HcrVelCorrect -params HcrVelCorrect.qc.10hz -debug -start "2018 01 23 12 00 00" -end "2018 01 24 23 00 00" >& /tmp/HcrVelCorrect.rf04.log &
+#HcrVelCorrect -params HcrVelCorrect.qc.10hz -debug -start "2018 01 25 00 00 00" -end "2018 01 26 23 00 00" >& /tmp/HcrVelCorrect.rf05.log &
+#HcrVelCorrect -params HcrVelCorrect.qc.10hz -debug -start "2018 01 28 00 00 00" -end "2018 01 29 23 00 00" >& /tmp/HcrVelCorrect.rf06.log &
+#HcrVelCorrect -params HcrVelCorrect.qc.10hz -debug -start "2018 01 30 00 00 00" -end "2018 01 31 23 00 00" >& /tmp/HcrVelCorrect.rf07.log &
+#HcrVelCorrect -params HcrVelCorrect.qc.10hz -debug -start "2018 02 03 00 00 00" -end "2018 02 04 12 00 00" >& /tmp/HcrVelCorrect.rf08.log &
+#HcrVelCorrect -params HcrVelCorrect.qc.10hz -debug -start "2018 02 04 12 00 00" -end "2018 02 05 23 00 00" >& /tmp/HcrVelCorrect.rf09.log &
+#HcrVelCorrect -params HcrVelCorrect.qc.10hz -debug -start "2018 02 07 00 00 00" -end "2018 02 08 23 00 00" >& /tmp/HcrVelCorrect.rf10.log &
+#HcrVelCorrect -params HcrVelCorrect.qc.10hz -debug -start "2018 02 16 00 00 00" -end "2018 02 17 12 00 00" >& /tmp/HcrVelCorrect.rf11.log &
+#HcrVelCorrect -params HcrVelCorrect.qc.10hz -debug -start "2018 02 17 12 00 00" -end "2018 02 18 23 00 00" >& /tmp/HcrVelCorrect.rf12.log &
+#HcrVelCorrect -params HcrVelCorrect.qc.10hz -debug -start "2018 02 19 00 00 00" -end "2018 02 20 23 00 00" >& /tmp/HcrVelCorrect.rf13.log &
+#VelCorrect -params HcrVelCorrect.qc.10hz -debug -start "2018 02 21 00 00 00" -end "2018 02 22 23 00 00" >& /tmp/HcrVelCorrect.rf14.log &
+#HcrVelCorrect -params HcrVelCorrect.qc.10hz -debug -start "2018 02 24 00 00 00" -end "2018 02 24 23 00 00" >& /tmp/HcrVelCorrect.rf15.log &
 
 
 
