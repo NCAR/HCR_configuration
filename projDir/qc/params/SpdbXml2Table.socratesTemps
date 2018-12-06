@@ -75,9 +75,9 @@ input_url = "/scr/rain1/rsfdata/projects/socrates/hcr/spdb/monitor/qc";
 //
 
 start_time = {
-    year = 2011,
-    month = 1,
-    day = 1,
+    year = 2018,
+    month = 01,
+    day = 15,
     hour = 0,
     min = 0,
     sec = 0
@@ -103,9 +103,9 @@ start_time = {
 //
 
 end_time = {
-    year = 2011,
-    month = 1,
-    day = 1,
+    year = 2018,
+    month = 02,
+    day = 25,
     hour = 0,
     min = 0,
     sec = 0
