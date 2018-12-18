@@ -14,9 +14,9 @@ endif
 
 # load the DDC8 bitstream
 
-loadDDC8.sh |& LogFilter -d $ERRORS_LOG_DIR -p hcrdrx -i ops
+loadDDC8.sh |& LogFilter -d $ERRORS_LOG_DIR -noLineStamp -p hcrdrx -i ops
 
 # start
 limit coredumpsize unlimited
-/bin/nice -10 $cmd |& LogFilter -d $ERRORS_LOG_DIR -p hcrdrx -i ops &
+/bin/nice -10 stdbuf -o L $cmd |& LogFilter -d $ERRORS_LOG_DIR -noLineStamp -p hcrdrx -i ops &
 

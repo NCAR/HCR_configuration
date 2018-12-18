@@ -1,0 +1,5 @@
+#! /bin/csh -f
+
+xterm -title MaxPowerMon -bg black -fg cyan -g 130x20-0+250 -fn fixed -sb -sl 2000 -e FmqMon -fmq /tmp/fmq/max_power/wband/shmem_15000 -mode ASCII_PRINT
+
+

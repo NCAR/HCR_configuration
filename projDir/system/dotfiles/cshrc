@@ -28,7 +28,7 @@ setenv LANG C
 #  DARWIN
 #  CYGWIN
 
-setenv HOST_OS LINUX_CX11
+setenv HOST_OS LINUX_LROSE
 
 setenv LROSE_CORE_DIR $HOME/git/lrose-core
 setenv LROSE_INSTALL_DIR $HOME/lrose
@@ -47,9 +47,6 @@ setenv RAP_SHARED_LIB_DIR $RAP_LIB_DIR
 setenv RAP_SHARED_BIN_DIR $RAP_BIN_DIR
 
 setenv HCRDIR "/opt/hcr"
-setenv TAO_ROOT /opt/local/ACE+TAO-1.6a/ACE_wrappers/TAO
-setenv ACE_ROOT /opt/local/ACE+TAO-1.6a/ACE_wrappers
-setenv DDS_ROOT /opt/local/OpenDDS-2.0/DDS
 
 # CVS
 

@@ -1,0 +1,10 @@
+#! /bin/csh -f
+
+cd $PROJ_DIR/time_series/params
+
+running "TsMaxPower2Fmq -params TsMaxPower2Fmq.wband"
+if ($status == 1) then
+  TsMaxPower2Fmq -params TsMaxPower2Fmq.wband |& \
+    LogFilter -d $ERRORS_LOG_DIR -p TsMaxPower2Fmq -i wband &
+endif
+

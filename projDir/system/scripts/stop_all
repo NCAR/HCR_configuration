@@ -13,15 +13,15 @@ kill_auto_restart
 
 stop_hcrdrx
 
-# on rds, stop cmigitsDaemon, MotionControlDaemon, 
-# HcrPmc730Daemon, and HcrMonitor
+# on rds, stop cmigitsDaemon, MotionControlDaemon, HcrPmc730Daemon,
+# and HcrExecutive
 stop_cmigitsDaemon.ins1
 stop_cmigitsDaemon.ins2
 stop_MotionControlDaemon
 stop_HcrPmc730Daemon
-stop_HcrMonitor
+stop_HcrExecutive
 
-# on archiver, hcr_xmitd, fireflyd, and SpectracomDaemon
+# on archiver, stop hcr_xmitd, fireflyd, and SpectracomDaemon
 stop_hcr_xmitd
 stop_fireflyd
 stop_SpectracomDaemon

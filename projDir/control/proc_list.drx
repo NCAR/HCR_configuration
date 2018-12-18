@@ -2,7 +2,7 @@
 # SYSTEM processes
 #
 Janitor       logs       start_Janitor.logs        kill_Janitor
-#DataMapper    primary    start_DataMapper          kill_DataMapper
+DataMapper    primary    start_DataMapper          kill_DataMapper
 #
 ###############################################################################
 # HCR DRX processes
@@ -11,22 +11,19 @@ cmigitsDaemon          ins1  start_cmigitsDaemon.ins1       stop_cmigitsDaemon.i
 cmigitsDaemon          ins2  start_cmigitsDaemon.ins2       stop_cmigitsDaemon.ins2
 MotionControlDaemon    ops   start_MotionControlDaemon.ops  stop_MotionControlDaemon
 HcrPmc730Daemon        ops   start_HcrPmc730Daemon.ops      stop_HcrPmc730Daemon
-HcrMonitor             ops   start_HcrMonitor.ops           stop_HcrMonitor
-#hcrdrx       ops        start_hcrdrx.ops          stop_hcrdrx
-#
-###############################################################################
-# TIME SERIES FROM WBAND
-TsTcp2Fmq     wband         start_TsTcp2Fmq.wband  snuff_inst
+HcrExecutive           ops   start_HcrExecutive.ops         stop_HcrExecutive
+#HcrMonitor            ops   start_HcrMonitor.ops           stop_HcrMonitor
+#hcrdrx                ops   start_hcrdrx.ops               stop_hcrdrx
 #
 ###############################################################################
 # COPY TIME SERIES TO ARCHIVER
 Fmq2Fmq       time_series  start_Fmq2Fmq.time_series  snuff_inst
 #
 ###############################################################################
-# COPY CMIGITS TO ARCHIVER
-#Fmq2Fmq       cmigits start_Fmq2Fmq.cmigits  snuff_inst
-#
-###############################################################################
 # Max power for safety monitor
 #
-TsPrint  power_server  start_TsPrint.power_server   snuff_inst
+TsMaxPower2Fmq  wband  start_TsMaxPower2Fmq.wband     snuff_inst
+###############################################################################
+# COPY CMIGITS TO ARCHIVER
+#Fmq2Fmq       cmigits start_Fmq2Fmq.cmigits          snuff_inst
+#

@@ -1,0 +1,14 @@
+#! /bin/csh -f
+
+cd $HOME/git/HCR_instrument/src/HcrExecutive/
+
+running "HcrExecutive"
+if ($status == 0) then
+    exit 0
+endif
+
+snuff HcrExecutive
+
+limit coredumpsize unlimited
+HcrExecutive |& LogFilter -d $ERRORS_LOG_DIR -p HcrExecutive -i ops &
+
