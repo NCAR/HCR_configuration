@@ -204,7 +204,7 @@ archive_end_time = "2015 07 12 15 05 00";
 // Type: string
 //
 
-archive_data_url = "/scr/eldora1/rsfdata/cset/hcr/qc/cfradial/moments/10hz";
+archive_data_url = "/scr/snow2/rsfdata/projects/cset/hcr/qc/cfradial/moments/10hz";
 
 //======================================================================
 //

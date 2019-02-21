@@ -3,7 +3,7 @@
 rehash
 
 setenv PROJ_DIR /opt/local/git/HCR_configuration/projDir
-setenv DATA_DIR /scr/eldora2/rsfdata/soc-test
+setenv DATA_DIR /scr/snow2/rsfdata/projects/soc-test
 cd $PROJ_DIR/display/params
 
 if ($#argv < 6) then
