@@ -109,7 +109,7 @@ data_valid_interval_secs = 300;
 // Type: string
 //
 
-archive_data_dir = "/scr/eldora2/rsfdata/cset/hcr/time_series/wband/save";
+archive_data_dir = "/scr/snow2/rsfdata/projects/cset/hcr/time_series/wband/save";
 
 ///////////// archive_start_time //////////////////////
 //

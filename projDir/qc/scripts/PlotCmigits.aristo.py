@@ -35,8 +35,8 @@ def main():
     projDir = os.environ['PROJ_DIR']
     dataDir = os.environ['DATA_DIR']
     global dataFilePath
-    cmigitsFilePath = '/scr/eldora1/rsfdata/aristo-17/hcr/ascii/ac_georef/C-MIGITS_RF02.txt';
-    sdn500FilePath = '/scr/eldora1/rsfdata/aristo-17/hcr/ascii/ac_georef/ARISTO.rf02.20170224_193000.to.20170224_223500.txt';
+    cmigitsFilePath = '/scr/snow2/rsfdata/projects/aristo-17/hcr/ascii/ac_georef/C-MIGITS_RF02.txt';
+    sdn500FilePath = '/scr/snow2/rsfdata/projects/aristo-17/hcr/ascii/ac_georef/ARISTO.rf02.20170224_193000.to.20170224_223500.txt';
 
     # parse the command line
 

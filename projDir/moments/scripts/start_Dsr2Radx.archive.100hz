@@ -2,8 +2,8 @@
 
 
 setenv PROJ_DIR ~/cvs/projects/hcr/projDir
-#setenv DATA_DIR /scr/eldora1/rsfdata/cset/hcr
-setenv DATA_DIR /export/eldora1/rsfdata/noreaster
+#setenv DATA_DIR /scr/snow2/rsfdata/projects/cset/hcr
+setenv DATA_DIR /export/snow2/rsfdata/projects/noreaster
 
 cd $PROJ_DIR/moments/params
 

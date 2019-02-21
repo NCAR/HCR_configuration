@@ -1,4 +1,4 @@
-Reading RAF netcdf file: /scr/eldora1/rsfdata/cset/gv_data/CSETff01.nc
+Reading RAF netcdf file: /scr/snow2/rsfdata/projects/cset/gv_data/CSETff01.nc
   _timeCoordName: Time
   _latCoordName: LATC
   _lonCoordName: LONC
@@ -10,7 +10,7 @@ Reading RAF netcdf file: /scr/eldora1/rsfdata/cset/gv_data/CSETff01.nc
 ==>> Time base: 2015/06/29 00:00:00
 ==>> startTime: 2015/06/29 16:00:00
 ==>> endTime: 2015/06/29 20:30:00
-Reading RAF netcdf file: /scr/eldora1/rsfdata/cset/gv_data/CSETrf01.nc
+Reading RAF netcdf file: /scr/snow2/rsfdata/projects/cset/gv_data/CSETrf01.nc
   _timeCoordName: Time
   _latCoordName: LATC
   _lonCoordName: LONC
@@ -22,7 +22,7 @@ Reading RAF netcdf file: /scr/eldora1/rsfdata/cset/gv_data/CSETrf01.nc
 ==>> Time base: 2015/07/01 00:00:00
 ==>> startTime: 2015/07/01 17:25:00
 ==>> endTime: 2015/07/01 22:25:00
-Reading RAF netcdf file: /scr/eldora1/rsfdata/cset/gv_data/CSETrf02.nc
+Reading RAF netcdf file: /scr/snow2/rsfdata/projects/cset/gv_data/CSETrf02.nc
   _timeCoordName: Time
   _latCoordName: LATC
   _lonCoordName: LONC
@@ -34,7 +34,7 @@ Reading RAF netcdf file: /scr/eldora1/rsfdata/cset/gv_data/CSETrf02.nc
 ==>> Time base: 2015/07/07 00:00:00
 ==>> startTime: 2015/07/07 14:55:00
 ==>> endTime: 2015/07/07 21:15:00
-Reading RAF netcdf file: /scr/eldora1/rsfdata/cset/gv_data/CSETrf03.nc
+Reading RAF netcdf file: /scr/snow2/rsfdata/projects/cset/gv_data/CSETrf03.nc
   _timeCoordName: Time
   _latCoordName: LATC
   _lonCoordName: LONC
@@ -46,7 +46,7 @@ Reading RAF netcdf file: /scr/eldora1/rsfdata/cset/gv_data/CSETrf03.nc
 ==>> Time base: 2015/07/09 00:00:00
 ==>> startTime: 2015/07/09 16:30:00
 ==>> endTime: 2015/07/09 23:38:00
-Reading RAF netcdf file: /scr/eldora1/rsfdata/cset/gv_data/CSETrf04.nc
+Reading RAF netcdf file: /scr/snow2/rsfdata/projects/cset/gv_data/CSETrf04.nc
   _timeCoordName: Time
   _latCoordName: LATC
   _lonCoordName: LONC
@@ -58,7 +58,7 @@ Reading RAF netcdf file: /scr/eldora1/rsfdata/cset/gv_data/CSETrf04.nc
 ==>> Time base: 2015/07/12 00:00:00
 ==>> startTime: 2015/07/12 14:50:00
 ==>> endTime: 2015/07/12 21:28:00
-Reading RAF netcdf file: /scr/eldora1/rsfdata/cset/gv_data/CSETrf05.nc
+Reading RAF netcdf file: /scr/snow2/rsfdata/projects/cset/gv_data/CSETrf05.nc
   _timeCoordName: Time
   _latCoordName: LATC
   _lonCoordName: LONC
@@ -70,7 +70,7 @@ Reading RAF netcdf file: /scr/eldora1/rsfdata/cset/gv_data/CSETrf05.nc
 ==>> Time base: 2015/07/14 00:00:00
 ==>> startTime: 2015/07/14 16:40:00
 ==>> endTime: 2015/07/15 00:18:00
-Reading RAF netcdf file: /scr/eldora1/rsfdata/cset/gv_data/CSETrf06.nc
+Reading RAF netcdf file: /scr/snow2/rsfdata/projects/cset/gv_data/CSETrf06.nc
   _timeCoordName: Time
   _latCoordName: LATC
   _lonCoordName: LONC
@@ -82,7 +82,7 @@ Reading RAF netcdf file: /scr/eldora1/rsfdata/cset/gv_data/CSETrf06.nc
 ==>> Time base: 2015/07/17 00:00:00
 ==>> startTime: 2015/07/17 14:55:00
 ==>> endTime: 2015/07/17 21:50:00
-Reading RAF netcdf file: /scr/eldora1/rsfdata/cset/gv_data/CSETrf07.nc
+Reading RAF netcdf file: /scr/snow2/rsfdata/projects/cset/gv_data/CSETrf07.nc
   _timeCoordName: Time
   _latCoordName: LATC
   _lonCoordName: LONC
@@ -94,7 +94,7 @@ Reading RAF netcdf file: /scr/eldora1/rsfdata/cset/gv_data/CSETrf07.nc
 ==>> Time base: 2015/07/19 00:00:00
 ==>> startTime: 2015/07/19 16:22:00
 ==>> endTime: 2015/07/20 00:05:00
-Reading RAF netcdf file: /scr/eldora1/rsfdata/cset/gv_data/CSETrf08.nc
+Reading RAF netcdf file: /scr/snow2/rsfdata/projects/cset/gv_data/CSETrf08.nc
   _timeCoordName: Time
   _latCoordName: LATC
   _lonCoordName: LONC
@@ -106,7 +106,7 @@ Reading RAF netcdf file: /scr/eldora1/rsfdata/cset/gv_data/CSETrf08.nc
 ==>> Time base: 2015/07/22 00:00:00
 ==>> startTime: 2015/07/22 15:00:00
 ==>> endTime: 2015/07/22 22:10:00
-Reading RAF netcdf file: /scr/eldora1/rsfdata/cset/gv_data/CSETrf09.nc
+Reading RAF netcdf file: /scr/snow2/rsfdata/projects/cset/gv_data/CSETrf09.nc
   _timeCoordName: Time
   _latCoordName: LATC
   _lonCoordName: LONC
@@ -118,7 +118,7 @@ Reading RAF netcdf file: /scr/eldora1/rsfdata/cset/gv_data/CSETrf09.nc
 ==>> Time base: 2015/07/24 00:00:00
 ==>> startTime: 2015/07/24 16:25:00
 ==>> endTime: 2015/07/25 00:30:00
-Reading RAF netcdf file: /scr/eldora1/rsfdata/cset/gv_data/CSETrf10.nc
+Reading RAF netcdf file: /scr/snow2/rsfdata/projects/cset/gv_data/CSETrf10.nc
   _timeCoordName: Time
   _latCoordName: LATC
   _lonCoordName: LONC
@@ -130,7 +130,7 @@ Reading RAF netcdf file: /scr/eldora1/rsfdata/cset/gv_data/CSETrf10.nc
 ==>> Time base: 2015/07/27 00:00:00
 ==>> startTime: 2015/07/27 14:59:00
 ==>> endTime: 2015/07/27 22:11:00
-Reading RAF netcdf file: /scr/eldora1/rsfdata/cset/gv_data/CSETrf11.nc
+Reading RAF netcdf file: /scr/snow2/rsfdata/projects/cset/gv_data/CSETrf11.nc
   _timeCoordName: Time
   _latCoordName: LATC
   _lonCoordName: LONC
@@ -142,7 +142,7 @@ Reading RAF netcdf file: /scr/eldora1/rsfdata/cset/gv_data/CSETrf11.nc
 ==>> Time base: 2015/07/29 00:00:00
 ==>> startTime: 2015/07/29 16:30:00
 ==>> endTime: 2015/07/30 00:08:00
-Reading RAF netcdf file: /scr/eldora1/rsfdata/cset/gv_data/CSETrf12.nc
+Reading RAF netcdf file: /scr/snow2/rsfdata/projects/cset/gv_data/CSETrf12.nc
   _timeCoordName: Time
   _latCoordName: LATC
   _lonCoordName: LONC
@@ -154,7 +154,7 @@ Reading RAF netcdf file: /scr/eldora1/rsfdata/cset/gv_data/CSETrf12.nc
 ==>> Time base: 2015/08/01 00:00:00
 ==>> startTime: 2015/08/01 14:50:00
 ==>> endTime: 2015/08/01 22:40:00
-Reading RAF netcdf file: /scr/eldora1/rsfdata/cset/gv_data/CSETrf13.nc
+Reading RAF netcdf file: /scr/snow2/rsfdata/projects/cset/gv_data/CSETrf13.nc
   _timeCoordName: Time
   _latCoordName: LATC
   _lonCoordName: LONC
@@ -166,7 +166,7 @@ Reading RAF netcdf file: /scr/eldora1/rsfdata/cset/gv_data/CSETrf13.nc
 ==>> Time base: 2015/08/03 00:00:00
 ==>> startTime: 2015/08/03 16:24:00
 ==>> endTime: 2015/08/03 23:45:00
-Reading RAF netcdf file: /scr/eldora1/rsfdata/cset/gv_data/CSETrf14.nc
+Reading RAF netcdf file: /scr/snow2/rsfdata/projects/cset/gv_data/CSETrf14.nc
   _timeCoordName: Time
   _latCoordName: LATC
   _lonCoordName: LONC
@@ -178,7 +178,7 @@ Reading RAF netcdf file: /scr/eldora1/rsfdata/cset/gv_data/CSETrf14.nc
 ==>> Time base: 2015/08/07 00:00:00
 ==>> startTime: 2015/08/07 14:50:00
 ==>> endTime: 2015/08/07 22:00:00
-Reading RAF netcdf file: /scr/eldora1/rsfdata/cset/gv_data/CSETrf15.nc
+Reading RAF netcdf file: /scr/snow2/rsfdata/projects/cset/gv_data/CSETrf15.nc
   _timeCoordName: Time
   _latCoordName: LATC
   _lonCoordName: LONC
@@ -190,7 +190,7 @@ Reading RAF netcdf file: /scr/eldora1/rsfdata/cset/gv_data/CSETrf15.nc
 ==>> Time base: 2015/08/09 00:00:00
 ==>> startTime: 2015/08/09 16:25:00
 ==>> endTime: 2015/08/09 23:44:00
-Reading RAF netcdf file: /scr/eldora1/rsfdata/cset/gv_data/CSETrf16.nc
+Reading RAF netcdf file: /scr/snow2/rsfdata/projects/cset/gv_data/CSETrf16.nc
   _timeCoordName: Time
   _latCoordName: LATC
   _lonCoordName: LONC

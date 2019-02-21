@@ -1,7 +1,7 @@
 #! /bin/csh -f
 
 setenv PROJ_DIR ~/cvs/projects/hcr/projDir
-setenv DATA_DIR /export/eldora1/rsfdata/noreaster
+setenv DATA_DIR /export/snow2/rsfdata/projects/noreaster
 
 cd $PROJ_DIR/moments/params
 

@@ -147,7 +147,7 @@ apply_georef_to_compute_angles = TRUE;
 // Type: string
 //
 
-output_dir = "/scr/eldora1/hcr-test/time_series/wband/save1";
+output_dir = "/scr/snow2/rsfdata/projects/hcr-test/time_series/wband/save1";
 
 ///////////// use_fixed_angle_for_file_name ///////////
 //

@@ -1,10 +1,10 @@
 #! /bin/csh
 
 setenv PROJ_DIR $HOME/cvs/projects/hcr/projDir
-setenv DATA_DIR /scr/eldora1/rsfdata/cset
+setenv DATA_DIR /scr/snow2/rsfdata/projects/cset
 
 cd $PROJ_DIR/qc/params
 
-AcGeoref2Spdb -params AcGeoref2Spdb.hcr_test.raf_1hz -debug -f /scr/eldora1/rsfdata/hcr-test/gv_data/HCRTESTrf??.nc
+AcGeoref2Spdb -params AcGeoref2Spdb.hcr_test.raf_1hz -debug -f /scr/snow2/rsfdata/projects/hcr-test/gv_data/HCRTESTrf??.nc
 
 

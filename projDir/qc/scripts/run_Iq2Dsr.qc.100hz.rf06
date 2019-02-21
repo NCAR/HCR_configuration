@@ -1,7 +1,7 @@
 #! /bin/csh -f
 
 setenv PROJ_DIR ~/cvs/projects/hcr/projDir
-setenv DATA_DIR /scr/eldora1/rsfdata/cset/hcr
+setenv DATA_DIR /scr/snow2/rsfdata/projects/cset/hcr
 setenv SITE_NAME CSET
 
 cd $PROJ_DIR/qc/params

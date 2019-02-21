@@ -76,7 +76,7 @@ input_mode = IWRF_FMQ_INPUT;
 // Type: string
 //
 
-input_fmq_url = "fmqp:://eldora::fmq/moments/wband/shmem_22500";
+input_fmq_url = "fmqp:://snow::fmq/moments/wband/shmem_22500";
 
 ///////////// seek_to_end_of_fmq //////////////////////
 //

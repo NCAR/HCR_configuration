@@ -5,6 +5,6 @@ setenv DATA_DIR ~/hcrDataDir
 
 cd $PROJ_DIR/qc/params
 
-AcGeoref2Spdb -params AcGeoref2Spdb.raf_1hz -debug -f /scr/eldora1/rsfdata/aristo-17/gv/ARISTO2017_rf??.nc
+AcGeoref2Spdb -params AcGeoref2Spdb.raf_1hz -debug -f /scr/snow2/rsfdata/projects/aristo-17/gv/ARISTO2017_rf??.nc
 
 

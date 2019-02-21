@@ -166,7 +166,7 @@ realtime_sleep_secs = 1;
 // Type: string
 //
 
-primary_spdb_url = "spdbp:://eldora::/scr/eldora1/rsfdata/aristo-17/hcr/spdb/ac_georef/raf_1hz";
+primary_spdb_url = "spdbp:://snow::/scr/snow2/rsfdata/projects/aristo-17/hcr/spdb/ac_georef/raf_1hz";
 
 ///////////// secondary_spdb_url //////////////////////
 //
@@ -185,7 +185,7 @@ primary_spdb_url = "spdbp:://eldora::/scr/eldora1/rsfdata/aristo-17/hcr/spdb/ac_
 // Type: string
 //
 
-secondary_spdb_url = "spdbp:://eldora::/scr/eldora1/rsfdata/aristo-17/hcr/spdb/ac_georef/moments_10hz";
+secondary_spdb_url = "spdbp:://snow::/scr/snow2/rsfdata/projects/aristo-17/hcr/spdb/ac_georef/moments_10hz";
 
 //======================================================================
 //

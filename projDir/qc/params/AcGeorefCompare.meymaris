@@ -82,7 +82,7 @@ instance = "meymaris";
 // Type: string
 //
 
-primary_spdb_url = "spdbp:://eldora::/scr/eldora1/rsfdata/cset/hcr/qc/spdb/ac_georef/raf_1hz";
+primary_spdb_url = "spdbp:://snow::/scr/snow2/rsfdata/projects/cset/hcr/qc/spdb/ac_georef/raf_1hz";
 
 ///////////// secondary_spdb_url //////////////////////
 //
@@ -101,7 +101,7 @@ primary_spdb_url = "spdbp:://eldora::/scr/eldora1/rsfdata/cset/hcr/qc/spdb/ac_ge
 // Type: string
 //
 
-secondary_spdb_url = "spdbp:://eldora::/scr/eldora1/rsfdata/cset/hcr/qc/spdb/ac_georef/cfradial_10hz";
+secondary_spdb_url = "spdbp:://snow::/scr/snow2/rsfdata/projects/cset/hcr/qc/spdb/ac_georef/cfradial_10hz";
 
 //======================================================================
 //
