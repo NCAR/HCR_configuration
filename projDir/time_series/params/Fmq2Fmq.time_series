@@ -80,7 +80,7 @@ msecs_sleep_blocking = 1000;
 //
 
 output_urls = {
- "fmqp:://archiver::fmq/ts/wband/shmem_10000"
+ "fmqp:://archiver::/tmp/fmq/ts/wband/shmem_10000"
 };
 
 ///////////// data_mapper_report_interval /////////////
