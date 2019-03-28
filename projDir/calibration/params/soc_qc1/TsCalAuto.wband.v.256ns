@@ -41,7 +41,7 @@ debug = DEBUG_NORM;
 // Type: string
 //
 
-instance = "wband_256ns";
+instance = "wband.v";
 
 ///////////// register_with_procmap ///////////////////
 //
@@ -192,8 +192,8 @@ siggen_ip_address = "10.40.0.21";
 // Type: double
 //
 
-// siggen_max_power = -34.65;
-siggen_max_power = -34.30;
+ siggen_max_power = -34.65;
+//siggen_max_power = -34.30;
 
 ///////////// siggen_min_power ////////////////////////
 //
@@ -203,8 +203,8 @@ siggen_max_power = -34.30;
 // Type: double
 //
 
-// siggen_min_power = -114.90;
-siggen_min_power = -115.08;
+ siggen_min_power = -114.90;
+//siggen_min_power = -115.08;
 
 ///////////// siggen_delta_power //////////////////////
 //
@@ -238,46 +238,46 @@ siggen_specify_power_sequence = TRUE;
 // Type: double
 // 1D array - variable length.
 //
-
- // siggen_power_sequence = {
- //  -34.65,
- //  -39.65,
- //  -44.65,
- //  -49.65,
- //  -54.65,
- //  -59.65,
- //  -64.65,
- //  -69.65,
- //  -74.65,
- //  -80.70,
- //  -85.70,
- //  -90.70,
- //  -95.70,
- //  -100.70,
- //  -105.70,
- //  -110.70,
- //  -115.70
- // };
-
 siggen_power_sequence = {
-  -34.30,
-  -39.30,
-  -44.30,
-  -49.30,
-  -54.30,
-  -59.30,
-  -64.30,
-  -69.30,
-  -74.30,
-  -80.08,
-  -85.08,
-  -90.08,
-  -95.08,
-  -100.08,
-  -105.08,
-  -110.08,
-  -115.08
-};
+  -34.65,
+  -39.65,
+  -44.65,
+  -49.65,
+  -54.65,
+  -59.65,
+  -64.65,
+  -69.65,
+  -74.65,
+  -80.70,
+  -85.70,
+  -90.70,
+  -95.70,
+  -100.70,
+  -105.70,
+  -110.70,
+  -115.70
+ };
+
+
+//siggen_power_sequence = {
+// -34.30,
+//-39.30,
+// -44.30,
+// -49.30,
+// -54.30,
+// -59.30,
+// -64.30,
+// -69.30,
+// -74.30,
+// -80.08,
+// -85.08,
+// -90.08,
+// -95.08,
+// -100.08,
+// -105.08,
+// -110.08,
+// -115.08
+//};
 
 ///////////// set_sig_freq ////////////////////////////
 //
@@ -516,7 +516,7 @@ twoWayWaveguideLossDbV = 0;
 // Type: double
 //
 
-twoWayRadomeLossDbH = 3.4;
+twoWayRadomeLossDbH = 3.8;
 
 ///////////// twoWayRadomeLossDbV /////////////////////
 //
@@ -546,7 +546,7 @@ twoWayRadomeLossDbV = 4.4;
 // Type: double
 //
 
-receiverMismatchLossDb = 2.3;
+receiverMismatchLossDb = 1.1;
 
 ///////////// noiseSourcePowerDbmH ////////////////////
 //
@@ -709,7 +709,7 @@ snr_for_mds = -6;
 // Type: string
 //
 
-output_dir = "$(PROJ_DIR)/calibration/data/wband_256ns";
+output_dir = "$(DATA_DIR)/cal/wband_v_256ns/11132017_cal";
 
 ///////////// output_file_label ///////////////////////
 //
@@ -721,7 +721,7 @@ output_dir = "$(PROJ_DIR)/calibration/data/wband_256ns";
 // Type: string
 //
 
-output_file_label = "Wband-HCR-256ns";
+output_file_label = "WbandV256ns";
 
 ///////////// plot_script /////////////////////////////
 //
@@ -734,7 +734,7 @@ output_file_label = "Wband-HCR-256ns";
 // Type: string
 //
 
-plot_script = "../scripts/do_calplot.dyn_range";
+plot_script = "do_calplot.dyn_range";
 
 //======================================================================
 //
