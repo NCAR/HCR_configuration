@@ -21,26 +21,26 @@
   <noiseDbmHx>-60.0616</noiseDbmHx>
   <noiseDbmVc>-60.7553</noiseDbmVc>
   <noiseDbmVx>-60.7553</noiseDbmVx>
-  <i0DbmHc>-101.598</i0DbmHc>
-  <i0DbmHx>-101.598</i0DbmHx>
-  <i0DbmVc>-101.211</i0DbmVc>
-  <i0DbmVx>-101.211</i0DbmVx>
-  <receiverGainDbHc>41.5363</receiverGainDbHc>
-  <receiverGainDbHx>41.5363</receiverGainDbHx>
-  <receiverGainDbVc>40.4554</receiverGainDbVc>
-  <receiverGainDbVx>40.4554</receiverGainDbVx>
-  <receiverSlopeDbHc>0.987205</receiverSlopeDbHc>
-  <receiverSlopeDbHx>0.987205</receiverSlopeDbHx>
-  <receiverSlopeDbVc>0.966753</receiverSlopeDbVc>
-  <receiverSlopeDbVx>0.966753</receiverSlopeDbVx>
+  <i0DbmHc>-101.609</i0DbmHc>
+  <i0DbmHx>-101.609</i0DbmHx>
+  <i0DbmVc>-101.152</i0DbmVc>
+  <i0DbmVx>-101.152</i0DbmVx>
+  <receiverGainDbHc>41.5476</receiverGainDbHc>
+  <receiverGainDbHx>41.5476</receiverGainDbHx>
+  <receiverGainDbVc>40.3962</receiverGainDbVc>
+  <receiverGainDbVx>40.3962</receiverGainDbVx>
+  <receiverSlopeDbHc>0.98197</receiverSlopeDbHc>
+  <receiverSlopeDbHx>0.98197</receiverSlopeDbHx>
+  <receiverSlopeDbVc>0.985146</receiverSlopeDbVc>
+  <receiverSlopeDbVx>0.985146</receiverSlopeDbVx>
   <dynamicRangeDbHc>71.6266</dynamicRangeDbHc>
   <dynamicRangeDbHx>71.6266</dynamicRangeDbHx>
   <dynamicRangeDbVc>71.6863</dynamicRangeDbVc>
   <dynamicRangeDbVx>71.6863</dynamicRangeDbVx>
-  <baseDbz1kmHc>-21.9557</baseDbz1kmHc>
-  <baseDbz1kmHx>-21.9557</baseDbz1kmHx>
-  <baseDbz1kmVc>-21.9073</baseDbz1kmVc>
-  <baseDbz1kmVx>-21.9073</baseDbz1kmVx>
+  <baseDbz1kmHc>-21.96</baseDbz1kmHc>
+  <baseDbz1kmHx>-21.96</baseDbz1kmHx>
+  <baseDbz1kmVc>-21.8498</baseDbz1kmVc>
+  <baseDbz1kmVx>-21.8498</baseDbz1kmVx>
   <sunPowerDbmHc>-9999</sunPowerDbmHc>
   <sunPowerDbmHx>-9999</sunPowerDbmHx>
   <sunPowerDbmVc>-9999</sunPowerDbmVc>
