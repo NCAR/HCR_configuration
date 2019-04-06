@@ -5,9 +5,9 @@
 #
 #  dir               late_secs  very_late_secs
 #################################################
-fmq/ts/wband/shmem_10000        60   120
-fmq/moments/100hz/shmem_20100   60   120
-fmq/moments/10hz/shmem_20010    60   120
+/tmp/fmq/ts/wband/shmem_10000        60   120
+/tmp/fmq/moments/100hz/shmem_20100   60   120
+/tmp/fmq/moments/10hz/shmem_20010    60   120
 #cfradial/covar/wband           120  300
 cfradial/moments/100hz          120  300
 cfradial/moments/10hz           120  300
