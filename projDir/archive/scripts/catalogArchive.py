@@ -63,7 +63,7 @@ def compileDriveList():
     for line in lines:
         if (line.split()[0].find('/dev') >= 0):
             partition = line.split()[5]
-            if (partition.find('HCR') >= 0):
+            if (partition.find('RSF') >= 0):
                 driveList.append(partition)
 
     driveList.sort()

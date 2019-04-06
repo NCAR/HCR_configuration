@@ -32,7 +32,7 @@ def main():
                       dest='targetDir', default='/tmp/target',
                       help='Path of target directory')
     parser.add_option('--volLabel',
-                      dest='volLabel', default='HCRXX',
+                      dest='volLabel', default='RSFxxxx',
                       help='Label of target drive')
     parser.add_option('--dayStr',
                       dest='dayStr', default='20110901',
