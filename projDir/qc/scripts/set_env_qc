@@ -2,6 +2,9 @@
 
 # set up the environment for HCR QC processing
 
+setenv PROJECT_NAME SOCRATES
+setenv SITE_NAME SOCRATES
+
 setenv PROJ_DIR ~/git/HCR_configuration/projDir
 setenv DATA_DIR  /scr/snow2/rsfdata/projects/socrates/hcr
 setenv QC_VERSION qc2
@@ -10,9 +13,5 @@ setenv QC_VERSION qc2
 
 mkdir -p $DATA_DIR
 mkdir -p $DATA_DIR/logs
-
-# bring in the project info environment
-
-source $PROJ_DIR/system/params/project_info
 
 
