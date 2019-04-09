@@ -102,15 +102,18 @@ n_compute_threads = 20;
 // Operating mode.
 //
 // In REALTIME mode, the program waits for a new input file. In ARCHIVE 
-//   mode, it moves through the list of file names specified on the 
-//   command line. In SIMULATE mode, the program moves repeatedly through 
-//   the file list, creating output files with times set to now. This is 
-//   useful for simulating an operational radar. In FMQ mode, the program 
-//   opens the input_fmq, and reads time series data from the queue.
+//   mode, it moves through the files between the start and end times 
+//   specified on the command line. In FILELIST mode, it moves through the 
+//   list of file names specified on the command line. In SIMULATE mode, 
+//   the program moves repeatedly through the file list, creating output 
+//   files with times set to now. This is useful for simulating an 
+//   operational radar. In FMQ mode, the program opens the input_fmq, and 
+//   reads time series data from the queue.
 //
 //
 // Type: enum
 // Options:
+//     FILELIST
 //     ARCHIVE
 //     REALTIME
 //     SIMULATE
@@ -150,14 +153,14 @@ position_fmq_at_start = FALSE;
 //
 // Dir for input data files.
 //
-// This is used in REALTIME mode only. In ARCHIVE and SIMULATE modes, 
-//   the file paths are specified on the command line.
+// This is used in REALTIME and ARCHIVE modes. In FILELIST and SIMULATE 
+//   modes, the file paths are specified on the command line.
 //
 //
 // Type: string
 //
 
-input_dir = "./input";
+input_dir = "$(DATA_DIR)/time_series/wband/save";
 
 ///////////// use_ldata_info_file /////////////////////
 //
@@ -762,7 +765,9 @@ scan_mode_for_override = SCAN_MODE_VERTICAL_POINTING;
 //   power in the central part of the time series. The adjustment corrects 
 //   beam_n_samples by computing the fraction of the window in which 90% 
 //   of the power occurs. For the VONHANN window this factor is just below 
-//   2.0, and for the BLACKMAN window it is just above 2.0.
+//   2.0, and for the BLACKMAN window it is just above 2.0. TUKEY_10 
+//   refers to a Tukey window with alpha of 0.1. Similarly TUKEY_20 means 
+//   alpha is 0.2, etc.
 // (f) switching_receiver: DEPRECATED (NO LONGER USED), we assuming a 
 //   switching receiver for the following modes: DP_ALT_HV_CO_ONLY, 
 //   DP_ALT_HV_CO_CROSS, DP_SIM_HV_SWITCHED_HV.
@@ -773,7 +778,8 @@ scan_mode_for_override = SCAN_MODE_VERTICAL_POINTING;
 //   parameter file.
 //
 // xmit_rcv_mode options:
-//  SP: Single polarization
+//  SINGLE_POL: single polarization, H channel.
+//  SINGLE_POL_V: single polarization, V channel.
 //  DP_ALT_HV_CO_ONLY: Dual pol, alternating transmission, copolar 
 //   receiver only (e.g. CP2 S-band)
 //  DP_ALT_HV_CO_CROSS: Dual pol, alternating transmission, co-polar and 
@@ -797,6 +803,19 @@ scan_mode_for_override = SCAN_MODE_VERTICAL_POINTING;
 //   velocity sign is incorrect. Set this flag to TRUE to change the sign.
 //
 // proc_flags: special processing options, not active yet.
+//
+// beam_method:
+// SPECIFY_N_SAMPLES:
+//   take the next N samples to form the beam;
+// SPECIFY_ANGLE:
+//   check the scanning angles, use those pulses that traverse the 
+//   specified angular arc;
+// CONSTANT_STEERING_ANGLE:
+//   process all pulses with a constant azimuth and elevation - this 
+//   applies to some electronically-steered radars, where the beam is 
+//   steered to a fixed angle for a while, and then jumps to a different 
+//   pointing direction. We use all of the pulses with a constant steering 
+//   angle to form the beam.
 //
 //
 // Type: struct
@@ -825,6 +844,7 @@ scan_mode_for_override = SCAN_MODE_VERTICAL_POINTING;
 //        Options:
 //          BEAM_SPECIFY_N_SAMPLES
 //          BEAM_SPECIFY_ANGLE
+//          BEAM_CONSTANT_STEERING_ANGLE
 //      int beam_n_samples;
 //      double beam_angle_deg;
 //      boolean index_the_beams;
@@ -836,6 +856,10 @@ scan_mode_for_override = SCAN_MODE_VERTICAL_POINTING;
 //          WINDOW_VONHANN
 //          WINDOW_BLACKMAN
 //          WINDOW_BLACKMAN_NUTTALL
+//          WINDOW_TUKEY_10
+//          WINDOW_TUKEY_20
+//          WINDOW_TUKEY_30
+//          WINDOW_TUKEY_50
 //      boolean switching_receiver;
 //      xmit_rcv_mode_t xmit_rcv_mode;
 //        Options:
@@ -847,6 +871,7 @@ scan_mode_for_override = SCAN_MODE_VERTICAL_POINTING;
 //          DP_SIM_HV_SWITCHED_HV
 //          DP_H_ONLY_FIXED_HV
 //          DP_V_ONLY_FIXED_HV
+//          SINGLE_POL_V
 //      boolean apply_clutter_filter;
 //      boolean apply_sz;
 //      boolean change_velocity_sign;
@@ -1158,7 +1183,7 @@ spectrum_width_method = WIDTH_METHOD_R0R1;
 // Type: string
 //
 
-startup_cal_file = "$(PROJ_DIR)/calibration/data/wband_256ns/TsCalAuto_Wband-HCR-256ns_20171113_231130.xml";
+startup_cal_file = "$(PROJ_DIR)/calibration/data/wband_256ns/TsCalAuto_Wband-HCR-256ns_20171113_231130.soc-qc2.xml";
 
 ///////////// set_cal_by_pulse_width //////////////////
 //
@@ -1212,6 +1237,7 @@ set_cal_by_pulse_width = FALSE;
 //          DP_SIM_HV_SWITCHED_HV
 //          DP_H_ONLY_FIXED_HV
 //          DP_V_ONLY_FIXED_HV
+//          SINGLE_POL_V
 //      double zdr_correction_db;
 //      double system_phidp_deg;
 //   }
@@ -1288,7 +1314,7 @@ override_cal_dbz_correction = FALSE;
 // Type: double
 //
 
-dbz_correction = 0.0;
+dbz_correction = 0;
 
 ///////////// override_cal_zdr_correction /////////////
 //
@@ -3536,13 +3562,13 @@ nbeams_for_params_and_calib = 20;
 // Type: boolean
 //
 
-write_blocking = TRUE;
+write_blocking = FALSE;
 
 ///////////// beam_wait_msecs /////////////////////////
 //
 // Wait per beam (milli-secs).
 //
-// ARCHIVE and SIMULATE modes only.
+// FILELIST, ARCHIVE and SIMULATE modes only.
 //
 //
 // Type: int
