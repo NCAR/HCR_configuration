@@ -70,7 +70,7 @@ mode = ARCHIVE;
 // Type: string
 //
 
-instance = "qc.socrates";
+instance = "qc";
 
 //======================================================================
 //
@@ -88,7 +88,7 @@ instance = "qc.socrates";
 // Type: string
 //
 
-input_spdb_url = "spdbp:://localhost::/scr/rain1/rsfdata/projects/socrates/hcr/spdb/monitor/qc";
+input_spdb_url = "$(DATA_DIR)/spdb/monitor/qc";
 
 ///////////// realtime_wait_interval_secs /////////////
 //
@@ -156,7 +156,7 @@ archive_processing_interval_secs = 900;
 // Type: string
 //
 
-output_spdb_url = "$(DATA_DIR)/spdb/tempVsGain";
+output_spdb_url = "$(DATA_DIR)/$(QC_VERSION)/spdb/tempVsGain";
 
 //======================================================================
 //
@@ -220,7 +220,7 @@ pod_temperature_tags = {
 // Type: double
 //
 
-v_lna_reference_temperature_c = 29.739;
+v_lna_reference_temperature_c = 29.73897;
 
 ///////////// v_lna_gain_change_per_c /////////////////
 //
@@ -234,7 +234,7 @@ v_lna_reference_temperature_c = 29.739;
 // Type: double
 //
 
-v_lna_gain_change_per_c = 0.16436;
+v_lna_gain_change_per_c = 0.19851;
 
 ///////////// pod_reference_temperature_c /////////////
 //
@@ -263,7 +263,7 @@ pod_reference_temperature_c = 19.39;
 // Type: double
 //
 
-v_rx_gain_change_per_c = -0.1085;
+v_rx_gain_change_per_c = -0.115120;
 
 ///////////// v_lna_temperature_time_lag_secs /////////
 //

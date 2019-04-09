@@ -109,7 +109,7 @@ data_valid_interval_secs = 300;
 // Type: string
 //
 
-archive_data_dir = "/scr/snow2/rsfdata/projects/aristo-17/hcr/time_series/wband/save";
+archive_data_dir = "$(DATA_DIR)/time_series/wband/save";
 
 ///////////// archive_start_time //////////////////////
 //
@@ -121,7 +121,7 @@ archive_data_dir = "/scr/snow2/rsfdata/projects/aristo-17/hcr/time_series/wband/
 // Type: string
 //
 
-archive_start_time = "2017 02 22 00 00 00";
+archive_start_time = "2018 01 15 00 00 00";
 
 ///////////// archive_end_time ////////////////////////
 //
@@ -133,7 +133,7 @@ archive_start_time = "2017 02 22 00 00 00";
 // Type: string
 //
 
-archive_end_time = "2017 03 11 00 00 00";
+archive_end_time = "2018 02 28 00 00 00";
 
 //======================================================================
 //
@@ -2808,7 +2808,7 @@ write_to_spdb = TRUE;
 // Type: string
 //
 
-spdb_url = "/scr/rain1/rsfdata/projects/aristo-17/hcr/spdb/monitor/qc";
+spdb_url = "$(DATA_DIR)/spdb/monitor/qc";
 
 ///////////// spdb_interval_secs //////////////////////
 //
