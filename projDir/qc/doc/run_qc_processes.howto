@@ -2,20 +2,28 @@
 
 #################################################################
 # Environment is set in:
-
+#
   ~/git/HCR_configuration/projDir/qc/scripts/set_env_qc
-
-# which sets up:
-
+#
+# which sets up, for example:
+#
   PROJ_DIR = ~/git/HCR_configuration/projDir
-  DATA_DIR = /scr/rain1/rsfdata/projects/socrates/hcr/qc
+  DATA_DIR = /scr/snow2/rsfdata/projects/socrates/hcr
   QC_VERSION = qc2 (or whatever)
+#
+# This file will be edited and changed for each qc run.
  
 #################################################################
 # run TsStatusMonitor
 #
 # Create Spdb data base of monitoring data, which includes
 # temperatures. These are used for correcting the rx gain.
+#
+# This step reads the time series and stores the monitoring data
+# in spdb.
+#
+# This data does not change between qc versions - it is the field
+# data. So this procedure is only run once per project.
 #
 # The results are written to:
 #
@@ -31,19 +39,35 @@ cd ~/git/HCR_configuration/projDir/qc/scripts
 /scr/snow2/rsfdata/projects/socrates/hcr/spdb/monitor/qc
 
 #################################################################
+# Translate temperature data into csv text files, from SPDB monitoring
+# data.
+#
+# Run SpdbXml2Table, to produce space-delimited text file
+# containing temps.
+#
+# For example, for socrates we would run:
+
+set_env_qc
+cd $PROJ_DIR/qc/params
+SpdbXml2Table -params SpdbXml2Table.temps -debug  -start "2018 01 15 00 00 00" -end "2018 02 28 00 00 00" > $DATA_DIR/txt/SOCRATES.temperatures.txt 
+
+# This creates the file:
+
+$DATA_DIR/txt/SOCRATES.temperatures.txt   
+
+#################################################################
 # LNA and pod temperature analysis
 #
 # analyze temperatures and powers from noise source cals (Rike)
-#   Input data is in $DATA_DIR/temperatures1s
-#                    $DATA_DIR/temperatures10s
-#   Step (a): run TsStatusMonitor to produce SPDB files
-#   Step (b): run SpdbXml2Table, to produce space-delimited text file
-#             containing temps
-#   Step (c): Run Matlab to read moments, correlate with temps.
+#
+# As an example:
+#   input data is in $DATA_DIR/txt/SOCRATES.temperatures.txt
+#
+# Run Matlab to read moments, correlate with temps.
 #
 #   Results file is: $DATA_DIR/calFiles/tempsTable_socrates.txt
 #
-# As an example for socrates, results are in:
+# As an example for socrates qc2, results are in:
 
 /scr/snow2/rsfdata/projects/socrates/hcr/qc2/calFiles/tempsTable_socrates.txt
 
