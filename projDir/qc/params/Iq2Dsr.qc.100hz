@@ -1604,7 +1604,7 @@ correct_hcr_v_rx_gain_for_temperature = TRUE;
 // Type: string
 //
 
-hcr_delta_gain_spdb_url = "$(DATA_DIR)/qc/spdb/tempVsGain";
+hcr_delta_gain_spdb_url = "$(DATA_DIR)/$(QC_VERSION)/spdb/tempVsGain";
 
 ///////////// hcr_delta_gain_search_margin_secs ///////
 //
@@ -3562,7 +3562,7 @@ nbeams_for_params_and_calib = 20;
 // Type: boolean
 //
 
-write_blocking = FALSE;
+write_blocking = TRUE;
 
 ///////////// beam_wait_msecs /////////////////////////
 //
