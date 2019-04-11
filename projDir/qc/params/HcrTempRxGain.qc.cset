@@ -112,7 +112,7 @@ realtime_wait_interval_secs = 1;
 // Type: string
 //
 
-archive_start_time = "2018 01 15 00 00 00";
+archive_start_time = "2015 07 01 00 00 00";
 
 ///////////// archive_end_time ////////////////////////
 //
@@ -124,7 +124,7 @@ archive_start_time = "2018 01 15 00 00 00";
 // Type: string
 //
 
-archive_end_time = "2018 02 25 00 00 00";
+archive_end_time = "2015 08 13 00 00 00";
 
 ///////////// archive_processing_interval_secs ////////
 //
@@ -220,7 +220,7 @@ pod_temperature_tags = {
 // Type: double
 //
 
-v_lna_reference_temperature_c = 29.73897;
+v_lna_reference_temperature_c = 33.3598897435898;
 
 ///////////// v_lna_gain_change_per_c /////////////////
 //
@@ -234,7 +234,7 @@ v_lna_reference_temperature_c = 29.73897;
 // Type: double
 //
 
-v_lna_gain_change_per_c = 0.19851;
+v_lna_gain_change_per_c = 0.146225632884548;
 
 ///////////// pod_reference_temperature_c /////////////
 //
@@ -249,7 +249,7 @@ v_lna_gain_change_per_c = 0.19851;
 // Type: double
 //
 
-pod_reference_temperature_c = 19.39;
+pod_reference_temperature_c = 22.3774134615385;
 
 ///////////// v_rx_gain_change_per_c //////////////////
 //
@@ -263,7 +263,7 @@ pod_reference_temperature_c = 19.39;
 // Type: double
 //
 
-v_rx_gain_change_per_c = -0.115120;
+v_rx_gain_change_per_c = -0.127529946053626;
 
 ///////////// v_lna_temperature_time_lag_secs /////////
 //
@@ -278,7 +278,7 @@ v_rx_gain_change_per_c = -0.115120;
 // Type: int
 //
 
-v_lna_temperature_time_lag_secs = -7;
+v_lna_temperature_time_lag_secs = -5.4;
 
 ///////////// temperature_smoothing_interval_secs /////
 //
