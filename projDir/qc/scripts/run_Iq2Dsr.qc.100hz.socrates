@@ -1,0 +1,59 @@
+#! /bin/csh -f
+
+# HCR 100Hz QC processing for socrates
+#
+# Run Iq2Dsr, writing 100 hz data to fmq
+# This will be read in by Dsr2Radx, to write CfRadial files
+
+source ~/git/HCR_configuration/projDir/qc/scripts/set_env_qc.socrates
+cd $PROJ_DIR/qc/params
+
+# flight by flight
+
+echo Iq2Dsr -params Iq2Dsr.qc.100hz.socrates -debug -start "2018 01 15 00 00 00" -end "2018 01 16 23 00 00" >& /tmp/Iq2Dsr.rf01.100hz.socrates.log
+Iq2Dsr -params Iq2Dsr.qc.100hz.socrates -debug -start "2018 01 15 00 00 00" -end "2018 01 16 23 00 00" >& /tmp/Iq2Dsr.rf01.100hz.socrates.log
+
+echo Iq2Dsr -params Iq2Dsr.qc.100hz.socrates -debug -start "2018 01 19 00 00 00" -end "2018 01 19 23 00 00" >& /tmp/Iq2Dsr.rf02.100hz.socrates.log
+Iq2Dsr -params Iq2Dsr.qc.100hz.socrates -debug -start "2018 01 19 00 00 00" -end "2018 01 19 23 00 00" >& /tmp/Iq2Dsr.rf02.100hz.socrates.log
+
+echo Iq2Dsr -params Iq2Dsr.qc.100hz.socrates -debug -start "2018 01 22 00 00 00" -end "2018 01 23 12 00 00" >& /tmp/Iq2Dsr.rf03.100hz.socrates.log
+Iq2Dsr -params Iq2Dsr.qc.100hz.socrates -debug -start "2018 01 22 00 00 00" -end "2018 01 23 12 00 00" >& /tmp/Iq2Dsr.rf03.100hz.socrates.log
+
+echo Iq2Dsr -params Iq2Dsr.qc.100hz.socrates -debug -start "2018 01 23 12 00 00" -end "2018 01 24 23 00 00" >& /tmp/Iq2Dsr.rf04.100hz.socrates.log
+Iq2Dsr -params Iq2Dsr.qc.100hz.socrates -debug -start "2018 01 23 12 00 00" -end "2018 01 24 23 00 00" >& /tmp/Iq2Dsr.rf04.100hz.socrates.log
+
+echo Iq2Dsr -params Iq2Dsr.qc.100hz.socrates -debug -start "2018 01 25 00 00 00" -end "2018 01 26 23 00 00" >& /tmp/Iq2Dsr.rf05.100hz.socrates.log
+Iq2Dsr -params Iq2Dsr.qc.100hz.socrates -debug -start "2018 01 25 00 00 00" -end "2018 01 26 23 00 00" >& /tmp/Iq2Dsr.rf05.100hz.socrates.log
+
+echo Iq2Dsr -params Iq2Dsr.qc.100hz.socrates -debug -start "2018 01 28 00 00 00" -end "2018 01 29 23 00 00" >& /tmp/Iq2Dsr.rf06.100hz.socrates.log
+Iq2Dsr -params Iq2Dsr.qc.100hz.socrates -debug -start "2018 01 28 00 00 00" -end "2018 01 29 23 00 00" >& /tmp/Iq2Dsr.rf06.100hz.socrates.log
+
+echo Iq2Dsr -params Iq2Dsr.qc.100hz.socrates -debug -start "2018 01 30 00 00 00" -end "2018 01 31 23 00 00" >& /tmp/Iq2Dsr.rf07.100hz.socrates.log
+Iq2Dsr -params Iq2Dsr.qc.100hz.socrates -debug -start "2018 01 30 00 00 00" -end "2018 01 31 23 00 00" >& /tmp/Iq2Dsr.rf07.100hz.socrates.log
+
+echo Iq2Dsr -params Iq2Dsr.qc.100hz.socrates -debug -start "2018 02 03 00 00 00" -end "2018 02 04 12 00 00" >& /tmp/Iq2Dsr.rf08.100hz.socrates.log
+Iq2Dsr -params Iq2Dsr.qc.100hz.socrates -debug -start "2018 02 03 00 00 00" -end "2018 02 04 12 00 00" >& /tmp/Iq2Dsr.rf08.100hz.socrates.log
+
+echo Iq2Dsr -params Iq2Dsr.qc.100hz.socrates -debug -start "2018 02 04 12 00 00" -end "2018 02 05 23 00 00" >& /tmp/Iq2Dsr.rf09.100hz.socrates.log
+Iq2Dsr -params Iq2Dsr.qc.100hz.socrates -debug -start "2018 02 04 12 00 00" -end "2018 02 05 23 00 00" >& /tmp/Iq2Dsr.rf09.100hz.socrates.log
+
+echo Iq2Dsr -params Iq2Dsr.qc.100hz.socrates -debug -start "2018 02 07 00 00 00" -end "2018 02 08 23 00 00" >& /tmp/Iq2Dsr.rf10.100hz.socrates.log
+Iq2Dsr -params Iq2Dsr.qc.100hz.socrates -debug -start "2018 02 07 00 00 00" -end "2018 02 08 23 00 00" >& /tmp/Iq2Dsr.rf10.100hz.socrates.log
+
+echo Iq2Dsr -params Iq2Dsr.qc.100hz.socrates -debug -start "2018 02 16 00 00 00" -end "2018 02 17 12 00 00" >& /tmp/Iq2Dsr.rf11.100hz.socrates.log
+Iq2Dsr -params Iq2Dsr.qc.100hz.socrates -debug -start "2018 02 16 00 00 00" -end "2018 02 17 12 00 00" >& /tmp/Iq2Dsr.rf11.100hz.socrates.log
+
+echo Iq2Dsr -params Iq2Dsr.qc.100hz.socrates -debug -start "2018 02 17 12 00 00" -end "2018 02 18 23 00 00" >& /tmp/Iq2Dsr.rf12.100hz.socrates.log
+Iq2Dsr -params Iq2Dsr.qc.100hz.socrates -debug -start "2018 02 17 12 00 00" -end "2018 02 18 23 00 00" >& /tmp/Iq2Dsr.rf12.100hz.socrates.log
+
+echo Iq2Dsr -params Iq2Dsr.qc.100hz.socrates -debug -start "2018 02 19 00 00 00" -end "2018 02 20 23 00 00" >& /tmp/Iq2Dsr.rf13.100hz.socrates.log
+Iq2Dsr -params Iq2Dsr.qc.100hz.socrates -debug -start "2018 02 19 00 00 00" -end "2018 02 20 23 00 00" >& /tmp/Iq2Dsr.rf13.100hz.socrates.log
+
+echo Iq2Dsr -params Iq2Dsr.qc.100hz.socrates -debug -start "2018 02 21 00 00 00" -end "2018 02 22 23 00 00" >& /tmp/Iq2Dsr.rf14.100hz.socrates.log
+Iq2Dsr -params Iq2Dsr.qc.100hz.socrates -debug -start "2018 02 21 00 00 00" -end "2018 02 22 23 00 00" >& /tmp/Iq2Dsr.rf14.100hz.socrates.log
+
+echo Iq2Dsr -params Iq2Dsr.qc.100hz.socrates -debug -start "2018 02 24 00 00 00" -end "2018 02 24 23 00 00" >& /tmp/Iq2Dsr.rf15.100hz.socrates.log
+Iq2Dsr -params Iq2Dsr.qc.100hz.socrates -debug -start "2018 02 24 00 00 00" -end "2018 02 24 23 00 00" >& /tmp/Iq2Dsr.rf15.100hz.socrates.log
+
+
+
