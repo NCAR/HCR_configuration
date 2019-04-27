@@ -1,0 +1,20 @@
+#! /bin/csh
+
+rehash
+
+# set up the environment for HCR QC processing
+
+# setenv PROJ_DIR /opt/local/git/HCR_configuration/projDir
+setenv PROJ_DIR $HOME/git/HCR_configuration/projDir
+setenv DATA_DIR /scr/snow2/rsfdata/projects/otrec/hcr
+source $PROJ_DIR/system/params/project_info
+cd $PROJ_DIR/display/params
+
+# start the display
+
+if ($#argv < 6) then
+ /opt/local/lrose/bin/HawkEye -params HawkEye.hcr-otrec-test.10hz -start_time "2019 04 19 20 00 00" >& /dev/null &
+else
+  /opt/local/lrose/bin/HawkEye -params HawkEye.hcr-otrec-test.10hz -start_time "$1 $2 $3 $4 $5 $6" >& /dev/null &
+endif
+
