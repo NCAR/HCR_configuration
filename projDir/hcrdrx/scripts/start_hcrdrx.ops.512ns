@@ -1,0 +1,22 @@
+#! /bin/csh -f
+
+# got to params dir
+
+cd /home/hcr/git/HCR_instrument/src/hcrdrx/
+
+# check if already running
+
+set cmd = "hcrdrx --instance ops hcrdrx.ops.512ns"
+running "$cmd"
+if ($status == 0) then
+    exit 0
+endif
+
+# load the DDC8 bitstream
+
+loadDDC8.sh |& LogFilter -d $ERRORS_LOG_DIR -noLineStamp -p hcrdrx -i ops
+
+# start
+limit coredumpsize unlimited
+/bin/nice -10 stdbuf -o L $cmd |& LogFilter -d $ERRORS_LOG_DIR -noLineStamp -p hcrdrx -i ops &
+

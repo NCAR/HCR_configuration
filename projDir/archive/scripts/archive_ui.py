@@ -50,7 +50,7 @@ class App:
 	fstab.close()
 	for l in lines:
 	    words= l.split()
-	    if (len(words) ==6) and (words[1].find('/usb/HCR') != -1):
+	    if (len(words) ==6) and (words[1].find('/usb/RSF') != -1):
 		    self._driveList.append(words[1])
 
 	print 'self._driveList = ', self._driveList
@@ -236,7 +236,7 @@ class App:
 	    tokens = line.split()
 	    if (tokens[0].find('/dev') >= 0):
 		partition = tokens[5]
-		if (partition.find('HCR') >= 0):
+		if (partition.find('RSF') >= 0):
 		    self._mountedDriveList.append(partition)
 		    deviceName = tokens[0]
 		    total = tokens[1]

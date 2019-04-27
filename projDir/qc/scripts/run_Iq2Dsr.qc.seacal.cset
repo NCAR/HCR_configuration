@@ -1,0 +1,47 @@
+#! /bin/csh -f
+
+# HCR QC processing
+#
+# Run Iq2Dsr for sea surface cal times
+
+source ~/git/HCR_configuration/projDir/qc/scripts/set_env_qc
+cd $PROJ_DIR/qc/params
+
+Iq2Dsr -params Iq2Dsr.qc.100hz.cset -start "2015 07 07 19 20 00" -end "2015 07 07 20 50 00" >>& /tmp/Iq2Dsr.qc.seacal
+
+Iq2Dsr -params Iq2Dsr.qc.100hz.cset -start "2015 07 09 17 15 00" -end "2015 07 09 17 55 00" >>& /tmp/Iq2Dsr.qc.seacal
+
+Iq2Dsr -params Iq2Dsr.qc.100hz.cset -start "2015 07 09 22 15 00" -end "2015 07 09 22 30 00" >>& /tmp/Iq2Dsr.qc.seacal
+
+Iq2Dsr -params Iq2Dsr.qc.100hz.cset -start "2015 07 22 15 30 00" -end "2015 07 22 15 40 00" >>& /tmp/Iq2Dsr.qc.seacal
+
+Iq2Dsr -params Iq2Dsr.qc.100hz.cset -start "2015 07 22 19 25 00" -end "2015 07 22 19 40 00" >>& /tmp/Iq2Dsr.qc.seacal
+
+Iq2Dsr -params Iq2Dsr.qc.100hz.cset -start "2015 07 24 16 55 00" -end "2015 07 24 17 05 00" >>& /tmp/Iq2Dsr.qc.seacal
+
+Iq2Dsr -params Iq2Dsr.qc.100hz.cset -start "2015 07 24 23 00 00" -end "2015 07 24 23 10 00" >>& /tmp/Iq2Dsr.qc.seacal
+
+Iq2Dsr -params Iq2Dsr.qc.100hz.cset -start "2015 07 27 15 15 00" -end "2015 07 27 15 45 00" >>& /tmp/Iq2Dsr.qc.seacal
+
+Iq2Dsr -params Iq2Dsr.qc.100hz.cset -start "2015 07 27 21 25 00" -end "2015 07 27 21 35 00" >>& /tmp/Iq2Dsr.qc.seacal
+
+Iq2Dsr -params Iq2Dsr.qc.100hz.cset -start "2015 07 29 16 50 00" -end "2015 07 29 17 00 00" >>& /tmp/Iq2Dsr.qc.seacal
+
+Iq2Dsr -params Iq2Dsr.qc.100hz.cset -start "2015 07 29 23 30 00" -end "2015 07 29 23 40 00" >>& /tmp/Iq2Dsr.qc.seacal
+
+Iq2Dsr -params Iq2Dsr.qc.100hz.cset -start "2015 08 01 21 40 00" -end "2015 08 01 21 55 00" >>& /tmp/Iq2Dsr.qc.seacal
+
+Iq2Dsr -params Iq2Dsr.qc.100hz.cset -start "2015 08 03 17 00 00" -end "2015 08 03 17 10 00" >>& /tmp/Iq2Dsr.qc.seacal
+
+Iq2Dsr -params Iq2Dsr.qc.100hz.cset -start "2015 08 07 15 20 00" -end "2015 08 07 15 30 00" >>& /tmp/Iq2Dsr.qc.seacal
+
+Iq2Dsr -params Iq2Dsr.qc.100hz.cset -start "2015 08 07 19 40 00" -end "2015 08 07 19 50 00" >>& /tmp/Iq2Dsr.qc.seacal
+
+Iq2Dsr -params Iq2Dsr.qc.100hz.cset -start "2015 08 07 21 05 00" -end "2015 08 07 21 45 00" >>& /tmp/Iq2Dsr.qc.seacal
+
+Iq2Dsr -params Iq2Dsr.qc.100hz.cset -start "2015 08 09 16 50 00" -end "2015 08 09 17 00 00" >>& /tmp/Iq2Dsr.qc.seacal
+
+Iq2Dsr -params Iq2Dsr.qc.100hz.cset -start "2015 08 12 16 50 00" -end "2015 08 12 17 00 00" >>& /tmp/Iq2Dsr.qc.seacal
+
+Iq2Dsr -params Iq2Dsr.qc.100hz.cset -start "2015 08 12 20 10 00" -end "2015 08 12 20 20 00" >>& /tmp/Iq2Dsr.qc.seacal
+

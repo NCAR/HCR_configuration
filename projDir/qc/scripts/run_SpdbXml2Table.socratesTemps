@@ -1,0 +1,10 @@
+#! /bin/csh
+
+source ~/git/HCR_configuration/projDir/qc/scripts/set_env_qc
+
+cd $PROJ_DIR/qc/params
+
+SpdbXml2Table -params SpdbXml2Table.temps -debug \
+    -start "2018 01 15 00 00 00" -end "2018 02 28 00 00 00"
+
+

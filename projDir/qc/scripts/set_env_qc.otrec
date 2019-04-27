@@ -1,0 +1,17 @@
+#! /bin/csh -f
+
+# set up the environment for HCR QC processing for otrec
+
+setenv PROJECT_NAME OTREC
+setenv SITE_NAME OTREC
+
+setenv PROJ_DIR ~/git/HCR_configuration/projDir
+setenv DATA_DIR  /scr/snow2/rsfdata/projects/otrec/hcr
+setenv QC_VERSION qc1
+
+# make sure the output dirs exist
+
+mkdir -p $DATA_DIR
+mkdir -p $DATA_DIR/logs
+
+

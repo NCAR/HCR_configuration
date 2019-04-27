@@ -690,6 +690,43 @@ apply_elevation_offset = FALSE;
 
 elevation_offset = 0;
 
+///////////// override_scan_mode //////////////////////
+//
+// Option to override the scan mode in the time series data.
+//
+// Set this to TRUE if the scan_mode is incorrect in the time series, 
+//   and you can override to a constant scan mode.
+//
+//
+// Type: boolean
+//
+
+override_scan_mode = FALSE;
+
+///////////// scan_mode_for_override //////////////////
+//
+// Select the scan mode for override.
+//
+// See 'override_scan_mode'.
+//
+//
+// Type: enum
+// Options:
+//     SCAN_MODE_UNKNOWN
+//     SCAN_MODE_SECTOR
+//     SCAN_MODE_COPLANE
+//     SCAN_MODE_RHI
+//     SCAN_MODE_VERTICAL_POINTING
+//     SCAN_MODE_IDLE
+//     SCAN_MODE_SURVEILLANCE
+//     SCAN_MODE_SUNSCAN
+//     SCAN_MODE_POINTING
+//     SCAN_MODE_MANUAL_PPI
+//     SCAN_MODE_MANUAL_RHI
+//
+
+scan_mode_for_override = SCAN_MODE_UNKNOWN;
+
 //======================================================================
 //
 // MOMENTS COMPUTATIONS.
@@ -725,7 +762,9 @@ elevation_offset = 0;
 //   power in the central part of the time series. The adjustment corrects 
 //   beam_n_samples by computing the fraction of the window in which 90% 
 //   of the power occurs. For the VONHANN window this factor is just below 
-//   2.0, and for the BLACKMAN window it is just above 2.0.
+//   2.0, and for the BLACKMAN window it is just above 2.0. TUKEY_10 
+//   refers to a Tukey window with alpha of 0.1. Similarly TUKEY_20 means 
+//   alpha is 0.2, etc.
 // (f) switching_receiver: DEPRECATED (NO LONGER USED), we assuming a 
 //   switching receiver for the following modes: DP_ALT_HV_CO_ONLY, 
 //   DP_ALT_HV_CO_CROSS, DP_SIM_HV_SWITCHED_HV.
@@ -736,7 +775,8 @@ elevation_offset = 0;
 //   parameter file.
 //
 // xmit_rcv_mode options:
-//  SP: Single polarization
+//  SINGLE_POL: single polarization, H channel.
+//  SINGLE_POL_V: single polarization, V channel.
 //  DP_ALT_HV_CO_ONLY: Dual pol, alternating transmission, copolar 
 //   receiver only (e.g. CP2 S-band)
 //  DP_ALT_HV_CO_CROSS: Dual pol, alternating transmission, co-polar and 
@@ -760,6 +800,19 @@ elevation_offset = 0;
 //   velocity sign is incorrect. Set this flag to TRUE to change the sign.
 //
 // proc_flags: special processing options, not active yet.
+//
+// beam_method:
+// SPECIFY_N_SAMPLES:
+//   take the next N samples to form the beam;
+// SPECIFY_ANGLE:
+//   check the scanning angles, use those pulses that traverse the 
+//   specified angular arc;
+// CONSTANT_STEERING_ANGLE:
+//   process all pulses with a constant azimuth and elevation - this 
+//   applies to some electronically-steered radars, where the beam is 
+//   steered to a fixed angle for a while, and then jumps to a different 
+//   pointing direction. We use all of the pulses with a constant steering 
+//   angle to form the beam.
 //
 //
 // Type: struct
@@ -788,6 +841,7 @@ elevation_offset = 0;
 //        Options:
 //          BEAM_SPECIFY_N_SAMPLES
 //          BEAM_SPECIFY_ANGLE
+//          BEAM_CONSTANT_STEERING_ANGLE
 //      int beam_n_samples;
 //      double beam_angle_deg;
 //      boolean index_the_beams;
@@ -799,6 +853,10 @@ elevation_offset = 0;
 //          WINDOW_VONHANN
 //          WINDOW_BLACKMAN
 //          WINDOW_BLACKMAN_NUTTALL
+//          WINDOW_TUKEY_10
+//          WINDOW_TUKEY_20
+//          WINDOW_TUKEY_30
+//          WINDOW_TUKEY_50
 //      boolean switching_receiver;
 //      xmit_rcv_mode_t xmit_rcv_mode;
 //        Options:
@@ -810,6 +868,7 @@ elevation_offset = 0;
 //          DP_SIM_HV_SWITCHED_HV
 //          DP_H_ONLY_FIXED_HV
 //          DP_V_ONLY_FIXED_HV
+//          SINGLE_POL_V
 //      boolean apply_clutter_filter;
 //      boolean apply_sz;
 //      boolean change_velocity_sign;
@@ -1122,7 +1181,6 @@ spectrum_width_method = WIDTH_METHOD_R0R1;
 //
 
 startup_cal_file = "$(PROJ_DIR)/moments/params/fallback_cal.xml";
-// startup_cal_file = "$(PROJ_DIR)/moments/params/cal_256ns/hcr_cal_noreaster_256ns_20150101_000000.xml";
 
 ///////////// set_cal_by_pulse_width //////////////////
 //
@@ -1176,6 +1234,7 @@ set_cal_by_pulse_width = TRUE;
 //          DP_SIM_HV_SWITCHED_HV
 //          DP_H_ONLY_FIXED_HV
 //          DP_V_ONLY_FIXED_HV
+//          SINGLE_POL_V
 //      double zdr_correction_db;
 //      double system_phidp_deg;
 //   }
@@ -1350,7 +1409,7 @@ ldr_correction_db_v = 0;
 //   cross-polar channels exceeds this value. Since the cross-polar 
 //   channel is generally the weaker channel, it is the SNR on the 
 //   cross-polar channel that will be limiting. See 'min_snr_db_for_ldr'.
-// 
+//
 //
 // Type: boolean
 //
@@ -1411,11 +1470,11 @@ change_phidp_sign = FALSE;
 
 //======================================================================
 //
-// CORRECT RECEIVER GAINS BASED ON MEASURED TEMPERATURE.
+// CORRECT RECEIVER GAINS BASED ON MEASURED TEMPERATURE IN STATUS XML.
 //
 //======================================================================
  
-///////////// correct_receiver_gains_for_temperature //
+///////////// correct_rx_gains_for_temperature ////////
 //
 // Option to correct the calibration receiver gains based on 
 //   temperature.
@@ -1430,62 +1489,21 @@ change_phidp_sign = FALSE;
 // Type: boolean
 //
 
-correct_receiver_gains_for_temperature = TRUE;
+correct_rx_gains_for_temperature = FALSE;
 
-///////////// rx_gain_correction //////////////////////
+///////////// rx_temp_gain_corrections ////////////////
 //
 // Correction to be applied to the gain in each receiver channel.
 //
+
+//
 // The correction is computed as:
 //
-//     correction = intercept + temperature * slope.
+//     correction = intercept + temperature * slope. 
 //
-//
-// Type: struct
-//   typedef struct {
-//      rx_channel_t rx_channel;
-//        Options:
-//          RX_CHANNEL_HC
-//          RX_CHANNEL_VC
-//          RX_CHANNEL_HX
-//          RX_CHANNEL_VX
-//      double slope;
-//      double intercept;
-//   }
-//
-// 1D array - variable length.
-//
-
-rx_gain_correction = {
-  {
-    rx_channel = RX_CHANNEL_HC,
-    slope = -0.0776,
-    intercept = 1.661
-  }
-  ,
-  {
-    rx_channel = RX_CHANNEL_VC,
-    slope = -0.0776,
-    intercept = 1.661
-  }
-  ,
-  {
-    rx_channel = RX_CHANNEL_HX,
-    slope = -0.0776,
-    intercept = 1.661
-  }
-  ,
-  {
-    rx_channel = RX_CHANNEL_VX,
-    slope = -0.0776,
-    intercept = 1.661
-  }
-};
-
-///////////// temperature_tags_in_status_xml //////////
-//
-// Specify the tag list for locating the temperature. These should be 
-//   delimited in xml format, using '<' and '>'.
+//  The tag list allows us to find the temperature in the status xml 
+//   block in the time series. These should be delimited in xml format, 
+//   using '<' and '>'. 
 //
 // The temperature will be searched for in the status_xml section of the 
 //   time series data. These tags specify how to find the temperature 
@@ -1508,10 +1526,105 @@ rx_gain_correction = {
 //   <HcrStatus><HcrReceiverStatus><EikTemp>.
 //
 //
+// Type: struct
+//   typedef struct {
+//      rx_channel_t rx_channel;
+//        Options:
+//          RX_CHANNEL_HC
+//          RX_CHANNEL_VC
+//          RX_CHANNEL_HX
+//          RX_CHANNEL_VX
+//      double slope;
+//      double intercept;
+//      string temp_tag_list_in_status_xml;
+//   }
+//
+// 1D array - variable length.
+//
+
+rx_temp_gain_corrections = {
+  {
+    rx_channel = RX_CHANNEL_HC,
+    slope = -0.0776,
+    intercept = 1.5564,
+    temp_tag_list_in_status_xml = "<HcrStatus><HcrReceiverStatus><EikTemp>"
+  }
+  ,
+  {
+    rx_channel = RX_CHANNEL_VC,
+    slope = -0.0776,
+    intercept = 1.5564,
+    temp_tag_list_in_status_xml = "<HcrStatus><HcrReceiverStatus><EikTemp>"
+  }
+  ,
+  {
+    rx_channel = RX_CHANNEL_HX,
+    slope = -0.0776,
+    intercept = 1.5564,
+    temp_tag_list_in_status_xml = "<HcrStatus><HcrReceiverStatus><EikTemp>"
+  }
+  ,
+  {
+    rx_channel = RX_CHANNEL_VX,
+    slope = -0.0776,
+    intercept = 1.5564,
+    temp_tag_list_in_status_xml = "<HcrStatus><HcrReceiverStatus><EikTemp>"
+  }
+};
+
+//======================================================================
+//
+// FOR HCR, CORRECT RECEIVER GAIN FOR TEMPERATURE USING VALUES FROM SPDB.
+//
+//======================================================================
+ 
+///////////// correct_hcr_v_rx_gain_for_temperature ///
+//
+// Option to correct the HCR V-channel receiver gain for temperature.
+//
+// Computing the HCR receiver gain correction is complicated. Therefore 
+//   this is done offline, and the results are stored as XML in SPDB. Here 
+//   we retrieve the values from SPDB and apply them to correct the 
+//   receiver gain.
+//
+//
+// Type: boolean
+//
+
+correct_hcr_v_rx_gain_for_temperature = FALSE;
+
+///////////// hcr_delta_gain_spdb_url /////////////////
+//
+// URL for HCR gain correction from SPDB.
+//
+//
 // Type: string
 //
 
-temperature_tags_in_status_xml = "<HcrStatus><HcrReceiverStatus><EikTemp>";
+hcr_delta_gain_spdb_url = "/scr/rain1/rsfdata/projects/socrates/hcr/qc/data/socrates/spdb/tempVsGain";
+
+///////////// hcr_delta_gain_search_margin_secs ///////
+//
+// Search margin when finding gain correction data (secs).
+//
+// We search for the value closest in time to the beam time. This is the 
+//   search margin on either side of the search time.
+//
+//
+// Type: int
+//
+
+hcr_delta_gain_search_margin_secs = 3600;
+
+///////////// hcr_v_rx_delta_gain_tag_list ////////////
+//
+// URL for HCR gain correction from SPDB.
+//
+//
+// Type: string
+//
+
+hcr_v_rx_delta_gain_tag_list = "<HcrTempGainCorrection><v_delta_gain>";
 
 //======================================================================
 //

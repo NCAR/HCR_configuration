@@ -73,7 +73,7 @@ def main():
         usedGBytes = spaceUsedTable[drive]
         availGBytes = spaceAvailTable[drive]
         totalGBytes = spaceTotalTable[drive]
-        spolStr = drive.find('HCR')
+        spolStr = drive.find('RSF')
         driveStr = drive[spolStr:]
         nagiosLabel = "USB_Archive_" + driveStr
         status = 0
@@ -125,7 +125,7 @@ def compileDriveList():
         tokens = line.split()
         if (tokens[0].find('/dev') >= 0):
             partition = tokens[5]
-            if (partition.find('HCR') >= 0):
+            if (partition.find('RSF') >= 0):
                 driveList.append(partition)
                 deviceName = tokens[0]
                 totalGBytes = tokens[1]

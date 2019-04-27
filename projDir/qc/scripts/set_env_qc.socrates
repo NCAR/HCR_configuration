@@ -1,0 +1,17 @@
+#! /bin/csh -f
+
+# set up the environment for HCR QC processing for socrates
+
+setenv PROJECT_NAME SOCRATES
+setenv SITE_NAME SOCRATES
+
+setenv PROJ_DIR ~/git/HCR_configuration/projDir
+setenv DATA_DIR  /scr/snow2/rsfdata/projects/socrates/hcr
+setenv QC_VERSION qc2
+
+# make sure the output dirs exist
+
+mkdir -p $DATA_DIR
+mkdir -p $DATA_DIR/logs
+
+
