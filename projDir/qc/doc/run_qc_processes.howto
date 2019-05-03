@@ -122,6 +122,7 @@ tail -f $DATA_DIR/logs/Iq2Dsr.qc.100hz
 
 # NOTE: to kill this step run:
 
+snuff "Dsr2Radx -params Dsr2Radx.qc.100hz"
 snuff run_Iq2Dsr.qc.100hz Iq2Dsr
 
 #################################################################
