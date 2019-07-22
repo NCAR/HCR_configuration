@@ -188,12 +188,12 @@ siggen_ip_address = "10.40.0.21";
 //
 // -34.65 dBm - Benchtop cal dated 11132017 (Tsai)
 // -34.3 dBm - Benchtop cal dated 09212018 (Tsai)
+// -36.15 dBm - Benchtop cal dated 06192019 (Tsai)
 //
 // Type: double
 //
 
-// siggen_max_power = -34.65;
-siggen_max_power = -34.30;
+siggen_max_power = -36.15;
 
 ///////////// siggen_min_power ////////////////////////
 //
@@ -203,8 +203,7 @@ siggen_max_power = -34.30;
 // Type: double
 //
 
-// siggen_min_power = -114.90;
-siggen_min_power = -115.08;
+siggen_min_power = -116.93;
 
 ///////////// siggen_delta_power //////////////////////
 //
@@ -260,23 +259,23 @@ siggen_specify_power_sequence = TRUE;
  // };
 
 siggen_power_sequence = {
-  -34.30,
-  -39.30,
-  -44.30,
-  -49.30,
-  -54.30,
-  -59.30,
-  -64.30,
-  -69.30,
-  -74.30,
-  -80.08,
-  -85.08,
-  -90.08,
-  -95.08,
-  -100.08,
-  -105.08,
-  -110.08,
-  -115.08
+  -36.15,
+  -41.15,
+  -46.15,
+  -51.15,
+  -56.15,
+  -61.15,
+  -66.15,
+  -71.15,
+  -76.15,
+  -81.93,
+  -86.93,
+  -91.93,
+  -96.93,
+  -101.93,
+  -106.93,
+  -111.93,
+  -116.93
 };
 
 ///////////// set_sig_freq ////////////////////////////
@@ -405,23 +404,25 @@ k_squared = 0.711;
 //
 // Transmitter peak power H (dBm).
 //
-// Benchtop Cal dated 11132017 (Tsai)
+// Benchtop Cal dated 11132017 (Tsai) Pout = 59.22 dBm
+// Benchtop Cal dated 06192019 (Tsai) Pout = 59.56 dBm
 //
 // Type: double
 //
 
-xmitPowerDbmH = 59.22;
+xmitPowerDbmH = 59.56;
 
 ///////////// xmitPowerDbmV ///////////////////////////
 //
 // Transmitter peak power V (dBm).
 //
-// Benchtop Cal dated 11132017 (Tsai)
+// Benchtop Cal dated 11132017 (Tsai) Pout = 59.77 dBm
+// Benchtop Cal dated 09192019 (Tsai) Pout = 59.91 dBm
 //
 // Type: double
 //
 
-xmitPowerDbmV = 59.77;
+xmitPowerDbmV = 59.91;
 
 ///////////// pulseWidthUs ////////////////////////////
 //

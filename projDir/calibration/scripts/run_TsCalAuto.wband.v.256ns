@@ -2,4 +2,4 @@
 
 cd $PROJ_DIR/calibration/params
 
-TsCalAuto -params TsCalAuto.wband.v.256ns 
+TsCalAuto -params TsCalAuto.wband.v_only.256ns 
