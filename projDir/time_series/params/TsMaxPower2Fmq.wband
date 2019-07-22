@@ -144,7 +144,7 @@ n_samples_skipped = 900;
 // Type: int
 //
 
-start_gate = 30;
+start_gate = 14;
 
 ///////////// distance_units //////////////////////////
 //

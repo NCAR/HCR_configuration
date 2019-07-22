@@ -1,0 +1,22 @@
+#! /bin/csh -f
+
+# HCR QC processing
+#
+# Run Dsr2Radx
+# Reads FMQ from Iq2Dsr.qc.100hz
+# Writes 100hz CfRadial data
+
+source ~/git/HCR_configuration/projDir/qc/scripts/set_env_qc.cset
+cd $PROJ_DIR/qc/params
+
+
+snuff "Dsr2Radx -params Dsr2Radx.qc.100hz"
+
+Dsr2Radx -params Dsr2Radx.qc.100hz -debug >& \
+    /tmp/Dsr2Radx.qc.100hz.cset.log &
+
+tail -f /tmp/Dsr2Radx.qc.100hz.cset.log
+
+
+
+

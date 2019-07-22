@@ -1,0 +1,146 @@
+# notes on running scripts for QC processes
+
+#################################################################
+# Environment is set in:
+#
+  ~/git/HCR_configuration/projDir/qc/scripts/set_env_qc
+#
+# which sets up, for example:
+#
+  PROJ_DIR = ~/git/HCR_configuration/projDir
+  DATA_DIR = /scr/snow2/rsfdata/projects/socrates/hcr
+  QC_VERSION = qc2 (or whatever)
+#
+# This file will be edited and changed for each qc run.
+ 
+#################################################################
+# run TsStatusMonitor
+#
+# Create Spdb data base of monitoring data, which includes
+# temperatures. These are used for correcting the rx gain.
+#
+# This step reads the time series and stores the monitoring data
+# in spdb.
+#
+# This data does not change between qc versions - it is the field
+# data. So this procedure is only run once per project.
+#
+# The results are written to:
+#
+#   $DATA_DIR/spdb/monitor/qc
+#
+# As an example, for socrates:
+
+cd ~/git/HCR_configuration/projDir/qc/scripts
+./run_TsStatusMonitor.qc.socrates
+
+# and the results are in:
+
+/scr/snow2/rsfdata/projects/socrates/hcr/spdb/monitor/qc
+
+#################################################################
+# Translate temperature data into csv text files, from SPDB monitoring
+# data.
+#
+# Run SpdbXml2Table, to produce space-delimited text file
+# containing temps.
+#
+# For example, for socrates we would run:
+
+set_env_qc
+cd $PROJ_DIR/qc/params
+SpdbXml2Table -params SpdbXml2Table.temps -debug  -start "2018 01 15 00 00 00" -end "2018 02 28 00 00 00" > $DATA_DIR/txt/SOCRATES.temperatures.txt 
+
+# This creates the file:
+
+$DATA_DIR/txt/SOCRATES.temperatures.txt   
+
+#################################################################
+# LNA and pod temperature analysis
+#
+# analyze temperatures and powers from noise source cals (Rike)
+#
+# As an example:
+#   input data is in $DATA_DIR/txt/SOCRATES.temperatures.txt
+#
+# Run Matlab to read moments, correlate with temps.
+#
+#   Results file is: $DATA_DIR/calFiles/tempsTable_socrates.txt
+#
+# As an example for socrates qc2, results are in:
+
+/scr/snow2/rsfdata/projects/socrates/hcr/qc2/calFiles/tempsTable_socrates.txt
+
+###################################################################
+# Run HcrTempRxGain to compute gain change with temp
+#
+# You need to edit the parameter file and copy in the results from
+# the previous step.
+#
+# There is a separate parameter file for each project, because the
+# gain values are analyzed per project.
+#
+# Input temp data is from the TsStatusMonitor step:
+#   $DATA_DIR/spdb/monitor/qc
+#
+#     Input data is time series in:
+#       /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save
+#     Output is XML stored in SPDB in:
+#       $DATA_DIR/$QC_VERSION/spdb/tempVsGain
+#
+# For examples, for socrates qc2, output data is in:
+
+/scr/snow2/rsfdata/projects/socrates/hcr/qc2/spdb/tempVsGain
+
+#################################################################
+# Dsr2Radx - 100 hz
+#
+# Save out 100Hz moments files in CfRadial
+# Open terminal
+#
+# NOTE: start this script first because it will wait for output
+# from Iq2Dsr
+
+cd ~/git/HCR_configuration/projDir/qc/scripts
+./run_Dsr2Radx.qc.100hz
+
+#################################################################
+# Iq2Dsr
+#
+# This reads time series, computes moments, corrects gain for
+# temperatures, writes 100hz moments data to FMQ (file message queue)
+#
+# NOTE: the velocity in these moments are only corrected for the
+# vertical motion of the aircraft.
+#
+# Open terminal
+# run
+
+cd ~/git/HCR_configuration/projDir/qc/scripts
+./run_Iq2Dsr.qc.100hz &
+tail -f $DATA_DIR/logs/Iq2Dsr.qc.100hz
+
+# NOTE: to kill this step run:
+
+snuff "Dsr2Radx -params Dsr2Radx.qc.100hz"
+snuff run_Iq2Dsr.qc.100hz Iq2Dsr
+
+#################################################################
+# RadxDwellCombine - combine 100hz data into 10hz dwells
+#
+# NOTE: the velocity in these moments are only corrected for the
+# vertical motion of the aircraft.
+
+cd ~/git/HCR_configuration/projDir/qc/scripts
+./run_RadxDwellCombine.qc.10hz
+
+#################################################################
+# RadxMon - use to see moments are flowing
+#
+# Don't do this when re-processing the data, only as a test.
+# Iq2Dsr is writing the FMQ in blocking mode, and only 1 reader is allowed
+#
+# Open terminal
+
+# RadxMon -fmq /tmp/fmq/qc_moments/100hz/shmem_30100 -summary -update -5
+
