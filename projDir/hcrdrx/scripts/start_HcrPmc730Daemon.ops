@@ -10,7 +10,8 @@ endif
 snuff HcrPmc730Daemon
 
 # Correction value for pressure vessel pressure (PSI)
-set pvPresCorr = 1.0	# 7/22/2019 
+# set pvPresCorr = 1.0	# 7/22/2019 
+set pvPresCorr = 1.20	# 7/31/2019 
 
 HcrPmc730Daemon --pvPressureCorrectionPsi $pvPresCorr |& LogFilter -d $ERRORS_LOG_DIR -p HcrPmc730Daemon -i ops &
 
