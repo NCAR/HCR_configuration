@@ -4,8 +4,7 @@ rehash
 
 # set up the environment for HCR QC processing
 
-# setenv PROJ_DIR /opt/local/git/HCR_configuration/projDir
-setenv PROJ_DIR $HOME/git/HCR_configuration/projDir
+setenv PROJ_DIR /opt/local/git/HCR_configuration/projDir
 setenv DATA_DIR /scr/snow2/rsfdata/projects/otrec/hcr
 source $PROJ_DIR/system/params/project_info
 cd $PROJ_DIR/display/params
