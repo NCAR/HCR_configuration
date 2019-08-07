@@ -42,3 +42,6 @@ projDir/logs
 projDir/control/crontab
 projDir/control/data_list
 projDir/control/proc_list
+
+# Eclipse-generated files
+.project

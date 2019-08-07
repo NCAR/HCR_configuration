@@ -231,7 +231,7 @@ def doArchiveToDrive(drive, dir):
     # compute target dir
     
     targetDir = drive
-    targetDir = os.path.join(targetDir, "hcr")
+    targetDir = os.path.join(targetDir, "rsf")
     targetDir = os.path.join(targetDir, "archive")
     targetDir = os.path.join(targetDir, options.projectName)
     targetDir = os.path.join(targetDir, dir)

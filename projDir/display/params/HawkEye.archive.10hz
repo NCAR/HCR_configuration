@@ -179,7 +179,7 @@ archive_start_time = "2018 01 16 00 24 00";
 // Type: string
 //
 
-archive_data_url = "$(DATA_DIR)/hcr/cfradial/moments/10hz";
+archive_data_url = "$(DATA_DIR)/cfradial/moments/10hz";
 
 //======================================================================
 //

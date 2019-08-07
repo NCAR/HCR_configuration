@@ -45,7 +45,7 @@ debug = DEBUG_OFF;
 // Type: boolean
 //
 
-register_with_procmap = TRUE;
+register_with_procmap = FALSE;
 
 ///////////// instance ////////////////////////////////
 //
@@ -57,7 +57,7 @@ register_with_procmap = TRUE;
 // Type: string
 //
 
-instance = "catalog";
+instance = "hcr-otrec.10hz";
 
 //======================================================================
 //
@@ -100,7 +100,7 @@ input_mode = IWRF_FMQ_INPUT;
 // Type: string
 //
 
-input_fmq_url = "fmqp:://localhost::fmq/moments/10hz/shmem_20020";
+input_fmq_url = "fmqp:://localhost::fmq/moments/10hz/shmem_20010";
 
 ///////////// seek_to_start_of_fmq ////////////////////
 //
@@ -168,19 +168,43 @@ beam_queue_size = 1000;
 // Type: boolean
 //
 
-begin_in_archive_mode = FALSE;
+begin_in_archive_mode = TRUE;
 
 ///////////// archive_start_time //////////////////////
 //
 // Start time for archive mode.
 //
-// If this is set to 1 Jan 1970, the app will initialize at 'now'.
+// In archive mode, data retrieval starts at this time.
 //
 //
 // Type: string
 //
 
-archive_start_time = "2014 12 01 18 40 00";
+archive_start_time = "2019 08 03 17 00 00";
+
+///////////// archive_scan_interval_secs //////////////
+//
+// Time between scans in archive mode (secs).
+//
+// Only applies to POLAR (PPI/RHI) mode, not BSCAN mode.
+//
+//
+// Type: int
+//
+
+archive_scan_interval_secs = 300;
+
+///////////// archive_n_scans /////////////////////////
+//
+// Number of scans in archive mode.
+//
+// Only applies to POLAR (PPI/RHI) mode, not BSCAN mode.
+//
+//
+// Type: int
+//
+
+archive_n_scans = 12;
 
 ///////////// archive_data_url ////////////////////////
 //
@@ -192,7 +216,20 @@ archive_start_time = "2014 12 01 18 40 00";
 // Type: string
 //
 
-archive_data_url = "$(DATA_DIR)/cfradial/moments/10hz";
+archive_data_url = "/scr/snow2/rsfdata/projects/otrec/hcr/cfradial/moments/10hz";
+
+///////////// archive_search_margin_secs //////////////
+//
+// Time margin for search in archive mode (secs).
+//
+// We search for data within this margin, on either side of the required 
+//   time.
+//
+//
+// Type: int
+//
+
+archive_search_margin_secs = 600;
 
 //======================================================================
 //
@@ -268,8 +305,8 @@ show_status_in_gui = {
     altitude_rate = TRUE,
     sun_elevation = TRUE,
     sun_azimuth = TRUE,
-    speed = TRUE,
-    heading = TRUE,
+    speed = FALSE,
+    heading = FALSE,
     track = FALSE
 };
 
@@ -328,8 +365,35 @@ fields = {
     raw_name = "VEL",
     filtered_name = "",
     units = "m/s",
-    color_map = "vel_w.colors",
+    color_map = "vel_w_4.colors",
     shortcut = "1"
+  }
+  ,
+  {
+    label = "VEL_RAW",
+    raw_name = "VEL_RAW",
+    filtered_name = "",
+    units = "m/s",
+    color_map = "vel_w_4.colors",
+    shortcut = "2"
+  }
+  ,
+  {
+    label = "VEL8",
+    raw_name = "VEL",
+    filtered_name = "",
+    units = "m/s",
+    color_map = "vel_w_8.colors",
+    shortcut = "3"
+  }
+  ,
+  {
+    label = "VEL_RAW8",
+    raw_name = "VEL_RAW",
+    filtered_name = "",
+    units = "m/s",
+    color_map = "vel_w_8.colors",
+    shortcut = "4"
   }
   ,
   {
@@ -338,7 +402,97 @@ fields = {
     filtered_name = "",
     units = "m/s",
     color_map = "width_w.colors",
-    shortcut = "3"
+    shortcut = "5"
+  }
+  ,
+  {
+    label = "SNR",
+    raw_name = "SNR",
+    filtered_name = "",
+    units = "dB",
+    color_map = "snr.colors",
+    shortcut = "6"
+  }
+  ,
+  {
+    label = "SNRHC",
+    raw_name = "SNRHC",
+    filtered_name = "",
+    units = "dB",
+    color_map = "snr.colors",
+    shortcut = "7"
+  }
+  ,
+  {
+    label = "SNRVC",
+    raw_name = "SNRVC",
+    filtered_name = "",
+    units = "dB",
+    color_map = "snr.colors",
+    shortcut = "8"
+  }
+  ,
+  {
+    label = "SNRHX",
+    raw_name = "SNRHX",
+    filtered_name = "",
+    units = "dB",
+    color_map = "snr.colors",
+    shortcut = "9"
+  }
+  ,
+  {
+    label = "SNRVX",
+    raw_name = "SNRVX",
+    filtered_name = "",
+    units = "dB",
+    color_map = "snr.colors",
+    shortcut = "a"
+  }
+  ,
+  {
+    label = "DBMHC",
+    raw_name = "DBMHC",
+    filtered_name = "",
+    units = "dBm",
+    color_map = "dbm.colors",
+    shortcut = "b"
+  }
+  ,
+  {
+    label = "DBMVC",
+    raw_name = "DBMVC",
+    filtered_name = "",
+    units = "dBm",
+    color_map = "dbm.colors",
+    shortcut = "c"
+  }
+  ,
+  {
+    label = "DBMHX",
+    raw_name = "DBMHX",
+    filtered_name = "",
+    units = "dBm",
+    color_map = "dbm.colors",
+    shortcut = "d"
+  }
+  ,
+  {
+    label = "DBMVX",
+    raw_name = "DBMVX",
+    filtered_name = "",
+    units = "dBm",
+    color_map = "dbm.colors",
+    shortcut = "e"
+  }
+  ,
+  {
+    label = "NCP",
+    raw_name = "NCP",
+    filtered_name = "",
+    units = "",
+    color_map = "ncp.colors",
+    shortcut = "f"
   }
   ,
   {
@@ -347,7 +501,25 @@ fields = {
     filtered_name = "",
     units = "dB",
     color_map = "ldr.colors",
-    shortcut = "t"
+    shortcut = "g"
+  }
+  ,
+  {
+    label = "LDRH",
+    raw_name = "LDRH",
+    filtered_name = "",
+    units = "dB",
+    color_map = "ldr.colors",
+    shortcut = "h"
+  }
+  ,
+  {
+    label = "LDRV",
+    raw_name = "LDRV",
+    filtered_name = "",
+    units = "dB",
+    color_map = "ldr.colors",
+    shortcut = "i"
   }
 };
 
@@ -440,7 +612,7 @@ override_radar_name = TRUE;
 // Type: string
 //
 
-radar_name = "HCR";
+radar_name = "HCR-10hz";
 
 ///////////// display_site_name ///////////////////////
 //
@@ -486,7 +658,7 @@ site_name = "GV";
 // Type: int
 //
 
-main_window_width = 1500;
+main_window_width = 1400;
 
 ///////////// main_window_height //////////////////////
 //
@@ -496,7 +668,7 @@ main_window_width = 1500;
 // Type: int
 //
 
-main_window_height = 800;
+main_window_height = 700;
 
 ///////////// main_window_start_x /////////////////////
 //
@@ -506,7 +678,7 @@ main_window_height = 800;
 // Type: int
 //
 
-main_window_start_x = 0;
+main_window_start_x = 300;
 
 ///////////// main_window_start_y /////////////////////
 //
@@ -516,7 +688,7 @@ main_window_start_x = 0;
 // Type: int
 //
 
-main_window_start_y = 0;
+main_window_start_y = 100;
 
 ///////////// color_scale_width ///////////////////////
 //
@@ -617,6 +789,53 @@ ppi_display_type = PPI_FULL;
 
 ppi_aspect_ratio = 1;
 
+///////////// ppi_grids_on_at_startup /////////////////
+//
+// Set PPI grids overlay on at startup.
+//
+//
+// Type: boolean
+//
+
+ppi_grids_on_at_startup = FALSE;
+
+///////////// ppi_range_rings_on_at_startup ///////////
+//
+// Set PPI range rings overlay on at startup.
+//
+//
+// Type: boolean
+//
+
+ppi_range_rings_on_at_startup = TRUE;
+
+///////////// ppi_azimuth_lines_on_at_startup /////////
+//
+// Set PPI azimuth lines overlay on at startup.
+//
+//
+// Type: boolean
+//
+
+ppi_azimuth_lines_on_at_startup = TRUE;
+
+///////////// ppi_main_legend_pos /////////////////////
+//
+// Position of main legend in the PPI plot window.
+//
+// This include time, field name and elevation angle.
+//
+//
+// Type: enum
+// Options:
+//     LEGEND_TOP_LEFT
+//     LEGEND_TOP_RIGHT
+//     LEGEND_BOTTOM_LEFT
+//     LEGEND_BOTTOM_RIGHT
+//
+
+ppi_main_legend_pos = LEGEND_TOP_LEFT;
+
 //======================================================================
 //
 // RHI MODE DISPLAY.
@@ -663,6 +882,94 @@ rhi_window_start_x = 1000;
 
 rhi_window_start_y = 0;
 
+///////////// rhi_top_margin //////////////////////////
+//
+// Height of top margin in RHI mode (pixels).
+//
+// Titles go in the top margin.
+//
+//
+// Type: int
+//
+
+rhi_top_margin = 20;
+
+///////////// rhi_bottom_margin ///////////////////////
+//
+// Height of bottom margin in RHI mode (pixels).
+//
+// Time scale goes in the bottom margin.
+//
+//
+// Type: int
+//
+
+rhi_bottom_margin = 20;
+
+///////////// rhi_left_margin /////////////////////////
+//
+// Width of left margin in RHI mode (pixels).
+//
+// Height scale goes in the left margin.
+//
+//
+// Type: int
+//
+
+rhi_left_margin = 20;
+
+///////////// rhi_right_margin ////////////////////////
+//
+// Width of right margin in RHI mode (pixels).
+//
+// Height scale goes in the right margin.
+//
+//
+// Type: int
+//
+
+rhi_right_margin = 20;
+
+///////////// rhi_label_font_size /////////////////////
+//
+// Font size for labels on range rings (pixels).
+//
+//
+// Type: int
+//
+
+rhi_label_font_size = 8;
+
+///////////// rhi_axis_tick_len ///////////////////////
+//
+// Length of ticks on axes (pixels).
+//
+//
+// Type: int
+//
+
+rhi_axis_tick_len = 7;
+
+///////////// rhi_n_ticks_ideal ///////////////////////
+//
+// Ideal number of ticks on axes.
+//
+//
+// Type: int
+//
+
+rhi_n_ticks_ideal = 7;
+
+///////////// rhi_text_margin /////////////////////////
+//
+// Margin around some text (pixels).
+//
+//
+// Type: int
+//
+
+rhi_text_margin = 5;
+
 ///////////// rhi_display_180_degrees /////////////////
 //
 // Flag indicating to display full 180 degrees in RHI window. If set to 
@@ -676,13 +983,80 @@ rhi_display_180_degrees = FALSE;
 
 ///////////// rhi_aspect_ratio ////////////////////////
 //
-// Aspect ratio (width/height) of PPI window.
+// Aspect ratio (width/height) of RHI window.
 //
 //
 // Type: double
 //
 
 rhi_aspect_ratio = 1;
+
+///////////// rhi_max_height_km ///////////////////////
+//
+// Max height of data in RHI window (km).
+//
+//
+// Type: double
+//
+
+rhi_max_height_km = 25;
+
+///////////// rhi_color_scale_width ///////////////////
+//
+// Width of color scale for RHI window (pixels).
+//
+//
+// Type: int
+//
+
+rhi_color_scale_width = 40;
+
+///////////// rhi_grids_on_at_startup /////////////////
+//
+// Set RHI grids overlay on at startup.
+//
+//
+// Type: boolean
+//
+
+rhi_grids_on_at_startup = TRUE;
+
+///////////// rhi_range_rings_on_at_startup ///////////
+//
+// Set RHI range rings overlay on at startup.
+//
+//
+// Type: boolean
+//
+
+rhi_range_rings_on_at_startup = FALSE;
+
+///////////// rhi_elevation_lines_on_at_startup ///////
+//
+// Set RHI elevation lines overlay on at startup.
+//
+//
+// Type: boolean
+//
+
+rhi_elevation_lines_on_at_startup = FALSE;
+
+///////////// rhi_main_legend_pos /////////////////////
+//
+// Position of main legend in the RHI plot window.
+//
+// This include time, field name and elevation angle.
+//
+//
+// Type: enum
+// Options:
+//     LEGEND_TOP_LEFT
+//     LEGEND_TOP_RIGHT
+//     LEGEND_BOTTOM_LEFT
+//     LEGEND_BOTTOM_RIGHT
+//
+
+rhi_main_legend_pos = LEGEND_TOP_LEFT;
 
 //======================================================================
 //
@@ -713,7 +1087,7 @@ bscan_time_span_secs = 300;
 // Type: boolean
 //
 
-bscan_truncate_start_time = TRUE;
+bscan_truncate_start_time = FALSE;
 
 ///////////// bscan_subsec_precision //////////////////
 //
@@ -805,7 +1179,7 @@ bscan_specify_range_limits = TRUE;
 // Type: double
 //
 
-bscan_min_range_km = -1;
+bscan_min_range_km = 0;
 
 ///////////// bscan_max_range_km //////////////////////
 //
@@ -817,7 +1191,7 @@ bscan_min_range_km = -1;
 // Type: double
 //
 
-bscan_max_range_km = 15;
+bscan_max_range_km = 25;
 
 ///////////// bscan_min_altitude_km ///////////////////
 //
@@ -827,7 +1201,7 @@ bscan_max_range_km = 15;
 // Type: double
 //
 
-bscan_min_altitude_km = -0.5;
+bscan_min_altitude_km = -1;
 
 ///////////// bscan_max_altitude_km ///////////////////
 //
@@ -837,7 +1211,7 @@ bscan_min_altitude_km = -0.5;
 // Type: double
 //
 
-bscan_max_altitude_km = $(BSCAN_MAX_ALTITUDE_KM);
+bscan_max_altitude_km = 15;
 
 ///////////// bscan_altitude_in_feet //////////////////
 //
@@ -1168,7 +1542,7 @@ bscan_add_distance_to_time_axis = TRUE;
 // Type: int
 //
 
-bscan_n_segments_for_computing_distance = 100;
+bscan_n_segments_for_computing_distance = 50;
 
 //======================================================================
 //
@@ -1254,7 +1628,7 @@ bscan_mean_track_and_speed_legend_pos = LEGEND_TOP_RIGHT;
 // Type: boolean
 //
 
-bscan_archive_dwell_auto = FALSE;
+bscan_archive_dwell_auto = TRUE;
 
 ///////////// bscan_archive_dwell_secs ////////////////
 //
@@ -1283,7 +1657,7 @@ bscan_archive_dwell_secs = 0.1;
 //     DWELL_STATS_MIDDLE
 //
 
-bscan_dwell_stats = DWELL_STATS_MEAN;
+bscan_dwell_stats = DWELL_STATS_MIDDLE;
 
 //======================================================================
 //
@@ -1307,7 +1681,7 @@ bscan_dwell_stats = DWELL_STATS_MEAN;
 // Type: string
 //
 
-images_output_dir = "$(DATA_DIR)/images/catalog";
+images_output_dir = "/tmp/images/HawkEye";
 
 ///////////// images_write_to_day_dir /////////////////
 //
@@ -1428,7 +1802,7 @@ images_write_latest_data_info = TRUE;
 // Type: boolean
 //
 
-images_auto_create = TRUE;
+images_auto_create = FALSE;
 
 ///////////// images_creation_mode ////////////////////
 //
@@ -1456,7 +1830,7 @@ images_auto_create = TRUE;
 //     CREATE_IMAGES_ON_ARCHIVE_SCHEDULE
 //
 
-images_creation_mode = CREATE_IMAGES_ON_REALTIME_SCHEDULE;
+images_creation_mode = CREATE_IMAGES_THEN_EXIT;
 
 ///////////// images_schedule_interval_secs ///////////
 //
@@ -1469,7 +1843,7 @@ images_creation_mode = CREATE_IMAGES_ON_REALTIME_SCHEDULE;
 // Type: int
 //
 
-images_schedule_interval_secs = 300;
+images_schedule_interval_secs = 60;
 
 ///////////// images_schedule_delay_secs //////////////
 //
@@ -1483,7 +1857,63 @@ images_schedule_interval_secs = 300;
 // Type: int
 //
 
-images_schedule_delay_secs = 60;
+images_schedule_delay_secs = 10;
+
+///////////// images_archive_start_time ///////////////
+//
+// Start time for image generation in archive mode.
+//
+// Image generation starts with a seach at this time, and the proceeds 
+//   at increments of images_schedule_interval_secs.
+//
+//
+// Type: string
+//
+
+images_archive_start_time = "1970 01 01 00 00 00";
+
+///////////// images_archive_end_time /////////////////
+//
+// End time for image generation in archive mode.
+//
+// Image generation is terminated when the search time exceeds this end 
+//   time.
+//
+//
+// Type: string
+//
+
+images_archive_end_time = "1970 01 01 00 00 00";
+
+///////////// images_set_sweep_index_list /////////////
+//
+// Option to specify the sweep indexes for the image generation.
+//
+// If TRUE, only the specified sweeps will be processed.
+//
+//
+// Type: boolean
+//
+
+images_set_sweep_index_list = FALSE;
+
+///////////// images_sweep_index_list /////////////////
+//
+// List of valid sweep indexes for image generation.
+//
+// See 'images_set_sweep_index_list'. Images will only be generated for 
+//   the specified sweep indexes.
+//
+//
+// Type: int
+// 1D array - variable length.
+//
+
+images_sweep_index_list = {
+ 0,
+ 1,
+ 2
+};
 
 //======================================================================
 //
