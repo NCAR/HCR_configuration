@@ -1,0 +1,3 @@
+#! /bin/csh -f
+
+xterm -title TsMaxPower2Fmq -bg black -fg green -g 104x21+0-0 -fn fixed -e TsMaxPower2Fmq -params ~/projDir/time_series/params/TsMaxPower2Fmq.debug 

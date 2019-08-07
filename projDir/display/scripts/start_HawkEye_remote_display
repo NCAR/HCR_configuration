@@ -10,5 +10,6 @@
 #
 cd $PROJ_DIR/display/params
 
-HawkEye -params HawkEye.bscan.10hz >& /dev/null
+HawkEye -params HawkEye.bscan.10hz >& /dev/null &
+
 

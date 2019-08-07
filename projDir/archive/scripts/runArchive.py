@@ -167,7 +167,7 @@ def doArchive(drive, volLabel, dayStr):
    # compute target dir
 
     targetDir = drive;
-    targetDir = os.path.join(targetDir, "hcr")
+    targetDir = os.path.join(targetDir, "rsf")
     targetDir = os.path.join(targetDir, "archive")
     targetDir = os.path.join(targetDir, options.projectName)
     
