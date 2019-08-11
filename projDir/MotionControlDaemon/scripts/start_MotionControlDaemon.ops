@@ -33,7 +33,9 @@ set rotBeamCorr="-2.95"		# correction from RF01 data
 # aircraft, then set this angle more negative. If the beam actually points
 # aft of the aircraft, set it more positive.
 #
-set tiltBeamCorr="-0.569"	# RF08-RF10 corrections (add -0.066)
+set tiltBeamCorr="-0.617"	# correction from OTREC RF01 data (-0.048 deg)
+#set tiltBeamCorr="-0.569"	# start of OTREC
+#set tiltBeamCorr="-0.569"	# RF08-RF10 corrections (add -0.066)
 #set tiltBeamCorr="-0.503"	# RF02 first in-flight correction (add 0.033)
 #set tiltBeamCorr="-0.536"	# RF02 first in-flight correction (reverse previous)
 #set tiltBeamCorr="-0.164"	# correction from RF01 data 
