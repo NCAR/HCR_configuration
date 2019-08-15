@@ -20,7 +20,7 @@ hcrDisk=$1
 
 # rsync HCR data which will automatically be synced to Boulder
 rsync -av --info=flist1,stats0 --exclude hsrl --exclude time_series \
-    --exclude 100hz --exclude yesterday --exclude today \
+    --exclude 100hz --exclude yesterday --exclude today --exclude '*.tmp' \
     /run/media/hcr/$hcrDisk/rsf/archive/otrec/* \
     /nas/data/data/OTREC/hcr_synced/
 
@@ -31,7 +31,7 @@ fi
 
 # rsync HCR 100 Hz data (NOT automatically synced to Boulder for
 # bandwidth reasons)
-rsync -av --info=flist1,stats0 --exclude 10hz \
+rsync -av --info=flist1,stats0 --exclude 10hz --exclude '*.tmp' \
     /run/media/hcr/$hcrDisk/rsf/archive/otrec/cfradial \
     /nas/data/data/OTREC/hcr_100hz/
 
