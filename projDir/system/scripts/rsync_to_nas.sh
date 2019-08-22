@@ -18,22 +18,28 @@ fi
 
 hcrDisk=$1
 
-# rsync HCR data which will automatically be synced to Boulder
+# rsync all HCR data except 100 Hz and time series files to the NAS's
+# Sync_to_Boulder/EOL_data tree (for automatic sync to Boulder) and to the
+# non-synced NAS EOL_data tree (for use in the ops center)
 rsync -av --info=flist1,stats0 --exclude hsrl --exclude time_series \
     --exclude 100hz --exclude yesterday --exclude today --exclude '*.tmp' \
     /run/media/hcr/$hcrDisk/rsf/archive/otrec/* \
-    /nas/data/data/OTREC/hcr_synced/
+    /nas/data/data/OTREC/Sync_to_Boulder/EOL_data/HCR_data/
+
+rsync -av --info=flist1,stats0 --exclude hsrl --exclude time_series \
+    --exclude 100hz --exclude yesterday --exclude today --exclude '*.tmp' \
+    /run/media/hcr/$hcrDisk/rsf/archive/otrec/* \
+    /nas/data/data/OTREC/EOL_data/HCR_data/
 
 if [ ! $? -eq 0 ]; then
     echo "HCR RSYNC FAILED!"
     exit 1
 fi
 
-# rsync HCR 100 Hz data (NOT automatically synced to Boulder for
-# bandwidth reasons)
+# rsync HCR 100 Hz data only to the NAS EOL_data tree
 rsync -av --info=flist1,stats0 --exclude 10hz --exclude '*.tmp' \
     /run/media/hcr/$hcrDisk/rsf/archive/otrec/cfradial \
-    /nas/data/data/OTREC/hcr_100hz/
+    /nas/data/data/OTREC/EOL_data/HCR_data/
 
 if [ ! $? -eq 0 ]; then
     echo "HCR 100hz RSYNC FAILED!"
