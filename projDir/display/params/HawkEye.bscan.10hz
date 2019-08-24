@@ -446,7 +446,7 @@ fields = {
     raw_name = "SNRVC",
     filtered_name = "",
     units = "dB",
-    color_map = "snr.colors",
+    color_map = "snr_-12_to_32.colors",
     shortcut = "8"
   }
   ,
@@ -455,7 +455,7 @@ fields = {
     raw_name = "SNRHX",
     filtered_name = "",
     units = "dB",
-    color_map = "snr.colors",
+    color_map = "snr_-12_to_32.colors",
     shortcut = "9"
   }
   // ,
