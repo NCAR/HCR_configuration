@@ -1,0 +1,113 @@
+# Ops config file for HCR
+
+#instance                ops
+radar_id                HCR
+
+# IMPORTANT NOTE: the calibration_file will be different for different 
+# values of tx_pulse_width
+calibration_file        /home/hcr/projDir/moments/params/cal_256ns/TsCalAuto_Wband-HCR1-256ns_20171113_231130.xml
+#calibration_file        /home/hcr/projDir/moments/params/cal_256ns/hcr_cal_256ns_20140825_223302.xml
+#calibration_file        /home/hcr/projDir/moments/params/cal_512ns/hcr_cal_512ns_20140825_220000.xml
+
+start_on_1pps		1
+
+gates                   770
+#gates                   385
+
+staggered_prt           0
+prt1                    1.01376e-4  # s
+prt2                    3.0e-4  # s
+
+# digitizer_gate0_delay is the time in seconds from T0 until digitizer sampling
+# begins. This number is effectively:
+#    tx_delay + tx_latency + 0.5 * tx_pulse_width + (downconverter latency) + 
+#         (desired offset of gate0 w.r.t. the transmit pulse) 
+# The downconverter latency is quite large, so the timing can look 
+# like we don't sample until *well after* the transmitted pulse, yet we 
+# actually see the transmitted pulse in the data.
+digitizer_gate0_delay   2.232e-6
+
+# range to the first gate in meters
+# this used to be computed from digitizer_gate0_delay, tx_delay and
+# tx_latency. We decided to use a parameter instead so that the
+# range_to_gate0 can be set independently from those parameters
+
+range_to_gate0_m     -198.0
+
+# Digitizer sample width, seconds (gate spacing = 0.5 * c * sample width)
+#digitizer_sample_width    64e-9
+digitizer_sample_width   128e-9
+#digitizer_sample_width   256e-9
+#digitizer_sample_width   512e-9  
+#digitizer_sample_width  1024e-9
+
+# tx_delay is the delay in seconds from T0 to the start of generation of the 
+# DAC waveform which goes to the EIK
+tx_delay                 336e-9
+
+# NOTE: If you change tx_pulse_width, you will also likely need to change 
+# calibration_file and digitizer_gate0_delay.
+tx_pulse_width           256e-9
+#tx_pulse_width           512e-9  
+#tx_pulse_width          1024e-9 
+
+# tx_pulse_mod_delay is the delay in seconds from T0 to the start of the
+# modulation pulse signal to the transmitter
+tx_pulse_mod_delay      432e-9 # s
+
+# tx_latency is the measured time in seconds between initiation of DAC waveform
+# generation (i.e., T0 + tx_delay, or the rising edge of the tx_gate signal) 
+# and the rising edge of the actual transmit pulse emitted from the EIK
+tx_latency              644e-9  # measured 2011-09-01
+
+# iqcount_scale_for_mw: count scaling factor to easily get power in mW from
+# I and Q.  If I and Q are counts from the Pentek, the power at the A/D in 
+# mW is:
+#
+#      (I / iqcount_scale_for_mw)^2 + (Q / iqcount_scale_for_mw)^2
+#
+# This value is determined empirically.
+#iqcount_scale_for_mw    11310   # unknown Pentek
+#iqcount_scale_for_mw    9465    # unknown Pentek
+#iqcount_scale_for_mw    7480    # PC.8194004H (HCR 1)
+iqcount_scale_for_mw    8200    # PC.8194004H (HCR 1, 2014-08-12)
+#iqcount_scale_for_mw    8297    # PC.8264003H (Ka-band)
+
+# FL1 location
+latitude            40.03794
+longitude           -105.24127
+altitude            1609
+
+# merge queue size
+
+merge_queue_size        100000  # size of queue which acts as buffer
+                                # for the merge
+
+# IWRF data export
+
+# export via FMQ?
+
+export_iwrf_via_fmq              1                 # 1 = yes, 0 = no
+iwrf_fmq_path        /tmp/fmq/ts/wband/shmem_10000 # path for lock file, fmq is in shmem
+iwrf_fmq_nslots                  100               # nslots should be small
+iwrf_fmq_bufsize                 1000000000        # 1 GB
+iwrf_fmq_npackets_per_message    100               # for efficiency we put multiple packets per msg
+iwrf_fmq_report_interval         1                # set > 0 to activate
+
+# TCP server only active if export_iwrf_via_fmq is 0 - see above
+
+iwrf_server_tcp_port                12000   # TCP port
+pulse_interval_per_iwrf_meta_data   5000    # how often to send out meta data
+
+# Enable/disable simulated PMC-730 card
+
+simulate_pmc730         0
+
+# simulation of antenna angles
+
+simulate_antenna_angles 0
+sim_n_elev              1
+sim_start_elev          -90.0    # deg
+sim_delta_elev          0.0     # deg
+sim_az_rate             0.0     # deg/s
+

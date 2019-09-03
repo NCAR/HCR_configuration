@@ -735,7 +735,7 @@ output_file_label = "Wband-HCR-256ns";
 // Type: string
 //
 
-plot_script = "../scripts/do_calplot.dyn_range";
+plot_script = "do_calplot.dyn_range";
 
 //======================================================================
 //

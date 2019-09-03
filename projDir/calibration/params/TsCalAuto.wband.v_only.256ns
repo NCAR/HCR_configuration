@@ -417,7 +417,7 @@ xmitPowerDbmH = 59.56;
 // Transmitter peak power V (dBm).
 //
 // Benchtop Cal dated 11132017 (Tsai) Pout = 59.77 dBm
-// Benchtop Cal dated 09192019 (Tsai) Pout = 59.91 dBm
+// Benchtop Cal dated 06192019 (Tsai) Pout = 59.91 dBm
 //
 // Type: double
 //
