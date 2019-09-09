@@ -1,0 +1,18 @@
+#! /bin/csh -f
+
+# HCR QC processing for SOCRATES
+#
+# Run HcrVelCorrect
+# Reads 10 hz data in CfRadial files, and corrects the velocity field by
+# checking for the velocity of the sea or land surface return.
+
+source ~/git/HCR_configuration/projDir/qc/scripts/set_env_qc
+
+cd $PROJ_DIR/qc/params
+
+HcrVelCorrect -params HcrVelCorrect.qc.10hz -start "2018 01 15 00 00 00" -end "2018 02 25 00 00 00" -debug >& /tmp/HcrVelCorrect.qc.10hz.socrates.log &
+tail -f /tmp/HcrVelCorrect.qc.10hz.socrates.log
+
+
+
+
