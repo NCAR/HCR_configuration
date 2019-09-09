@@ -6,7 +6,7 @@
 # Reads 10 hz data in CfRadial files, and corrects the velocity field by
 # checking for the velocity of the sea or land surface return.
 
-source ~/git/HCR_configuration/projDir/qc/scripts/set_env_qc
+source ~/git/HCR_configuration/projDir/qc/scripts/set_env_qc.otrec
 
 cd $PROJ_DIR/qc/params
 

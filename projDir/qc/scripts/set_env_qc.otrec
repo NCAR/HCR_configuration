@@ -6,7 +6,8 @@ setenv PROJECT_NAME OTREC
 setenv SITE_NAME OTREC
 
 setenv PROJ_DIR ~/git/HCR_configuration/projDir
-setenv DATA_DIR  /scr/snow2/rsfdata/projects/otrec/hcr
+#setenv DATA_DIR  /scr/snow2/rsfdata/projects/otrec/hcr
+setenv DATA_DIR  $PROJ_DIR/data
 setenv QC_VERSION qc1
 
 # make sure the output dirs exist
