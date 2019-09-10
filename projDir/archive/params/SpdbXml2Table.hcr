@@ -976,6 +976,13 @@ xml_entries = {
     label = "notset",
     required = FALSE
   }
+  ,
+  {
+    xml_tag_list = "<HcrReceiverStatus><InsTemp>",
+    specify_label = FALSE,
+    label = "notset",
+    required = FALSE
+  }
 };
 
 //======================================================================

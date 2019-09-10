@@ -11,11 +11,22 @@ calibration_file        /home/hcr/projDir/moments/params/cal_256ns/TsCalAuto_Wba
 
 start_on_1pps		1
 
+<<<<<<< HEAD
 gates                   770
 #gates                   385
 
 staggered_prt           0
 prt1                    1.01376e-4  # s
+=======
+gates                   770 # for PRT 1.01376e-4
+#gates                   806   # for PRT 1.05984e-4
+#gates                   840   # for PRT 1.10592e-4
+
+staggered_prt           0
+prt1                    1.01376e-4  # s
+#prt1                   1.05984e-4  # s
+#prt1                   1.10592e-4  # s
+>>>>>>> ace9b8819d8078d799661c981132db3b78da4e3e
 prt2                    3.0e-4  # s
 
 # digitizer_gate0_delay is the time in seconds from T0 until digitizer sampling
@@ -91,7 +102,11 @@ export_iwrf_via_fmq              1                 # 1 = yes, 0 = no
 iwrf_fmq_path        /tmp/fmq/ts/wband/shmem_10000 # path for lock file, fmq is in shmem
 iwrf_fmq_nslots                  100               # nslots should be small
 iwrf_fmq_bufsize                 1000000000        # 1 GB
+<<<<<<< HEAD
 iwrf_fmq_npackets_per_message    100               # for efficiency we put multiple packets per msg
+=======
+iwrf_fmq_npackets_per_message    1000              # for efficiency we put multiple packets per msg
+>>>>>>> ace9b8819d8078d799661c981132db3b78da4e3e
 iwrf_fmq_report_interval         1                # set > 0 to activate
 
 # TCP server only active if export_iwrf_via_fmq is 0 - see above

@@ -1,0 +1,18 @@
+#! /bin/csh -f
+
+# HCR QC processing for OTREC
+#
+# Run HcrVelCorrect
+# Reads 10 hz data in CfRadial files, and corrects the velocity field by
+# checking for the velocity of the sea or land surface return.
+
+source ~/git/HCR_configuration/projDir/qc/scripts/set_env_qc.otrec
+
+cd $PROJ_DIR/qc/params
+
+HcrVelCorrect -params HcrVelCorrect.qc.10hz -start "2019 08 07 00 00 00" -end "2019 10 01 00 00 00" -debug >& /tmp/HcrVelCorrect.qc.10hz.otrec.log &
+tail -f /tmp/HcrVelCorrect.qc.10hz.otrec.log
+
+
+
+
