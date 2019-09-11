@@ -55,7 +55,7 @@ setenv CVSROOT :pserver:${CVSUSER}@localhost:/cvs
 
 # --- OTHER BUILD SETTINGS
 
-setenv QTDIR /usr/lib64/qt4
+setenv QTDIR /usr/lib64/qt5
 
 setenv FC gfortran
 setenv GCC_WARNINGS -Wall
@@ -125,7 +125,7 @@ endif
 
 set savehist=0
 
-set path = ($path /usr/lib64/qt4/bin $HOME/anaconda2/bin)
+set path = ($path /usr/lib64/qt5/bin $HOME/anaconda2/bin)
 
 set path = ($path ~/bin \
         /opt/local/bin \
