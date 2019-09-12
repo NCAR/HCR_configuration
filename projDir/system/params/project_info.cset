@@ -1,19 +1,19 @@
-#! /bin/csh -f
+#############################################
+# project-specific parameters for CSET
+#############################################
 
 # set up the environment for HCR processing for cset
 
 setenv PROJECT_NAME cset
 
+setenv  BSCAN_MAX_ALTITUDE_KM      8.0
+setenv  BSCAN_MIN_ALTITUDE_KM      -0.5
+
 setenv PROJ_DIR ~/git/HCR_configuration/projDir
 setenv DATA_DIR  /scr/snow2/rsfdata/projects/cset/hcr
 setenv QC_VERSION qc2
-
-setenv  BSCAN_MAX_ALTITUDE_KM      8.0
-setenv  BSCAN_MIN_ALTITUDE_KM      -0.5
 
 # make sure the output dirs exist
 
 mkdir -p $DATA_DIR
 mkdir -p $DATA_DIR/logs
-
-
