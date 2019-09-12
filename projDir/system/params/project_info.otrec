@@ -1,0 +1,20 @@
+#! /bin/csh -f
+
+# set up the environment for HCR processing for otrec
+
+setenv PROJECT_NAME otrec
+
+setenv PROJ_DIR ~/git/HCR_configuration/projDir
+#setenv DATA_DIR  /scr/snow1/rsfdata/projects/otrec/hcr
+setenv DATA_DIR  /nas/data/data/OTREC/EOL_data/HCR_data
+setenv QC_VERSION qc0
+
+setenv  BSCAN_MAX_ALTITUDE_KM      14.5     # 47500 ft
+setenv  BSCAN_MIN_ALTITUDE_KM      -0.5
+
+# make sure the output dirs exist
+
+mkdir -p $DATA_DIR
+mkdir -p $DATA_DIR/logs
+
+

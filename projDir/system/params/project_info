@@ -7,9 +7,11 @@
 # Project-specific info
 
 setenv  PROJECT_NAME               "otrec"
-setenv  SITE_NAME                  "OTREC"
+
 setenv  BSCAN_MAX_ALTITUDE_KM      14.326     # OTREC (47000 ft.)
 #setenv BSCAN_MAX_ALTITUDE_KM      8.0        # SOCRATES
+
+setenv  BSCAN_MIN_ALTITUDE_KM      -0.5
 
 # The following are set as default parameters
 # until the INS/GPS data comes in

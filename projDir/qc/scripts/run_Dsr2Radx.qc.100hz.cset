@@ -6,7 +6,7 @@
 # Reads FMQ from Iq2Dsr.qc.100hz
 # Writes 100hz CfRadial data
 
-source ~/git/HCR_configuration/projDir/qc/scripts/set_env_qc.cset
+source ~/git/HCR_configuration/projDir/system/params/project_info.cset
 cd $PROJ_DIR/qc/params
 
 

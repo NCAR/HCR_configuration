@@ -4,7 +4,7 @@
 #
 # Run Iq2Dsr, writing 100 hz data to fmq
 
-source ~/git/HCR_configuration/projDir/qc/scripts/set_env_qc
+source ~/git/HCR_configuration/projDir/system/params/project_info
 
 cd $PROJ_DIR/qc/params
 

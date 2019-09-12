@@ -4,7 +4,7 @@
 #
 # Run Iq2Dsr for sea surface cal times
 
-source ~/git/HCR_configuration/projDir/qc/scripts/set_env_qc
+source ~/git/HCR_configuration/projDir/system/params/project_info
 cd $PROJ_DIR/qc/params
 
 Iq2Dsr -params Iq2Dsr.qc.100hz -start "2017 03 02 20 35 00" -end "2017 03 02 22 40 00" >>& /tmp/Iq2Dsr.qc.seacal
