@@ -13,11 +13,3 @@ setenv  BSCAN_MAX_ALTITUDE_KM      14.326     # OTREC (47000 ft.)
 
 setenv  BSCAN_MIN_ALTITUDE_KM      -0.5
 
-# The following are set as default parameters
-# until the INS/GPS data comes in
-
-setenv RADAR_LAT                  40.0
-setenv RADAR_LON                  -105.0
-setenv RADAR_ALT_KM               1.6
-setenv RADAR_ALT_M                1600
-
