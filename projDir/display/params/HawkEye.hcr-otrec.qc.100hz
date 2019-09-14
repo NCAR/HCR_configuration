@@ -110,7 +110,7 @@ input_mode = IWRF_FMQ_INPUT;
 // Type: string
 //
 
-input_fmq_url = "fmqp:://localhost::fmq/moments/100hz/shmem_20000";
+input_fmq_url = "/tmp/fmq/qc_moments/100hz/shmem_30100";
 
 ///////////// seek_to_start_of_fmq ////////////////////
 //
@@ -459,6 +459,24 @@ fields = {
     color_map = "dbm.colors",
     shortcut = "d"
   }
+  ,
+  {
+    label = "NOISE_BIAS_DB_VC",
+    raw_name = "NOISE_BIAS_DB_VC",
+    filtered_name = "",
+    units = "dB",
+    color_map = "noise_bias.colors",
+    shortcut = "i"
+  }
+  ,
+  {
+    label = "NOISE_BIAS_DB_HX",
+    raw_name = "NOISE_BIAS_DB_HX",
+    filtered_name = "",
+    units = "dB",
+    color_map = "noise_bias.colors",
+    shortcut = "i"
+  }
 };
 
 ///////////// background_render_mins //////////////////
@@ -550,7 +568,7 @@ override_radar_name = TRUE;
 // Type: string
 //
 
-radar_name = "HCR-10hz";
+radar_name = "HCR-100hz";
 
 ///////////// display_site_name ///////////////////////
 //
@@ -1025,7 +1043,7 @@ rhi_beam_queue_size = 360;
 // Type: double
 //
 
-bscan_time_span_secs = 300;
+bscan_time_span_secs = 315;
 
 ///////////// bscan_truncate_start_time ///////////////
 //

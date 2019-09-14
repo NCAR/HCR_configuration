@@ -9,6 +9,9 @@ setenv  PROJECT_NAME               otrec
 setenv  BSCAN_MAX_ALTITUDE_KM      14.326     # OTREC (47000 ft.)
 setenv  BSCAN_MIN_ALTITUDE_KM      -0.5
 
+setenv  BSCAN_MAX_ALTITUDE_KM      14.5       # OTREC 47500 ft
+setenv  BSCAN_MIN_ALTITUDE_KM      -0.5
+
 # previous projects
 
 #setenv  PROJECT_NAME               cset
@@ -16,4 +19,5 @@ setenv  BSCAN_MIN_ALTITUDE_KM      -0.5
 
 #setenv BSCAN_MAX_ALTITUDE_KM      8.0        # CSET
 #setenv BSCAN_MAX_ALTITUDE_KM      9.0        # SOCRATES
+
 
