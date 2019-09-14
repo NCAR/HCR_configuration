@@ -108,7 +108,7 @@ mode = ARCHIVE;
 // Type: string
 //
 
-input_dir = "$(DATA_DIR)/cfradial/moments/100hz";
+input_dir = "$(DATA_DIR)/$(QC_VERSION)/cfradial/moments/100hz";
 
 ///////////// max_realtime_data_age_secs //////////////
 //
@@ -348,8 +348,8 @@ field_folds = {
   {
     field_name = "VEL_RAW",
     use_nyquist = TRUE,
-    fold_limit_lower = -90,
-    fold_limit_upper = 90
+    fold_limit_lower = 0,
+    fold_limit_upper = 0
   }
 };
 
