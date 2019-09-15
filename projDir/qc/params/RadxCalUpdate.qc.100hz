@@ -60,7 +60,7 @@ instance = "qc.100hz";
 // Type: string
 //
 
-input_dir = "$(PROJ_DIR)/data/cfradial/moments/100hz";
+input_dir = "$(DATA_DIR)/cfradial/moments/100hz";
 
 ///////////// mode ////////////////////////////////////
 //
@@ -140,7 +140,7 @@ compression_level = 4;
 // Type: string
 //
 
-output_dir = "$(PROJ_DIR)/data/$(QC_VERSION)/cfradial/moments/100hz";
+output_dir = "$(DATA_DIR)/$(QC_VERSION)/cfradial/moments/100hz";
 
 ///////////// output_filename_mode ////////////////////
 //
@@ -282,5 +282,5 @@ correct_altitude_for_egm = TRUE;
 // Type: string
 //
 
-egm_2008_geoid_file = "$(PROJ_DIR)/data/egm/EGM_2008_WGS84_2.5minx2.5min.nc";
+egm_2008_geoid_file = "$(DATA_DIR)/egm/EGM_2008_WGS84_2.5minx2.5min.nc";
 
