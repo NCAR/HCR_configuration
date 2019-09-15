@@ -214,7 +214,7 @@ archive_time_span_secs = 600;
 // Type: string
 //
 
-archive_data_url = "$(DATA_DIR)/$(QC_VERSION)/cfradial/moments/10hz";
+archive_data_url = "$(DATA_DIR)/$(QC_VERSION)/cfradial/velcorr/10hz";
 
 //======================================================================
 //
@@ -353,6 +353,33 @@ fields = {
   }
   ,
   {
+    label = "VEL_CORR4",
+    raw_name = "VEL_CORR",
+    filtered_name = "",
+    units = "m/s",
+    color_map = "vel_w_4.colors",
+    shortcut = "1"
+  }
+  ,
+  {
+    label = "VEL_CORR8",
+    raw_name = "VEL_CORR",
+    filtered_name = "",
+    units = "m/s",
+    color_map = "vel_w_8.colors",
+    shortcut = "2"
+  }
+  ,
+  {
+    label = "VEL_DELTA",
+    raw_name = "VEL_DELTA",
+    filtered_name = "",
+    units = "m/s",
+    color_map = "vel_delta.colors",
+    shortcut = "3"
+  }
+  ,
+  {
     label = "VEL4",
     raw_name = "VEL",
     filtered_name = "",
@@ -395,6 +422,15 @@ fields = {
     units = "m/s",
     color_map = "width_w.colors",
     shortcut = "8"
+  }
+  ,
+  {
+    label = "WIDTH_CORR",
+    raw_name = "WIDTH_CORR",
+    filtered_name = "",
+    units = "m/s",
+    color_map = "width_w.colors",
+    shortcut = "9"
   }
   ,
   {
@@ -458,24 +494,6 @@ fields = {
     units = "dBm",
     color_map = "dbm.colors",
     shortcut = "d"
-  }
-  ,
-  {
-    label = "NOISE_BIAS_DB_VC",
-    raw_name = "NOISE_BIAS_DB_VC",
-    filtered_name = "",
-    units = "dB",
-    color_map = "noise_bias.colors",
-    shortcut = "i"
-  }
-  ,
-  {
-    label = "NOISE_BIAS_DB_HX",
-    raw_name = "NOISE_BIAS_DB_HX",
-    filtered_name = "",
-    units = "dB",
-    color_map = "noise_bias.colors",
-    shortcut = "i"
   }
 };
 
