@@ -118,7 +118,7 @@ mode = ARCHIVE;
 // Type: string
 //
 
-input_dir = "$(DATA_DIR)/cfradial/moments/10hz";
+input_dir = "$(DATA_DIR)/$(QC_VERSION)/cfradial/moments/10hz";
 
 ///////////// max_realtime_data_age_secs //////////////
 //
@@ -458,7 +458,7 @@ compression_level = 4;
 // Type: string
 //
 
-output_dir = "$(DATA_DIR)/qc/cfradial/velcorr/10hz";
+output_dir = "$(DATA_DIR)/$(QC_VERSION)/cfradial/velcorr/10hz";
 
 ///////////// output_filename_mode ////////////////////
 //
