@@ -367,7 +367,7 @@ width_correction_beamwidth_deg = 0.69;
 // Type: boolean
 //
 
-correct_altitude_for_egm = TRUE;
+correct_altitude_for_egm = FALSE;
 
 ///////////// egm_2008_geoid_file /////////////////////
 //

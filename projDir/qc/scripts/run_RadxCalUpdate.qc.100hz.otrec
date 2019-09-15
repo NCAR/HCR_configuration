@@ -1,0 +1,16 @@
+#! /bin/csh -f
+
+# HCR QC processing
+#
+# Run RadxCalUpdate
+# Reads 100 hz data in CfRadial files, combines into 10 hz dwells
+# Writes 10hz CfRadial data
+
+source ~/git/HCR_configuration/projDir/system/params/project_info.otrec
+
+cd $PROJ_DIR/qc/params
+
+RadxCalUpdate -params RadxCalUpdate.qc.100hz -debug -start "2019 08 07 00 00 00" -end "2019 10 10 00 00 00" >& /tmp/RadxCalUpdate.qc.100hz.otrec.log &
+
+tail -f /tmp/RadxCalUpdate.qc.100hz.otrec.log
+
