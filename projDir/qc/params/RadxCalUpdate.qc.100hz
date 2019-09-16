@@ -1,5 +1,5 @@
 /**********************************************************************
- * TDRP params for RadxCalUpdate
+ * TDRP params for ./RadxCalUpdate
  **********************************************************************/
 
 //======================================================================
@@ -243,6 +243,60 @@ dbz_fields_for_update = {
  "DBZ",
  "DBZHC"
 };
+
+//======================================================================
+//
+// FOR HCR, CORRECT RECEIVER GAIN FOR TEMPERATURE USING VALUES FROM SPDB.
+//
+//======================================================================
+ 
+///////////// correct_hcr_v_rx_gain_for_temperature ///
+//
+// Option to correct the HCR V-channel receiver gain for temperature.
+//
+// Computing the HCR receiver gain correction is complicated. Therefore 
+//   this is done offline, using the application HcrTempRxGain, and the 
+//   results are stored as XML in SPDB. Here we retrieve the values from 
+//   SPDB and apply them to correct the receiver gain.
+//
+//
+// Type: boolean
+//
+
+correct_hcr_v_rx_gain_for_temperature = TRUE;
+
+///////////// hcr_delta_gain_spdb_url /////////////////
+//
+// URL for HCR gain correction from SPDB.
+//
+//
+// Type: string
+//
+
+hcr_delta_gain_spdb_url = "$(DATA_DIR)/$(QC_VERSION)/spdb/tempVsGain";
+
+///////////// hcr_delta_gain_search_margin_secs ///////
+//
+// Search margin when finding gain correction data (secs).
+//
+// We search for the value closest in time to the beam time. This is the 
+//   search margin on either side of the search time.
+//
+//
+// Type: int
+//
+
+hcr_delta_gain_search_margin_secs = 3600;
+
+///////////// hcr_v_rx_delta_gain_tag_list ////////////
+//
+// URL for HCR gain correction from SPDB.
+//
+//
+// Type: string
+//
+
+hcr_v_rx_delta_gain_tag_list = "<HcrTempGainCorrection><v_delta_gain>";
 
 //======================================================================
 //
