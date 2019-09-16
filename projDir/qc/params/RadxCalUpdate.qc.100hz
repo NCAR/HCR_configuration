@@ -241,7 +241,7 @@ calibration_file_path = "$(PROJ_DIR)/calibration/data/wband_256ns/TsCalAuto_Wban
 
 dbz_fields_for_update = {
  "DBZ",
- "DBZHC"
+ "DBZVC"
 };
 
 //======================================================================
