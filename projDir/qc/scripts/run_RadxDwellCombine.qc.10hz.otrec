@@ -12,25 +12,25 @@ cd $PROJ_DIR/qc/params
 
 # Entire data set in one operation
 
-#RadxDwellCombine -params RadxDwellCombine.qc.10hz -debug -start "2019 08 07 00 00 00" -end "2019 10 07 00 00 00" >& /tmp/RadxDwellCombine.qc.10hz.otrec.log &
+RadxDwellCombine -params RadxDwellCombine.qc.10hz -debug -start "2019 08 07 00 00 00" -end "2019 10 07 00 00 00" >& /tmp/RadxDwellCombine.qc.10hz.otrec.log &
 
-#tail -f /tmp/RadxDwellCombine.qc.10hz.otrec.log
+tail -f /tmp/RadxDwellCombine.qc.10hz.otrec.log
 
 
 # flight by flight
 
-RadxDwellCombine -params RadxDwellCombine.qc.10hz -debug -start "2019 08 07 00 00 00" -end "2019 08 07 23 59 59" >& /tmp/RadxDwellCombine.qc.10hz.otrec.20190807.log &
-RadxDwellCombine -params RadxDwellCombine.qc.10hz -debug -start "2019 08 11 00 00 00" -end "2019 08 11 23 59 59" >& /tmp/RadxDwellCombine.qc.10hz.otrec.20190811.log &
-RadxDwellCombine -params RadxDwellCombine.qc.10hz -debug -start "2019 08 12 00 00 00" -end "2019 08 12 23 59 59" >& /tmp/RadxDwellCombine.qc.10hz.otrec.20190812.log &
-RadxDwellCombine -params RadxDwellCombine.qc.10hz -debug -start "2019 08 16 00 00 00" -end "2019 08 16 23 59 59" >& /tmp/RadxDwellCombine.qc.10hz.otrec.20190816.log &
-RadxDwellCombine -params RadxDwellCombine.qc.10hz -debug -start "2019 08 17 00 00 00" -end "2019 08 17 23 59 59" >& /tmp/RadxDwellCombine.qc.10hz.otrec.20190817.log &
-RadxDwellCombine -params RadxDwellCombine.qc.10hz -debug -start "2019 08 18 00 00 00" -end "2019 08 18 23 59 59" >& /tmp/RadxDwellCombine.qc.10hz.otrec.20190818.log &
-RadxDwellCombine -params RadxDwellCombine.qc.10hz -debug -start "2019 08 22 00 00 00" -end "2019 08 22 23 59 59" >& /tmp/RadxDwellCombine.qc.10hz.otrec.20190822.log &
-RadxDwellCombine -params RadxDwellCombine.qc.10hz -debug -start "2019 08 23 00 00 00" -end "2019 08 23 23 59 59" >& /tmp/RadxDwellCombine.qc.10hz.otrec.20190823.log &
-RadxDwellCombine -params RadxDwellCombine.qc.10hz -debug -start "2019 08 25 00 00 00" -end "2019 08 25 23 59 59" >& /tmp/RadxDwellCombine.qc.10hz.otrec.20190825.log &
-RadxDwellCombine -params RadxDwellCombine.qc.10hz -debug -start "2019 09 03 00 00 00" -end "2019 09 03 23 59 59" >& /tmp/RadxDwellCombine.qc.10hz.otrec.20190903.log &
-RadxDwellCombine -params RadxDwellCombine.qc.10hz -debug -start "2019 09 04 00 00 00" -end "2019 09 04 23 59 59" >& /tmp/RadxDwellCombine.qc.10hz.otrec.20190904.log &
-RadxDwellCombine -params RadxDwellCombine.qc.10hz -debug -start "2019 09 09 00 00 00" -end "2019 09 09 23 59 59" >& /tmp/RadxDwellCombine.qc.10hz.otrec.20190909.log &
+#RadxDwellCombine -params RadxDwellCombine.qc.10hz -debug -start "2019 08 07 00 00 00" -end "2019 08 07 23 59 59" >& /tmp/RadxDwellCombine.qc.10hz.otrec.20190807.log &
+#RadxDwellCombine -params RadxDwellCombine.qc.10hz -debug -start "2019 08 11 00 00 00" -end "2019 08 11 23 59 59" >& /tmp/RadxDwellCombine.qc.10hz.otrec.20190811.log &
+#RadxDwellCombine -params RadxDwellCombine.qc.10hz -debug -start "2019 08 12 00 00 00" -end "2019 08 12 23 59 59" >& /tmp/RadxDwellCombine.qc.10hz.otrec.20190812.log &
+#RadxDwellCombine -params RadxDwellCombine.qc.10hz -debug -start "2019 08 16 00 00 00" -end "2019 08 16 23 59 59" >& /tmp/RadxDwellCombine.qc.10hz.otrec.20190816.log &
+#RadxDwellCombine -params RadxDwellCombine.qc.10hz -debug -start "2019 08 17 00 00 00" -end "2019 08 17 23 59 59" >& /tmp/RadxDwellCombine.qc.10hz.otrec.20190817.log &
+#RadxDwellCombine -params RadxDwellCombine.qc.10hz -debug -start "2019 08 18 00 00 00" -end "2019 08 18 23 59 59" >& /tmp/RadxDwellCombine.qc.10hz.otrec.20190818.log &
+#RadxDwellCombine -params RadxDwellCombine.qc.10hz -debug -start "2019 08 22 00 00 00" -end "2019 08 22 23 59 59" >& /tmp/RadxDwellCombine.qc.10hz.otrec.20190822.log &
+#RadxDwellCombine -params RadxDwellCombine.qc.10hz -debug -start "2019 08 23 00 00 00" -end "2019 08 23 23 59 59" >& /tmp/RadxDwellCombine.qc.10hz.otrec.20190823.log &
+#RadxDwellCombine -params RadxDwellCombine.qc.10hz -debug -start "2019 08 25 00 00 00" -end "2019 08 25 23 59 59" >& /tmp/RadxDwellCombine.qc.10hz.otrec.20190825.log &
+#RadxDwellCombine -params RadxDwellCombine.qc.10hz -debug -start "2019 09 03 00 00 00" -end "2019 09 03 23 59 59" >& /tmp/RadxDwellCombine.qc.10hz.otrec.20190903.log &
+#RadxDwellCombine -params RadxDwellCombine.qc.10hz -debug -start "2019 09 04 00 00 00" -end "2019 09 04 23 59 59" >& /tmp/RadxDwellCombine.qc.10hz.otrec.20190904.log &
+#RadxDwellCombine -params RadxDwellCombine.qc.10hz -debug -start "2019 09 09 00 00 00" -end "2019 09 09 23 59 59" >& /tmp/RadxDwellCombine.qc.10hz.otrec.20190909.log &
 
 
 
