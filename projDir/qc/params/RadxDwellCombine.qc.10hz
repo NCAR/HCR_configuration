@@ -570,7 +570,7 @@ apply_censoring = TRUE;
 
 ///////////// censoring_fields ////////////////////////
 //
-// Fields to be used for censoring.
+// Fields to be used for determining censoring.
 //
 // Specify the fields to be used to determine whether a gate should be 
 //   censored. The name refers to the input data field names. Valid field 
@@ -613,7 +613,7 @@ censoring_fields = {
   ,
   {
     name = "NCP",
-    min_valid_value = 0.10,
+    min_valid_value = 0.1,
     max_valid_value = 1000,
     combination_method = LOGICAL_OR
   }
@@ -635,6 +635,36 @@ censoring_fields = {
 //
 
 censoring_min_valid_run = 3;
+
+///////////// specify_non_censored_fields /////////////
+//
+// Option to exclude fields from censoring.
+//
+// If censoring is turned on, you also have the option of non censoring 
+//   specified fields. Set this parameter to TRUE, and specify the fields 
+//   to be excluded in the non_censored_fields list.
+//
+//
+// Type: boolean
+//
+
+specify_non_censored_fields = TRUE;
+
+///////////// non_censored_fields /////////////////////
+//
+// List of fields to be excluded from censoring.
+//
+// See 'specify_non_censored_fields'.
+//
+//
+// Type: string
+// 1D array - variable length.
+//
+
+non_censored_fields = {
+ "DBMHX",
+ "DBMVC"
+};
 
 //======================================================================
 //
