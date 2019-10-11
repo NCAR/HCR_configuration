@@ -5,6 +5,6 @@
 source ~/git/HCR_configuration/projDir/system/params/project_info.otrec
 cd $PROJ_DIR/qc/params
 
-HcrTempRxGain -params HcrTempRxGain.qc.otrec -debug -start "2019 08 07 00 00 00" -end "2019 10 10 00 00 00" > $DATA_DIR/logs/HcrTempRxGain.qc.otrec.log &
+HcrTempRxGain -params HcrTempRxGain.qc.otrec -debug -start "2019 08 07 00 00 00" -end "2019 10 02 23 59 59" > $DATA_DIR/logs/HcrTempRxGain.qc.otrec.log &
 
 tail -f $DATA_DIR/logs/HcrTempRxGain.qc.otrec.log
