@@ -1,15 +1,19 @@
 #! /bin/csh
 
-rehash
+# basic setup
 
-#setenv PROJ_DIR /opt/local/git/HCR_configuration/projDir
+source /opt/local/git/HCR_configuration/projDir/system/params/project_info.otrec
 
-source ~/git/HCR_configuration/projDir/system/params/project_info.otrec
+# override proj dir
 
-cd $PROJ_DIR/display/params
+setenv PROJ_DIR /opt/local/git/HCR_configuration/projDir
 
-#set HAWKEYE = /opt/local/lrose/bin/HawkEye
-set HAWKEYE = HawkEye
+echo "PROJ_DIR: ${PROJ_DIR}"
+
+cd ${PROJ_DIR}/display/params
+
+set HAWKEYE = /opt/local/lrose/bin/HawkEye
+#set HAWKEYE = HawkEye
 
 if ($#argv < 6) then
   $HAWKEYE -params HawkEye.hcr-otrec.qc.10hz -start_time "2019 08 07 15 30 00" >& /dev/null &
