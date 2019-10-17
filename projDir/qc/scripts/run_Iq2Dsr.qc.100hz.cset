@@ -5,7 +5,7 @@
 # Run Iq2Dsr, writing 100 hz data to fmq
 # This will be read in by Dsr2Radx, to write CfRadial files
 
-source ~/git/HCR_configuration/projDir/qc/scripts/set_env_qc.cset
+source ~/git/HCR_configuration/projDir/system/params/project_info.cset
 cd $PROJ_DIR/qc/params
 
 # flight by flight

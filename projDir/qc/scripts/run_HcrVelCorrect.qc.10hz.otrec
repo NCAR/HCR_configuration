@@ -1,0 +1,66 @@
+#! /bin/csh -f
+
+# HCR QC processing for OTREC
+#
+# Run HcrVelCorrect
+# Reads 10 hz data in CfRadial files, and corrects the velocity field by
+# checking for the velocity of the sea or land surface return.
+
+source ~/git/HCR_configuration/projDir/system/params/project_info.otrec
+
+cd $PROJ_DIR/qc/params
+
+# entire project in one operation
+
+#HcrVelCorrect -params HcrVelCorrect.qc.10hz -start "2019 08 07 00 00 00" -end "2019 10 02 23 59 59" -debug >& /tmp/HcrVelCorrect.qc.10hz.otrec.log &
+#tail -f /tmp/HcrVelCorrect.qc.10hz.otrec.log
+
+# flight by flight
+
+HcrVelCorrect -params HcrVelCorrect.qc.10hz -debug -start "2019 08 07 00 00 00" -end "2019 08 07 23 59 59" >& /tmp/HcrVelCorrect.qc.10hz.otrec.20190807.log &
+
+HcrVelCorrect -params HcrVelCorrect.qc.10hz -debug -start "2019 08 11 00 00 00" -end "2019 08 11 23 59 59" >& /tmp/HcrVelCorrect.qc.10hz.otrec.20190811.log &
+
+HcrVelCorrect -params HcrVelCorrect.qc.10hz -debug -start "2019 08 12 00 00 00" -end "2019 08 12 23 59 59" >& /tmp/HcrVelCorrect.qc.10hz.otrec.20190812.log &
+
+HcrVelCorrect -params HcrVelCorrect.qc.10hz -debug -start "2019 08 16 00 00 00" -end "2019 08 16 23 59 59" >& /tmp/HcrVelCorrect.qc.10hz.otrec.20190816.log &
+
+HcrVelCorrect -params HcrVelCorrect.qc.10hz -debug -start "2019 08 17 00 00 00" -end "2019 08 17 23 59 59" >& /tmp/HcrVelCorrect.qc.10hz.otrec.20190817.log &
+
+HcrVelCorrect -params HcrVelCorrect.qc.10hz -debug -start "2019 08 18 00 00 00" -end "2019 08 18 23 59 59" >& /tmp/HcrVelCorrect.qc.10hz.otrec.20190818.log &
+
+HcrVelCorrect -params HcrVelCorrect.qc.10hz -debug -start "2019 08 22 00 00 00" -end "2019 08 22 23 59 59" >& /tmp/HcrVelCorrect.qc.10hz.otrec.20190822.log &
+
+HcrVelCorrect -params HcrVelCorrect.qc.10hz -debug -start "2019 08 23 00 00 00" -end "2019 08 23 23 59 59" >& /tmp/HcrVelCorrect.qc.10hz.otrec.20190823.log &
+
+HcrVelCorrect -params HcrVelCorrect.qc.10hz -debug -start "2019 08 25 00 00 00" -end "2019 08 25 23 59 59" >& /tmp/HcrVelCorrect.qc.10hz.otrec.20190825.log &
+
+HcrVelCorrect -params HcrVelCorrect.qc.10hz -debug -start "2019 09 03 00 00 00" -end "2019 09 03 23 59 59" >& /tmp/HcrVelCorrect.qc.10hz.otrec.20190903.log &
+
+HcrVelCorrect -params HcrVelCorrect.qc.10hz -debug -start "2019 09 04 00 00 00" -end "2019 09 04 23 59 59" >& /tmp/HcrVelCorrect.qc.10hz.otrec.20190904.log &
+
+HcrVelCorrect -params HcrVelCorrect.qc.10hz -debug -start "2019 09 09 00 00 00" -end "2019 09 09 23 59 59" >& /tmp/HcrVelCorrect.qc.10hz.otrec.20190909.log &
+
+HcrVelCorrect -params HcrVelCorrect.qc.10hz -debug -start "2019 09 17 00 00 00" -end "2019 09 17 23 59 59" >& /tmp/HcrVelCorrect.qc.10hz.otrec.20190917.log &
+
+HcrVelCorrect -params HcrVelCorrect.qc.10hz -debug -start "2019 09 21 00 00 00" -end "2019 09 21 23 59 59" >& /tmp/HcrVelCorrect.qc.10hz.otrec.20190921.log &
+
+HcrVelCorrect -params HcrVelCorrect.qc.10hz -debug -start "2019 09 22 00 00 00" -end "2019 09 22 23 59 59" >& /tmp/HcrVelCorrect.qc.10hz.otrec.20190922.log &
+
+HcrVelCorrect -params HcrVelCorrect.qc.10hz -debug -start "2019 09 24 00 00 00" -end "2019 09 24 23 59 59" >& /tmp/HcrVelCorrect.qc.10hz.otrec.20190924.log &
+
+HcrVelCorrect -params HcrVelCorrect.qc.10hz -debug -start "2019 09 25 00 00 00" -end "2019 09 25 23 59 59" >& /tmp/HcrVelCorrect.qc.10hz.otrec.20190925.log &
+
+HcrVelCorrect -params HcrVelCorrect.qc.10hz -debug -start "2019 09 27 00 00 00" -end "2019 09 27 23 59 59" >& /tmp/HcrVelCorrect.qc.10hz.otrec.20190927.log &
+
+HcrVelCorrect -params HcrVelCorrect.qc.10hz -debug -start "2019 09 28 00 00 00" -end "2019 09 28 23 59 59" >& /tmp/HcrVelCorrect.qc.10hz.otrec.20190928.log &
+
+HcrVelCorrect -params HcrVelCorrect.qc.10hz -debug -start "2019 09 30 00 00 00" -end "2019 09 30 23 59 59" >& /tmp/HcrVelCorrect.qc.10hz.otrec.20190930.log &
+
+HcrVelCorrect -params HcrVelCorrect.qc.10hz -debug -start "2019 10 01 00 00 00" -end "2019 10 01 23 59 59" >& /tmp/HcrVelCorrect.qc.10hz.otrec.20191001.log &
+
+HcrVelCorrect -params HcrVelCorrect.qc.10hz -debug -start "2019 10 02 00 00 00" -end "2019 10 02 23 59 59" >& /tmp/HcrVelCorrect.qc.10hz.otrec.20191002.log &
+
+
+
+

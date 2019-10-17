@@ -2,7 +2,7 @@
 
 rehash
 
-source ~/git/HCR_configuration/projDir/qc/scripts/set_env_qc
+source ~/git/HCR_configuration/projDir/system/params/project_info.socrates
 
 cd $PROJ_DIR/display/params
 

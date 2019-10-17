@@ -53,7 +53,7 @@ debug = DEBUG_OFF;
 // Type: string
 //
 
-input_url = "$(DATA_DIR)/spdb/monitor/qc";
+input_url = "$(DATA_DIR)/$(QC_VERSION)/spdb/monitor";
 
 ///////////// start_time //////////////////////////////
 //

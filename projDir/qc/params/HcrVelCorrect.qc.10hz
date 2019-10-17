@@ -118,7 +118,7 @@ mode = ARCHIVE;
 // Type: string
 //
 
-input_dir = "$(DATA_DIR)/qc/cfradial/moments/10hz";
+input_dir = "$(DATA_DIR)/$(QC_VERSION)/cfradial/moments/10hz";
 
 ///////////// max_realtime_data_age_secs //////////////
 //
@@ -347,6 +347,45 @@ width_correction_beamwidth_deg = 0.69;
 
 //======================================================================
 //
+// CORRECT ALTITUDE FOR EGM.
+//
+// Correct the GPS altitude for the geoid, using EGM-2008. See: 
+//   https://earth-info.nga.mil/GandG/wgs84/gravitymod/egm2008/egm08_wgs84.
+//   html.
+//
+//======================================================================
+ 
+///////////// correct_altitude_for_egm ////////////////
+//
+// Option to correct the altitude for the geoid.
+//
+// Altitude from the SDN500 is based on the WGS84 ellipsoid. To get 
+//   altitude relative to MSL, a correction for the geoid based on 
+//   gravitation strength is required. We use the EGM-2008 geoid table.
+//
+//
+// Type: boolean
+//
+
+correct_altitude_for_egm = FALSE;
+
+///////////// egm_2008_geoid_file /////////////////////
+//
+// Path to geoid table file.
+//
+// Downloads available from 
+//   https://earth-info.nga.mil/GandG/wgs84/gravitymod. NetCDF file is on 
+//   the shared drive at HCR->dataProcessing->AltitudeCorrection. The app 
+//   Egm2Mdv will convert the downloadable file to a netCDF format file.
+//
+//
+// Type: string
+//
+
+egm_2008_geoid_file = "$(PROJ_DIR)/data/egm/EGM_2008_WGS84_2.5minx2.5min.nc";
+
+//======================================================================
+//
 // OUTPUT FIELD DETAILS.
 //
 //======================================================================
@@ -419,7 +458,7 @@ compression_level = 4;
 // Type: string
 //
 
-output_dir = "$(DATA_DIR)/qc/cfradial/velcorr/10hz";
+output_dir = "$(DATA_DIR)/$(QC_VERSION)/cfradial/velcorr/10hz";
 
 ///////////// output_filename_mode ////////////////////
 //
@@ -533,7 +572,7 @@ write_latest_data_info = FALSE;
 // Type: boolean
 //
 
-write_surface_vel_results_to_spdb = TRUE;
+write_surface_vel_results_to_spdb = FALSE;
 
 ///////////// surface_vel_results_spdb_output_url /////
 //

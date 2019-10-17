@@ -544,7 +544,7 @@ override_radar_location = TRUE;
 // Type: double
 //
 
-radar_latitude_deg = $(RADAR_LAT);
+radar_latitude_deg = 0.0;
 
 ///////////// radar_longitude_deg /////////////////////
 //
@@ -556,7 +556,7 @@ radar_latitude_deg = $(RADAR_LAT);
 // Type: double
 //
 
-radar_longitude_deg = $(RADAR_LON);
+radar_longitude_deg = 0.0;
 
 ///////////// radar_altitude_meters ///////////////////
 //
@@ -568,7 +568,7 @@ radar_longitude_deg = $(RADAR_LON);
 // Type: double
 //
 
-radar_altitude_meters = $(RADAR_ALT_M);
+radar_altitude_meters = 0.0;
 
 ///////////// override_gate_geometry //////////////////
 //

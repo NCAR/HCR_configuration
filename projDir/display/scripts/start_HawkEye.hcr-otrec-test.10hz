@@ -6,7 +6,7 @@ rehash
 
 setenv PROJ_DIR /opt/local/git/HCR_configuration/projDir
 setenv DATA_DIR /scr/snow2/rsfdata/projects/otrec/hcr
-source $PROJ_DIR/system/params/project_info
+source $PROJ_DIR/system/params/project_info.socrates
 cd $PROJ_DIR/display/params
 
 # start the display

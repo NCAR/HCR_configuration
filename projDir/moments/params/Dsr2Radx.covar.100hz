@@ -127,7 +127,7 @@ use_input_scan_mode = TRUE;
 // Type: string
 //
 
-site_name = "$(SITE_NAME)";
+site_name = "$(PROJECT_NAME)";
 
 ///////////// override_radar_name /////////////////////
 //
@@ -1893,7 +1893,7 @@ output_compression_level = 4;
 // Type: string
 //
 
-ncf_title = "HCR data - $(SITE_NAME)";
+ncf_title = "HCR data - $(PROJECT_NAME)";
 
 ///////////// ncf_institution /////////////////////////
 //
@@ -1913,7 +1913,7 @@ ncf_institution = "EOL/NCAR";
 // Type: string
 //
 
-ncf_references = "$(SITE_NAME)";
+ncf_references = "$(PROJECT_NAME)";
 
 ///////////// ncf_source //////////////////////////////
 //

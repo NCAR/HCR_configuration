@@ -356,7 +356,7 @@ sun_scan_output_dir = "$(DATA_DIR)/time_series/wband/sunscan";
 // Type: double
 //
 
-radar_latitude = $(RADAR_LAT);
+radar_latitude = 0.0;
 
 ///////////// radar_longitude /////////////////////////
 //
@@ -365,7 +365,7 @@ radar_latitude = $(RADAR_LAT);
 // Type: double
 //
 
-radar_longitude = $(RADAR_LON);
+radar_longitude = 0.0;
 
 ///////////// radar_altitude_km ///////////////////////
 //
@@ -373,7 +373,7 @@ radar_longitude = $(RADAR_LON);
 // Type: double
 //
 
-radar_altitude_km = $(RADAR_ALT_KM);
+radar_altitude_km = 0.0;
 
 //======================================================================
 //
