@@ -531,6 +531,15 @@ fields = {
     color_map = "rh.colors",
     shortcut = "d"
   }
+  ,
+  {
+    label = "FLAG",
+    raw_name = "FLAG",
+    filtered_name = "",
+    units = "",
+    color_map = "hcr_flag.colors",
+    shortcut = "d"
+  }
 };
 
 ///////////// background_render_mins //////////////////
