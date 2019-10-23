@@ -649,7 +649,7 @@ noise_filter_length_secs = 3;
 // Type: double
 //
 
-wave_filter_length_secs = 20;
+wave_filter_length_secs = $(WAVE_FILTER_LENGTH_SECS);
 
 ///////////// wave_filter_polynomial_order ////////////
 //

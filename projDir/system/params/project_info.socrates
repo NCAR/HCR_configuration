@@ -18,4 +18,8 @@ setenv QC_VERSION qc2
 mkdir -p $DATA_DIR
 mkdir -p $DATA_DIR/logs
 
+# length of wave filter for HcrVelCorrect
+
+setenv WAVE_FILTER_LENGTH_SECS 20
+
 
