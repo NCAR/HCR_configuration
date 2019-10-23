@@ -1,5 +1,5 @@
 /**********************************************************************
- * TDRP params for ./RadxCalUpdate
+ * TDRP params for RadxCalUpdate
  **********************************************************************/
 
 //======================================================================
@@ -230,18 +230,87 @@ calibration_file_path = "$(PROJ_DIR)/calibration/data/wband_256ns/TsCalAuto_Wban
 
 ///////////// dbz_fields_for_update ///////////////////
 //
-// Names of DBZ fields to be updated.
+// Description of DBZ fields to be updated.
 //
-// Only the fields in this list will be updated for the new cal.
+// Only the fields in this list will be updated for the new cal. The 
+//   calibration changes will vary per channel, hence the channel is 
+//   specified along with the name.
 //
 //
-// Type: string
+// Type: struct
+//   typedef struct {
+//      channel_t channel;
+//        Options:
+//          CHANNEL_HC
+//          CHANNEL_VC
+//          CHANNEL_HX
+//          CHANNEL_VX
+//      string name;
+//   }
+//
 // 1D array - variable length.
 //
 
 dbz_fields_for_update = {
- "DBZ",
- "DBZVC"
+  {
+    channel = CHANNEL_VC,
+    name = "DBZ"
+  }
+  ,
+  {
+    channel = CHANNEL_VC,
+    name = "DBZVC"
+  }
+  ,
+  {
+    channel = CHANNEL_HC,
+    name = "DBZHC"
+  }
+};
+
+///////////// dbm_fields_for_update ///////////////////
+//
+// Description of DBM fields to be updated.
+//
+// Only the fields in this list will be updated for the new cal. The 
+//   calibration changes will vary per channel, hence the channel is 
+//   specified along with the name.
+//
+//
+// Type: struct
+//   typedef struct {
+//      channel_t channel;
+//        Options:
+//          CHANNEL_HC
+//          CHANNEL_VC
+//          CHANNEL_HX
+//          CHANNEL_VX
+//      string name;
+//   }
+//
+// 1D array - variable length.
+//
+
+dbm_fields_for_update = {
+  {
+    channel = CHANNEL_HC,
+    name = "DBMHC"
+  }
+  ,
+  {
+    channel = CHANNEL_VC,
+    name = "DBMVC"
+  }
+  ,
+  {
+    channel = CHANNEL_HX,
+    name = "DBMHX"
+  }
+  ,
+  {
+    channel = CHANNEL_VX,
+    name = "DBMVX"
+  }
 };
 
 //======================================================================
