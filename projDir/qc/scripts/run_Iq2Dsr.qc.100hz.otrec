@@ -34,3 +34,23 @@ Iq2Dsr -params Iq2Dsr.qc.100hz.otrec -debug -start "2019 09 04 00 00 00" -end "2
 
 Iq2Dsr -params Iq2Dsr.qc.100hz.otrec -debug -start "2019 09 09 00 00 00" -end "2019 09 09 23 59 59" >& /tmp/Iq2Dsr.rf12.100hz.otrec.log
 
+Iq2Dsr -params Iq2Dsr.qc.100hz.otrec -debug -start "2019 09 17 00 00 00" -end "2019 09 17 23 59 59" >& /tmp/Iq2Dsr.rf13.100hz.otrec.log
+
+Iq2Dsr -params Iq2Dsr.qc.100hz.otrec -debug -start "2019 09 21 00 00 00" -end "2019 09 21 23 59 59" >& /tmp/Iq2Dsr.rf14.100hz.otrec.log
+
+Iq2Dsr -params Iq2Dsr.qc.100hz.otrec -debug -start "2019 09 22 00 00 00" -end "2019 09 22 23 59 59" >& /tmp/Iq2Dsr.rf15.100hz.otrec.log
+
+Iq2Dsr -params Iq2Dsr.qc.100hz.otrec -debug -start "2019 09 24 00 00 00" -end "2019 09 24 23 59 59" >& /tmp/Iq2Dsr.rf16.100hz.otrec.log
+
+Iq2Dsr -params Iq2Dsr.qc.100hz.otrec -debug -start "2019 09 25 00 00 00" -end "2019 09 25 23 59 59" >& /tmp/Iq2Dsr.rf17.100hz.otrec.log
+
+Iq2Dsr -params Iq2Dsr.qc.100hz.otrec -debug -start "2019 09 27 00 00 00" -end "2019 09 27 23 59 59" >& /tmp/Iq2Dsr.rf18.100hz.otrec.log
+
+Iq2Dsr -params Iq2Dsr.qc.100hz.otrec -debug -start "2019 09 28 00 00 00" -end "2019 09 28 23 59 59" >& /tmp/Iq2Dsr.rf19.100hz.otrec.log
+
+Iq2Dsr -params Iq2Dsr.qc.100hz.otrec -debug -start "2019 09 30 00 00 00" -end "2019 09 30 23 59 59" >& /tmp/Iq2Dsr.rf20.100hz.otrec.log
+
+Iq2Dsr -params Iq2Dsr.qc.100hz.otrec -debug -start "2019 10 01 00 00 00" -end "2019 10 01 23 59 59" >& /tmp/Iq2Dsr.rf21.100hz.otrec.log
+
+Iq2Dsr -params Iq2Dsr.qc.100hz.otrec -debug -start "2019 10 02 00 00 00" -end "2019 10 02 23 59 59" >& /tmp/Iq2Dsr.rf22.100hz.otrec.log
+
