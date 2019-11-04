@@ -59,7 +59,7 @@ register_with_procmap = FALSE;
 // Type: string
 //
 
-instance = "qc.10hz";
+instance = "qc.10hz_from_time_series";
 
 //======================================================================
 //
