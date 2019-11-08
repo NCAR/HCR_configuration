@@ -1,5 +1,5 @@
 /**********************************************************************
- * TDRP params for ./Iq2Dsr
+ * TDRP params for Iq2Dsr
  **********************************************************************/
 
 //======================================================================
@@ -1579,6 +1579,8 @@ rx_temp_gain_corrections = {
 //
 // FOR HCR, CORRECT RECEIVER GAIN FOR TEMPERATURE USING VALUES FROM SPDB.
 //
+// Also, optionally correct georeference height.
+//
 //======================================================================
  
 ///////////// correct_hcr_v_rx_gain_for_temperature ///
@@ -1586,9 +1588,9 @@ rx_temp_gain_corrections = {
 // Option to correct the HCR V-channel receiver gain for temperature.
 //
 // Computing the HCR receiver gain correction is complicated. Therefore 
-//   this is done offline, and the results are stored as XML in SPDB. Here 
-//   we retrieve the values from SPDB and apply them to correct the 
-//   receiver gain.
+//   this is done offline, using the application HcrTempRxGain, and the 
+//   results are stored as XML in SPDB. Here we retrieve the values from 
+//   SPDB and apply them to correct the receiver gain.
 //
 //
 // Type: boolean
@@ -1628,6 +1630,38 @@ hcr_delta_gain_search_margin_secs = 3600;
 //
 
 hcr_v_rx_delta_gain_tag_list = "<HcrTempGainCorrection><v_delta_gain>";
+
+///////////// correct_altitude_for_egm ////////////////
+//
+// Option to correct the altitude for the geoid.
+//
+// This only applies for moving platforms. Altitude from some GPS units 
+//   is based on the WGS84 ellipsoid. To get altitude relative to MSL, a 
+//   correction for the geoid based on gravitation strength is required. 
+//   We use the EGM-2008 geoid table. See: 
+//   https://earth-info.nga.mil/GandG/wgs84/gravitymod/egm2008/egm08_wgs84.
+//   html.
+//
+//
+// Type: boolean
+//
+
+correct_altitude_for_egm = TRUE;
+
+///////////// egm_2008_geoid_file /////////////////////
+//
+// Path to geoid table file.
+//
+// Downloads available from 
+//   https://earth-info.nga.mil/GandG/wgs84/gravitymod. NetCDF file is on 
+//   the shared drive at HCR->dataProcessing->AltitudeCorrection. The app 
+//   Egm2Mdv will convert the downloadable file to a netCDF format file.
+//
+//
+// Type: string
+//
+
+egm_2008_geoid_file = "$(DATA_DIR)/egm/EGM_2008_WGS84_2.5minx2.5min.nc";
 
 //======================================================================
 //

@@ -158,7 +158,6 @@ archive_processing_interval_secs = 900;
 //
 
 output_spdb_url = "$(DATA_DIR)/$(QC_VERSION)/spdb/tempVsGain";
-// output_spdb_url = "$(HOME)/local_data/spdb/tempVsGain";
 
 //======================================================================
 //
@@ -222,7 +221,7 @@ pod_temperature_tags = {
 // Type: double
 //
 
-v_lna_reference_temperature_c = 29.73897;
+v_lna_reference_temperature_c = 34.51782;
 
 ///////////// v_lna_gain_change_per_c /////////////////
 //
@@ -236,7 +235,7 @@ v_lna_reference_temperature_c = 29.73897;
 // Type: double
 //
 
-v_lna_gain_change_per_c = 0.19851;
+v_lna_gain_change_per_c = 0.196288;
 
 ///////////// pod_reference_temperature_c /////////////
 //
@@ -251,7 +250,7 @@ v_lna_gain_change_per_c = 0.19851;
 // Type: double
 //
 
-pod_reference_temperature_c = 19.39;
+pod_reference_temperature_c = 22.959;
 
 ///////////// v_rx_gain_change_per_c //////////////////
 //
@@ -265,7 +264,7 @@ pod_reference_temperature_c = 19.39;
 // Type: double
 //
 
-v_rx_gain_change_per_c = -0.115120;
+v_rx_gain_change_per_c = -0.097777;
 
 ///////////// v_lna_temperature_time_lag_secs /////////
 //

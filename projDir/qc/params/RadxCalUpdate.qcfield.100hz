@@ -332,7 +332,7 @@ dbm_fields_for_update = {
 // Type: boolean
 //
 
-correct_hcr_v_rx_gain_for_temperature = TRUE;
+correct_hcr_v_rx_gain_for_temperature = FALSE;
 
 ///////////// hcr_delta_gain_spdb_url /////////////////
 //
