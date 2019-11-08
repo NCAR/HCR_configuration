@@ -62,7 +62,7 @@ def main():
                       help='Maximum pitch angle (deg)')
     parser.add_option('--pitchDelta',
                       dest='pitchDelta',
-                      default=0.5,
+                      default=1.0,
                       help='Delta pitch angle in matrix (deg)')
     parser.add_option('--rollMin',
                       dest='rollMin',
@@ -74,21 +74,37 @@ def main():
                       help='Maximum roll angle (deg)')
     parser.add_option('--rollDelta',
                       dest='rollDelta',
-                      default=5.0,
+                      default=10.0,
                       help='Delta roll angle in matrix (deg)')
     
     (options, args) = parser.parse_args()
-    
+
+    global _tilt, _rot, _drift
+    global _pitchMin, _pitchMax, _pitchDelta
+    global _rollMin, _rollMax, _rollDelta
+
+    _tilt = float(options.tilt)
+    _rot = float(options.rot)
+    _drift = float(options.drift)
+
+    _pitchMin = float(options.pitchMin)
+    _pitchMax = float(options.pitchMax)
+    _pitchDelta = float(options.pitchDelta)
+
+    _rollMin = float(options.rollMin)
+    _rollMax = float(options.rollMax)
+    _rollDelta = float(options.rollDelta)
+
     if (options.debug == True):
-        print("  tilt: ", options.tilt, file=sys.stderr)
-        print("  rot: ", options.rot, file=sys.stderr)
-        print("  drift: ", options.drift, file=sys.stderr)
-        print("  pitchMin: ", options.pitchMin, file=sys.stderr)
-        print("  pitchMax: ", options.pitchMax, file=sys.stderr)
-        print("  pitchDelta: ", options.pitchDelta, file=sys.stderr)
-        print("  rollMin: ", options.rollMin, file=sys.stderr)
-        print("  rollMax: ", options.rollMax, file=sys.stderr)
-        print("  rollDelta: ", options.rollDelta, file=sys.stderr)
+        print("#  tilt: ", _tilt, file=sys.stderr)
+        print("#  rot: ", _rot, file=sys.stderr)
+        print("#  drift: ", _drift, file=sys.stderr)
+        print("#  pitchMin: ", _pitchMin, file=sys.stderr)
+        print("#  pitchMax: ", _pitchMax, file=sys.stderr)
+        print("#  pitchDelta: ", _pitchDelta, file=sys.stderr)
+        print("#  rollMin: ", _rollMin, file=sys.stderr)
+        print("#  rollMax: ", _rollMax, file=sys.stderr)
+        print("#  rollDelta: ", _rollDelta, file=sys.stderr)
 
     # compute angles, and write them out
 
@@ -111,82 +127,95 @@ def main():
 
 def computeAngles():
 
-    for pitch in np.arange(options.pitchMin, options.pitchMax, options.pitchDelta):
+    print("# ",
+          '{:>10} '.format('pitch'),
+          '{:>10} '.format('roll'),
+          '{:>10} '.format('reflRot'),
+          '{:>10} '.format('reflTilt'),
+          file=sys.stderr)
 
-        for roll in np.arange(options.rollMin, options.rollMax, options.rollDelta):
+    for pitch in np.arange(_pitchMin, _pitchMax, _pitchDelta):
 
-            print(" pitch, roll: ", pitch, ", ", roll, file=sys.stderr)
+        for roll in np.arange(_rollMin, _rollMax, _rollDelta):
 
+            reflRot, reflTilt = computeReflAngles(pitch, roll)
+
+            print("  ",
+                  '{:10.2f} '.format(pitch),
+                  '{:10.2f} '.format(roll),
+                  '{:10.2f} '.format(reflRot),
+                  '{:10.2f} '.format(reflTilt),
+                  file=sys.stderr)
 
 ########################################################################
-# Set up arrays for plotting
+# compute reflector angles
+# Returns rotation and tilt for the reflector
+# This is from MotionControl.cpp.
 
-def loadDataArrays(compData, compTimes):
+def computeReflAngles(pitch, roll):
 
-    filtLen = int(options.filtLen)
-    
-    # set up arrays
+    sinPitch = math.sin(math.radians(pitch))
+    cosPitch = math.cos(math.radians(pitch))
 
-    global ctimes
+    sinRoll = math.sin(math.radians(roll))
+    cosRoll = math.cos(math.radians(roll))
 
-    ctimes = np.array(compTimes).astype(datetime.datetime)
+    sinDrift = math.sin(math.radians(_drift))
+    cosDrift = math.cos(math.radians(_drift))
 
-    global lat, lon, alt
-    lat = movingAverage(np.array(compData["Lat"]).astype(np.double), filtLen)
-    lon = movingAverage(np.array(compData["Lon"]).astype(np.double), filtLen)
-    alt = movingAverage(np.array(compData["Alt"]).astype(np.double), filtLen)
+    # Track relative coordinates - desired beam position
 
-    global velNorth, velEast, velUp
-    velNorth = movingAverage(np.array(compData["VelNorth"]).astype(np.double), filtLen)
-    velEast = movingAverage(np.array(compData["VelEast"]).astype(np.double), filtLen)
-    velUp = movingAverage(np.array(compData["VelUp"]).astype(np.double), filtLen)
+    sinRot = math.sin(math.radians(_rot))
+    cosRot = math.cos(math.radians(_rot))
 
-    global pitch, roll, heading
-    pitch = movingAverage(np.array(compData["Pitch"]).astype(np.double), filtLen)
-    roll = movingAverage(np.array(compData["Roll"]).astype(np.double), filtLen)
-    heading = movingAverage(np.array(compData["Heading"]).astype(np.double), filtLen)
+    sinTilt = math.sin(math.radians(_tilt))
+    cosTilt = math.cos(math.radians(_tilt))
 
-    global gndSpdKnots, vertSpdFps
-    #for (vn in velNorth, ve in velEast):
-    #    print >>sys.stderr, "vn, ve: ", vn, ve
+    # Convert to track relative Cartesian coordinates
 
-    gndSpdKnots = math.sqrt((velNorth * velNorth) + math.sqrt(velEast * velEast))
-    
-########################################################################
-# Plot pitch, roll and heading data
+    x_t = cosTilt * sinRot
+    y_t = sinTilt
+    z_t = cosTilt * cosRot
 
-def doPlotPitchRollHeading():
+    print("#  x_t, y_t, z_t: ", x_t, y_t, z_t, file=sys.stderr)
 
-    # set up plots
+    # Convert to pod relative Cartesian coordinates - adjusted beam position
 
-    widthIn = float(options.mainWidthMm) / 25.4
-    htIn = float(options.mainHeightMm) / 25.4
-    
-    global figNum
-    fig = plt.figure(figNum, (widthIn, htIn))
-    figNum = figNum + 1
-    
-    ax1 = fig.add_subplot(3,1,1,xmargin=0.0)
-    ax2 = fig.add_subplot(3,1,2,xmargin=0.0)
-    ax3 = fig.add_subplot(3,1,3,xmargin=0.0)
-    
-    ax1.plot(ctimes, pitch, label='Pitch(deg)', color='green', linewidth=1)
-    ax2.plot(ctimes, roll, label='Roll(deg)', color='red', linewidth=1)
-    ax3.plot(ctimes, heading, label='Heading(deg)', color='blue', linewidth=1)
+    x_a = \
+          x_t * (cosDrift * cosRoll - sinDrift * sinPitch * sinRoll) + \
+          y_t * (sinDrift + cosDrift * sinPitch * sinRoll) + \
+          -z_t * cosPitch * sinRoll
 
-    configTimeAxis(ax1, -9999, -9999, "Pitch(deg)", 'upper right')
-    configTimeAxis(ax2, -9999, -9999, "Roll(deg)", 'upper right')
-    configTimeAxis(ax3, -9999, -9999, "Heading(deg)", 'upper right')
+    y_a = \
+          -x_t * sinDrift * cosPitch + \
+          y_t * cosDrift * cosPitch + \
+          z_t * sinPitch
 
-    fig.autofmt_xdate()
-    fig.tight_layout()
-    fig.subplots_adjust(bottom=0.08, left=0.06, right=0.97, top=0.96)
-    
-    # title name
+    z_a = \
+          x_t * (cosDrift * sinRoll + sinDrift * sinPitch * sinRoll) + \
+          y_t * (sinDrift * sinRoll - cosDrift * sinPitch * cosRoll) + \
+          z_t * cosPitch * cosRoll
 
-    fig.suptitle("HCR PITCH/ROLL/HDG - " + str(startTime) + " to " + str(endTime))
+    print("#  x_a, y_a, z_a: ", x_a, y_a, z_a, file=sys.stderr)
 
-    return
+    # Convert from pod relative Cartesian coordinates to polar coordinates
+    # and save the adjusted rotation and tilt angles.
+
+    reflTilt = math.degrees(math.asin(y_a))
+
+    # KLUGE: The algorithm above isn't really right. As compensation for now,
+    # just change the sign of the corrected tilt if the desired rotation angle
+    # rots downward, i.e., if its cosine is less than zero.
+    if (cosRot < 0.0):
+        reflTilt = reflTilt * -1
+
+    # rotation needs to be in the range of 0-360
+
+    reflRot = math.degrees(math.atan2(x_a, z_a))
+    #if (reflRot < 0):
+    #    reflRot = reflRot + 360.0
+
+    return (reflRot, reflTilt)
 
 ########################################################################
 # Plot velocities
