@@ -187,6 +187,7 @@ def computeAzElYPrime(pitch, roll, hdg, rot, tilt):
     x_a = sinRot * cosTilt
     y_a = sinTilt
     z_a = cosRot * cosTilt
+    len_a = math.sqrt(x_a * x_a + y_a * y_a + z_a * z_a)
 
     # compute matrix elements after multiplication
     # for 3 axis transformation
@@ -208,6 +209,7 @@ def computeAzElYPrime(pitch, roll, hdg, rot, tilt):
     xx = mf11 * x_a + mf12 * y_a + mf13 * z_a
     yy = mf21 * x_a + mf22 * y_a + mf23 * z_a
     zz = mf31 * x_a + mf32 * y_a + mf33 * z_a
+    len = math.sqrt(xx * xx + yy * yy + zz * zz)
 
     # compute az and el
 
@@ -225,10 +227,12 @@ def computeAzElYPrime(pitch, roll, hdg, rot, tilt):
         print("#  x_a  : ", '{:10.4f} '.format(x_a), file=sys.stderr)
         print("#  y_a  : ", '{:10.4f} '.format(y_a), file=sys.stderr)
         print("#  z_a  : ", '{:10.4f} '.format(z_a), file=sys.stderr)
+        print("#  len_a: ", '{:10.4f} '.format(len_a), file=sys.stderr)
 
         print("#  xx   : ", '{:10.4f} '.format(xx), file=sys.stderr)
         print("#  yy   : ", '{:10.4f} '.format(yy), file=sys.stderr)
         print("#  zz   : ", '{:10.4f} '.format(zz), file=sys.stderr)
+        print("#  len  : ", '{:10.4f} '.format(len), file=sys.stderr)
 
         print("#  az   : ", '{:10.4f} '.format(az), file=sys.stderr)
         print("#  el   : ", '{:10.4f} '.format(el), file=sys.stderr)
@@ -263,6 +267,7 @@ def computeRotTiltYPrime(pitch, roll, hdg, el, az):
     xx = sinAz * cosEl
     yy = cosAz * cosEl
     zz = sinEl
+    len = math.sqrt(xx * xx + yy * yy + zz * zz)
 
     # compute matrix elements after multiplication
     # for 3 axis transformation
@@ -275,8 +280,8 @@ def computeRotTiltYPrime(pitch, roll, hdg, el, az):
     mr22 = cosPitch * cosHdg
     mr23 = sinPitch
 
-    mr31 = -sinRoll * cosHdg - cosRoll * sinPitch * sinHdg
-    mr32 = sinRoll * sinHdg - cosRoll * sinPitch * cosHdg
+    mr31 = sinRoll * cosHdg - cosRoll * sinPitch * sinHdg
+    mr32 = -sinRoll * sinHdg - cosRoll * sinPitch * cosHdg
     mr33 = cosRoll * cosPitch
 
     # Compute unit vector in earth coords
@@ -284,6 +289,7 @@ def computeRotTiltYPrime(pitch, roll, hdg, el, az):
     x_a = mr11 * xx + mr12 * yy + mr13 * zz
     y_a = mr21 * xx + mr22 * yy + mr23 * zz
     z_a = mr31 * xx + mr32 * yy + mr33 * zz
+    len_a = math.sqrt(x_a * x_a + y_a * y_a + z_a * z_a)
 
     # compute rot and tilt
 
@@ -298,13 +304,15 @@ def computeRotTiltYPrime(pitch, roll, hdg, el, az):
         print("#  rot  : ", '{:10.4f} '.format(rot), file=sys.stderr)
         print("#  tilt : ", '{:10.4f} '.format(tilt), file=sys.stderr)
 
-        print("#  x_a  : ", '{:10.4f} '.format(x_a), file=sys.stderr)
-        print("#  y_a  : ", '{:10.4f} '.format(y_a), file=sys.stderr)
-        print("#  z_a  : ", '{:10.4f} '.format(z_a), file=sys.stderr)
-
         print("#  xx   : ", '{:10.4f} '.format(xx), file=sys.stderr)
         print("#  yy   : ", '{:10.4f} '.format(yy), file=sys.stderr)
         print("#  zz   : ", '{:10.4f} '.format(zz), file=sys.stderr)
+        print("#  len  : ", '{:10.4f} '.format(len), file=sys.stderr)
+
+        print("#  x_a  : ", '{:10.4f} '.format(x_a), file=sys.stderr)
+        print("#  y_a  : ", '{:10.4f} '.format(y_a), file=sys.stderr)
+        print("#  z_a  : ", '{:10.4f} '.format(z_a), file=sys.stderr)
+        print("#  len_a: ", '{:10.4f} '.format(len_a), file=sys.stderr)
 
         print("#  az   : ", '{:10.4f} '.format(az), file=sys.stderr)
         print("#  el   : ", '{:10.4f} '.format(el), file=sys.stderr)
