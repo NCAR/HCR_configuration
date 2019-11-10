@@ -146,9 +146,9 @@ def computeAngles():
 
         for roll in np.arange(_rollMin, _rollMax, _rollDelta):
 
-            el, az = computeAzElYPrimeHdg(pitch, roll, _hdg, _rot, _tilt)
+            el, az = computeAzElYPrime(pitch, roll, _hdg, _rot, _tilt)
 
-            rot, tilt = computeRotTiltYPrimeHdg(pitch, roll, _hdg, el, az)
+            rot, tilt = computeRotTiltYPrime(pitch, roll, _hdg, el, az)
 
             print("  ",
                   '{:10.4f} '.format(pitch),
@@ -191,23 +191,23 @@ def computeAzElYPrime(pitch, roll, hdg, rot, tilt):
     # compute matrix elements after multiplication
     # for 3 axis transformation
 
-    m11 = cosHdg * cosRoll + sinHdg * sinPitch * sinRoll
-    m12 = sinHdg * cosPitch
-    m13 = cosHdg * sinRoll - sinHdg * sinPitch * cosRoll
+    mf11 = cosHdg * cosRoll + sinHdg * sinPitch * sinRoll
+    mf12 = sinHdg * cosPitch
+    mf13 = cosHdg * sinRoll - sinHdg * sinPitch * cosRoll
 
-    m21 = -sinHdg * cosRoll + cosHdg * sinPitch * sinRoll
-    m22 = cosHdg * cosPitch
-    m23 = -sinHdg * sinRoll - cosHdg * sinPitch * cosRoll
+    mf21 = -sinHdg * cosRoll + cosHdg * sinPitch * sinRoll
+    mf22 = cosHdg * cosPitch
+    mf23 = -sinHdg * sinRoll - cosHdg * sinPitch * cosRoll
 
-    m31 = -cosPitch * sinRoll
-    m32 = sinPitch
-    m33 = cosPitch * cosRoll
+    mf31 = -cosPitch * sinRoll
+    mf32 = sinPitch
+    mf33 = cosPitch * cosRoll
 
     # Compute unit vector in earth coords
 
-    xx = m11 * x_a + m12 * y_a + m13 * z_a
-    yy = m21 * x_a + m22 * y_a + m23 * z_a
-    zz = m31 * x_a + m32 * y_a + m33 * z_a
+    xx = mf11 * x_a + mf12 * y_a + mf13 * z_a
+    yy = mf21 * x_a + mf22 * y_a + mf23 * z_a
+    zz = mf31 * x_a + mf32 * y_a + mf33 * z_a
 
     # compute az and el
 
@@ -267,35 +267,23 @@ def computeRotTiltYPrime(pitch, roll, hdg, el, az):
     # compute matrix elements after multiplication
     # for 3 axis transformation
 
-    n11 = cosRoll * cosHdg + sinRoll * sinPitch * sinHdg
-    n12 = -cosRoll * sinHdg + sinRoll * sinPitch * cosHdg
-    n13 = -sinRoll * cosPitch
+    mr11 = cosRoll * cosHdg + sinRoll * sinPitch * sinHdg
+    mr12 = -cosRoll * sinHdg + sinRoll * sinPitch * cosHdg
+    mr13 = -sinRoll * cosPitch
 
-    n21 = cosPitch * sinHdg
-    n22 = cosPitch * cosHdg
-    n23 = sinPitch
+    mr21 = cosPitch * sinHdg
+    mr22 = cosPitch * cosHdg
+    mr23 = sinPitch
 
-    n31 = cosRoll * cosHdg - cosRoll * sinPitch * sinHdg
-    n32 = -sinRoll * sinHdg - cosRoll * sinPitch * cosHdg
-    n33 = cosRoll * cosPitch
-
-    n11 = cosRoll * cosHdg + sinRoll * sinPitch * sinHdg
-    n12 = -cosRoll * sinHdg + sinRoll * sinPitch * cosHdg
-    n13 = -sinRoll * cosPitch
-
-    n21 = cosPitch * sinHdg
-    n22 = cosPitch * cosHdg
-    n23 = sinPitch
-
-    n31 = cosRoll * cosHdg - cosRoll * sinPitch * sinHdg
-    n32 = -sinRoll * sinHdg - cosRoll * sinPitch * cosHdg
-    n33 = cosRoll * cosPitch
+    mr31 = -sinRoll * cosHdg - cosRoll * sinPitch * sinHdg
+    mr32 = sinRoll * sinHdg - cosRoll * sinPitch * cosHdg
+    mr33 = cosRoll * cosPitch
 
     # Compute unit vector in earth coords
 
-    x_a = n11 * xx + n12 * yy + n13 * zz
-    y_a = n21 * xx + n22 * yy + n23 * zz
-    z_a = n31 * xx + n32 * yy + n33 * zz
+    x_a = mr11 * xx + mr12 * yy + mr13 * zz
+    y_a = mr21 * xx + mr22 * yy + mr23 * zz
+    z_a = mr31 * xx + mr32 * yy + mr33 * zz
 
     # compute rot and tilt
 
