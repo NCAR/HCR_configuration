@@ -2,7 +2,7 @@
 
 #===========================================================================
 #
-# Produce plots for OTREC RF09 data
+# Compute el/az for Yprime radar
 #
 #===========================================================================
 
@@ -46,12 +46,16 @@ def main():
                       help='Desired tilt angle (deg)')
     parser.add_option('--rot',
                       dest='rot',
-                      default=-90.0,
+                      default=90.0,
                       help='Desired rotation angle (deg)')
     parser.add_option('--drift',
                       dest='drift',
                       default=0.0,
                       help='Desired drift angle (deg)')
+    parser.add_option('--hdg',
+                      dest='hdg',
+                      default=45.0,
+                      help='Desired hdg angle (deg)')
     parser.add_option('--pitchMin',
                       dest='pitchMin',
                       default=-2.0,
@@ -79,12 +83,13 @@ def main():
     
     (options, args) = parser.parse_args()
 
-    global _tilt, _rot, _drift
+    global _tilt, _rot, _hdg, _drift
     global _pitchMin, _pitchMax, _pitchDelta
     global _rollMin, _rollMax, _rollDelta
 
     _tilt = float(options.tilt)
     _rot = float(options.rot)
+    _hdg = float(options.hdg)
     _drift = float(options.drift)
 
     _pitchMin = float(options.pitchMin)
@@ -95,16 +100,17 @@ def main():
     _rollMax = float(options.rollMax)
     _rollDelta = float(options.rollDelta)
 
-    if (options.debug == True):
-        print("#  tilt: ", _tilt, file=sys.stderr)
-        print("#  rot: ", _rot, file=sys.stderr)
-        print("#  drift: ", _drift, file=sys.stderr)
-        print("#  pitchMin: ", _pitchMin, file=sys.stderr)
-        print("#  pitchMax: ", _pitchMax, file=sys.stderr)
-        print("#  pitchDelta: ", _pitchDelta, file=sys.stderr)
-        print("#  rollMin: ", _rollMin, file=sys.stderr)
-        print("#  rollMax: ", _rollMax, file=sys.stderr)
-        print("#  rollDelta: ", _rollDelta, file=sys.stderr)
+    print("###############################", file=sys.stderr)
+    print("#  tilt: ", _tilt, file=sys.stderr)
+    print("#  rot: ", _rot, file=sys.stderr)
+    print("#  drift: ", _drift, file=sys.stderr)
+    print("#  hdg: ", _hdg, file=sys.stderr)
+    print("#  pitchMin: ", _pitchMin, file=sys.stderr)
+    print("#  pitchMax: ", _pitchMax, file=sys.stderr)
+    print("#  pitchDelta: ", _pitchDelta, file=sys.stderr)
+    print("#  rollMin: ", _rollMin, file=sys.stderr)
+    print("#  rollMax: ", _rollMax, file=sys.stderr)
+    print("#  rollDelta: ", _rollDelta, file=sys.stderr)
 
     # compute angles, and write them out
 
@@ -130,92 +136,22 @@ def computeAngles():
     print("# ",
           '{:>10} '.format('pitch'),
           '{:>10} '.format('roll'),
-          '{:>10} '.format('reflRot'),
-          '{:>10} '.format('reflTilt'),
+          '{:>10} '.format('el'),
+          '{:>10} '.format('az'),
           file=sys.stderr)
 
     for pitch in np.arange(_pitchMin, _pitchMax, _pitchDelta):
 
         for roll in np.arange(_rollMin, _rollMax, _rollDelta):
 
-            reflRot, reflTilt = computeReflAngles(pitch, roll)
+            el, az = computeAzElYPrime(pitch, roll, _hdg, _rot, _tilt)
 
             print("  ",
                   '{:10.2f} '.format(pitch),
                   '{:10.2f} '.format(roll),
-                  '{:10.2f} '.format(reflRot),
-                  '{:10.2f} '.format(reflTilt),
+                  '{:10.2f} '.format(el),
+                  '{:10.2f} '.format(az),
                   file=sys.stderr)
-
-########################################################################
-# compute reflector angles
-# Returns rotation and tilt for the reflector
-# This is from MotionControl.cpp.
-
-def computeReflAngles(pitch, roll):
-
-    sinPitch = math.sin(math.radians(pitch))
-    cosPitch = math.cos(math.radians(pitch))
-
-    sinRoll = math.sin(math.radians(roll))
-    cosRoll = math.cos(math.radians(roll))
-
-    sinDrift = math.sin(math.radians(_drift))
-    cosDrift = math.cos(math.radians(_drift))
-
-    # Track relative coordinates - desired beam position
-
-    sinRot = math.sin(math.radians(_rot))
-    cosRot = math.cos(math.radians(_rot))
-
-    sinTilt = math.sin(math.radians(_tilt))
-    cosTilt = math.cos(math.radians(_tilt))
-
-    # Convert to track relative Cartesian coordinates
-
-    x_t = cosTilt * sinRot
-    y_t = sinTilt
-    z_t = cosTilt * cosRot
-
-    #print("#  x_t, y_t, z_t: ", x_t, y_t, z_t, file=sys.stderr)
-
-    # Convert to pod relative Cartesian coordinates - adjusted beam position
-
-    x_a = \
-          x_t * (cosDrift * cosRoll - sinDrift * sinPitch * sinRoll) + \
-          y_t * (sinDrift + cosDrift * sinPitch * sinRoll) + \
-          -z_t * cosPitch * sinRoll
-
-    y_a = \
-          -x_t * sinDrift * cosPitch + \
-          y_t * cosDrift * cosPitch + \
-          z_t * sinPitch
-
-    z_a = \
-          x_t * (cosDrift * sinRoll + sinDrift * sinPitch * sinRoll) + \
-          y_t * (sinDrift * sinRoll - cosDrift * sinPitch * cosRoll) + \
-          z_t * cosPitch * cosRoll
-
-    #print("#  x_a, y_a, z_a: ", x_a, y_a, z_a, file=sys.stderr)
-
-    # Convert from pod relative Cartesian coordinates to polar coordinates
-    # and save the adjusted rotation and tilt angles.
-
-    reflTilt = math.degrees(math.asin(y_a))
-
-    # KLUGE: The algorithm above isn't really right. As compensation for now,
-    # just change the sign of the corrected tilt if the desired rotation angle
-    # rots downward, i.e., if its cosine is less than zero.
-    if (cosRot < 0.0):
-        reflTilt = reflTilt * -1
-
-    # rotation needs to be in the range of 0-360
-
-    reflRot = math.degrees(math.atan2(x_a, z_a))
-    #if (reflRot < 0):
-    #    reflRot = reflRot + 360.0
-
-    return (reflRot, reflTilt)
 
 ########################################################################
 # compute (elevation, azimuth) from rotation and tilt, attitude
@@ -272,22 +208,23 @@ def computeAzElYPrime(pitch, roll, hdg, rot, tilt):
     az = math.degrees(math.atan2(xx, yy))
     el = math.degrees(math.asin(zz))
 
-    print("#  pitch: ", pitch, file=sys.stderr)
-    print("#  roll: ", roll, file=sys.stderr)
-    print("#  hdg: ", hdg, file=sys.stderr)
-    print("#  rot: ", rot, file=sys.stderr)
-    print("#  tilt: ", tilt, file=sys.stderr)
+    if (options.debug):
+        print("#  pitch: ", pitch, file=sys.stderr)
+        print("#  roll: ", roll, file=sys.stderr)
+        print("#  hdg: ", hdg, file=sys.stderr)
+        print("#  rot: ", rot, file=sys.stderr)
+        print("#  tilt: ", tilt, file=sys.stderr)
 
-    print("#  x_a: ", x_a, file=sys.stderr)
-    print("#  y_a: ", y_a, file=sys.stderr)
-    print("#  z_a: ", z_a, file=sys.stderr)
+        print("#  x_a: ", x_a, file=sys.stderr)
+        print("#  y_a: ", y_a, file=sys.stderr)
+        print("#  z_a: ", z_a, file=sys.stderr)
 
-    print("#  xx: ", x_a, file=sys.stderr)
-    print("#  yy: ", yy, file=sys.stderr)
-    print("#  zz: ", zz, file=sys.stderr)
+        print("#  xx: ", x_a, file=sys.stderr)
+        print("#  yy: ", yy, file=sys.stderr)
+        print("#  zz: ", zz, file=sys.stderr)
 
-    print("#  az: ", az, file=sys.stderr)
-    print("#  el: ", el, file=sys.stderr)
+        print("#  az: ", az, file=sys.stderr)
+        print("#  el: ", el, file=sys.stderr)
 
     return (el, az)
 
