@@ -146,17 +146,17 @@ def computeAngles():
 
         for roll in np.arange(_rollMin, _rollMax, _rollDelta):
 
-            el, az = computeAzElYPrime(pitch, roll, _hdg, _rot, _tilt)
+            el, az = computeAzElYPrimeHdg(pitch, roll, _hdg, _rot, _tilt)
 
-            rot, tilt = computeRotTiltYPrime(pitch, roll, _hdg, el, az)
+            rot, tilt = computeRotTiltYPrimeHdg(pitch, roll, _hdg, el, az)
 
             print("  ",
-                  '{:10.2f} '.format(pitch),
-                  '{:10.2f} '.format(roll),
-                  '{:10.2f} '.format(el),
-                  '{:10.2f} '.format(az),
-                  '{:10.2f} '.format(rot),
-                  '{:10.2f} '.format(tilt),
+                  '{:10.4f} '.format(pitch),
+                  '{:10.4f} '.format(roll),
+                  '{:10.4f} '.format(el),
+                  '{:10.4f} '.format(az),
+                  '{:10.4f} '.format(rot),
+                  '{:10.4f} '.format(tilt),
                   file=sys.stderr)
 
 ########################################################################
@@ -205,9 +205,9 @@ def computeAzElYPrime(pitch, roll, hdg, rot, tilt):
 
     # Compute unit vector in earth coords
 
-    xx = m11 * x_a + m12 * y_a * m13 * z_a
-    yy = m21 * x_a + m22 * y_a * m23 * z_a
-    zz = m31 * x_a + m32 * y_a * m33 * z_a
+    xx = m11 * x_a + m12 * y_a + m13 * z_a
+    yy = m21 * x_a + m22 * y_a + m23 * z_a
+    zz = m31 * x_a + m32 * y_a + m33 * z_a
 
     # compute az and el
 
@@ -215,22 +215,23 @@ def computeAzElYPrime(pitch, roll, hdg, rot, tilt):
     el = math.degrees(math.asin(zz))
 
     if (options.debug):
-        print("#  pitch: ", pitch, file=sys.stderr)
-        print("#  roll: ", roll, file=sys.stderr)
-        print("#  hdg: ", hdg, file=sys.stderr)
-        print("#  rot: ", rot, file=sys.stderr)
-        print("#  tilt: ", tilt, file=sys.stderr)
+        print("####################################", file=sys.stderr)
+        print("#  pitch: ", '{:10.4f} '.format(pitch), file=sys.stderr)
+        print("#  roll : ", '{:10.4f} '.format(roll), file=sys.stderr)
+        print("#  hdg  : ", '{:10.4f} '.format(hdg), file=sys.stderr)
+        print("#  rot  : ", '{:10.4f} '.format(rot), file=sys.stderr)
+        print("#  tilt : ", '{:10.4f} '.format(tilt), file=sys.stderr)
 
-        print("#  x_a: ", x_a, file=sys.stderr)
-        print("#  y_a: ", y_a, file=sys.stderr)
-        print("#  z_a: ", z_a, file=sys.stderr)
+        print("#  x_a  : ", '{:10.4f} '.format(x_a), file=sys.stderr)
+        print("#  y_a  : ", '{:10.4f} '.format(y_a), file=sys.stderr)
+        print("#  z_a  : ", '{:10.4f} '.format(z_a), file=sys.stderr)
 
-        print("#  xx: ", x_a, file=sys.stderr)
-        print("#  yy: ", yy, file=sys.stderr)
-        print("#  zz: ", zz, file=sys.stderr)
+        print("#  xx   : ", '{:10.4f} '.format(xx), file=sys.stderr)
+        print("#  yy   : ", '{:10.4f} '.format(yy), file=sys.stderr)
+        print("#  zz   : ", '{:10.4f} '.format(zz), file=sys.stderr)
 
-        print("#  az: ", az, file=sys.stderr)
-        print("#  el: ", el, file=sys.stderr)
+        print("#  az   : ", '{:10.4f} '.format(az), file=sys.stderr)
+        print("#  el   : ", '{:10.4f} '.format(el), file=sys.stderr)
 
     return (el, az)
 
@@ -278,11 +279,23 @@ def computeRotTiltYPrime(pitch, roll, hdg, el, az):
     n32 = -sinRoll * sinHdg - cosRoll * sinPitch * cosHdg
     n33 = cosRoll * cosPitch
 
+    n11 = cosRoll * cosHdg + sinRoll * sinPitch * sinHdg
+    n12 = -cosRoll * sinHdg + sinRoll * sinPitch * cosHdg
+    n13 = -sinRoll * cosPitch
+
+    n21 = cosPitch * sinHdg
+    n22 = cosPitch * cosHdg
+    n23 = sinPitch
+
+    n31 = cosRoll * cosHdg - cosRoll * sinPitch * sinHdg
+    n32 = -sinRoll * sinHdg - cosRoll * sinPitch * cosHdg
+    n33 = cosRoll * cosPitch
+
     # Compute unit vector in earth coords
 
-    x_a = n11 * xx + n12 * yy * n13 * zz
-    y_a = n21 * xx + n22 * yy * n23 * zz
-    z_a = n31 * xx + n32 * yy * n33 * zz
+    x_a = n11 * xx + n12 * yy + n13 * zz
+    y_a = n21 * xx + n22 * yy + n23 * zz
+    z_a = n31 * xx + n32 * yy + n33 * zz
 
     # compute rot and tilt
 
@@ -290,14 +303,515 @@ def computeRotTiltYPrime(pitch, roll, hdg, el, az):
     rot = math.degrees(math.atan2(x_a, z_a))
 
     if (options.debug):
-        print("#  pitch: ", pitch, file=sys.stderr)
-        print("#  roll: ", roll, file=sys.stderr)
-        print("#  hdg: ", hdg, file=sys.stderr)
-        print("#  az: ", az, file=sys.stderr)
-        print("#  el: ", el, file=sys.stderr)
+        print("####################################", file=sys.stderr)
+        print("#  pitch: ", '{:10.4f} '.format(pitch), file=sys.stderr)
+        print("#  roll : ", '{:10.4f} '.format(roll), file=sys.stderr)
+        print("#  hdg  : ", '{:10.4f} '.format(hdg), file=sys.stderr)
+        print("#  rot  : ", '{:10.4f} '.format(rot), file=sys.stderr)
+        print("#  tilt : ", '{:10.4f} '.format(tilt), file=sys.stderr)
 
-        print("#  rot: ", rot, file=sys.stderr)
-        print("#  tilt: ", tilt, file=sys.stderr)
+        print("#  x_a  : ", '{:10.4f} '.format(x_a), file=sys.stderr)
+        print("#  y_a  : ", '{:10.4f} '.format(y_a), file=sys.stderr)
+        print("#  z_a  : ", '{:10.4f} '.format(z_a), file=sys.stderr)
+
+        print("#  xx   : ", '{:10.4f} '.format(xx), file=sys.stderr)
+        print("#  yy   : ", '{:10.4f} '.format(yy), file=sys.stderr)
+        print("#  zz   : ", '{:10.4f} '.format(zz), file=sys.stderr)
+
+        print("#  az   : ", '{:10.4f} '.format(az), file=sys.stderr)
+        print("#  el   : ", '{:10.4f} '.format(el), file=sys.stderr)
+
+    return (rot, tilt)
+
+########################################################################
+# compute (elevation, azimuth) from rotation and tilt, attitude
+# For a Y-prime radar e.g. HCR
+
+def computeAzElYPrimeRoll(pitch, roll, hdg, rot, tilt):
+
+    # precompute sin/cos
+    
+    sinPitch = math.sin(math.radians(pitch))
+    cosPitch = math.cos(math.radians(pitch))
+
+    sinRoll = math.sin(math.radians(roll))
+    cosRoll = math.cos(math.radians(roll))
+
+    sinHdg = math.sin(math.radians(hdg))
+    cosHdg = math.cos(math.radians(hdg))
+
+    sinRot = math.sin(math.radians(rot))
+    cosRot = math.cos(math.radians(rot))
+    
+    sinTilt = math.sin(math.radians(tilt))
+    cosTilt = math.cos(math.radians(tilt))
+
+    # compute unit vector relative to aircraft
+
+    x_a = sinRot * cosTilt
+    y_a = sinTilt
+    z_a = cosRot * cosTilt
+    len_a = math.sqrt(x_a * x_a + y_a * y_a + z_a * z_a)
+
+    # compute matrix elements after multiplication
+    # for 3 axis transformation
+
+    mf11 = cosRoll
+    mf12 = 0.0
+    mf13 = sinRoll
+
+    mf21 = 0.0
+    mf22 = 1.0
+    mf23 = 0.0
+
+    mf31 = -sinRoll
+    mf32 = 0.0
+    mf33 = cosRoll
+
+    # Compute unit vector in earth coords
+
+    xx = mf11 * x_a + mf12 * y_a + mf13 * z_a
+    yy = mf21 * x_a + mf22 * y_a + mf23 * z_a
+    zz = mf31 * x_a + mf32 * y_a + mf33 * z_a
+
+    len = math.sqrt(xx * xx + yy * yy + zz * zz)
+
+    # compute az and el
+
+    az = math.degrees(math.atan2(xx, yy))
+    el = math.degrees(math.asin(zz))
+
+    if (options.debug):
+        print("####################################", file=sys.stderr)
+        print("#  pitch: ", '{:10.4f} '.format(pitch), file=sys.stderr)
+        print("#  roll : ", '{:10.4f} '.format(roll), file=sys.stderr)
+        print("#  hdg  : ", '{:10.4f} '.format(hdg), file=sys.stderr)
+        print("#  rot  : ", '{:10.4f} '.format(rot), file=sys.stderr)
+        print("#  tilt : ", '{:10.4f} '.format(tilt), file=sys.stderr)
+
+        print("#  sinR : ", '{:10.4f} '.format(sinRoll), file=sys.stderr)
+        print("#  cosR : ", '{:10.4f} '.format(cosRoll), file=sys.stderr)
+
+        print("#  x_a  : ", '{:10.4f} '.format(x_a), file=sys.stderr)
+        print("#  y_a  : ", '{:10.4f} '.format(y_a), file=sys.stderr)
+        print("#  z_a  : ", '{:10.4f} '.format(z_a), file=sys.stderr)
+        print("#  len_a: ", '{:10.4f} '.format(len_a), file=sys.stderr)
+
+        print("#  xx   : ", '{:10.4f} '.format(xx), file=sys.stderr)
+        print("#  yy   : ", '{:10.4f} '.format(yy), file=sys.stderr)
+        print("#  zz   : ", '{:10.4f} '.format(zz), file=sys.stderr)
+        print("#  len  : ", '{:10.4f} '.format(len), file=sys.stderr)
+
+        print("#  az   : ", '{:10.4f} '.format(az), file=sys.stderr)
+        print("#  el   : ", '{:10.4f} '.format(el), file=sys.stderr)
+
+    return (el, az)
+
+########################################################################
+# compute (elevation, azimuth) from rotation and tilt, attitude
+# For a Y-prime radar e.g. HCR
+
+def computeRotTiltYPrimeRoll(pitch, roll, hdg, el, az):
+
+    # precompute sin/cos
+    
+    sinPitch = math.sin(math.radians(pitch))
+    cosPitch = math.cos(math.radians(pitch))
+
+    sinRoll = math.sin(math.radians(roll))
+    cosRoll = math.cos(math.radians(roll))
+
+    sinHdg = math.sin(math.radians(hdg))
+    cosHdg = math.cos(math.radians(hdg))
+
+    sinEl = math.sin(math.radians(el))
+    cosEl = math.cos(math.radians(el))
+    
+    sinAz = math.sin(math.radians(az))
+    cosAz = math.cos(math.radians(az))
+
+    # compute unit vector relative to aircraft
+
+    xx = sinAz * cosEl
+    yy = cosAz * cosEl
+    zz = sinEl
+    len = math.sqrt(xx * xx + yy *yy + zz * zz)
+
+    # compute matrix elements after multiplication
+    # for 3 axis transformation
+
+    mr11 = cosRoll
+    mr12 = 0.0
+    mr13 = -sinRoll
+
+    mr21 = 0.0
+    mr22 = 1.0
+    mr23 = 0.0
+
+    mr31 = sinRoll
+    mr32 = 0.0
+    mr33 = cosRoll
+
+    # Compute unit vector in earth coords
+
+    x_a = mr11 * xx + mr12 * yy + mr13 * zz
+    y_a = mr21 * xx + mr22 * yy + mr23 * zz
+    z_a = mr31 * xx + mr32 * yy + mr33 * zz
+    len_a = math.sqrt(x_a * x_a + y_a * y_a + z_a * z_a)
+
+    # compute rot and tilt
+
+    tilt = math.degrees(math.asin(y_a))
+    rot = math.degrees(math.atan2(x_a, z_a))
+
+    if (options.debug):
+        print("####################################", file=sys.stderr)
+        print("#  pitch: ", '{:10.4f} '.format(pitch), file=sys.stderr)
+        print("#  roll : ", '{:10.4f} '.format(roll), file=sys.stderr)
+        print("#  hdg  : ", '{:10.4f} '.format(hdg), file=sys.stderr)
+        print("#  rot  : ", '{:10.4f} '.format(rot), file=sys.stderr)
+        print("#  tilt : ", '{:10.4f} '.format(tilt), file=sys.stderr)
+
+        print("#  sinR : ", '{:10.4f} '.format(sinRoll), file=sys.stderr)
+        print("#  cosR : ", '{:10.4f} '.format(cosRoll), file=sys.stderr)
+
+        print("#  xx   : ", '{:10.4f} '.format(xx), file=sys.stderr)
+        print("#  yy   : ", '{:10.4f} '.format(yy), file=sys.stderr)
+        print("#  zz   : ", '{:10.4f} '.format(zz), file=sys.stderr)
+        print("#  len  : ", '{:10.4f} '.format(len), file=sys.stderr)
+
+        print("#  x_a  : ", '{:10.4f} '.format(x_a), file=sys.stderr)
+        print("#  y_a  : ", '{:10.4f} '.format(y_a), file=sys.stderr)
+        print("#  z_a  : ", '{:10.4f} '.format(z_a), file=sys.stderr)
+        print("#  len_a: ", '{:10.4f} '.format(len_a), file=sys.stderr)
+
+        print("#  az   : ", '{:10.4f} '.format(az), file=sys.stderr)
+        print("#  el   : ", '{:10.4f} '.format(el), file=sys.stderr)
+
+    return (rot, tilt)
+
+########################################################################
+# compute (elevation, azimuth) from rotation and tilt, attitude
+# For a Y-prime radar e.g. HCR
+
+def computeAzElYPrimePitch(pitch, roll, hdg, rot, tilt):
+
+    # precompute sin/cos
+    
+    sinPitch = math.sin(math.radians(pitch))
+    cosPitch = math.cos(math.radians(pitch))
+
+    sinRoll = math.sin(math.radians(roll))
+    cosRoll = math.cos(math.radians(roll))
+
+    sinHdg = math.sin(math.radians(hdg))
+    cosHdg = math.cos(math.radians(hdg))
+
+    sinRot = math.sin(math.radians(rot))
+    cosRot = math.cos(math.radians(rot))
+    
+    sinTilt = math.sin(math.radians(tilt))
+    cosTilt = math.cos(math.radians(tilt))
+
+    # compute unit vector relative to aircraft
+
+    x_a = sinRot * cosTilt
+    y_a = sinTilt
+    z_a = cosRot * cosTilt
+
+    # compute matrix elements after multiplication
+    # for 3 axis transformation
+
+    mf11 = 1.0
+    mf12 = 0.0
+    mf13 = 0.0
+
+    mf21 = 0.0
+    mf22 = cosPitch
+    mf23 = -sinPitch
+
+    mf31 = 0.0
+    mf32 = sinPitch
+    mf33 = cosPitch
+
+    # Compute unit vector in earth coords
+
+    xx = mf11 * x_a + mf12 * y_a + mf13 * z_a
+    yy = mf21 * x_a + mf22 * y_a + mf23 * z_a
+    zz = mf31 * x_a + mf32 * y_a + mf33 * z_a
+
+    # compute az and el
+
+    az = math.degrees(math.atan2(xx, yy))
+    el = math.degrees(math.asin(zz))
+
+    if (options.debug):
+        print("####################################", file=sys.stderr)
+        print("#  pitch: ", '{:10.4f} '.format(pitch), file=sys.stderr)
+        print("#  roll : ", '{:10.4f} '.format(roll), file=sys.stderr)
+        print("#  hdg  : ", '{:10.4f} '.format(hdg), file=sys.stderr)
+        print("#  rot  : ", '{:10.4f} '.format(rot), file=sys.stderr)
+        print("#  tilt : ", '{:10.4f} '.format(tilt), file=sys.stderr)
+
+        print("#  sinR : ", '{:10.4f} '.format(sinRoll), file=sys.stderr)
+        print("#  cosR : ", '{:10.4f} '.format(cosRoll), file=sys.stderr)
+
+        print("#  x_a  : ", '{:10.4f} '.format(x_a), file=sys.stderr)
+        print("#  y_a  : ", '{:10.4f} '.format(y_a), file=sys.stderr)
+        print("#  z_a  : ", '{:10.4f} '.format(z_a), file=sys.stderr)
+
+        print("#  xx   : ", '{:10.4f} '.format(xx), file=sys.stderr)
+        print("#  yy   : ", '{:10.4f} '.format(yy), file=sys.stderr)
+        print("#  zz   : ", '{:10.4f} '.format(zz), file=sys.stderr)
+
+        print("#  az   : ", '{:10.4f} '.format(az), file=sys.stderr)
+        print("#  el   : ", '{:10.4f} '.format(el), file=sys.stderr)
+
+    return (el, az)
+
+########################################################################
+# compute (elevation, azimuth) from rotation and tilt, attitude
+# For a Y-prime radar e.g. HCR
+
+def computeRotTiltYPrimePitch(pitch, roll, hdg, el, az):
+
+    # precompute sin/cos
+    
+    sinPitch = math.sin(math.radians(pitch))
+    cosPitch = math.cos(math.radians(pitch))
+
+    sinRoll = math.sin(math.radians(roll))
+    cosRoll = math.cos(math.radians(roll))
+
+    sinHdg = math.sin(math.radians(hdg))
+    cosHdg = math.cos(math.radians(hdg))
+
+    sinEl = math.sin(math.radians(el))
+    cosEl = math.cos(math.radians(el))
+    
+    sinAz = math.sin(math.radians(az))
+    cosAz = math.cos(math.radians(az))
+
+    # compute unit vector relative to aircraft
+
+    xx = sinAz * cosEl
+    yy = cosAz * cosEl
+    zz = sinEl
+
+    # compute matrix elements after multiplication
+    # for 3 axis transformation
+
+    mr11 = 1.0
+    mr12 = 0.0
+    mr13 = 0.0
+
+    mr21 = 0.0
+    mr22 = cosPitch
+    mr23 = sinPitch
+
+    mr31 = 0.0
+    mr32 = -sinPitch
+    mr33 = cosPitch
+
+    # Compute unit vector in earth coords
+
+    x_a = mr11 * xx + mr12 * yy + mr13 * zz
+    y_a = mr21 * xx + mr22 * yy + mr23 * zz
+    z_a = mr31 * xx + mr32 * yy + mr33 * zz
+
+    # compute rot and tilt
+
+    tilt = math.degrees(math.asin(y_a))
+    rot = math.degrees(math.atan2(x_a, z_a))
+
+    if (options.debug):
+        print("####################################", file=sys.stderr)
+        print("#  pitch: ", '{:10.4f} '.format(pitch), file=sys.stderr)
+        print("#  roll : ", '{:10.4f} '.format(roll), file=sys.stderr)
+        print("#  hdg  : ", '{:10.4f} '.format(hdg), file=sys.stderr)
+        print("#  rot  : ", '{:10.4f} '.format(rot), file=sys.stderr)
+        print("#  tilt : ", '{:10.4f} '.format(tilt), file=sys.stderr)
+
+        print("#  sinR : ", '{:10.4f} '.format(sinRoll), file=sys.stderr)
+        print("#  cosR : ", '{:10.4f} '.format(cosRoll), file=sys.stderr)
+
+        print("#  xx   : ", '{:10.4f} '.format(xx), file=sys.stderr)
+        print("#  yy   : ", '{:10.4f} '.format(yy), file=sys.stderr)
+        print("#  zz   : ", '{:10.4f} '.format(zz), file=sys.stderr)
+
+        print("#  x_a  : ", '{:10.4f} '.format(x_a), file=sys.stderr)
+        print("#  y_a  : ", '{:10.4f} '.format(y_a), file=sys.stderr)
+        print("#  z_a  : ", '{:10.4f} '.format(z_a), file=sys.stderr)
+
+        print("#  az   : ", '{:10.4f} '.format(az), file=sys.stderr)
+        print("#  el   : ", '{:10.4f} '.format(el), file=sys.stderr)
+
+    return (rot, tilt)
+
+########################################################################
+# compute (elevation, azimuth) from rotation and tilt, attitude
+# For a Y-prime radar e.g. HCR
+
+def computeAzElYPrimeHdg(pitch, roll, hdg, rot, tilt):
+
+    # precompute sin/cos
+    
+    sinPitch = math.sin(math.radians(pitch))
+    cosPitch = math.cos(math.radians(pitch))
+
+    sinRoll = math.sin(math.radians(roll))
+    cosRoll = math.cos(math.radians(roll))
+
+    sinHdg = math.sin(math.radians(hdg))
+    cosHdg = math.cos(math.radians(hdg))
+
+    sinRot = math.sin(math.radians(rot))
+    cosRot = math.cos(math.radians(rot))
+    
+    sinTilt = math.sin(math.radians(tilt))
+    cosTilt = math.cos(math.radians(tilt))
+
+    # compute unit vector relative to aircraft
+
+    x_a = sinRot * cosTilt
+    y_a = sinTilt
+    z_a = cosRot * cosTilt
+    len_a = math.sqrt(x_a * x_a + y_a * y_a + z_a * z_a)
+
+    # compute matrix elements after multiplication
+    # for 3 axis transformation
+
+    mf11 = cosHdg
+    mf12 = sinHdg
+    mf13 = 0.0
+
+    mf21 = -sinHdg
+    mf22 = cosHdg
+    mf23 = 0.0
+
+    mf31 = 0.0
+    mf32 = 0.0
+    mf33 = 1.0
+
+    # Compute unit vector in earth coords
+
+    xx = mf11 * x_a + mf12 * y_a + mf13 * z_a
+    yy = mf21 * x_a + mf22 * y_a + mf23 * z_a
+    zz = mf31 * x_a + mf32 * y_a + mf33 * z_a
+
+    len = math.sqrt(xx * xx + yy * yy + zz * zz)
+
+    # compute az and el
+
+    az = math.degrees(math.atan2(xx, yy))
+    el = math.degrees(math.asin(zz))
+
+    if (options.debug):
+        print("####################################", file=sys.stderr)
+        print("#  pitch: ", '{:10.4f} '.format(pitch), file=sys.stderr)
+        print("#  roll : ", '{:10.4f} '.format(roll), file=sys.stderr)
+        print("#  hdg  : ", '{:10.4f} '.format(hdg), file=sys.stderr)
+        print("#  rot  : ", '{:10.4f} '.format(rot), file=sys.stderr)
+        print("#  tilt : ", '{:10.4f} '.format(tilt), file=sys.stderr)
+
+        print("#  sinR : ", '{:10.4f} '.format(sinRoll), file=sys.stderr)
+        print("#  cosR : ", '{:10.4f} '.format(cosRoll), file=sys.stderr)
+
+        print("#  x_a  : ", '{:10.4f} '.format(x_a), file=sys.stderr)
+        print("#  y_a  : ", '{:10.4f} '.format(y_a), file=sys.stderr)
+        print("#  z_a  : ", '{:10.4f} '.format(z_a), file=sys.stderr)
+        print("#  len_a: ", '{:10.4f} '.format(len_a), file=sys.stderr)
+
+        print("#  xx   : ", '{:10.4f} '.format(xx), file=sys.stderr)
+        print("#  yy   : ", '{:10.4f} '.format(yy), file=sys.stderr)
+        print("#  zz   : ", '{:10.4f} '.format(zz), file=sys.stderr)
+        print("#  len  : ", '{:10.4f} '.format(len), file=sys.stderr)
+
+        print("#  az   : ", '{:10.4f} '.format(az), file=sys.stderr)
+        print("#  el   : ", '{:10.4f} '.format(el), file=sys.stderr)
+
+    return (el, az)
+
+########################################################################
+# compute (elevation, azimuth) from rotation and tilt, attitude
+# For a Y-prime radar e.g. HCR
+
+def computeRotTiltYPrimeHdg(pitch, roll, hdg, el, az):
+
+    # precompute sin/cos
+    
+    sinPitch = math.sin(math.radians(pitch))
+    cosPitch = math.cos(math.radians(pitch))
+
+    sinRoll = math.sin(math.radians(roll))
+    cosRoll = math.cos(math.radians(roll))
+
+    sinHdg = math.sin(math.radians(hdg))
+    cosHdg = math.cos(math.radians(hdg))
+
+    sinEl = math.sin(math.radians(el))
+    cosEl = math.cos(math.radians(el))
+    
+    sinAz = math.sin(math.radians(az))
+    cosAz = math.cos(math.radians(az))
+
+    # compute unit vector relative to aircraft
+
+    xx = sinAz * cosEl
+    yy = cosAz * cosEl
+    zz = sinEl
+    len = math.sqrt(xx * xx + yy *yy + zz * zz)
+
+    # compute matrix elements after multiplication
+    # for 3 axis transformation
+
+    mr11 = cosHdg
+    mr12 = -sinHdg
+    mr13 = 0.0
+
+    mr21 = sinHdg
+    mr22 = cosHdg
+    mr23 = 0.0
+
+    mr31 = 0.0
+    mr32 = 0.0
+    mr33 = 1.0
+
+    # Compute unit vector in earth coords
+
+    x_a = mr11 * xx + mr12 * yy + mr13 * zz
+    y_a = mr21 * xx + mr22 * yy + mr23 * zz
+    z_a = mr31 * xx + mr32 * yy + mr33 * zz
+    len_a = math.sqrt(x_a * x_a + y_a * y_a + z_a * z_a)
+
+    # compute rot and tilt
+
+    tilt = math.degrees(math.asin(y_a))
+    rot = math.degrees(math.atan2(x_a, z_a))
+
+    if (options.debug):
+        print("####################################", file=sys.stderr)
+        print("#  pitch: ", '{:10.4f} '.format(pitch), file=sys.stderr)
+        print("#  roll : ", '{:10.4f} '.format(roll), file=sys.stderr)
+        print("#  hdg  : ", '{:10.4f} '.format(hdg), file=sys.stderr)
+        print("#  rot  : ", '{:10.4f} '.format(rot), file=sys.stderr)
+        print("#  tilt : ", '{:10.4f} '.format(tilt), file=sys.stderr)
+
+        print("#  sinR : ", '{:10.4f} '.format(sinRoll), file=sys.stderr)
+        print("#  cosR : ", '{:10.4f} '.format(cosRoll), file=sys.stderr)
+
+        print("#  xx   : ", '{:10.4f} '.format(xx), file=sys.stderr)
+        print("#  yy   : ", '{:10.4f} '.format(yy), file=sys.stderr)
+        print("#  zz   : ", '{:10.4f} '.format(zz), file=sys.stderr)
+        print("#  len  : ", '{:10.4f} '.format(len), file=sys.stderr)
+
+        print("#  x_a  : ", '{:10.4f} '.format(x_a), file=sys.stderr)
+        print("#  y_a  : ", '{:10.4f} '.format(y_a), file=sys.stderr)
+        print("#  z_a  : ", '{:10.4f} '.format(z_a), file=sys.stderr)
+        print("#  len_a: ", '{:10.4f} '.format(len_a), file=sys.stderr)
+
+        print("#  az   : ", '{:10.4f} '.format(az), file=sys.stderr)
+        print("#  el   : ", '{:10.4f} '.format(el), file=sys.stderr)
 
     return (rot, tilt)
 
