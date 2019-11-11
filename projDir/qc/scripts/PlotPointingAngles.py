@@ -95,16 +95,15 @@ def main():
     _rollMax = float(options.rollMax)
     _rollDelta = float(options.rollDelta)
 
-    if (options.debug == True):
-        print("#  tilt: ", _tilt, file=sys.stderr)
-        print("#  rot: ", _rot, file=sys.stderr)
-        print("#  drift: ", _drift, file=sys.stderr)
-        print("#  pitchMin: ", _pitchMin, file=sys.stderr)
-        print("#  pitchMax: ", _pitchMax, file=sys.stderr)
-        print("#  pitchDelta: ", _pitchDelta, file=sys.stderr)
-        print("#  rollMin: ", _rollMin, file=sys.stderr)
-        print("#  rollMax: ", _rollMax, file=sys.stderr)
-        print("#  rollDelta: ", _rollDelta, file=sys.stderr)
+    print("#  tilt: ", _tilt, file=sys.stderr)
+    print("#  rot: ", _rot, file=sys.stderr)
+    print("#  drift: ", _drift, file=sys.stderr)
+    print("#  pitchMin: ", _pitchMin, file=sys.stderr)
+    print("#  pitchMax: ", _pitchMax, file=sys.stderr)
+    print("#  pitchDelta: ", _pitchDelta, file=sys.stderr)
+    print("#  rollMin: ", _rollMin, file=sys.stderr)
+    print("#  rollMax: ", _rollMax, file=sys.stderr)
+    print("#  rollDelta: ", _rollDelta, file=sys.stderr)
 
     # compute angles, and write them out
 
