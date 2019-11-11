@@ -360,22 +360,39 @@ def computeReflAngles(pitch, roll, drift, rot, tilt):
 
     # Convert to pod relative Cartesian coordinates - adjusted beam position
 
-    x_a = \
-          xx * (cosDrift * cosRoll - sinDrift * sinPitch * sinRoll) + \
-          yy * (sinDrift + cosDrift * sinPitch * sinRoll) + \
-          -zz * cosPitch * sinRoll
+    mr11 = cosDrift * cosRoll - sinDrift * sinPitch * sinRoll
+    mr12 = sinDrift + cosDrift * sinPitch * sinRoll
+    mr13 = -cosPitch * sinRoll
 
-    y_a = \
-          -xx * sinDrift * cosPitch + \
-          yy * cosDrift * cosPitch + \
-          zz * sinPitch
+    mr21 = -sinDrift * cosPitch
+    mr22 = cosDrift * cosPitch
+    mr23 = sinPitch
 
-    z_a = \
-          xx * (cosDrift * sinRoll + sinDrift * sinPitch * sinRoll) + \
-          yy * (sinDrift * sinRoll - cosDrift * sinPitch * cosRoll) + \
-          zz * cosPitch * cosRoll
+    mr31 = cosDrift * sinRoll + sinDrift * sinPitch * sinRoll
+    mr32 = sinDrift * sinRoll - cosDrift * sinPitch * cosRoll
+    mr33 = cosPitch * cosRoll
 
+    x_a = mr11 * xx + mr12 * yy + mr13 * zz
+    y_a = mr21 * xx + mr22 * yy + mr23 * zz
+    z_a = mr31 * xx + mr32 * yy + mr33 * zz
     len_a = math.sqrt(x_a * x_a + y_a * y_a + z_a * z_a)
+
+    # x_a = \
+    #       xx * (cosDrift * cosRoll - sinDrift * sinPitch * sinRoll) + \
+    #       yy * (sinDrift + cosDrift * sinPitch * sinRoll) + \
+    #       -zz * cosPitch * sinRoll
+
+    # y_a = \
+    #       -xx * sinDrift * cosPitch + \
+    #       yy * cosDrift * cosPitch + \
+    #       zz * sinPitch
+
+    # z_a = \
+    #       xx * (cosDrift * sinRoll + sinDrift * sinPitch * sinRoll) + \
+    #       yy * (sinDrift * sinRoll - cosDrift * sinPitch * cosRoll) + \
+    #       zz * cosPitch * cosRoll
+
+    # len_a = math.sqrt(x_a * x_a + y_a * y_a + z_a * z_a)
 
     # Convert from pod relative Cartesian coordinates to polar coordinates
     # and save the adjusted rotation and tilt angles.
