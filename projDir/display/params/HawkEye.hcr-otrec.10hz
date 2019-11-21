@@ -216,7 +216,7 @@ archive_n_scans = 12;
 // Type: string
 //
 
-archive_data_url = "/scr/snow2/rsfdata/projects/otrec/hcr/cfradial/moments/10hz";
+archive_data_url = "$(DATA_DIR)/cfradial/moments/10hz";
 
 ///////////// archive_search_margin_secs //////////////
 //
