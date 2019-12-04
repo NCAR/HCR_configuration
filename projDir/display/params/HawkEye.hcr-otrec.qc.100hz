@@ -96,7 +96,7 @@ instance = "hcr-otrec.qc.100hz";
 //     DSR_FMQ_INPUT
 //
 
-input_mode = IWRF_FMQ_INPUT;
+input_mode = DSR_FMQ_INPUT;
 
 ///////////// input_fmq_url ///////////////////////////
 //
@@ -110,7 +110,7 @@ input_mode = IWRF_FMQ_INPUT;
 // Type: string
 //
 
-input_fmq_url = "/tmp/fmq/qc_moments/100hz/shmem_30100";
+input_fmq_url = "/tmp/fmq/qc_moments/100hz/shmem_00000";
 
 ///////////// seek_to_start_of_fmq ////////////////////
 //
