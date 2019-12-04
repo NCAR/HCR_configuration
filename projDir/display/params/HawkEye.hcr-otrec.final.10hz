@@ -70,7 +70,7 @@ register_with_procmap = FALSE;
 // Type: string
 //
 
-instance = "hcr-addvars.10hz";
+instance = "hcr-final.10hz";
 
 //======================================================================
 //
@@ -214,7 +214,7 @@ archive_time_span_secs = 600;
 // Type: string
 //
 
-archive_data_url = "$(DATA_DIR)/$(QC_VERSION)/cfradial/addvars/10hz";
+archive_data_url = "$(DATA_DIR)/$(QC_VERSION)/cfradial/final/10hz";
 
 //======================================================================
 //
@@ -353,17 +353,26 @@ fields = {
   }
   ,
   {
-    label = "VEL_CORR4",
-    raw_name = "VEL_CORR",
+    label = "VEL",
+    raw_name = "VEL",
     filtered_name = "",
     units = "m/s",
-    color_map = "vel_w_4.colors",
+    color_map = "vel_w_8.colors",
     shortcut = "1"
   }
   ,
   {
-    label = "VEL_CORR8",
+    label = "VEL_CORR",
     raw_name = "VEL_CORR",
+    filtered_name = "",
+    units = "m/s",
+    color_map = "vel_w_8.colors",
+    shortcut = "1"
+  }
+  ,
+  {
+    label = "VEL_RAW",
+    raw_name = "VEL_RAW",
     filtered_name = "",
     units = "m/s",
     color_map = "vel_w_8.colors",
@@ -380,42 +389,6 @@ fields = {
   }
   ,
   {
-    label = "VEL4",
-    raw_name = "VEL",
-    filtered_name = "",
-    units = "m/s",
-    color_map = "vel_w_4.colors",
-    shortcut = "4"
-  }
-  ,
-  {
-    label = "VEL8",
-    raw_name = "VEL",
-    filtered_name = "",
-    units = "m/s",
-    color_map = "vel_w_8.colors",
-    shortcut = "5"
-  }
-  ,
-  {
-    label = "VEL_RAW4",
-    raw_name = "VEL_RAW",
-    filtered_name = "",
-    units = "m/s",
-    color_map = "vel_w_4.colors",
-    shortcut = "6"
-  }
-  ,
-  {
-    label = "VEL_RAW8",
-    raw_name = "VEL_RAW",
-    filtered_name = "",
-    units = "m/s",
-    color_map = "vel_w_8.colors",
-    shortcut = "7"
-  }
-  ,
-  {
     label = "WIDTH",
     raw_name = "WIDTH",
     filtered_name = "",
@@ -425,8 +398,8 @@ fields = {
   }
   ,
   {
-    label = "WIDTH_CORR",
-    raw_name = "WIDTH_CORR",
+    label = "WIDTH_RAW",
+    raw_name = "WIDTH_RAW",
     filtered_name = "",
     units = "m/s",
     color_map = "width_w.colors",
@@ -461,39 +434,12 @@ fields = {
   }
   ,
   {
-    label = "SNRVC",
-    raw_name = "SNRVC",
-    filtered_name = "",
-    units = "dB",
-    color_map = "snr.colors",
-    shortcut = "a"
-  }
-  ,
-  {
-    label = "SNRHX",
-    raw_name = "SNRHX",
-    filtered_name = "",
-    units = "dB",
-    color_map = "snr.colors",
-    shortcut = "b"
-  }
-  ,
-  {
     label = "DBMVC",
     raw_name = "DBMVC",
     filtered_name = "",
     units = "dBm",
     color_map = "dbm.colors",
     shortcut = "c"
-  }
-  ,
-  {
-    label = "DBMHX",
-    raw_name = "DBMHX",
-    filtered_name = "",
-    units = "dBm",
-    color_map = "dbm.colors",
-    shortcut = "d"
   }
   ,
   {
