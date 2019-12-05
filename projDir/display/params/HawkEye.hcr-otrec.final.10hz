@@ -353,8 +353,17 @@ fields = {
   }
   ,
   {
-    label = "VEL",
-    raw_name = "VEL",
+    label = "DBZ_MASKED",
+    raw_name = "DBZ_MASKED",
+    filtered_name = "",
+    units = "dBZ",
+    color_map = "dbz_w.colors",
+    shortcut = "0"
+  }
+  ,
+  {
+    label = "VEL_CORR",
+    raw_name = "VEL_CORR",
     filtered_name = "",
     units = "m/s",
     color_map = "vel_w_8.colors",
@@ -362,8 +371,8 @@ fields = {
   }
   ,
   {
-    label = "VEL_CORR",
-    raw_name = "VEL_CORR",
+    label = "VEL",
+    raw_name = "VEL",
     filtered_name = "",
     units = "m/s",
     color_map = "vel_w_8.colors",
@@ -377,15 +386,6 @@ fields = {
     units = "m/s",
     color_map = "vel_w_8.colors",
     shortcut = "2"
-  }
-  ,
-  {
-    label = "VEL_DELTA",
-    raw_name = "VEL_DELTA",
-    filtered_name = "",
-    units = "m/s",
-    color_map = "vel_delta.colors",
-    shortcut = "3"
   }
   ,
   {
