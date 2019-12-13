@@ -1,5 +1,9 @@
 #! /bin/csh -f
 
+# HCR QC processing for OTREC
+
+source ~/git/HCR_configuration/projDir/system/params/project_info.otrec
+
 cd $PROJ_DIR/catalog/params
 
 HawkEye -params HawkEye.catalog.5min_archive -debug -images_start_time "2019 08 07 12 15 00" -images_end_time "2019 08 07 17 40 00"

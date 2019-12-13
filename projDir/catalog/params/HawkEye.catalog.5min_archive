@@ -287,7 +287,7 @@ show_status_in_gui = {
 // Type: string
 //
 
-color_scale_dir = "$(PROJ_DIR)/display/color_scales";
+color_scale_dir = "$(HOME)/git/HCR_configuration/projDir/display/color_scales";
 
 ///////////// fields //////////////////////////////////
 //
@@ -316,7 +316,7 @@ color_scale_dir = "$(PROJ_DIR)/display/color_scales";
 fields = {
   {
     label = "DBZ",
-    raw_name = "DBZ",
+    raw_name = "DBZ_MASKED",
     filtered_name = "",
     units = "dBZ",
     color_map = "dbz_w.colors",
@@ -328,7 +328,7 @@ fields = {
     raw_name = "VEL_CORR",
     filtered_name = "",
     units = "m/s",
-    color_map = "vel_w.colors",
+    color_map = "vel_w_8.colors",
     shortcut = "1"
   }
   ,
