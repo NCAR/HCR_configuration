@@ -809,7 +809,7 @@ rhi_aspect_ratio = 1;
 // Type: double
 //
 
-bscan_time_span_secs = 300;
+bscan_time_span_secs = 3600;
 
 ///////////// bscan_truncate_start_time ///////////////
 //
@@ -1416,7 +1416,7 @@ bscan_dwell_stats = DWELL_STATS_MEAN;
 // Type: string
 //
 
-images_output_dir = "/scr/snow1/rsfdata/projects/otrec/hcr/qc1/images/catalog5min";
+images_output_dir = "/scr/snow1/rsfdata/projects/otrec/hcr/qc1/images/catalog1hr";
 
 ///////////// images_write_to_day_dir /////////////////
 //
@@ -1578,7 +1578,7 @@ images_creation_mode = CREATE_IMAGES_ON_ARCHIVE_SCHEDULE;
 // Type: int
 //
 
-images_schedule_interval_secs = 300;
+images_schedule_interval_secs = 3600;
 
 ///////////// images_schedule_delay_secs //////////////
 //
