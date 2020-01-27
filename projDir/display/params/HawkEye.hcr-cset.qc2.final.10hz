@@ -529,7 +529,7 @@ use_field_label_in_title = FALSE;
 // Type: double
 //
 
-max_range_km = 11;
+max_range_km = 15;
 
 //======================================================================
 //
@@ -1168,7 +1168,7 @@ bscan_min_range_km = -0.5;
 // Type: double
 //
 
-bscan_max_range_km = 11;
+bscan_max_range_km = 15;
 
 ///////////// bscan_min_altitude_km ///////////////////
 //
