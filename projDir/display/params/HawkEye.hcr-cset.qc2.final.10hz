@@ -190,7 +190,7 @@ begin_in_archive_mode = TRUE;
 // Type: string
 //
 
-archive_start_time = "2015 07 01 18 00 00";
+archive_start_time = "2015 07 01 17 30 00";
 
 ///////////// archive_time_span_secs //////////////////
 //
@@ -529,7 +529,7 @@ use_field_label_in_title = FALSE;
 // Type: double
 //
 
-max_range_km = 8;
+max_range_km = 12;
 
 //======================================================================
 //
@@ -1168,7 +1168,7 @@ bscan_min_range_km = -0.5;
 // Type: double
 //
 
-bscan_max_range_km = 8;
+bscan_max_range_km = 12;
 
 ///////////// bscan_min_altitude_km ///////////////////
 //
