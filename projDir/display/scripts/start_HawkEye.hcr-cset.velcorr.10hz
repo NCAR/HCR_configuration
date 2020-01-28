@@ -4,7 +4,7 @@ rehash
 
 setenv PROJ_DIR /opt/local/git/HCR_configuration/projDir
 setenv DATA_DIR /scr/snow2/rsfdata/projects/cset/hcr
-setenv BSCAN_MIN_ALTITUDE_KM 0.5
+setenv BSCAN_MIN_ALTITUDE_KM -0.5
 setenv BSCAN_MAX_ALTITUDE_KM 15.0
 cd $PROJ_DIR/display/params
 
