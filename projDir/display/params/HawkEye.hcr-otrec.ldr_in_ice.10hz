@@ -70,7 +70,7 @@ register_with_procmap = FALSE;
 // Type: string
 //
 
-instance = "hcr-addvars.10hz";
+instance = "hcr-otrec.qc.10hz";
 
 //======================================================================
 //
@@ -190,7 +190,7 @@ begin_in_archive_mode = TRUE;
 // Type: string
 //
 
-archive_start_time = "2019 08 07 15 00 00";
+archive_start_time = "2019 09 04 14 55 00";
 
 ///////////// archive_time_span_secs //////////////////
 //
@@ -214,7 +214,7 @@ archive_time_span_secs = 600;
 // Type: string
 //
 
-archive_data_url = "$(DATA_DIR)/$(QC_VERSION)/cfradial/addvars/10hz";
+archive_data_url = "$(DATA_DIR)/$(QC_VERSION)/cfradial/velcorr/10hz";
 
 //======================================================================
 //
@@ -353,6 +353,15 @@ fields = {
   }
   ,
   {
+    label = "DBZ_CORR",
+    raw_name = "DBZ_CORR",
+    filtered_name = "",
+    units = "dBZ",
+    color_map = "dbz_w.colors",
+    shortcut = "0"
+  }
+  ,
+  {
     label = "VEL_CORR4",
     raw_name = "VEL_CORR",
     filtered_name = "",
@@ -452,6 +461,24 @@ fields = {
   }
   ,
   {
+    label = "LDR_FILT",
+    raw_name = "LDR_FILT",
+    filtered_name = "",
+    units = "dB",
+    color_map = "ldr.colors",
+    shortcut = "f"
+  }
+  ,
+  {
+    label = "LDR_GRADIENT",
+    raw_name = "LDR_GRADIENT",
+    filtered_name = "",
+    units = "dB",
+    color_map = "ldr_gradient.colors",
+    shortcut = "f"
+  }
+  ,
+  {
     label = "SNR",
     raw_name = "SNR",
     filtered_name = "",
@@ -493,51 +520,6 @@ fields = {
     filtered_name = "",
     units = "dBm",
     color_map = "dbm.colors",
-    shortcut = "d"
-  }
-  ,
-  {
-    label = "DBMHX",
-    raw_name = "DBMHX",
-    filtered_name = "",
-    units = "dBm",
-    color_map = "dbm.colors",
-    shortcut = "d"
-  }
-  ,
-  {
-    label = "TEMP",
-    raw_name = "TEMP",
-    filtered_name = "",
-    units = "C",
-    color_map = "temp.colors",
-    shortcut = "c"
-  }
-  ,
-  {
-    label = "PRESS",
-    raw_name = "PRESS",
-    filtered_name = "",
-    units = "hPa",
-    color_map = "pressure_xml.colors",
-    shortcut = "d"
-  }
-  ,
-  {
-    label = "RH",
-    raw_name = "RH",
-    filtered_name = "",
-    units = "%",
-    color_map = "rh.colors",
-    shortcut = "d"
-  }
-  ,
-  {
-    label = "FLAG",
-    raw_name = "FLAG",
-    filtered_name = "",
-    units = "",
-    color_map = "hcr_flag.colors",
     shortcut = "d"
   }
 };

@@ -70,7 +70,7 @@ register_with_procmap = FALSE;
 // Type: string
 //
 
-instance = "hcr-otrec.qc.100hz";
+instance = "hcr-final.10hz";
 
 //======================================================================
 //
@@ -96,7 +96,7 @@ instance = "hcr-otrec.qc.100hz";
 //     DSR_FMQ_INPUT
 //
 
-input_mode = DSR_FMQ_INPUT;
+input_mode = IWRF_FMQ_INPUT;
 
 ///////////// input_fmq_url ///////////////////////////
 //
@@ -110,7 +110,7 @@ input_mode = DSR_FMQ_INPUT;
 // Type: string
 //
 
-input_fmq_url = "/tmp/fmq/qc_moments/100hz/shmem_00000";
+input_fmq_url = "fmqp:://localhost::fmq/moments/10hz/shmem_20010";
 
 ///////////// seek_to_start_of_fmq ////////////////////
 //
@@ -190,7 +190,7 @@ begin_in_archive_mode = TRUE;
 // Type: string
 //
 
-archive_start_time = "2019 09 04 14 55 00";
+archive_start_time = "2019 08 07 15 00 00";
 
 ///////////// archive_time_span_secs //////////////////
 //
@@ -214,7 +214,7 @@ archive_time_span_secs = 600;
 // Type: string
 //
 
-archive_data_url = "$(DATA_DIR)/$(QC_VERSION)/cfradial/moments/100hz";
+archive_data_url = "$(DATA_DIR)/$(QC_VERSION)/cfradial/final/10hz";
 
 //======================================================================
 //
@@ -353,21 +353,30 @@ fields = {
   }
   ,
   {
+    label = "DBZ_MASKED",
+    raw_name = "DBZ_MASKED",
+    filtered_name = "",
+    units = "dBZ",
+    color_map = "dbz_w.colors",
+    shortcut = "0"
+  }
+  ,
+  {
+    label = "VEL_CORR",
+    raw_name = "VEL_CORR",
+    filtered_name = "",
+    units = "m/s",
+    color_map = "vel_w_8.colors",
+    shortcut = "1"
+  }
+  ,
+  {
     label = "VEL",
     raw_name = "VEL",
     filtered_name = "",
     units = "m/s",
     color_map = "vel_w_8.colors",
-    shortcut = "5"
-  }
-  ,
-  {
-    label = "VEL_VERT",
-    raw_name = "VEL_VERT",
-    filtered_name = "",
-    units = "m/s",
-    color_map = "vel_w_8.colors",
-    shortcut = "7"
+    shortcut = "1"
   }
   ,
   {
@@ -376,7 +385,7 @@ fields = {
     filtered_name = "",
     units = "m/s",
     color_map = "vel_w_8.colors",
-    shortcut = "7"
+    shortcut = "2"
   }
   ,
   {
@@ -394,7 +403,7 @@ fields = {
     filtered_name = "",
     units = "m/s",
     color_map = "width_w.colors",
-    shortcut = "8"
+    shortcut = "9"
   }
   ,
   {
@@ -425,24 +434,6 @@ fields = {
   }
   ,
   {
-    label = "SNRVC",
-    raw_name = "SNRVC",
-    filtered_name = "",
-    units = "dB",
-    color_map = "snr.colors",
-    shortcut = "a"
-  }
-  ,
-  {
-    label = "SNRHX",
-    raw_name = "SNRHX",
-    filtered_name = "",
-    units = "dB",
-    color_map = "snr.colors",
-    shortcut = "b"
-  }
-  ,
-  {
     label = "DBMVC",
     raw_name = "DBMVC",
     filtered_name = "",
@@ -461,21 +452,39 @@ fields = {
   }
   ,
   {
-    label = "NOISE_BIAS_DB_VC",
-    raw_name = "NOISE_BIAS_DB_VC",
+    label = "TEMP",
+    raw_name = "TEMP",
     filtered_name = "",
-    units = "dB",
-    color_map = "noise_bias.colors",
-    shortcut = "i"
+    units = "C",
+    color_map = "temp.colors",
+    shortcut = "c"
   }
   ,
   {
-    label = "NOISE_BIAS_DB_HX",
-    raw_name = "NOISE_BIAS_DB_HX",
+    label = "PRESS",
+    raw_name = "PRESS",
     filtered_name = "",
-    units = "dB",
-    color_map = "noise_bias.colors",
-    shortcut = "i"
+    units = "hPa",
+    color_map = "pressure_xml.colors",
+    shortcut = "d"
+  }
+  ,
+  {
+    label = "RH",
+    raw_name = "RH",
+    filtered_name = "",
+    units = "%",
+    color_map = "rh.colors",
+    shortcut = "d"
+  }
+  ,
+  {
+    label = "FLAG",
+    raw_name = "FLAG",
+    filtered_name = "",
+    units = "",
+    color_map = "hcr_flag.colors",
+    shortcut = "d"
   }
 };
 
@@ -568,7 +577,7 @@ override_radar_name = TRUE;
 // Type: string
 //
 
-radar_name = "HCR-100hz";
+radar_name = "HCR-10hz";
 
 ///////////// display_site_name ///////////////////////
 //
@@ -654,7 +663,7 @@ main_window_start_y = 100;
 // Type: int
 //
 
-color_scale_width = 50;
+color_scale_width = 90;
 
 ///////////// label_font_size /////////////////////////
 //
@@ -1043,7 +1052,7 @@ rhi_beam_queue_size = 360;
 // Type: double
 //
 
-bscan_time_span_secs = 315;
+bscan_time_span_secs = 300;
 
 ///////////// bscan_truncate_start_time ///////////////
 //
@@ -1340,7 +1349,7 @@ bscan_left_margin = 50;
 // Type: int
 //
 
-bscan_right_margin = 40;
+bscan_right_margin = 30;
 
 ///////////// bscan_axis_tick_len /////////////////////
 //

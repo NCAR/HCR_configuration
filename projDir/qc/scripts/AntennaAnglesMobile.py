@@ -41,6 +41,14 @@ def main():
                       dest='debug', default=False,
                       action="store_true",
                       help='Set debugging on')
+    parser.add_option('--az',
+                      dest='az',
+                      default=0.0,
+                      help='Desired azimuth angle (deg)')
+    parser.add_option('--el',
+                      dest='el',
+                      default=-90.0,
+                      help='Desired elevation angle (deg)')
     parser.add_option('--tilt',
                       dest='tilt',
                       default=0.0,
@@ -84,9 +92,13 @@ def main():
     
     (options, args) = parser.parse_args()
 
+    global _el, _az
     global _tilt, _rot, _hdg, _drift
     global _pitchMin, _pitchMax, _pitchDelta
     global _rollMin, _rollMax, _rollDelta
+
+    _el = float(options.el)
+    _az = float(options.az)
 
     _tilt = float(options.tilt)
     _rot = float(options.rot)
@@ -102,6 +114,8 @@ def main():
     _rollDelta = float(options.rollDelta)
 
     print("###############################", file=sys.stderr)
+    print("#  el: ", _el, file=sys.stderr)
+    print("#  az: ", _az, file=sys.stderr)
     print("#  tilt: ", _tilt, file=sys.stderr)
     print("#  rot: ", _rot, file=sys.stderr)
     print("#  drift: ", _drift, file=sys.stderr)
@@ -115,7 +129,9 @@ def main():
 
     # compute angles, and write them out
 
-    computeAngles()
+    # computeAngles()
+    # computeAngles2()
+    doCompare()
 
     # render the plots
 
@@ -134,6 +150,7 @@ def main():
 
 def computeAngles():
 
+    print("#############################################", file=sys.stderr)
     print("# ",
           '{:>10} '.format('pitch'),
           '{:>10} '.format('roll'),
@@ -165,6 +182,51 @@ def computeAngles():
                   '{:10.4f} '.format(reflRot),
                   '{:10.4f} '.format(reflTilt),
                   file=sys.stderr)
+
+########################################################################
+# Compute the angles, and write them out
+
+def computeAngles2():
+
+    print("#############################################", file=sys.stderr)
+    print("# ",
+          '{:>10} '.format('pitch'),
+          '{:>10} '.format('roll'),
+          '{:>10} '.format('rot'),
+          '{:>10} '.format('tilt'),
+          '{:>10} '.format('reflRot'),
+          '{:>10} '.format('reflTilt'),
+          file=sys.stderr)
+
+    for pitch in np.arange(_pitchMin, _pitchMax, _pitchDelta):
+
+        for roll in np.arange(_rollMin, _rollMax, _rollDelta):
+
+            rot, tilt = computeRotTiltYPrime(pitch, roll, _hdg, _el, _az)
+
+            reflRot, reflTilt = computeReflAngles(pitch, roll, _drift,
+                                                  90.0 - _el, _az)
+
+            print("  ",
+                  '{:10.4f} '.format(pitch),
+                  '{:10.4f} '.format(roll),
+                  '{:10.4f} '.format(rot),
+                  '{:10.4f} '.format(tilt),
+                  '{:10.4f} '.format(reflRot),
+                  '{:10.4f} '.format(reflTilt),
+                  file=sys.stderr)
+
+########################################################################
+# Compute equations for various conditions
+
+def doCompare():
+
+    for pitch in np.arange(_pitchMin, _pitchMax, _pitchDelta):
+
+        for roll in np.arange(_rollMin, _rollMax, _rollDelta):
+
+            compareEquations(pitch, roll, _drift,
+                             90.0 - _el, _az)
 
 ########################################################################
 # compute (elevation, azimuth) from rotation and tilt, attitude
@@ -224,7 +286,7 @@ def computeAzElYPrime(pitch, roll, hdg, rot, tilt):
     el = math.degrees(math.asin(zz))
 
     if (options.debug):
-        print("####################################", file=sys.stderr)
+        print("############# computeAzElYPrime ##############", file=sys.stderr)
         print("#  pitch: ", '{:10.4f} '.format(pitch), file=sys.stderr)
         print("#  roll : ", '{:10.4f} '.format(roll), file=sys.stderr)
         print("#  hdg  : ", '{:10.4f} '.format(hdg), file=sys.stderr)
@@ -304,7 +366,7 @@ def computeRotTiltYPrime(pitch, roll, hdg, el, az):
     rot = math.degrees(math.atan2(x_a, z_a))
 
     if (options.debug):
-        print("####################################", file=sys.stderr)
+        print("############# computeRotTiltYPrime ##############", file=sys.stderr)
         print("#  pitch: ", '{:10.4f} '.format(pitch), file=sys.stderr)
         print("#  roll : ", '{:10.4f} '.format(roll), file=sys.stderr)
         print("#  hdg  : ", '{:10.4f} '.format(hdg), file=sys.stderr)
@@ -360,45 +422,45 @@ def computeReflAngles(pitch, roll, drift, rot, tilt):
 
     # Convert to pod relative Cartesian coordinates - adjusted beam position
 
-    mr11 = cosDrift * cosRoll - sinDrift * sinPitch * sinRoll
-    mr12 = sinDrift + cosDrift * sinPitch * sinRoll
-    mr13 = -cosPitch * sinRoll
+    # mr11 = cosDrift * cosRoll + sinDrift * sinPitch * sinRoll
+    # mr12 = -sinDrift * cosRoll + cosDrift * sinPitch * sinRoll
+    # mr13 = -cosPitch * sinRoll
 
-    mr21 = -sinDrift * cosPitch
-    mr22 = cosDrift * cosPitch
-    mr23 = sinPitch
+    # mr21 = sinDrift * cosPitch
+    # mr22 = cosDrift * cosPitch
+    # mr23 = sinPitch
 
-    mr31 = cosDrift * sinRoll + sinDrift * sinPitch * sinRoll
-    mr32 = sinDrift * sinRoll - cosDrift * sinPitch * cosRoll
-    mr33 = cosPitch * cosRoll
+    # mr31 = cosDrift * sinRoll - sinDrift * sinPitch * cosRoll
+    # mr32 = -sinDrift * sinRoll - cosDrift * sinPitch * cosRoll
+    # mr33 = cosPitch * cosRoll
 
-    x_a = mr11 * xx + mr12 * yy + mr13 * zz
-    y_a = mr21 * xx + mr22 * yy + mr23 * zz
-    z_a = mr31 * xx + mr32 * yy + mr33 * zz
-    len_a = math.sqrt(x_a * x_a + y_a * y_a + z_a * z_a)
-
-    # x_a = \
-    #       xx * (cosDrift * cosRoll - sinDrift * sinPitch * sinRoll) + \
-    #       yy * (sinDrift + cosDrift * sinPitch * sinRoll) + \
-    #       -zz * cosPitch * sinRoll
-
-    # y_a = \
-    #       -xx * sinDrift * cosPitch + \
-    #       yy * cosDrift * cosPitch + \
-    #       zz * sinPitch
-
-    # z_a = \
-    #       xx * (cosDrift * sinRoll + sinDrift * sinPitch * sinRoll) + \
-    #       yy * (sinDrift * sinRoll - cosDrift * sinPitch * cosRoll) + \
-    #       zz * cosPitch * cosRoll
-
+    # x_a = mr11 * xx + mr12 * yy + mr13 * zz
+    # y_a = mr21 * xx + mr22 * yy + mr23 * zz
+    # z_a = mr31 * xx + mr32 * yy + mr33 * zz
     # len_a = math.sqrt(x_a * x_a + y_a * y_a + z_a * z_a)
+
+    x_a = \
+          xx * (cosDrift * cosRoll - sinDrift * sinPitch * sinRoll) + \
+          yy * (sinDrift + cosDrift * sinPitch * sinRoll) + \
+          -zz * cosPitch * sinRoll
+
+    y_a = \
+          -xx * sinDrift * cosPitch + \
+          yy * cosDrift * cosPitch + \
+          zz * sinPitch
+
+    z_a = \
+          xx * (cosDrift * sinRoll + sinDrift * sinPitch * sinRoll) + \
+          yy * (sinDrift * sinRoll - cosDrift * sinPitch * cosRoll) + \
+          zz * cosPitch * cosRoll
+
+    len_a = math.sqrt(x_a * x_a + y_a * y_a + z_a * z_a)
 
     # Convert from pod relative Cartesian coordinates to polar coordinates
     # and save the adjusted rotation and tilt angles.
     # devide by 2 because it is a reflector
 
-    reflTilt = math.degrees(math.asin(y_a)) / 2.0
+    reflTilt = math.degrees(math.asin(y_a))
 
     # KLUGE: The algorithm above isn't really right. As compensation for now,
     # just change the sign of the corrected tilt if the desired rotation angle
@@ -414,8 +476,10 @@ def computeReflAngles(pitch, roll, drift, rot, tilt):
     #if (reflRot < 0):
     #    reflRot = reflRot + 360.0
 
+    print("#  len_a: ", '{:10.4f} '.format(len_a), file=sys.stderr)
+
     if (options.debug):
-        print("####################################", file=sys.stderr)
+        print("############# computeRefAngles ##############", file=sys.stderr)
         print("#  pitch: ", '{:10.4f} '.format(pitch), file=sys.stderr)
         print("#  roll : ", '{:10.4f} '.format(roll), file=sys.stderr)
         print("#  drift: ", '{:10.4f} '.format(drift), file=sys.stderr)
@@ -436,6 +500,102 @@ def computeReflAngles(pitch, roll, drift, rot, tilt):
         print("#  reflTilt : ", '{:10.4f} '.format(reflTilt), file=sys.stderr)
 
     return (reflRot, reflTilt)
+
+########################################################################
+# compare forward equations
+
+def compareEquations(pitch, roll, drift, rot, tilt):
+
+    sinPitch = math.sin(math.radians(pitch))
+    cosPitch = math.cos(math.radians(pitch))
+
+    sinRoll = math.sin(math.radians(roll))
+    cosRoll = math.cos(math.radians(roll))
+
+    sinDrift = math.sin(math.radians(drift))
+    cosDrift = math.cos(math.radians(drift))
+
+    # Track relative coordinates - desired beam position
+
+    sinRot = math.sin(math.radians(rot))
+    cosRot = math.cos(math.radians(rot))
+
+    sinTilt = math.sin(math.radians(tilt))
+    cosTilt = math.cos(math.radians(tilt))
+
+    # Convert to track relative Cartesian coordinates
+
+    xx = cosTilt * sinRot
+    yy = sinTilt
+    zz = cosTilt * cosRot
+    len = math.sqrt(xx * xx + yy * yy + zz * zz)
+
+    # Convert to pod relative Cartesian coordinates - adjusted beam position
+
+    mr11 = cosDrift * cosRoll + sinDrift * sinPitch * sinRoll
+    mr12 = -sinDrift * cosRoll + cosDrift * sinPitch * sinRoll
+    mr13 = -cosPitch * sinRoll
+
+    mr21 = sinDrift * cosPitch
+    mr22 = cosDrift * cosPitch
+    mr23 = sinPitch
+
+    mr31 = cosDrift * sinRoll - sinDrift * sinPitch * cosRoll
+    mr32 = -sinDrift * sinRoll - cosDrift * sinPitch * cosRoll
+    mr33 = cosPitch * cosRoll
+
+    xx1 = mr11 * xx + mr12 * yy + mr13 * zz
+    yy1 = mr21 * xx + mr22 * yy + mr23 * zz
+    zz1 = mr31 * xx + mr32 * yy + mr33 * zz
+    len1 = math.sqrt(xx1 * xx1 + yy1 * yy1 + zz1 * zz1)
+
+    xx2 = \
+          xx * (cosDrift * cosRoll - sinDrift * sinPitch * sinRoll) + \
+          yy * (sinDrift + cosDrift * sinPitch * sinRoll) + \
+          -zz * cosPitch * sinRoll
+
+    yy2 = \
+          -xx * sinDrift * cosPitch + \
+          yy * cosDrift * cosPitch + \
+          zz * sinPitch
+
+    zz2 = \
+          xx * (cosDrift * sinRoll + sinDrift * sinPitch * sinRoll) + \
+          yy * (sinDrift * sinRoll - cosDrift * sinPitch * cosRoll) + \
+          zz * cosPitch * cosRoll
+
+    len2 = math.sqrt(xx2 * xx2 + yy2 * yy2 + zz2 * zz2)
+
+    xxDiff = xx1 - xx2;
+    yyDiff = yy1 - yy2;
+    zzDiff = zz1 - zz2;
+
+    lenDiff = math.sqrt(xxDiff * xxDiff + yyDiff * yyDiff + zzDiff * zzDiff)
+
+    if (lenDiff > 0.00001):
+
+        print("############# compareAngles ##############", file=sys.stderr)
+        print("#  pitch: ", '{:10.4f} '.format(pitch), file=sys.stderr)
+        print("#  roll : ", '{:10.4f} '.format(roll), file=sys.stderr)
+        print("#  drift: ", '{:10.4f} '.format(drift), file=sys.stderr)
+        print("#  rot  : ", '{:10.4f} '.format(rot), file=sys.stderr)
+        print("#  tilt : ", '{:10.4f} '.format(tilt), file=sys.stderr)
+
+        print("#  xx1   : ", '{:10.4f} '.format(xx1), file=sys.stderr)
+        print("#  yy1   : ", '{:10.4f} '.format(yy1), file=sys.stderr)
+        print("#  zz1   : ", '{:10.4f} '.format(zz1), file=sys.stderr)
+        print("#  len1  : ", '{:10.4f} '.format(len1), file=sys.stderr)
+
+        print("#  xx2   : ", '{:10.4f} '.format(xx2), file=sys.stderr)
+        print("#  yy2   : ", '{:10.4f} '.format(yy2), file=sys.stderr)
+        print("#  zz2   : ", '{:10.4f} '.format(zz2), file=sys.stderr)
+        print("#  len2  : ", '{:10.4f} '.format(len2), file=sys.stderr)
+
+        print("#  xxDiff   : ", '{:10.4f} '.format(xxDiff), file=sys.stderr)
+        print("#  yyDiff   : ", '{:10.4f} '.format(yyDiff), file=sys.stderr)
+        print("#  zzDiff   : ", '{:10.4f} '.format(zzDiff), file=sys.stderr)
+        print("#  lenDiff  : ", '{:10.4f} '.format(lenDiff), file=sys.stderr)
+
 
 ########################################################################
 # Plot velocities

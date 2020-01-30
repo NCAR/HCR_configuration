@@ -70,7 +70,7 @@ register_with_procmap = FALSE;
 // Type: string
 //
 
-instance = "hcr-otrec.qc.100hz";
+instance = "hcr-otrec.qc.selected_fields";
 
 //======================================================================
 //
@@ -96,7 +96,7 @@ instance = "hcr-otrec.qc.100hz";
 //     DSR_FMQ_INPUT
 //
 
-input_mode = DSR_FMQ_INPUT;
+input_mode = IWRF_FMQ_INPUT;
 
 ///////////// input_fmq_url ///////////////////////////
 //
@@ -110,7 +110,7 @@ input_mode = DSR_FMQ_INPUT;
 // Type: string
 //
 
-input_fmq_url = "/tmp/fmq/qc_moments/100hz/shmem_00000";
+input_fmq_url = "fmqp:://localhost::fmq/moments/10hz/shmem_20010";
 
 ///////////// seek_to_start_of_fmq ////////////////////
 //
@@ -214,7 +214,7 @@ archive_time_span_secs = 600;
 // Type: string
 //
 
-archive_data_url = "$(DATA_DIR)/$(QC_VERSION)/cfradial/moments/100hz";
+archive_data_url = "$(DATA_DIR)/$(QC_VERSION)/cfradial/selected_fields/10hz";
 
 //======================================================================
 //
@@ -358,16 +358,7 @@ fields = {
     filtered_name = "",
     units = "m/s",
     color_map = "vel_w_8.colors",
-    shortcut = "5"
-  }
-  ,
-  {
-    label = "VEL_VERT",
-    raw_name = "VEL_VERT",
-    filtered_name = "",
-    units = "m/s",
-    color_map = "vel_w_8.colors",
-    shortcut = "7"
+    shortcut = "1"
   }
   ,
   {
@@ -376,7 +367,7 @@ fields = {
     filtered_name = "",
     units = "m/s",
     color_map = "vel_w_8.colors",
-    shortcut = "7"
+    shortcut = "2"
   }
   ,
   {
@@ -385,7 +376,7 @@ fields = {
     filtered_name = "",
     units = "m/s",
     color_map = "width_w.colors",
-    shortcut = "8"
+    shortcut = "3"
   }
   ,
   {
@@ -394,7 +385,7 @@ fields = {
     filtered_name = "",
     units = "m/s",
     color_map = "width_w.colors",
-    shortcut = "8"
+    shortcut = "4"
   }
   ,
   {
@@ -403,7 +394,7 @@ fields = {
     filtered_name = "",
     units = "",
     color_map = "ncp.colors",
-    shortcut = "e"
+    shortcut = "5"
   }
   ,
   {
@@ -412,7 +403,7 @@ fields = {
     filtered_name = "",
     units = "dB",
     color_map = "ldr.colors",
-    shortcut = "f"
+    shortcut = "6"
   }
   ,
   {
@@ -421,25 +412,7 @@ fields = {
     filtered_name = "",
     units = "dB",
     color_map = "snr.colors",
-    shortcut = "a"
-  }
-  ,
-  {
-    label = "SNRVC",
-    raw_name = "SNRVC",
-    filtered_name = "",
-    units = "dB",
-    color_map = "snr.colors",
-    shortcut = "a"
-  }
-  ,
-  {
-    label = "SNRHX",
-    raw_name = "SNRHX",
-    filtered_name = "",
-    units = "dB",
-    color_map = "snr.colors",
-    shortcut = "b"
+    shortcut = "7"
   }
   ,
   {
@@ -448,7 +421,7 @@ fields = {
     filtered_name = "",
     units = "dBm",
     color_map = "dbm.colors",
-    shortcut = "c"
+    shortcut = "8"
   }
   ,
   {
@@ -457,25 +430,7 @@ fields = {
     filtered_name = "",
     units = "dBm",
     color_map = "dbm.colors",
-    shortcut = "d"
-  }
-  ,
-  {
-    label = "NOISE_BIAS_DB_VC",
-    raw_name = "NOISE_BIAS_DB_VC",
-    filtered_name = "",
-    units = "dB",
-    color_map = "noise_bias.colors",
-    shortcut = "i"
-  }
-  ,
-  {
-    label = "NOISE_BIAS_DB_HX",
-    raw_name = "NOISE_BIAS_DB_HX",
-    filtered_name = "",
-    units = "dB",
-    color_map = "noise_bias.colors",
-    shortcut = "i"
+    shortcut = "9"
   }
 };
 
@@ -568,7 +523,7 @@ override_radar_name = TRUE;
 // Type: string
 //
 
-radar_name = "HCR-100hz";
+radar_name = "HCR-10hz";
 
 ///////////// display_site_name ///////////////////////
 //
@@ -1043,7 +998,7 @@ rhi_beam_queue_size = 360;
 // Type: double
 //
 
-bscan_time_span_secs = 315;
+bscan_time_span_secs = 300;
 
 ///////////// bscan_truncate_start_time ///////////////
 //

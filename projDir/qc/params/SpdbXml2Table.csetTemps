@@ -1,5 +1,5 @@
 /**********************************************************************
- * TDRP params for ./SpdbXml2Table
+ * TDRP params for SpdbXml2Table
  **********************************************************************/
 
 //======================================================================
@@ -76,7 +76,7 @@ input_url = "/scr/rain1/rsfdata/projects/cset/hcr/spdb/monitor/qc";
 
 start_time = {
     year = 2015,
-    month = 06,
+    month = 6,
     day = 16,
     hour = 0,
     min = 0,
@@ -104,7 +104,7 @@ start_time = {
 
 end_time = {
     year = 2015,
-    month = 08,
+    month = 8,
     day = 13,
     hour = 0,
     min = 0,
@@ -329,13 +329,23 @@ convert_boolean_to_integer = TRUE;
 
 ///////////// ignore_if_all_nans //////////////////////
 //
-// Do not print a line if all string values are 'nan'.
+// Do not print a line if all values are 'nan'.
 //
 //
 // Type: boolean
 //
 
 ignore_if_all_nans = FALSE;
+
+///////////// ignore_if_any_nans //////////////////////
+//
+// Do not print a line if any values are 'nan'.
+//
+//
+// Type: boolean
+//
+
+ignore_if_any_nans = FALSE;
 
 ///////////// replace_string_in_output ////////////////
 //

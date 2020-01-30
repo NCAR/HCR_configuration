@@ -11,7 +11,6 @@ setenv  BSCAN_MIN_ALTITUDE_KM      -0.5
 
 setenv PROJ_DIR ~/git/HCR_configuration/projDir
 
-#setenv DATA_DIR  /nas/data/data/OTREC/EOL_data/HCR_data
 setenv DATA_DIR  /scr/snow1/rsfdata/projects/otrec/hcr
 
 setenv QC_VERSION qc1
@@ -24,4 +23,5 @@ mkdir -p $DATA_DIR/logs
 # length of wave filter for HcrVelCorrect
 
 setenv WAVE_FILTER_LENGTH_SECS 10
+
 

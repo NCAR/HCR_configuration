@@ -9,7 +9,7 @@ setenv PROJECT_NAME socrates
 setenv  BSCAN_MAX_ALTITUDE_KM      9.0
 setenv  BSCAN_MIN_ALTITUDE_KM      -0.5
 
-setenv PROJ_DIR ~/git/HCR_configuration/projDir
+setenv PROJ_DIR /opt/local/git/HCR_configuration/projDir
 setenv DATA_DIR  /scr/snow2/rsfdata/projects/socrates/hcr
 setenv QC_VERSION qc2
 

@@ -1621,7 +1621,16 @@ output_fields = {
   {
     dsr_name = "VEL",
     output_name = "VEL",
-    long_name = "doppler_velocity",
+    long_name = "doppler_velocity_corrected_for_motion",
+    standard_name = "radial_velocity_of_scatterers_away_from_instrument",
+    output_units = "m/s",
+    output_encoding = OUTPUT_FLOAT
+  }
+  ,
+  {
+    dsr_name = "VEL_VERT",
+    output_name = "VEL_VERT",
+    long_name = "doppler_velocity_corrected_for_vert_motion",
     standard_name = "radial_velocity_of_scatterers_away_from_instrument",
     output_units = "m/s",
     output_encoding = OUTPUT_FLOAT
@@ -1639,7 +1648,16 @@ output_fields = {
   {
     dsr_name = "WIDTH",
     output_name = "WIDTH",
-    long_name = "spectrum_width",
+    long_name = "spectrum_width_corrected_for_motion",
+    standard_name = "doppler_spectrum_width",
+    output_units = "m/s",
+    output_encoding = OUTPUT_FLOAT
+  }
+  ,
+  {
+    dsr_name = "WIDTH_RAW",
+    output_name = "WIDTH_RAW",
+    long_name = "spectrum_width_uncorrected_for_motion",
     standard_name = "doppler_spectrum_width",
     output_units = "m/s",
     output_encoding = OUTPUT_FLOAT
@@ -1817,7 +1835,7 @@ output_fields = {
 
 output_data_set = {
   {
-    output_dir = "$(DATA_DIR)/$(QC_VERSION)/cfradial/moments/100hz_from_time_series",
+    output_dir = "$(DATA_DIR)/$(QC_VERSION)/cfradial/moments/100hz",
     format = OUTPUT_FORMAT_CFRADIAL
   }
 };

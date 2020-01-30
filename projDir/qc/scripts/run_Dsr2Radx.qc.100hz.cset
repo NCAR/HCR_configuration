@@ -9,13 +9,9 @@
 source ~/git/HCR_configuration/projDir/system/params/project_info.cset
 cd $PROJ_DIR/qc/params
 
-
 snuff "Dsr2Radx -params Dsr2Radx.qc.100hz"
 
-Dsr2Radx -params Dsr2Radx.qc.100hz -debug >& \
-    /tmp/Dsr2Radx.qc.100hz.cset.log &
-
-tail -f /tmp/Dsr2Radx.qc.100hz.cset.log
+Dsr2Radx -params Dsr2Radx.qc.100hz -debug
 
 
 

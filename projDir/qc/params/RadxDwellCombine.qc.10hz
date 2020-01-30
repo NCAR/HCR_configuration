@@ -346,6 +346,13 @@ field_folds = {
   }
   ,
   {
+    field_name = "VEL_VERT",
+    use_nyquist = TRUE,
+    fold_limit_lower = 0,
+    fold_limit_upper = 0
+  }
+  ,
+  {
     field_name = "VEL_RAW",
     use_nyquist = TRUE,
     fold_limit_lower = 0,

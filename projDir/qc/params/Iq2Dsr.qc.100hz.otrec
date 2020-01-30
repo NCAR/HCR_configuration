@@ -89,7 +89,7 @@ use_multiple_threads = TRUE;
 // Type: int
 //
 
-n_compute_threads = 8;
+n_compute_threads = 16;
 
 //======================================================================
 //
@@ -1138,14 +1138,46 @@ staggered_prt_median_filter_len = 1;
 //
 // Option to compute velocity corrected for platform motion.
 //
-// If true, we use georeference to account for platform motion, and 
-//   corrected for velocity accordingly.
+// Measured vel can be influenced both by vertical and horizontal 
+//   platform motinos. If this parameter is true, we use the georeference 
+//   data to account for platform motion, and correct for velocity 
+//   accordingly. We compute the correction first for vertical velocity, 
+//   and then correct for the effects of horizontal veocity.
 //
 //
 // Type: boolean
 //
 
 compute_velocity_corrected_for_platform_motion = TRUE;
+
+///////////// compute_width_corrected_for_platform_motion 
+//
+// Option to compute width corrected for platform motion.
+//
+// For a platform in motion, spectrum width is increased because 
+//   different parts of the beam observe the platform velocity 
+//   differently. If this parameter is true, we use the georeference data 
+//   to correct the spectrum width for platform motion effects. We specify 
+//   the beam width to be used for this correction, since this may differ 
+//   somewhat from the nominal beam width.
+//
+//
+// Type: boolean
+//
+
+compute_width_corrected_for_platform_motion = TRUE;
+
+///////////// width_correction_beamwidth_deg //////////
+//
+// Beam width to be used for correcting spectrum width for motion (deg).
+//
+// This may differ from the nominal radar spectrum width.
+//
+//
+// Type: double
+//
+
+width_correction_beamwidth_deg = 0.69;
 
 ///////////// spectrum_width_method ///////////////////
 //
@@ -3654,7 +3686,8 @@ beam_wait_msecs = 0;
 //          VEL_V_ONLY
 //          VEL_ALT_FOLD_INTERVAL
 //          VEL_ALT_FOLD_CONFIDENCE
-//          VEL_CORRECTED
+//          VEL_CORR_VERT
+//          VEL_CORR_MOTION
 //          VEL_PRT_SHORT
 //          VEL_PRT_LONG
 //          VEL_DIFF
@@ -3668,6 +3701,7 @@ beam_wait_msecs = 0;
 //          WIDTH_V_ONLY
 //          WIDTH_PRT_LONG
 //          WIDTH_PRT_SHORT
+//          WIDTH_CORR_MOTION
 //          NCP
 //          NCP_H_ONLY
 //          NCP_V_ONLY
@@ -3859,8 +3893,18 @@ output_fields = {
   }
   ,
   {
-    id = VEL_CORRECTED,
+    id = VEL_CORR_MOTION,
     name = "VEL",
+    units = "m/s",
+    scale = 0.01,
+    bias = -320,
+    write_unfiltered = TRUE,
+    write_filtered = FALSE
+  }
+  ,
+  {
+    id = VEL_CORR_VERT,
+    name = "VEL_VERT",
     units = "m/s",
     scale = 0.01,
     bias = -320,
@@ -3880,6 +3924,16 @@ output_fields = {
   ,
   {
     id = WIDTH,
+    name = "WIDTH_RAW",
+    units = "m/s",
+    scale = 0.001,
+    bias = -0.01,
+    write_unfiltered = TRUE,
+    write_filtered = FALSE
+  }
+  ,
+  {
+    id = WIDTH_CORR_MOTION,
     name = "WIDTH",
     units = "m/s",
     scale = 0.001,
