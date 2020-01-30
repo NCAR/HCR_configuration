@@ -1,4 +1,4 @@
- notes on running scripts for QC processes
+Notes on running scripts for QC processes
 
 #################################################################
 # Environment is set in:
@@ -58,14 +58,14 @@ $DATA_DIR/txt/SOCRATES.temperatures.txt
 #################################################################
 # LNA and pod temperature analysis
 #
-# analyze temperatures and powers from noise source cals (Rike)
+# analyze temperatures and powers from noise source cals
 #
 # As an example:
 #   input data is in $DATA_DIR/txt/SOCRATES.temperatures.txt
 #
 # Run Matlab to read moments, correlate with temps.
 #
-#   Results file is: $DATA_DIR/calFiles/tempsTable_socrates.txt
+#   Results file is: $DATA_DIR/$QC_VERSION/calFiles/tempsTable_socrates.txt
 #
 # As an example for socrates qc2, results are in:
 

@@ -3,10 +3,9 @@
 clear all;
 close all;
 
-project='cset';
+project='socrates';
 
-addpath('/h/eol/romatsch/gitPriv/utils/');
-addpath('/h/eol/romatsch/gitPriv/process_HCR/NSCAL/functions/');
+addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
 figdir=['/h/eol/romatsch/hcrCalib/nsCal/figs/qc2/' project '/lnaTemps/'];
 
@@ -27,7 +26,7 @@ else
     return
 end
 
-filedir='/h/eol/romatsch/hcrCalib/nsCal/inFiles/';
+filedir='~/git/HCR_configuration/projDir/qc/dataProcessing/nsCal/inFiles/';
 infile=['cal_' project '.dat'];
 
 inlist=readtable([filedir infile]);
