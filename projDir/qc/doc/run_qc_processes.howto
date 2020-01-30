@@ -64,12 +64,15 @@ $DATA_DIR/txt/SOCRATES.temperatures.txt
 #   input data is in $DATA_DIR/txt/SOCRATES.temperatures.txt
 #
 # Run Matlab to read moments, correlate with temps.
+# 
+# Make an input file with all the cal events and put it in $PROJ_DIR/qc/dataProcessing/nsCal/inFiles
 #
-#   Results file is: $DATA_DIR/$QC_VERSION/calFiles/tempsTable_socrates.txt
+# Run $PROJ_DIR/qc/dataProcessing/nsCal/determine_LNA_tempSlope.m
+# and then
+# $PROJ_DIR/qc/dataProcessing/nsCal/determine_Pod_tempSlope.m
 #
-# As an example for socrates qc2, results are in:
-
-/scr/snow2/rsfdata/projects/socrates/hcr/qc2/calFiles/tempsTable_socrates.txt
+#   Results file is: $PROJ_DIR/qc/dataProcessing/nsCal/inFiles/tempsTable_socrates.txt
+#
 
 ###################################################################
 # Run HcrTempRxGain to compute gain change with temp
