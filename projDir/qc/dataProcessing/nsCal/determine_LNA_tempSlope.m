@@ -82,8 +82,6 @@ colorAll=jet(size(inlist,1));
 plotSym='^';
 
 for ii=1:size(inlist,1)
-
-    close all
     
     disp(['Case ' num2str(ii) ' from ' num2str(size(inlist,1))]);
     startTime=datetime(inlist{ii,1:6});
@@ -266,11 +264,11 @@ for ii=1:size(inlist,1)
     end
     
     % Debug figure
-    figure
-    plot(time,dBZmean);
-    xlim([time(1) time(end)]);
-    hold on
-    plot(time,movmean(dBZmean,600));
+%     figure
+%     plot(time,dBZmean);
+%     xlim([time(1) time(end)]);
+%     hold on
+%     plot(time,movmean(dBZmean,600));
     % %%%%%%%%%%%
     
     f2=figure;

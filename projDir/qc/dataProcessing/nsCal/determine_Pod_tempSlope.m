@@ -4,16 +4,15 @@
 clear all;
 close all;
 
-project='cset';
+project='socrates';
 
-addpath('/h/eol/romatsch/gitPriv/utils/');
-addpath('/h/eol/romatsch/gitPriv/process_HCR/NSCAL/functions/');
+addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
 figdir=['/h/eol/romatsch/hcrCalib/nsCal/figs/qc2/' project '/podTemps/'];
 
 if strcmp(project,'socrates')
     indir='/scr/snow2/rsfdata/projects/socrates/hcr/cfradial/moments/10hz/'; %socrates
-    highResTempDir='/scr/rain1/rsfdata/projects/socrates/hcr/qc/temperatures1s/';
+    highResTempDir='/scr/snow2/rsfdata/projects/socrates/hcr/qc/temperatures1s/';
 elseif strcmp(project,'cset')
     indir='/scr/snow2/rsfdata/projects/cset/hcr/cfradial/moments/10hz/'; %cset raw
     highResTempDir='/h/eol/romatsch/data/hcrCalib/temps/';
@@ -28,7 +27,7 @@ else
     return
 end
 
-filedir='/h/eol/romatsch/hcrCalib/nsCal/inFiles/';
+filedir='~/git/HCR_configuration/projDir/qc/dataProcessing/nsCal/inFiles/';
 infile=['cal_' project '.dat'];
 
 inlist=readtable([filedir infile]);
@@ -176,6 +175,14 @@ for ii=1:size(inlist,1)
             indata.Properties.VariableNames=tempnames;
         end
     end
+    
+    % Remove spaces in variable names if necessary
+    varNames=indata.Properties.VariableNames;
+    newNames={};
+    for aa=1:length(varNames)
+        newNames{end+1}=erase(varNames{aa}," ");
+    end
+    indata.Properties.VariableNames=newNames;
     
     EikTemp=indata.EikTemp;
     PolSwitchTemp=indata.PolarizationSwitchTemp;
