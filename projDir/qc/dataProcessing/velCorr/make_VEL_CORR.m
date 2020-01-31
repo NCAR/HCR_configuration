@@ -5,18 +5,18 @@ close all
 
 savefig=1;
 
-addpath(genpath('/h/eol/romatsch/gitPriv/utils/'));
+addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-project='otrec'; % socrates, cset, aristo, otrec
-quality='qc1'; % field, qc1, qc2
+project='cset'; % socrates, cset, aristo, otrec
+quality='qc2'; % field, qc1, qc2
 freqData='10hz'; % 10hz, 100hz, or 2hz
 
 plotLine=1;
 plotSurf=1;
 
-testCases=readtable(['/h/eol/romatsch/hcrCalib/velCorr/',project,'/testCases_VEL_CORR.dat']);
+testCases=readtable(['~/git/HCR_configuration/projDir/qc/dataProcessing/velCorr/inFiles/testCases_cset.dat']);
 
-figdir=['/h/eol/romatsch/hcrCalib/velCorr/',project,'/velFigs_VEL_CORR/'];
+figdir=['/h/eol/romatsch/hcrCalib/velCorr/',project,'/velFigs_final/'];
 formatOut = 'yyyymmdd_HHMM';
 
 indir=HCRdir(project,quality,freqData);

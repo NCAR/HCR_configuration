@@ -96,43 +96,46 @@ $DATA_DIR/txt/SOCRATES.temperatures.txt
 /scr/snow2/rsfdata/projects/socrates/hcr/qc2/spdb/tempVsGain
 
 #################################################################
-# Dsr2Radx - 100 hz
+# Dsr2Radx and Iq2Dsr - 100 hz
 #
-# Save out 100Hz moments files in CfRadial
-# Open terminal
-#
-# NOTE: start this script first because it will wait for output
-# from Iq2Dsr
-
-cd ~/git/HCR_configuration/projDir/qc/scripts
-./run_Dsr2Radx.qc.100hz
-
-#################################################################
 # Iq2Dsr
 #
-# This reads time series, computes moments, corrects gain for
-# temperatures, writes 100hz moments data to FMQ (file message queue)
+# Iq2Dsr reads time series and computes moments
+# corrects gain for temperatures
+# corrects spectral widths
+# corrects altitude for deviation from ellipsoid
+# corrects velocities for aircraft motion (vertical and horizontal)
 #
-# NOTE: the velocity in these moments are only corrected for the
-# vertical motion of the aircraft.
+# writes 100hz moments data to FMQ (file message queue)
 #
-# Open terminal
-# run
+# Dsr2Radx
+#
+# Save out 100Hz moments files in CfRadial
+#
+# NOTE: start this script first because it will wait for output from Iq2Dsr
+
+# There is a script set up to run start both processes in the right order:
 
 cd ~/git/HCR_configuration/projDir/qc/scripts
-./run_Iq2Dsr.qc.100hz &
-tail -f $DATA_DIR/logs/Iq2Dsr.qc.100hz
+./run_qc.100hz.socrates
+
+# It does the following:
+./run_Dsr2Radx.qc.100hz.socrates
+./run_Iq2Dsr.qc.100hz.socrates
 
 # NOTE: to kill this step run:
-
+./kill_qc.100hz.socrates
+# or
+snuff run_Dsr2Radx.qc.100hz.socrates
 snuff "Dsr2Radx -params Dsr2Radx.qc.100hz"
-snuff run_Iq2Dsr.qc.100hz Iq2Dsr
+snuff run_Iq2Dsr.qc.100hz.socrates
+snuff "Iq2Dsr -params Iq2Dsr.qc.100hz.socrates"
 
 #################################################################
 # RadxDwellCombine - combine 100hz data into 10hz dwells
 #
 # NOTE: the velocity in these moments are only corrected for the
-# vertical motion of the aircraft.
+# motion of the aircraft.
 
 cd ~/git/HCR_configuration/projDir/qc/scripts
 ./run_RadxDwellCombine.qc.10hz

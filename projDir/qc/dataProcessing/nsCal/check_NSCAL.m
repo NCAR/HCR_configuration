@@ -3,15 +3,14 @@
 clear all;
 close all;
 
-project='cset';
+project='socrates';
 
-addpath('/h/eol/romatsch/gitPriv/utils/');
-addpath('/h/eol/romatsch/gitPriv/process_HCR/NSCAL/functions/');
+addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
 figdir=['/h/eol/romatsch/hcrCalib/nsCal/figs/qc2/' project '/checkQC2/'];
 
 if strcmp(project,'socrates')
-    indir='/scr/snow2/rsfdata/projects/socrates/hcr/cfradial/moments/10hz/'; %socrates
+    indir='/scr/snow2/rsfdata/projects/socrates/hcr/qc2/cfradial/moments/100hz/'; %socrates
     highResTempDir='/scr/snow2/rsfdata/projects/socrates/hcr/qc/temperatures1s/';
 elseif strcmp(project,'cset')
     indir='/scr/rain1/rsfdata/projects/cset/hcr/qc2/cfradial/moments/100hz/'; %cset raw
@@ -27,7 +26,7 @@ else
     return
 end
 
-filedir='/h/eol/romatsch/hcrCalib/nsCal/inFiles/';
+filedir='~/git/HCR_configuration/projDir/qc/dataProcessing/nsCal/inFiles/';
 infile=['cal_' project '.dat'];
 
 inlist=readtable([filedir infile]);
@@ -113,6 +112,9 @@ for ii=1:size(inlist,1)
         pulseWidth=cat(2,pulseWidth,pulseWidth1);
     end
     
+    if isempty(dBmVC)
+        continue
+    end
     % Check if pulse width changes over all files
     pulseWidthChange=find(pulseWidth ~= pulseWidth(1));
     
@@ -124,6 +126,7 @@ for ii=1:size(inlist,1)
     % Get rid of non noise source cal data
     around90=zeros(size(dBmVC));
     around90(dBmVC>-95 & dBmVC<-85)=1;
+
     sum90=nansum(around90,1);
     tooSmall=find(sum90<(size(dBmVC,1)*0.9));
     
@@ -140,6 +143,10 @@ for ii=1:size(inlist,1)
     dBZmean=nanmean(dBZ,1);
     
     time(outOfBoundsInds)=[];
+    
+    if isempty(dBmVC)
+        continue
+    end
     
     %Get high resolution temperature data if wanted
     if inlist{ii,13}==1 | inlist{ii,13}==2
@@ -162,6 +169,15 @@ for ii=1:size(inlist,1)
                 indata.Properties.VariableNames=tempnames;
             end
         end
+        
+        % Remove spaces in variable names if necessary
+        varNames=indata.Properties.VariableNames;
+        newNames={};
+        for aa=1:length(varNames)
+            newNames{end+1}=erase(varNames{aa}," ");
+        end
+        indata.Properties.VariableNames=newNames;
+        
         EikTemp=indata.EikTemp;
         PolSwitchTemp=indata.PolarizationSwitchTemp;
         RfDetTemp=indata.RfDetectorTemp;

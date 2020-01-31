@@ -7,11 +7,11 @@ savefig=1;
 
 addpath(genpath('/h/eol/romatsch/gitPriv/utils/'));
 
-project='otrec'; % socrates, cset, aristo, otrec
-quality='qc1'; % field, qc1, qc2
+project='cset'; % socrates, cset, aristo, otrec
+quality='qc2'; % field, qc1, qc2
 freqData='10hz'; % 10hz, 100hz, or 2hz
 
-testCases=readtable(['/h/eol/romatsch/hcrCalib/velCorr/',project,'/testCases.dat']);
+testCases=readtable(['~/git/HCR_configuration/projDir/qc/dataProcessing/velCorr/inFiles/testCases_cset.dat']);
 
 figdir=['/h/eol/romatsch/hcrCalib/velCorr/',project,'/velFigs/'];
 formatOut = 'yyyymmdd_HHMM';
@@ -28,7 +28,7 @@ color_map=colormap(vel_default(29));
 limits=-4.05:0.3:4.05;
 limits=[-inf limits inf];
 
-for kk=1:size(testCases,1)
+for kk=4:size(testCases,1)
     startTime=datetime(testCases{kk,1},testCases{kk,2},testCases{kk,3}, ...
         testCases{kk,4},testCases{kk,5},0);
     endTime=datetime(testCases{kk,6},testCases{kk,7},testCases{kk,8}, ...
@@ -81,16 +81,17 @@ for kk=1:size(testCases,1)
 % %         posInds2=find(data.VEL_RAW(linInd)>0);
 % %         data.VEL_RAW(:,posInds2)=data.VEL_RAW(:,posInds2)-2.*data.nyquist_velocity(posInds2);
         
-        xxCorr=sind(data.azimuth).*cosd(data.elevation).*data.eastward_velocity;
-        yyCorr=cosd(data.azimuth).*cosd(data.elevation).*data.northward_velocity;
-        
-        % Use this equations when starting from VEL
-        velAngCorr=data.VEL+xxCorr+yyCorr;
-        
+%         xxCorr=sind(data.azimuth).*cosd(data.elevation).*data.eastward_velocity;
+%         yyCorr=cosd(data.azimuth).*cosd(data.elevation).*data.northward_velocity;
+%         
+%         % Use this equations when starting from VEL
+%         velAngCorr=data.VEL+xxCorr+yyCorr;
+%         
 %         % Use these equations when starting from VEL_RAW
 %         zzCorr=sind(data.elevation).*data.vertical_velocity;
 %         velAngCorr2=data.VEL_RAW+xxCorr+yyCorr+zzCorr;
             
+        velAngCorr=data.VEL;
         %% Fill in extinct echo
         surfDBZ=data.DBZ(linInd);
         surfDBZlin=10.^(surfDBZ./10);
