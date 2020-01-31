@@ -55,7 +55,7 @@ beam_count_for_debug_print = 30;
 // Type: string
 //
 
-instance = "qc.100hz";
+instance = "qc.100hz.socrates";
 
 //======================================================================
 //
@@ -89,7 +89,7 @@ use_multiple_threads = TRUE;
 // Type: int
 //
 
-n_compute_threads = 20;
+n_compute_threads = 16;
 
 //======================================================================
 //
@@ -547,7 +547,7 @@ override_radar_location = FALSE;
 // Type: double
 //
 
-radar_latitude_deg = 0.0;
+radar_latitude_deg = 0;
 
 ///////////// radar_longitude_deg /////////////////////
 //
@@ -559,7 +559,7 @@ radar_latitude_deg = 0.0;
 // Type: double
 //
 
-radar_longitude_deg = 0.0;
+radar_longitude_deg = 0;
 
 ///////////// radar_altitude_meters ///////////////////
 //
@@ -571,7 +571,7 @@ radar_longitude_deg = 0.0;
 // Type: double
 //
 
-radar_altitude_meters = 0.0;
+radar_altitude_meters = 0;
 
 ///////////// override_gate_geometry //////////////////
 //
@@ -1138,14 +1138,46 @@ staggered_prt_median_filter_len = 1;
 //
 // Option to compute velocity corrected for platform motion.
 //
-// If true, we use georeference to account for platform motion, and 
-//   corrected for velocity accordingly.
+// Measured vel can be influenced both by vertical and horizontal 
+//   platform motinos. If this parameter is true, we use the georeference 
+//   data to account for platform motion, and correct for velocity 
+//   accordingly. We compute the correction first for vertical velocity, 
+//   and then correct for the effects of horizontal veocity.
 //
 //
 // Type: boolean
 //
 
 compute_velocity_corrected_for_platform_motion = TRUE;
+
+///////////// compute_width_corrected_for_platform_motion 
+//
+// Option to compute width corrected for platform motion.
+//
+// For a platform in motion, spectrum width is increased because 
+//   different parts of the beam observe the platform velocity 
+//   differently. If this parameter is true, we use the georeference data 
+//   to correct the spectrum width for platform motion effects. We specify 
+//   the beam width to be used for this correction, since this may differ 
+//   somewhat from the nominal beam width.
+//
+//
+// Type: boolean
+//
+
+compute_width_corrected_for_platform_motion = TRUE;
+
+///////////// width_correction_beamwidth_deg //////////
+//
+// Beam width to be used for correcting spectrum width for motion (deg).
+//
+// This may differ from the nominal radar spectrum width.
+//
+//
+// Type: double
+//
+
+width_correction_beamwidth_deg = 0.69;
 
 ///////////// spectrum_width_method ///////////////////
 //
@@ -1579,6 +1611,8 @@ rx_temp_gain_corrections = {
 //
 // FOR HCR, CORRECT RECEIVER GAIN FOR TEMPERATURE USING VALUES FROM SPDB.
 //
+// Also, optionally correct georeference height.
+//
 //======================================================================
  
 ///////////// correct_hcr_v_rx_gain_for_temperature ///
@@ -1586,9 +1620,9 @@ rx_temp_gain_corrections = {
 // Option to correct the HCR V-channel receiver gain for temperature.
 //
 // Computing the HCR receiver gain correction is complicated. Therefore 
-//   this is done offline, and the results are stored as XML in SPDB. Here 
-//   we retrieve the values from SPDB and apply them to correct the 
-//   receiver gain.
+//   this is done offline, using the application HcrTempRxGain, and the 
+//   results are stored as XML in SPDB. Here we retrieve the values from 
+//   SPDB and apply them to correct the receiver gain.
 //
 //
 // Type: boolean
@@ -1628,6 +1662,38 @@ hcr_delta_gain_search_margin_secs = 3600;
 //
 
 hcr_v_rx_delta_gain_tag_list = "<HcrTempGainCorrection><v_delta_gain>";
+
+///////////// correct_altitude_for_egm ////////////////
+//
+// Option to correct the altitude for the geoid.
+//
+// This only applies for moving platforms. Altitude from some GPS units 
+//   is based on the WGS84 ellipsoid. To get altitude relative to MSL, a 
+//   correction for the geoid based on gravitation strength is required. 
+//   We use the EGM-2008 geoid table. See: 
+//   https://earth-info.nga.mil/GandG/wgs84/gravitymod/egm2008/egm08_wgs84.
+//   html.
+//
+//
+// Type: boolean
+//
+
+correct_altitude_for_egm = TRUE;
+
+///////////// egm_2008_geoid_file /////////////////////
+//
+// Path to geoid table file.
+//
+// Downloads available from 
+//   https://earth-info.nga.mil/GandG/wgs84/gravitymod. NetCDF file is on 
+//   the shared drive at HCR->dataProcessing->AltitudeCorrection. The app 
+//   Egm2Mdv will convert the downloadable file to a netCDF format file.
+//
+//
+// Type: string
+//
+
+egm_2008_geoid_file = "$(DATA_DIR)/egm/EGM_2008_WGS84_2.5minx2.5min.nc";
 
 //======================================================================
 //
@@ -2237,6 +2303,22 @@ KDP_HB_rhohv_threshold = 0.75;
 //
 
 use_estimated_noise_for_noise_subtraction = TRUE;
+
+///////////// max_valid_noise_bias_db /////////////////
+//
+// Max valid value for noise bias (dB).
+//
+// The estimated noise is only used if the estimated noise bias does not 
+//   exceed this value. For example, if you do not want to suppress sun 
+//   spikes, you can set this value to something like 3dB, since sun 
+//   spikes generally cause a noise increase of 10 dB or more, depending 
+//   on the wavelength.
+//
+//
+// Type: double
+//
+
+max_valid_noise_bias_db = 20;
 
 ///////////// noise_ngates_kernel /////////////////////
 //
@@ -3604,7 +3686,8 @@ beam_wait_msecs = 0;
 //          VEL_V_ONLY
 //          VEL_ALT_FOLD_INTERVAL
 //          VEL_ALT_FOLD_CONFIDENCE
-//          VEL_CORRECTED
+//          VEL_CORR_VERT
+//          VEL_CORR_MOTION
 //          VEL_PRT_SHORT
 //          VEL_PRT_LONG
 //          VEL_DIFF
@@ -3618,6 +3701,7 @@ beam_wait_msecs = 0;
 //          WIDTH_V_ONLY
 //          WIDTH_PRT_LONG
 //          WIDTH_PRT_SHORT
+//          WIDTH_CORR_MOTION
 //          NCP
 //          NCP_H_ONLY
 //          NCP_V_ONLY
@@ -3809,8 +3893,18 @@ output_fields = {
   }
   ,
   {
-    id = VEL_CORRECTED,
+    id = VEL_CORR_MOTION,
     name = "VEL",
+    units = "m/s",
+    scale = 0.01,
+    bias = -320,
+    write_unfiltered = TRUE,
+    write_filtered = FALSE
+  }
+  ,
+  {
+    id = VEL_CORR_VERT,
+    name = "VEL_VERT",
     units = "m/s",
     scale = 0.01,
     bias = -320,
@@ -3830,6 +3924,16 @@ output_fields = {
   ,
   {
     id = WIDTH,
+    name = "WIDTH_RAW",
+    units = "m/s",
+    scale = 0.001,
+    bias = -0.01,
+    write_unfiltered = TRUE,
+    write_filtered = FALSE
+  }
+  ,
+  {
+    id = WIDTH_CORR_MOTION,
     name = "WIDTH",
     units = "m/s",
     scale = 0.001,
