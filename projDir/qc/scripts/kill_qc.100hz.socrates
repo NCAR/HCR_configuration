@@ -1,0 +1,13 @@
+#! /bin/csh -f
+
+# Kill HCR 100Hz QC processing for socrates
+#
+
+set echo
+
+snuff run_Dsr2Radx.qc.100hz.socrates
+snuff "Dsr2Radx -params Dsr2Radx.qc.100hz"
+
+snuff run_Iq2Dsr.qc.100hz.socrates
+snuff "Iq2Dsr -params Iq2Dsr.qc.100hz.socrates"
+

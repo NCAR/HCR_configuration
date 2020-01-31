@@ -1,0 +1,24 @@
+#! /bin/csh -f
+
+# HCR 100Hz QC processing for socrates
+#
+
+# first start Dsr2Radx
+
+echo "==>> running run_Dsr2Radx.qc.100hz.socrates"
+run_Dsr2Radx.qc.100hz.socrates >& /tmp/Dsr2Radx.qc.100hz.socrates.log &
+echo "======>> log will be in file: /tmp/Dsr2Radx.qc.100hz.socrates.log"
+
+# then run Iq2Dsr
+
+echo "==>> running run_Iq2Dsr.qc.100hz.socrates"
+run_Iq2Dsr.qc.100hz.socrates >& /tmp/Iq2Dsr.qc.100hz.socrates.log &
+echo "======>> log will be in file: /tmp/Iq2Dsr.qc.100hz.socrates.log"
+
+echo "To see these logs, use:"
+echo "  tail -f /tmp/Dsr2Radx.qc.100hz.socrates.log"
+echo "  tail -f /tmp/Iq2Dsr.qc.100hz.socrates.log"
+echo
+echo "To kill these processes, use:"
+echo "  kill_qc.100hz.socrates"
+
