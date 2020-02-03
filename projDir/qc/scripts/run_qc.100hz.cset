@@ -6,18 +6,18 @@
 # first start Dsr2Radx
 
 echo "==>> running run_Dsr2Radx.qc.100hz.cset"
-run_Dsr2Radx.qc.100hz.cset >& /tmp/Dsr2Radx.qc.100hz.cset.log &
-echo "======>> log will be in file: /tmp/Dsr2Radx.qc.100hz.cset.log"
+run_Dsr2Radx.qc.100hz.cset >& $LOG_DIR/Dsr2Radx.qc.100hz.cset.log &
+echo "======>> log will be in file: $LOG_DIR/Dsr2Radx.qc.100hz.cset.log"
 
 # then run Iq2Dsr
 
 echo "==>> running run_Iq2Dsr.qc.100hz.cset"
-run_Iq2Dsr.qc.100hz.cset >& /tmp/Iq2Dsr.qc.100hz.cset.log &
-echo "======>> log will be in file: /tmp/Iq2Dsr.qc.100hz.cset.log"
+run_Iq2Dsr.qc.100hz.cset >& $LOG_DIR/Iq2Dsr.qc.100hz.cset.log &
+echo "======>> log will be in file: $LOG_DIR/Iq2Dsr.qc.100hz.cset.log"
 
 echo "To see these logs, use:"
-echo "  tail -f /tmp/Dsr2Radx.qc.100hz.cset.log"
-echo "  tail -f /tmp/Iq2Dsr.qc.100hz.cset.log"
+echo "  tail -f $LOG_DIR/Dsr2Radx.qc.100hz.cset.log"
+echo "  tail -f $LOG_DIR/Iq2Dsr.qc.100hz.cset.log"
 echo
 echo "To kill these processes, use:"
 echo "  kill_qc.100hz.cset"
