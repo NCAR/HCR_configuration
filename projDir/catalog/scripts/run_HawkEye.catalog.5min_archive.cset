@@ -1,0 +1,39 @@
+#! /bin/csh -f
+
+# HCR QC processing for CSET
+
+source ~/git/HCR_configuration/projDir/system/params/project_info.cset
+
+cd $PROJ_DIR/catalog/params
+
+HawkEye -params HawkEye.catalog.5min_archive.cset -debug -images_start_time "2015 07 01 17 20 00" -images_end_time "2015 07 01 22 21 00"
+
+HawkEye -params HawkEye.catalog.5min_archive.cset -debug -images_start_time "2015 07 07 14 00 00" -images_end_time "2015 07 07 21 14 00" 
+
+HawkEye -params HawkEye.catalog.5min_archive.cset -debug -images_start_time "2015 07 09 16 25 00" -images_end_time "2015 07 09 23 34 00" 
+
+HawkEye -params HawkEye.catalog.5min_archive.cset -debug -images_start_time "2015 07 12 14 45 00" -images_end_time "2015 07 12 21 11 00" 
+
+HawkEye -params HawkEye.catalog.5min_archive.cset -debug -images_start_time "2015 07 14 16 35 00" -images_end_time "2015 07 14 23 59 30" 
+
+HawkEye -params HawkEye.catalog.5min_archive.cset -debug -images_start_time "2015 07 17 14 55 00" -images_end_time "2015 07 17 21 47 00" 
+
+HawkEye -params HawkEye.catalog.5min_archive.cset -debug -images_start_time "2015 07 19 16 20 00" -images_end_time "2015 07 20 00 04 30" 
+
+HawkEye -params HawkEye.catalog.5min_archive.cset -debug -images_start_time "2015 07 22 14 55 00" -images_end_time "2015 07 22 22 04 00" 
+
+HawkEye -params HawkEye.catalog.5min_archive.cset -debug -images_start_time "2015 07 24 16 20 00" -images_end_time "2015 07 25 00 19 00" 
+
+HawkEye -params HawkEye.catalog.5min_archive.cset -debug -images_start_time "2015 07 27 14 50 00" -images_end_time "2015 07 27 22 04 59" 
+
+HawkEye -params HawkEye.catalog.5min_archive.cset -debug -images_start_time "2015 07 29 16 25 00" -images_end_time "2015 07 29 23 57 00" 
+
+HawkEye -params HawkEye.catalog.5min_archive.cset -debug -images_start_time "2015 08 01 14 50 00" -images_end_time "2015 08 01 22 26 00" 
+
+HawkEye -params HawkEye.catalog.5min_archive.cset -debug -images_start_time "2015 08 03 16 20 00" -images_end_time "2015 08 03 23 28 00" 
+
+HawkEye -params HawkEye.catalog.5min_archive.cset -debug -images_start_time "2015 08 07 14 55 00" -images_end_time "2015 08 07 21 54 00" 
+
+HawkEye -params HawkEye.catalog.5min_archive.cset -debug -images_start_time "2015 08 09 16 20 00" -images_end_time "2015 08 09 23 29 59" 
+
+HawkEye -params HawkEye.catalog.5min_archive.cset -debug -images_start_time "2015 08 12 15 20 00" -images_end_time "2015 08 12 21 56 00" 
