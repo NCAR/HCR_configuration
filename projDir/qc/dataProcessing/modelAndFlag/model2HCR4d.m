@@ -2,35 +2,27 @@
 clear all;
 close all;
 
-disp(datetime('now'));
-
 addpath(genpath('/h/eol/romatsch/gitPriv/utils/'));
 
-project='cset'; % socrates, cset, aristo, otrec
+project='socrates'; % socrates, cset, aristo, otrec
 quality='qc2'; % field, qc1, qc2
 freqData='10hz'; % 10hz, 100hz, or 2hz
 whichModel='era5'; % ecmwf or era5
 
 formatOut = 'yyyymmdd_HHMM';
 
-if strcmp(whichModel,'era5')
-    modeldir=['/scr/sci/romatsch/data/reanalysis/ecmwf/era5/',project,'/'];
-    outdir=['/scr/sci/romatsch/data/reanalysis/ecmwf/era5interp/',project,'/',freqData,'/'];
-elseif strcmp(whichModel,'ecmwf')
-    modeldir=['/scr/sci/romatsch/data/reanalysis/ecmwf/forecast/',project,'/'];
-    outdir=['/scr/sci/romatsch/data/reanalysis/ecmwf/forecastInterp/',project,'/',freqData,'/'];
-end
+[modeldir outdir]=modelDir(project,whichModel,freqData);
 
-topodir=['/scr/sci/romatsch/data/topo/gtopo30s/',project,'/'];
+topodir=topoDir(project);
 
-infile=['/h/eol/romatsch/hcrCalib/oceanScans/biasInFiles/flights_',project,'_data.txt'];
+infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_',project,'_data.txt'];
 
 caseList = table2array(readtable(infile));
 
 indir=HCRdir(project,quality,freqData);
 
 %% Go through flights
-for ii=9:size(caseList,1)
+for ii=1:size(caseList,1)
     disp(['Flight ',num2str(ii)]);
     
     startTime=datetime(caseList(ii,1:6));
