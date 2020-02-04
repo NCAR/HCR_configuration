@@ -1,0 +1,43 @@
+#! /bin/csh -f
+
+# HCR QC processing
+#
+# Run RadxConvert to select desired fields, and trim out unwanted fields
+# Reads 10 hz data in CfRadial files, removed unwanted fields, and
+# writes 10hz CfRadial data
+
+source ~/git/HCR_configuration/projDir/system/params/project_info.socrates
+
+cd $PROJ_DIR/qc/params
+
+# flight by flight
+
+RadxConvert -params RadxConvert.qc.select_fields -debug -start "2018 01 15 22 40 00" -end "2018 01 16 05 50 00" >& $LOG_DIR/RadxConvert.qc2.rf01.socrates.log &
+
+RadxConvert -params RadxConvert.qc.select_fields -debug -start "2018 01 19 00 35 00" -end "2018 01 19 07 20 00" >& $LOG_DIR/RadxConvert.qc2.rf02.socrates.log &
+
+RadxConvert -params RadxConvert.qc.select_fields -debug -start "2018 01 22 20 55 00" -end "2018 01 23 03 55 00" >& $LOG_DIR/RadxConvert.qc2.rf03.socrates.log &
+
+RadxConvert -params RadxConvert.qc.select_fields -debug -start "2018 01 23 23 05 00" -end "2018 01 24 06 10 00" >& $LOG_DIR/RadxConvert.qc2.rf04.socrates.log &
+
+RadxConvert -params RadxConvert.qc.select_fields -debug -start "2018 01 25 22 43 00" -end "2018 01 26 05 30 00" >& $LOG_DIR/RadxConvert.qc2.rf05.socrates.log &
+
+RadxConvert -params RadxConvert.qc.select_fields -debug -start "2018 01 28 22 45 00" -end "2018 01 29 06 20 00" >& $LOG_DIR/RadxConvert.qc2.rf06.socrates.log &
+
+RadxConvert -params RadxConvert.qc.select_fields -debug -start "2018 01 30 00 48 00" -end "2018 01 31 08 10 00" >& $LOG_DIR/RadxConvert.qc2.rf07.socrates.log &
+
+RadxConvert -params RadxConvert.qc.select_fields -debug -start "2018 02 03 23 05 00" -end "2018 02 04 06 55 00" >& $LOG_DIR/RadxConvert.qc2.rf08.socrates.log &
+
+RadxConvert -params RadxConvert.qc.select_fields -debug -start "2018 02 04 22 45 00" -end "2018 02 05 07 00 00" >& $LOG_DIR/RadxConvert.qc2.rf09.socrates.log &
+
+RadxConvert -params RadxConvert.qc.select_fields -debug -start "2018 02 07 20 45 00" -end "2018 02 08 05 10 00" >& $LOG_DIR/RadxConvert.qc2.rf10.socrates.log &
+
+RadxConvert -params RadxConvert.qc.select_fields -debug -start "2018 02 16 01 28 00" -end "2018 02 17 06 25 00" >& $LOG_DIR/RadxConvert.qc2.rf11.socrates.log &
+
+RadxConvert -params RadxConvert.qc.select_fields -debug -start "2018 02 17 23 43 00" -end "2018 02 18 07 52 00" >& $LOG_DIR/RadxConvert.qc2.rf12.socrates.log &
+
+RadxConvert -params RadxConvert.qc.select_fields -debug -start "2018 02 19 22 48 00" -end "2018 02 20 06 34 00" >& $LOG_DIR/RadxConvert.qc2.rf13.socrates.log &
+
+RadxConvert -params RadxConvert.qc.select_fields -debug -start "2018 02 21 22 38 00" -end "2018 02 22 06 46 00" >& $LOG_DIR/RadxConvert.qc2.rf14.socrates.log &
+
+RadxConvert -params RadxConvert.qc.select_fields -debug -start "2018 02 24 01 56 00" -end "2018 02 24 08 44 00" >& $LOG_DIR/RadxConvert.qc2.rf15.socrates.log &
