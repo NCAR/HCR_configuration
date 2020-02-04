@@ -8,5 +8,5 @@ elseif strcmp(project,'otrec')
  baseDir='/scr/snow1/rsfdata/projects/otrec/';
 end
 
-topoDirectory=[baseDir,'gtopo/'];
+topoDirectory=[baseDir,'topo/'];
 end
