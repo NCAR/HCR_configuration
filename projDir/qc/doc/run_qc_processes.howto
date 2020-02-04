@@ -132,6 +132,15 @@ snuff run_Iq2Dsr.qc.100hz.socrates
 snuff "Iq2Dsr -params Iq2Dsr.qc.100hz.socrates"
 
 #################################################################
+# Check tempereature correction
+# To check if the temperature correction from the previous step
+# worked as expected, run
+
+$PROJ_DIR/qc/dataProcessing/nsCal/check_NSCAL.m
+
+# In the generated figure, there should be no more temperature dependency.
+
+#################################################################
 # RadxDwellCombine - combine 100hz data into 10hz dwells
 #
 # NOTE: the velocity in these moments are only corrected for the
@@ -139,6 +148,84 @@ snuff "Iq2Dsr -params Iq2Dsr.qc.100hz.socrates"
 
 cd ~/git/HCR_configuration/projDir/qc/scripts
 ./run_RadxDwellCombine.qc.10hz
+
+#################################################################
+# Interpolate forecast or reanalysis data
+# 
+# Modify and run $PROJ_DIR/qc/dataProcessing/modelAndFlag/model2HCR4d.m
+
+# It needs an input file with the start and end dates of each flight
+# $PROJ_DIR/qc/dataProcessing/scriptsFiles/flights_socrates_data.txt
+
+# It also needs model input data from eather ecmwf forecasts or
+# era5 reanalysis which are in
+
+cd $DATA_DIR
+cd ../model/era5
+
+# Output is in .mat files in
+
+cd $DATA_DIR
+cd ../model/era5interp/10hz
+
+#################################################################
+# Output fields
+# Make data copy with selected fields. Run
+$PROJ_DIR/qc/scripts/run_RadxConvert.qc.select_fields.socrates
+
+# This will put the selected fields in
+# $DATA_DIR/QC_VERSION/cfradial/selected_fields
+
+# We make another copy of selected_fields to
+# $DATA_DIR/QC_VERSION/cfradial/final
+# Where the model data, flag field, etc. will be added
+# selected_fields is a backup which can be copied to final
+# again if something goes wrong during the addition of the
+# additional fields.
+
+#################################################################
+# Add model data
+# Add model data to cfradial files in
+# $DATA_DIR/QC_VERSION/cfradial/final
+
+# Run
+$PROJ_DIR/qc/dataProcessing/modelAndFlag/cfradialModel.m
+
+#################################################################
+# FLAG field and DBZ_masked
+# To create the flag field, run
+$PROJ_DIR/qc/dataProcessing/modelAndFlag/makeFlagField_wholeFlights.m
+
+# To add it to the cfradial files, run
+$PROJ_DIR/qc/dataProcessing/modelAndFlag/cfradialFlagfield.m
+
+# To add a DBZ field that has only cloud data, run
+$PROJ_DIR/qc/dataProcessing/modelAndFlag/cfradialDBZmasked.m
+
+#################################################################
+# VEL_CORR
+
+# To make the VEL_CORR field, modify and run
+$PROJ_DIR/qc/dataProcessing/velCorr/make_VEL_CORR_wholeFlights.m
+# The filter lenght can be adjusted in this file. To test out 
+# different filter lenghts, run
+$PROJ_DIR/qc/dataProcessing/velCorr/plotVelCorr_findPoly.m
+# on a few test cases.
+
+# To add it to the cfradial files, run
+$PROJ_DIR/qc/dataProcessing/velCorr/cfradialVelCorr.m
+
+#################################################################
+# Sea Surface Cal
+
+# To check the sea surface calfor ssCal events, run
+$PROJ_DIR/qc/dataProcessing/determine_bias.m
+
+# With the start and end dates of
+$PROJ_DIR/qc/dataProcessing/biasInFiles/cal_socrates_era5file.txt
+
+# To run nadir pointing ssCal for whole flights:
+$PROJ_DIR/qc/dataProcessing/determine_bias_nadir.m
 
 #################################################################
 # RadxMon - use to see moments are flowing

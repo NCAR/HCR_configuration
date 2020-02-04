@@ -17,7 +17,7 @@ if strcmp(project,'socrates')
         end
     elseif strcmp(quality,'qc2')
         if strcmp(freq,'100hz') | strcmp(freq,'10hz')
-            indir=['/scr/snow2/rsfdata/projects/socrates/hcr/qc2/cfradial/moments/',freq,'/'];
+            indir=['/scr/snow2/rsfdata/projects/socrates/hcr/qc2/cfradial/final/',freq,'/'];
         else
             disp('No 2hz data in qc2 data.');
             return

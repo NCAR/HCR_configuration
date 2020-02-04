@@ -5,30 +5,21 @@ close all;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Input variables %%%%%%%%%%%%%%%%%%%%%%%%%%
 
-project='cset'; %socrates, aristo, cset
+project='socrates'; %socrates, aristo, cset
 quality='qc2'; %field, qc1, or qc2
 freqData='10hz'; % 10hz, 100hz, or 2hz
 addName=''; % Extra name part for output files. Default is ''.
 whichModel='era5';
 
-addpath('~/gitPriv/process_HCR/oceanScans/functions/');
-addpath('~/gitPriv/process_HCR/oceanScans/colormaps/');
-addpath('~/gitPriv/process_HCR/NSCAL/functions/');
-addpath(genpath('~/gitPriv/utils/'));
-
-outdir=['/h/eol/romatsch/hcrCalib/mask/'];
+addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
 directories.dataDir=HCRdir(project,quality,freqData);
 
-if strcmp(whichModel,'era5')
-    directories.modeldir=['/scr/sci/romatsch/data/reanalysis/ecmwf/era5interp/',project,'/',freqData,'/'];
-elseif strcmp(whichModel,'ecmwf')
-    directories.modeldir=['/scr/sci/romatsch/data/reanalysis/ecmwf/forecastInterp/',project,'/',freqData,'/'];
-end
+[~,directories.modeldir]=modelDir(project,whichModel,freqData);
 
 outdir=directories.modeldir;
 
-infile=['/h/eol/romatsch/hcrCalib/oceanScans/biasInFiles/flights_',project,'_data.txt'];
+infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_',project,'_data.txt'];
 
 caseList = table2array(readtable(infile));
 

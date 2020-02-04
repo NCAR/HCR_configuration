@@ -2,27 +2,22 @@
 clear all;
 close all;
 
-addpath(genpath('/h/eol/romatsch/gitPriv/utils/'));
+addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-project='otrec'; % socrates, cset, aristo, otrec
-quality='qc1'; % field, qc1, qc2
+project='socrates'; % socrates, cset, aristo, otrec
+quality='qc2'; % field, qc1, qc2
 freqData='10hz';
 whichModel='era5';
 
 formatOut = 'yyyymmdd';
 
-infile=['/h/eol/romatsch/hcrCalib/oceanScans/biasInFiles/flights_',project,'_data.txt'];
+infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_',project,'_data.txt'];
 
 caseList = table2array(readtable(infile));
 
 indir=HCRdir(project,quality,freqData);
-%indir='/scr/snow1/rsfdata/projects/otrec/hcr/qc0/cfradial/addvars/10hz/';
 
-if strcmp(whichModel,'era5')
-    modeldir=['/scr/sci/romatsch/data/reanalysis/ecmwf/era5interp/',project,'/',freqData,'/'];
-elseif strcmp(whichModel,'ecmwf')
-    modeldir=['/scr/sci/romatsch/data/reanalysis/ecmwf/forecastInterp/',project,'/',freqData,'/'];
-end
+[~,modeldir]=modelDir(project,whichModel,freqData);
 
 %% Run processing
 
@@ -62,8 +57,8 @@ for ii=1:size(caseList,1)
             [C,ia,ib] = intersect(timeHcrNum,timeModelNum);
             
             if length(timeHCR)~=length(ib)
-                disp('Times do not match up.')
-                return
+                warning('Times do not match up. Skipping file.')
+                continue
             end
             
             % Write output
