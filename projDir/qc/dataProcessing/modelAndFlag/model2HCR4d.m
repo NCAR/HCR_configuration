@@ -2,7 +2,7 @@
 clear all;
 close all;
 
-addpath(genpath('/h/eol/romatsch/gitPriv/utils/'));
+addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
 project='socrates'; % socrates, cset, aristo, otrec
 quality='qc2'; % field, qc1, qc2
@@ -22,7 +22,7 @@ caseList = table2array(readtable(infile));
 indir=HCRdir(project,quality,freqData);
 
 %% Go through flights
-for ii=1:size(caseList,1)
+for ii=8:size(caseList,1)
     disp(['Flight ',num2str(ii)]);
     
     startTime=datetime(caseList(ii,1:6));
@@ -222,7 +222,7 @@ for ii=1:size(caseList,1)
                     vq=cat(2,vq,nan(length(newGrid),1));
                 end
             end
-            % Then grab the data points a the HCR grid
+            % Then grab the data points at the HCR grid
             Vq = interp2(X,Y,vq,xq(:,1),xq(:,2));
             modelvar=nan(size(data.range));
             modelvar(keepInds)=Vq;
