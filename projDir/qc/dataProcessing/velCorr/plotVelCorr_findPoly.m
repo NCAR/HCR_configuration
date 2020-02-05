@@ -7,11 +7,11 @@ savefig=1;
 
 addpath(genpath('/h/eol/romatsch/gitPriv/utils/'));
 
-project='cset'; % socrates, cset, aristo, otrec
+project='socrates'; % socrates, cset, aristo, otrec
 quality='qc2'; % field, qc1, qc2
 freqData='10hz'; % 10hz, 100hz, or 2hz
 
-testCases=readtable(['~/git/HCR_configuration/projDir/qc/dataProcessing/velCorr/inFiles/testCases_cset.dat']);
+testCases=readtable(['~/git/HCR_configuration/projDir/qc/dataProcessing/velCorr/inFiles/testCases_',project,'.dat']);
 
 figdir=['/h/eol/romatsch/hcrCalib/velCorr/',project,'/velFigs/'];
 formatOut = 'yyyymmdd_HHMM';

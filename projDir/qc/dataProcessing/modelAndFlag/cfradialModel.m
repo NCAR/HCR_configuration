@@ -22,7 +22,7 @@ indir=HCRdir(project,quality,freqData);
 %% Run processing
 
 % Go through flights
-for ii=4:size(caseList,1)
+for ii=1:size(caseList,1)
     
     disp(['Flight ',num2str(ii)]);
     
