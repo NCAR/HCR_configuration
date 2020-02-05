@@ -5,9 +5,9 @@ close all
 
 savefig=0;
 
-addpath(genpath('/h/eol/romatsch/gitPriv/utils/'));
+addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-project='cset'; % socrates, cset, aristo, otrec
+project='socrates'; % socrates, cset, aristo, otrec
 quality='qc2'; % field, qc1, qc2
 freqData='10hz'; % 10hz, 100hz, or 2hz
 whichModel='era5';
@@ -15,15 +15,11 @@ whichModel='era5';
 plotLine=1;
 plotSurf=0;
 
-if strcmp(whichModel,'era5')
-    directories.modeldir=['/scr/sci/romatsch/data/reanalysis/ecmwf/era5interp/',project,'/',freqData,'/'];
-elseif strcmp(whichModel,'ecmwf')
-    directories.modeldir=['/scr/sci/romatsch/data/reanalysis/ecmwf/forecastInterp/',project,'/',freqData,'/'];
-end
+[~,directories.modeldir]=modelDir(project,whichModel,freqData);
 
 outdir=directories.modeldir;
 
-infile=['/h/eol/romatsch/hcrCalib/oceanScans/biasInFiles/flights_',project,'_data.txt'];
+infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_',project,'_data.txt'];
 
 caseList = table2array(readtable(infile));
 
@@ -32,7 +28,7 @@ formatOut = 'yyyymmdd_HHMM';
 
 indir=HCRdir(project,quality,freqData);
 
-polyTimePeriod=15; %Time period for poly fit in seconds
+polyTimePeriod=20; %Time period for poly fit in seconds
 polyOrder=3; % Order of polynomial fit
 
 maxEdge=14.6; % Upper edge for plotting
@@ -81,6 +77,7 @@ for kk=1:size(caseList,1)
             
         %% Fill in extinct echo
         
+        disp(['Filling extinct areas.']);
         % Remove up pointing
         dbzDown=data.DBZ;
         dbzDown(:,data.elevation>0)=nan;
@@ -133,6 +130,9 @@ for kk=1:size(caseList,1)
             end
         end
         %% Make poly fit
+        
+        disp('Making fit.');
+        
         velSmoothPorig=vel2vel_corr_testPoly(surfVel,data.time,polyTimePeriod,polyOrder);
         
         % Fill in data where we don't have polyfit data

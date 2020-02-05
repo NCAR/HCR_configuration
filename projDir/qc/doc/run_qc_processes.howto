@@ -150,6 +150,21 @@ cd ~/git/HCR_configuration/projDir/qc/scripts
 ./run_RadxDwellCombine.qc.10hz
 
 #################################################################
+# Output fields
+# Make data copy with selected fields. Run
+$PROJ_DIR/qc/scripts/run_RadxConvert.qc.select_fields.socrates
+
+# This will put the selected fields in
+# $DATA_DIR/QC_VERSION/cfradial/selected_fields
+
+# We make another copy of selected_fields to
+# $DATA_DIR/QC_VERSION/cfradial/final
+# Where the model data, flag field, etc. will be added
+# selected_fields is a backup which can be copied to final
+# again if something goes wrong during the addition of the
+# additional fields.
+
+#################################################################
 # Interpolate forecast or reanalysis data
 # 
 # Modify and run $PROJ_DIR/qc/dataProcessing/modelAndFlag/model2HCR4d.m
@@ -167,21 +182,6 @@ cd ../model/era5
 
 cd $DATA_DIR
 cd ../model/era5interp/10hz
-
-#################################################################
-# Output fields
-# Make data copy with selected fields. Run
-$PROJ_DIR/qc/scripts/run_RadxConvert.qc.select_fields.socrates
-
-# This will put the selected fields in
-# $DATA_DIR/QC_VERSION/cfradial/selected_fields
-
-# We make another copy of selected_fields to
-# $DATA_DIR/QC_VERSION/cfradial/final
-# Where the model data, flag field, etc. will be added
-# selected_fields is a backup which can be copied to final
-# again if something goes wrong during the addition of the
-# additional fields.
 
 #################################################################
 # Add model data

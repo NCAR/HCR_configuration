@@ -5,7 +5,7 @@ close all
 
 savefig=1;
 
-addpath(genpath('/h/eol/romatsch/gitPriv/utils/'));
+addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
 project='socrates'; % socrates, cset, aristo, otrec
 quality='qc2'; % field, qc1, qc2
@@ -28,7 +28,7 @@ color_map=colormap(vel_default(29));
 limits=-4.05:0.3:4.05;
 limits=[-inf limits inf];
 
-for kk=4:size(testCases,1)
+for kk=1:size(testCases,1)
     startTime=datetime(testCases{kk,1},testCases{kk,2},testCases{kk,3}, ...
         testCases{kk,4},testCases{kk,5},0);
     endTime=datetime(testCases{kk,6},testCases{kk,7},testCases{kk,8}, ...
@@ -43,7 +43,7 @@ for kk=4:size(testCases,1)
         data.nyquist_velocity=[];
         data.DBZ=[];
         data.VEL=[];
-%        data.VEL_RAW=[];
+        data.VEL_RAW=[];
         data.TOPO=[];
         data.northward_velocity=[];
         data.eastward_velocity=[];
@@ -126,7 +126,9 @@ for kk=4:size(testCases,1)
         surfNan=find(isnan(surfVel));
         
         for ll=1:length(surfNan)
-            if ~isnan(surfMean(surfNan(ll)-1)) % At the beginning of the gap we have moving average data
+            if ll==1
+                surfVel(surfNan(ll))=surfMean(surfNan(ll));
+            elseif ~isnan(surfMean(surfNan(ll)-1)) % At the beginning of the gap we have moving average data
                 surfVel(surfNan(ll))=surfMean(surfNan(ll)-1);
             else % Once the moving average turns nan we just keep the previous one going
                 surfVel(surfNan(ll))=surfVel(surfNan(ll)-1);
@@ -161,11 +163,11 @@ for kk=4:size(testCases,1)
         
         subplot(3,1,1)
         hold on
-        plot(data.time,data.VEL(linInd),'-g','linewidth',1.5);
-        plot(data.time,velAngCorr(linInd),'color',[0.5 0.5 0.5],'linewidth',1.5);
+        plot(data.time,data.VEL_RAW(linInd),'-g','linewidth',1.5);
+        plot(data.time,data.VEL(linInd),'color',[0.5 0.5 0.5],'linewidth',1.5);
         ylim([nanmedian(data.VEL(linInd))-1.5 nanmedian(data.VEL(linInd))+1.5]);
         ylabel('Velocity [m/s]');
-        legend('VelSurf','VelSurfAngCorr','Orientation','horizontal');
+        legend('VelRawSurf','VelSurf','Orientation','horizontal');
         title([datestr(startTime,formatOut) ' to ' datestr(endTime,formatOut)],'interpreter','none');
         xlim([startTime,endTime]);
         ax=gca;
@@ -176,7 +178,7 @@ for kk=4:size(testCases,1)
         subplot(3,1,2)
         
         colorIn=lines(length(polyTimePeriod));
-        legIn={'VelSurfAngCorr','VelSurfAngCorrFilled'};
+        legIn={'VelSurf','VelSurfAngCorrFilled'};
         
         hold on
         plot(data.time,velAngCorr(linInd),'color',[0.5 0.5 0.5],'linewidth',1.5);
@@ -225,6 +227,51 @@ for kk=4:size(testCases,1)
         % Vel
         subplot(3,1,1)
         hold on
+        fig2=surf(data.time,data.asl./1000,data.VEL_RAW);
+        fig2.EdgeColor='none';
+        ylim([-0.2 maxEdge]);
+        xlim([startTime,endTime]);
+        view(2);
+        
+        fld=fig2.CData;
+        
+        col_def1 = nan(size(fld));
+        col_def2 = nan(size(fld));
+        col_def3 = nan(size(fld));
+        
+        for ii=1:size(color_map,1)
+            col_ind=find(fld>limits(ii) & fld<=limits(ii+1));
+            col_def1(col_ind)=color_map(ii,1);
+            col_def2(col_ind)=color_map(ii,2);
+            col_def3(col_ind)=color_map(ii,3);
+        end
+        if ~isequal(size(col_def1),(size(fld)))
+            col_def=cat(3,col_def1',col_def2',col_def3');
+        else
+            col_def=cat(3,col_def1,col_def2,col_def3);
+        end
+        fig2.CData=col_def;
+        
+        hcb=colorbar;
+        set(get(hcb,'Title'),'String','m/s');
+        colormap(gca,color_map);
+        caxis([0 size(color_map,1)]);
+        caxis_yticks=(1:1:size(color_map,1)-1);
+        caxis_ytick_labels=num2str(limits(2:end-1)');
+        while length(caxis_yticks)>16
+            caxis_yticks=caxis_yticks(1:2:end);
+            caxis_ytick_labels=caxis_ytick_labels((1:2:end),:);
+        end
+        set(hcb,'ytick',caxis_yticks);
+        set(hcb,'YTickLabel',caxis_ytick_labels);
+        ylabel('Altitude [km]');
+        
+        title('VEL_RAW','interpreter','none');
+        
+        % Vel angle corrected
+        
+        subplot(3,1,2)
+        hold on
         fig2=surf(data.time,data.asl./1000,data.VEL);
         fig2.EdgeColor='none';
         ylim([-0.2 maxEdge]);
@@ -264,52 +311,7 @@ for kk=4:size(testCases,1)
         set(hcb,'YTickLabel',caxis_ytick_labels);
         ylabel('Altitude [km]');
         
-        title('Vel');
-        
-        % Vel angle corrected
-        
-        subplot(3,1,2)
-        hold on
-        fig2=surf(data.time,data.asl./1000,velAngCorr);
-        fig2.EdgeColor='none';
-        ylim([-0.2 maxEdge]);
-        xlim([startTime,endTime]);
-        view(2);
-        
-        fld=fig2.CData;
-        
-        col_def1 = nan(size(fld));
-        col_def2 = nan(size(fld));
-        col_def3 = nan(size(fld));
-        
-        for ii=1:size(color_map,1)
-            col_ind=find(fld>limits(ii) & fld<=limits(ii+1));
-            col_def1(col_ind)=color_map(ii,1);
-            col_def2(col_ind)=color_map(ii,2);
-            col_def3(col_ind)=color_map(ii,3);
-        end
-        if ~isequal(size(col_def1),(size(fld)))
-            col_def=cat(3,col_def1',col_def2',col_def3');
-        else
-            col_def=cat(3,col_def1,col_def2,col_def3);
-        end
-        fig2.CData=col_def;
-        
-        hcb=colorbar;
-        set(get(hcb,'Title'),'String','m/s');
-        colormap(gca,color_map);
-        caxis([0 size(color_map,1)]);
-        caxis_yticks=(1:1:size(color_map,1)-1);
-        caxis_ytick_labels=num2str(limits(2:end-1)');
-        while length(caxis_yticks)>16
-            caxis_yticks=caxis_yticks(1:2:end);
-            caxis_ytick_labels=caxis_ytick_labels((1:2:end),:);
-        end
-        set(hcb,'ytick',caxis_yticks);
-        set(hcb,'YTickLabel',caxis_ytick_labels);
-        ylabel('Altitude [km]');
-        
-        title('Vel angle corrected');
+        title('VEL');
         
         % VelCorr
         
@@ -354,7 +356,7 @@ for kk=4:size(testCases,1)
         set(hcb,'YTickLabel',caxis_ytick_labels);
         ylabel('Altitude [km]');
   
-        title(['VelCorr ',num2str(polyTimePeriod(polyUsed)),' s']);
+        title(['VEL_CORR ',num2str(polyTimePeriod(polyUsed)),' s'],'interpreter','none');
         
         if savefig
             set(gcf,'PaperPositionMode','auto')
