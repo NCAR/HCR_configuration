@@ -2,32 +2,25 @@
 clear all;
 close all;
 
-addpath(genpath('/h/eol/romatsch/gitPriv/utils/'));
+addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-project='otrec'; % socrates, cset, aristo, otrec
-quality='qc1'; % field, qc1, qc2
+project='socrates'; % socrates, cset, aristo, otrec
+quality='qc2'; % field, qc1, qc2
 freqData='10hz';
 whichModel='era5';
 
 formatOut = 'yyyymmdd';
 
-infile=['/h/eol/romatsch/hcrCalib/oceanScans/biasInFiles/flights_',project,'_data.txt'];
+infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_',project,'_data.txt'];
 
 caseList = table2array(readtable(infile));
 
 indir=HCRdir(project,quality,freqData);
-%indir='/scr/snow1/rsfdata/projects/otrec/hcr/qc0/cfradial/addvars/10hz/';
-
-if strcmp(whichModel,'era5')
-    modeldir=['/scr/sci/romatsch/data/reanalysis/ecmwf/era5interp/',project,'/',freqData,'/'];
-elseif strcmp(whichModel,'ecmwf')
-    modeldir=['/scr/sci/romatsch/data/reanalysis/ecmwf/forecastInterp/',project,'/',freqData,'/'];
-end
 
 %% Run processing
 
 % Go through flights
-for ii=1:size(caseList,1)
+for ii=4:size(caseList,1)
     
     disp(['Flight ',num2str(ii)]);
     
@@ -39,10 +32,20 @@ for ii=1:size(caseList,1)
     if ~isempty(fileList)
         %% Loop through HCR data files
         for jj=1:length(fileList)
-            infile=fileList{jj};
             
+            testField=[];;
+            
+            infile=fileList{jj};
             disp(infile);
             
+            try
+                testField=ncread(infile,'DBZ_MASKED');
+            end
+            if ~isempty(testField)
+                warning('Field already exists. Skipping file.')
+                continue
+            end                
+                        
             % Create masked DBZ field
             dbz=ncread(infile,'DBZ')';
             mask=ncread(infile,'FLAG')';
