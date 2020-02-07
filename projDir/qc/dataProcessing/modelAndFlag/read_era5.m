@@ -46,10 +46,10 @@ for kk=1:length(inhours) %Loop through all hours
     roundTime=inhours(kk);
     dayStr=datestr(roundTime,'yyyymmdd');
     
-    rFiles=dir([indir,'*.R.*',dayStr,'00_',dayStr,'23.nc']);
-    tFiles=dir([indir,'*.T.*',dayStr,'00_',dayStr,'23.nc']);
-    zFiles=dir([indir,'*.Z.*',dayStr,'00_',dayStr,'23.nc']);
-    
+    rFiles=dir([indir,'R.*',dayStr,'00_',dayStr,'23.nc']);
+    tFiles=dir([indir,'T.*',dayStr,'00_',dayStr,'23.nc']);
+    zFiles=dir([indir,'Z.*',dayStr,'00_',dayStr,'23.nc']);
+            
     if size(zFiles,1)==0 | size(zFiles,1)==0 | size(zFiles,1)==0
         disp('No model data found.');
         return
@@ -63,10 +63,10 @@ for kk=1:length(inhours) %Loop through all hours
     lonRean=ncread([rFiles(1).folder,'/',rFiles(1).name],'longitude');
     latRean=ncread([rFiles(1).folder,'/',rFiles(1).name],'latitude');
     
-    t=nan(length(lonRean),length(latRean),length(rFiles)+1);
-    rh=nan(length(lonRean),length(latRean),length(rFiles)+1);
-    z=nan(length(lonRean),length(latRean),length(rFiles)+1);
-    p=nan(length(lonRean),length(latRean),length(rFiles)+1);
+    t=nan(length(lonRean),length(latRean),length(rFiles));
+    rh=nan(length(lonRean),length(latRean),length(rFiles));
+    z=nan(length(lonRean),length(latRean),length(rFiles));
+    p=nan(length(lonRean),length(latRean),length(rFiles));
     
     for jj=1:size(tFiles,1)
         p(:,:,jj)=fliplr(ncread([rFiles(jj).folder,'/',rFiles(jj).name],'level'));
@@ -86,11 +86,11 @@ for kk=1:length(inhours) %Loop through all hours
     % Find ecmwf files
     monthStr=datestr(roundTime,'yyyymm');
     
-    dFiles=dir([indir,'*.VAR_2D.*',monthStr,'0100_*.nc']);
-    tsFiles=dir([indir,'*.VAR_2T.*',monthStr,'0100_*.nc']);
-    uFiles=dir([indir,'*.VAR_10U.*',monthStr,'0100_*.nc']);
-    vFiles=dir([indir,'*.VAR_10V.*',monthStr,'0100_*.nc']);
-    pFiles=dir([indir,'*.SP.*',monthStr,'0100_*.nc']);
+    dFiles=dir([indir,'VAR_2D.*',monthStr,'0100_*.nc']);
+    tsFiles=dir([indir,'VAR_2T.*',monthStr,'0100_*.nc']);
+    uFiles=dir([indir,'VAR_10U.*',monthStr,'0100_*.nc']);
+    vFiles=dir([indir,'VAR_10V.*',monthStr,'0100_*.nc']);
+    pFiles=dir([indir,'SP.*',monthStr,'0100_*.nc']);
     
     info=ncinfo([dFiles.folder,'/',dFiles.name]);
     
@@ -100,7 +100,7 @@ for kk=1:length(inhours) %Loop through all hours
     pS=fliplr(ncread([pFiles.folder,'/',pFiles.name],'SP',[1,1,timeIndS],[inf,inf,1])./100);
     tS=fliplr(ncread([tsFiles.folder,'/',tsFiles.name],'VAR_2T',[1,1,timeIndS],[inf,inf,1])-273.15);
     td=fliplr(ncread([dFiles.folder,'/',dFiles.name],'VAR_2D',[1,1,timeIndS],[inf,inf,1])-273.15);
-    rhS=100*(exp((17.625*td)./(243.04+td))./exp((17.625*t(:,:,end))./(243.04+t(:,:,end))));
+    rhS=100*(exp((17.625*td)./(243.04+td))./exp((17.625*tS)./(243.04+tS)));
     sfcU=fliplr(ncread([uFiles.folder,'/',uFiles.name],'VAR_10U',[1,1,timeIndS],[inf,inf,1]));
     sfcV=fliplr(ncread([vFiles.folder,'/',vFiles.name],'VAR_10V',[1,1,timeIndS],[inf,inf,1]));
     
@@ -112,7 +112,7 @@ for kk=1:length(inhours) %Loop through all hours
     
     %% SST
     if SSTyes
-        sstFiles=dir([indir,'*.SSTK.*',monthStr,'0100_*.nc']);
+        sstFiles=dir([indir,'SSTK.*',monthStr,'0100_*.nc']);
         sst=fliplr(ncread([sstFiles.folder,'/',sstFiles.name],'SSTK',[1,1,timeIndS],[inf,inf,1])-273.15);
         sstSurf=cat(3,sstSurf,sst);
     end
