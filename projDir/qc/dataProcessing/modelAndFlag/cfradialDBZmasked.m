@@ -4,8 +4,8 @@ close all;
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-project='socrates'; % socrates, cset, aristo, otrec
-quality='qc2'; % field, qc1, qc2
+project='otrec'; % socrates, cset, aristo, otrec
+quality='qc1'; % field, qc1, qc2
 freqData='10hz';
 whichModel='era5';
 
@@ -20,7 +20,7 @@ indir=HCRdir(project,quality,freqData);
 %% Run processing
 
 % Go through flights
-for ii=4:size(caseList,1)
+for ii=1:size(caseList,1)
     
     disp(['Flight ',num2str(ii)]);
     

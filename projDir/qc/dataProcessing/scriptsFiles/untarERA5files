@@ -2,7 +2,7 @@
 
 # untar reanalysis files
 
-setenv INDIR ./otrec
+setenv INDIR /scr/snow2/rsfdata/projects/cset/model/era5
 cd $INDIR
 
 setenv FILES *.tar
