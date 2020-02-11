@@ -11,15 +11,15 @@ makeSingleFigs=1;
 addNSCAL=0; % Noise source cal will be incorporated
 addSIG0model=1; % Plot also model data from sig0 model
 
-project='socrates'; %socrates, aristo, cset, otrec
-quality='qc2'; %field, qc1, or qc2
+project='otrec'; %socrates, aristo, cset, otrec
+quality='qc1'; %field, qc1, or qc2
 dataFreq='10hz';
 addName=''; % Extra name part for output files. Default is ''.
 
 attenuationFrom='era5file'; %Name part of the file that infile that states which attenuation data should be used: 
 % ecmwf, ecmwfsonde, era5, era5sonde, sonde, era5file, ecmwffile
 
-oceanTemp=12;
+oceanTemp=27;
 salinity=35; % Ocean salinity for sig0model in per mille (world wide default is 35) and sensitivity to that number is low
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

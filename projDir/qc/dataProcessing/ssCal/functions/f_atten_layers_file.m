@@ -60,6 +60,8 @@ layer_es=2.409.*(300./(layer_t+273.15)).^5.*10.^(10-9.834.*(300./(layer_t+273.15
 [spAlpha]=f_atten_Liebe(f,layer_p,layer_t,layer_es,layer_rh);
 %multiply by layer depth
 layer_alpha=spAlpha.*layer_depth./1000;
+% Remove data where range is negative
+layer_alpha(modeldata.rangeMat(1:end-1,:)<0)=nan;
 %sum over all layers
 alphaTot1=sum(layer_alpha,1,'omitnan')';
 
@@ -67,6 +69,8 @@ alphaTot1=sum(layer_alpha,1,'omitnan')';
 [spGamma, spGamma0, spGammaW]=f_atten_ITUR(f,layer_p,layer_t,layer_rh,layer_es);
 %multiply by layer depth
 layer_gamma=spGamma.*layer_depth./1000;
+% Remove data where range is negative
+layer_gamma(modeldata.rangeMat(1:end-1,:)<0)=nan;
 %sum over all layers
 gammaTot1=sum(layer_gamma,1,'omitnan')';
 
