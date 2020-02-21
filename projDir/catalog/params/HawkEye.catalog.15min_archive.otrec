@@ -315,7 +315,7 @@ color_scale_dir = "$(HOME)/git/HCR_configuration/projDir/display/color_scales";
 
 fields = {
   {
-    label = "1Hr_DBZ",
+    label = "DBZ",
     raw_name = "DBZ",
     filtered_name = "",
     units = "dBZ",
@@ -324,7 +324,7 @@ fields = {
   }
   ,
   {
-    label = "1Hr_DBZ_MASKED",
+    label = "DBZ_MASKED",
     raw_name = "DBZ_MASKED",
     filtered_name = "",
     units = "dBZ",
@@ -333,7 +333,7 @@ fields = {
   }
   ,
   {
-    label = "1Hr_VEL_CORR",
+    label = "VEL_CORR",
     raw_name = "VEL_CORR",
     filtered_name = "",
     units = "m/s",
@@ -342,7 +342,7 @@ fields = {
   }
   ,
   {
-    label = "1Hr_VEL",
+    label = "VEL",
     raw_name = "VEL",
     filtered_name = "",
     units = "m/s",
@@ -351,7 +351,7 @@ fields = {
   }
   ,
   {
-    label = "1Hr_VEL_RAW",
+    label = "VEL_RAW",
     raw_name = "VEL_RAW",
     filtered_name = "",
     units = "m/s",
@@ -360,7 +360,7 @@ fields = {
   }
   ,
   {
-    label = "1Hr_WIDTH",
+    label = "WIDTH",
     raw_name = "WIDTH",
     filtered_name = "",
     units = "m/s",
@@ -369,7 +369,7 @@ fields = {
   }
   ,
   {
-    label = "1Hr_WIDTH_RAW",
+    label = "WIDTH_RAW",
     raw_name = "WIDTH_RAW",
     filtered_name = "",
     units = "m/s",
@@ -378,7 +378,7 @@ fields = {
   }
   ,
   {
-    label = "1Hr_NCP",
+    label = "NCP",
     raw_name = "NCP",
     filtered_name = "",
     units = "",
@@ -387,7 +387,7 @@ fields = {
   }
   ,
   {
-    label = "1Hr_LDR",
+    label = "LDR",
     raw_name = "LDR",
     filtered_name = "",
     units = "dB",
@@ -396,7 +396,7 @@ fields = {
   }
   ,
   {
-    label = "1Hr_SNR",
+    label = "SNR",
     raw_name = "SNR",
     filtered_name = "",
     units = "dB",
@@ -405,7 +405,7 @@ fields = {
   }
   ,
   {
-    label = "1Hr_DBMVC",
+    label = "DBMVC",
     raw_name = "DBMVC",
     filtered_name = "",
     units = "dBm",
@@ -414,7 +414,7 @@ fields = {
   }
   ,
   {
-    label = "1Hr_DBMHX",
+    label = "DBMHX",
     raw_name = "DBMHX",
     filtered_name = "",
     units = "dBm",
@@ -423,7 +423,7 @@ fields = {
   }
   ,
   {
-    label = "1Hr_TEMP",
+    label = "TEMP",
     raw_name = "TEMP",
     filtered_name = "",
     units = "C",
@@ -432,7 +432,7 @@ fields = {
   }
   ,
   {
-    label = "1Hr_PRESS",
+    label = "PRESS",
     raw_name = "PRESS",
     filtered_name = "",
     units = "hPa",
@@ -441,7 +441,7 @@ fields = {
   }
   ,
   {
-    label = "1Hr_RH",
+    label = "RH",
     raw_name = "RH",
     filtered_name = "",
     units = "%",
@@ -450,7 +450,7 @@ fields = {
   }
   ,
   {
-    label = "1Hr_FLAG",
+    label = "FLAG",
     raw_name = "FLAG",
     filtered_name = "",
     units = "",
@@ -634,7 +634,7 @@ main_window_start_y = 0;
 // Type: int
 //
 
-color_scale_width = 80;
+color_scale_width = 50;
 
 ///////////// label_font_size /////////////////////////
 //
@@ -809,7 +809,7 @@ rhi_aspect_ratio = 1;
 // Type: double
 //
 
-bscan_time_span_secs = 3600;
+bscan_time_span_secs = 900;
 
 ///////////// bscan_truncate_start_time ///////////////
 //
@@ -1416,7 +1416,7 @@ bscan_dwell_stats = DWELL_STATS_MEAN;
 // Type: string
 //
 
-images_output_dir = "/scr/snow1/rsfdata/projects/otrec/hcr/qc2/images/catalog1hr";
+images_output_dir = "/scr/snow1/rsfdata/projects/otrec/hcr/qc2/images/catalog15min";
 
 ///////////// images_write_to_day_dir /////////////////
 //
@@ -1578,7 +1578,7 @@ images_creation_mode = CREATE_IMAGES_ON_ARCHIVE_SCHEDULE;
 // Type: int
 //
 
-images_schedule_interval_secs = 3600;
+images_schedule_interval_secs = 900;
 
 ///////////// images_schedule_delay_secs //////////////
 //
