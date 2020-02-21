@@ -71,23 +71,20 @@ elseif strcmp(project,'otrec')
         if strcmp(freq,'100hz') | strcmp(freq,'10hz')
             indir=['/scr/snow1/rsfdata/projects/otrec/hcr/cfradial/moments/',freq,'/'];
         end
-    elseif strcmp(quality,'qc0')
-        if strcmp(freq,'100hz') | strcmp(freq,'10hz')
-            indir=['/scr/snow1/rsfdata/projects/otrec/hcr/qc0/cfradial/addvars/',freq,'/'];
-        else
-            disp('No 2hz data in qc0 data.');
-            return
-        end
     elseif strcmp(quality,'qc1')
         if strcmp(freq,'100hz') | strcmp(freq,'10hz')
-            indir=['/scr/snow1/rsfdata/projects/otrec/hcr/qc1/cfradial/finalERA5/',freq,'/'];
+            indir=['/scr/snow1/rsfdata/projects/otrec/hcr/qc1/cfradial/final/',freq,'/'];
         else
             disp('No 2hz data in qc1 data.');
             return
         end
     elseif strcmp(quality,'qc2')
-        disp('There is no qc2 data for otrec.');
-        return
+        if strcmp(freq,'100hz') | strcmp(freq,'10hz')
+            indir=['/scr/snow1/rsfdata/projects/otrec/hcr/qc2/cfradial/final/',freq,'/'];
+        else
+            disp('No 2hz data in qc1 data.');
+            return
+        end
     end
 end
 end
