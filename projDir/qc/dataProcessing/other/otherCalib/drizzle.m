@@ -5,27 +5,19 @@
 clear all;
 close all;
 
-project='otrec';
+project='socrates'; % socrates, cset, aristo, otrec
+quality='qc2'; % field, qc1, qc2
+freqData='10hz'; % 10hz, 100hz, or 2hz
 
-addpath('/h/eol/romatsch/gitPriv/process_HCR/oceanScans/functions/');
-addpath('/h/eol/romatsch/gitPriv/utils/');
-addpath('/h/eol/romatsch/gitPriv/other/');
+addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
 directories.figdir='/h/eol/romatsch/hcrCalib/otherCalib/drizzle/';
 formatOut = 'yyyymmdd_HHMM';
 
+directories.dataDir=HCRdir(project,quality,freqData);
 
-if strcmp(project,'socrates')
-    directories.dataDir='/scr/snow2/rsfdata/projects/socrates/hcr/qc2/cfradial/moments/10hz/'; %Final
-elseif strcmp(project,'cset')
-    directories.dataDir='/scr/snow2/rsfdata/projects/cset/hcr/qc2/cfradial/moments/10hz/'; %Final
-elseif strcmp(project,'aristo')
-    directories.dataDir='/scr/eldora1/rsfdata/aristo-17/hcr/cfradial/moments/10hz/';
-elseif strcmp(project,'otrec')
-    directories.dataDir='/scr/snow1/rsfdata/projects/otrec/hcr/qc1/cfradial/finalERA5/10hz/';
-end
-
-infile=['/h/eol/romatsch/hcrCalib/otherCalib/inFiles/drizzle_',project,'.txt'];
+infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_',project,'.txt'];
+%infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/other/otherCalib/inFiles/drizzle_',project,'.txt'];
 
 % Data files with plane data
 if strcmp(project,'otrec')
@@ -48,6 +40,7 @@ for ii=1:size(caseList,1)
     PLT.refl = [];  % reflectivity
     PLT.elev = [];  % elevation angle is referenced to horiz plane;
     PLT.range = [];
+    PLT.mask = [];
     
     startTime=datetime(caseList(ii,1:6));
     endTime=datetime(caseList(ii,7:12));
@@ -82,9 +75,11 @@ for ii=1:size(caseList,1)
         elevIn=ncread(indata,'elevation');
         rangeIn=ncread(indata,'range');
         reflIn=ncread(indata,'DBZ');
+        maskIn=ncread(indata,'FLAG');
         rangeMat=repmat(rangeIn,1,size(reflIn,2));
         
         PLT.refl = [ PLT.refl, reflIn ];
+        PLT.mask = [ PLT.mask, maskIn ];
         PLT.range = [ PLT.range, rangeMat ];
         PLT.elev  = [ PLT.elev; elevIn ];
     end
@@ -139,7 +134,12 @@ for ii=1:size(caseList,1)
     lowTempInd=find(planeTemp<5);
         
     range=PLT.range;
+    
+    % Sort out data where there is no contiguous cloud between radar and
+    % desired range
+    gapInd=[];
     reflTemp=PLT.refl;
+    reflTemp(PLT.mask~=1)=nan;
     
     %Fill in bang
     reflTemp(1:17,:)=1;
@@ -152,12 +152,21 @@ for ii=1:size(caseList,1)
         nanRay=find(isnan(reflRay));
         nonNanRay=find(~isnan(reflRay));
         if min(nanRay)<max(nonNanRay)
-            reflTemp(:,jj)=nan;
+            gapInd=[gapInd,jj];
         end
     end
     
-    refl=reflTemp;
-    refl2=reflTemp;
+    refl=PLT.refl;
+    refl2=PLT.refl;
+    
+    refl(:,gapInd)=nan;
+    refl2(:,gapInd)=nan;
+    
+    refl(:,lowTempInd)=nan;
+    refl2(:,lowTempInd)=nan;
+    
+    refl(PLT.mask~=1)=nan;
+    refl2(PLT.mask~=1)=nan;
     
     % Get right range
     refl(range<230 | range>270)=nan;
@@ -204,7 +213,7 @@ subplot(2,1,1)
 histogram(reflRangeAll,edgesAll)
 title([project,' histogram of reflectivities at 250 m range'],'interpreter','none');
 xlim([-60 35])
-text(0,60000,['Total points: ', num2str(length(reflRangeAll))],'fontsize',14);
+text(0,8000,['Total points: ', num2str(length(reflRangeAll))],'fontsize',14);
 xlabel('Reflectivity (dBZ)');
 
 subplot(2,1,2)
@@ -226,7 +235,7 @@ subplot(2,1,1)
 histogram(reflRangeMedian,edgesAll)
 title([project,' histogram of median of reflectivities at 250 m range'],'interpreter','none');
 xlim([-60 35])
-text(0,40000,['Total points: ', num2str(length(find(~isnan(reflRangeMedian))))],'fontsize',14);
+text(0,4000,['Total points: ', num2str(length(find(~isnan(reflRangeMedian))))],'fontsize',14);
 xlabel('Reflectivity (dBZ)');
 
 subplot(2,1,2)

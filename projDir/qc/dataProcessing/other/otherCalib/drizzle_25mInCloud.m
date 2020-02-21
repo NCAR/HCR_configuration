@@ -5,21 +5,18 @@
 clear all;
 close all;
 
-project='otrec'; % socrates, cset, aristo, otrec
-quality='qc1'; % field, qc1, qc2
+project='cset'; % socrates, cset, aristo, otrec
+quality='qc2'; % field, qc1, qc2
 freqData='10hz'; % 10hz, 100hz, or 2hz
 
-addpath('/h/eol/romatsch/gitPriv/process_HCR/oceanScans/functions/');
-addpath('/h/eol/romatsch/gitPriv/utils/');
-addpath('/h/eol/romatsch/gitPriv/other/');
-addpath(genpath('/h/eol/romatsch/gitPriv/utils/'));
+addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
 directories.figdir='/h/eol/romatsch/hcrCalib/otherCalib/drizzle/';
 formatOut = 'yyyymmdd_HHMM';
 
 indir=HCRdir(project,quality,freqData);
 
-infile=['/h/eol/romatsch/hcrCalib/otherCalib/inFiles/drizzle_',project,'.txt'];
+infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/other/otherCalib/inFiles/drizzle_',project,'.txt'];
 
 % Read file with calib events
 caseList = table2array(readtable(infile));
