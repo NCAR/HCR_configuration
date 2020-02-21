@@ -389,6 +389,15 @@ fields = {
   }
   ,
   {
+    label = "WIDTH_RAW",
+    raw_name = "WIDTH_RAW",
+    filtered_name = "",
+    units = "m/s",
+    color_map = "width_w.colors",
+    shortcut = "8"
+  }
+  ,
+  {
     label = "NCP",
     raw_name = "NCP",
     filtered_name = "",
