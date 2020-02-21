@@ -1,19 +1,23 @@
 #! /bin/csh
 
-rehash
+# basic setup
 
-# set up the environment for HCR QC processing
+source /opt/local/git/HCR_configuration/projDir/system/params/project_info.socrates
+
+# override proj dir
 
 setenv PROJ_DIR /opt/local/git/HCR_configuration/projDir
-setenv DATA_DIR /scr/rain1/rsfdata/projects/socrates/hcr
-source $PROJ_DIR/system/params/project_info.socrates
-cd $PROJ_DIR/display/params
 
-# start the display
+echo "PROJ_DIR: ${PROJ_DIR}"
+
+cd ${PROJ_DIR}/display/params
+
+set HAWKEYE = /opt/local/lrose/bin/HawkEye
+#set HAWKEYE = HawkEye
 
 if ($#argv < 6) then
- /opt/local/lrose/bin/HawkEye -params HawkEye.hcr-socrates.qc.100hz -start_time "2018 01 19 04 00 00 " >& /dev/null &
+  $HAWKEYE -params HawkEye.hcr-socrates.qc.100hz -start_time "2018 01 19 04 00 00 " >& /dev/null &
 else
-  /opt/local/lrose/bin/HawkEye -params HawkEye.hcr-socrates.qc.100hz -start_time "$1 $2 $3 $4 $5 $6" >& /dev/null &
+  $HAWKEYE HawkEye.hcr-socrates.qc.100hz -start_time "$1 $2 $3 $4 $5 $6" >& /dev/null &
 endif
 
