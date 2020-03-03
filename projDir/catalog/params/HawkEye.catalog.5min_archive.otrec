@@ -192,7 +192,7 @@ archive_start_time = "2019 08 07 12 15 00";
 // Type: string
 //
 
-archive_data_url = "/scr/snow1/rsfdata/projects/otrec/hcr/qc1/cfradial/final/10hz";
+archive_data_url = "/scr/snow1/rsfdata/projects/otrec/hcr/qc2/cfradial/final/10hz";
 
 //======================================================================
 //
@@ -1416,7 +1416,7 @@ bscan_dwell_stats = DWELL_STATS_MEAN;
 // Type: string
 //
 
-images_output_dir = "/scr/snow1/rsfdata/projects/otrec/hcr/qc1/images/catalog5min";
+images_output_dir = "/scr/snow1/rsfdata/projects/otrec/hcr/qc2/images/catalog5min";
 
 ///////////// images_write_to_day_dir /////////////////
 //
