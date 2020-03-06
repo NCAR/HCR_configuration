@@ -6,7 +6,7 @@
 # Reads 10 hz data in CfRadial files, combines into 2 hz dwells
 # Writes 2hz CfRadial data
 
-source ~/git/HCR_configuration/projDir/system/params/project_info
+source ~/git/HCR_configuration/projDir/system/params/project_info.socrates
 
 cd $PROJ_DIR/qc/params
 

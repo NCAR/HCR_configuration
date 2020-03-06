@@ -430,6 +430,63 @@ dwell_stats_max_fraction_missing = 0.5;
 
 //======================================================================
 //
+// OPTION TO SET STATS METHOD FOR INDIVIDUAL FIELDS.
+//
+//======================================================================
+ 
+///////////// set_stats_method_for_individual_fields //
+//
+// Set the stats method for individual fields.
+//
+// The global stats method is set by the 'dwell_stats_method' parameter. 
+//   If 'set_stats_method_for_individual_fields' is true, we can set the 
+//   stats method on particular fields. Fields not specified here will use 
+//   the global parameter.
+//
+//
+// Type: boolean
+//
+
+set_stats_method_for_individual_fields = FALSE;
+
+///////////// stats_method_fields /////////////////////
+//
+// Stats methods for individual fields.
+//
+// Applies if 'set_stats_method_for_individual_fields' is true. The 
+//   global stats method is set by the 'dwell_stats_method' parameter. 
+//   Fields not specified here will use the global parameter.
+//
+//
+// Type: struct
+//   typedef struct {
+//      string field_name;
+//      dwell_stats_method_t stats_method;
+//        Options:
+//          DWELL_STATS_MEAN
+//          DWELL_STATS_MEDIAN
+//          DWELL_STATS_MAXIMUM
+//          DWELL_STATS_MINIMUM
+//          DWELL_STATS_MIDDLE
+//   }
+//
+// 1D array - variable length.
+//
+
+stats_method_fields = {
+  {
+    field_name = "FLAG",
+    stats_method = DWELL_STATS_MEDIAN
+  }
+  ,
+  {
+    field_name = "ANTENNA_FLAG",
+    stats_method = DWELL_STATS_MIDDLE
+  }
+};
+
+//======================================================================
+//
 // OPTION TO OVERRIDE SELECTED GLOBAL ATTRIBUTES.
 //
 //======================================================================
