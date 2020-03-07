@@ -4,7 +4,7 @@
 clear all;
 close all;
 
-project='socrates';
+project='otrec';
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
@@ -20,8 +20,8 @@ elseif strcmp(project,'aristo')
     indir='/scr/snow2/rsfdata/projects/aristo-17/hcr/cfradial/moments/10hz/'; %aristo raw
     highResTempDir='/h/eol/romatsch/data/hcrCalib/temps/';
 elseif strcmp(project,'otrec')
-    indir='/scr/snow1/rsfdata/projects/otrec/hcr/qcfield/cfradial/moments/10hz/'; % otrec field
-    highResTempDir='/scr/snow1/rsfdata/projects/otrec/hcr/qc0/temperatures/';
+    indir='/scr/snow1/rsfdata/projects/otrec/hcr/qc0/cfradial/moments/100hz/'; % otrec field
+    highResTempDir='/scr/snow1/rsfdata/projects/otrec/hcr/txt/';
 else
     disp('Project name not valid.')
     return
@@ -165,7 +165,13 @@ for ii=1:size(inlist,1)
         indata=txtTable2matTable(tempFile,',');
     elseif strcmp(project,'cset') | strcmp(project,'aristo') | strcmp(project,'otrec')
         if ii==1
-            tempFile=[highResTempDir,project,'_temps.txt'];
+            if strcmp(project,'cset')
+                tempFile=[highResTempDir,'CSET.temperatures.txt'];
+            elseif strcmp(project,'otrec')
+                tempFile=[highResTempDir,'OTREC.temperatures.txt'];
+            elseif strcmp(project,'aristo')
+                tempFile=[highResTempDir,project,'_temps.txt'];
+            end
             tempnames={'count','year','month','day','hour','min','sec','unix_time',...
                 'unix_day','XmitterTemp','PloTemp','EikTemp','VLnaTemp','HLnaTemp',...
                 'PolarizationSwitchTemp','RfDetectorTemp','NoiseSourceTemp','Ps28VTemp',...

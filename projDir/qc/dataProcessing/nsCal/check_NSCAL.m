@@ -3,7 +3,7 @@
 clear all;
 close all;
 
-project='socrates';
+project='otrec';
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
@@ -20,7 +20,7 @@ elseif strcmp(project,'aristo')
     highResTempDir='/h/eol/romatsch/data/hcrCalib/temps/';
 elseif strcmp(project,'otrec')
     indir='/scr/snow1/rsfdata/projects/otrec/hcr/qc1/cfradial/moments/100hz/'; % otrec
-    highResTempDir='/scr/snow1/rsfdata/projects/otrec/hcr/qc0/temperatures/';
+    highResTempDir='/scr/snow1/rsfdata/projects/otrec/hcr/txt/';
 else
     disp('Project name not valid.')
     return
@@ -157,7 +157,9 @@ for ii=1:size(inlist,1)
             if ii==1
                 if strcmp(project,'cset')
                     tempFile=[highResTempDir,'CSET.temperatures.txt'];
-                elseif strcmp(project,'aristo') | strcmp(project,'otrec')
+                elseif strcmp(project,'otrec')
+                    tempFile=[highResTempDir,'OTREC.temperatures.txt'];
+                elseif strcmp(project,'aristo')
                     tempFile=[highResTempDir,project,'_temps.txt'];
                 end
                 tempnames={'count','year','month','day','hour','min','sec','unix_time',...
@@ -207,10 +209,16 @@ for ii=1:size(inlist,1)
     DNnewTimes=datenum(newTimes);
     
     %Interpolate DBMVC data
-    nanInd=find(isnan(dBmVCmean) | isnan(dnTime));
+    nanInd=find(isnan(dnTime));
     dBmVCmean(nanInd)=[];
     dnTime(nanInd)=[];
     time(nanInd)=[];
+    
+    nanInd=find(isnan(dBmVCmean));
+    dBmVCmean(nanInd)=[];
+    dnTime(nanInd)=[];
+    time(nanInd)=[];
+    
     [fitDBMVC,~,mu1]=polyfit(dnTime,dBmVCmean',2);
     newDBMVC=polyval(fitDBMVC,DNnewTimes,[],mu1);
     
