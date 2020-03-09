@@ -161,100 +161,150 @@ end
 BB=data.LDR;
 BB(data.FLAG>1)=nan;
 BB(BB<-16 | BB>-7)=nan;
-BB(data.range<500)=nan;
+BB(data.range<100)=nan;
 
 % Smooth data along time axis
 %BB=smoothdata(BB,1,'movmedian',5);
 
-% Find altitude of bright band
-maxLevel=nan(size(data.time));
-for ii=1:length(data.time)
-    vertCol=BB(:,ii);
-    if data.elevation(ii)<90 % Down pointing
-        vertCol(rowInds(ii)+30:end)=nan;
-        vertCol(1:max([rowInds(ii)-10,1]))=nan;
-    else % Up pointing
-        vertCol(rowInds(ii)+10:end)=nan;
-        vertCol(1:max([rowInds(ii)-30,1]))=nan;
-    end
-    % Check if all nan
-    if min(isnan(vertCol))==0
-        vertColData=vertCol(~isnan(vertCol));
-        maxLevel(ii)=min(find(vertCol==nanmax(vertCol)));
-    end
-end
+%% Find altitude of bright band
+BBall={};
+BBaltAll={};
+timeIall={};
 
-colIndsBB=1:1:size(data.TEMP,2);
-linearIndBB = sub2ind(size(data.TEMP), maxLevel, colIndsBB);
-linearIndBB(isnan(maxLevel))=[];
-
-% Raw altitude of melting layer
-BBaltRaw=data.asl(linearIndBB);
-% Mean altitude of meltig layer
-BBalt=movmedian(BBaltRaw,300,'omitnan');
-% Distance between raw ans mean altitude
-BBloc=abs(BBaltRaw-BBalt);
-
-% Resample to full resolution
-BBaltFull=nan(size(data.time));
-BBaltFull(find(~isnan(maxLevel)))=BBalt;
-BBlocFull=nan(size(data.time));
-BBlocFull(find(~isnan(maxLevel)))=BBloc;
-
-% Remove data where distance is more than 200 m
-BB(:,isnan(BBlocFull))=nan;
-BB(:,BBlocFull>200)=nan;
-
-%% Remove data that is too far off bright band altitude
-
-BBvalMax=BB(linearIndBB);
-BBvalFull=nan(size(data.time));
-BBvalFull(find(~isnan(maxLevel)))=BBvalMax;
-
-for ii=1:length(data.time)
-    BBcol=BB(:,ii);
-    dataInd=find(~isnan(BBcol));
-    if length(dataInd)>0
-        diffs=abs(data.asl(dataInd,ii)-BBaltFull(ii));
-        tooFar=find(diffs>300);
-        BB(dataInd(tooFar),ii)=nan;
-        % remove data in low gradient areas
-        BBcol=BB(:,ii);
-        dataInd=find(~isnan(BBcol));
-        if length(dataInd)>0
-            minVal=min(BBcol(dataInd));
-            BB((BBvalFull(ii)-BBcol)>(BBvalFull(ii)-minVal)/1.2,ii)=nan;
+for kk=1:size(layerAlts,1)
+    timeInds=find(~isnan(layerAlts(kk,:)));
+    
+    rowInds=layerInds(kk,timeInds);
+    maxLevel=nan(size(rowInds));
+    for ii=1:length(rowInds)
+        vertCol=BB(:,timeInds(ii));
+        if data.elevation(timeInds(ii))<90 % Down pointing
+            vertCol(rowInds(ii)+30:end)=nan;
+            vertCol(1:max([rowInds(ii)-10,1]))=nan;
+        else % Up pointing
+            vertCol(rowInds(ii)+10:end)=nan;
+            vertCol(1:max([rowInds(ii)-30,1]))=nan;
+        end
+        % Check if all nan
+        if min(isnan(vertCol))==0
+            vertColData=vertCol(~isnan(vertCol));
+            maxLevel(ii)=min(find(vertCol==nanmax(vertCol)));
         end
     end
-end
-
-% Remove contiguous areas that are too small
-specCut=100;
-
-bbTemp=BB;
-
-maskTemp=zeros(size(bbTemp));
-maskTemp(~isnan(bbTemp))=1;
-
-CC = bwconncomp(maskTemp,4);
-
-for ii=1:CC.NumObjects
-    area=CC.PixelIdxList{ii};
-    if length(area)<=specCut
-        BB(area)=nan;
+    
+    if min(isnan(maxLevel))~=0
+        continue
+    end
+    
+    BBlayer=BB(:,timeInds);
+    ASLlayer=data.asl(:,timeInds);
+    
+    colIndsBB=1:1:size(BBlayer,2);
+    linearIndBB = sub2ind(size(BBlayer), maxLevel, colIndsBB);
+    linearIndBB(isnan(maxLevel))=[];
+    
+    % Raw altitude of melting layer
+    BBaltRaw=ASLlayer(linearIndBB);
+    % Mean altitude of meltig layer
+    BBalt=movmedian(BBaltRaw,300,'omitnan');
+    % Distance between raw and mean altitude
+    BBloc=abs(BBaltRaw-BBalt);
+    
+    % Resample to full resolution
+    BBaltFull=nan(size(rowInds));
+    BBaltFull(find(~isnan(maxLevel)))=BBalt;
+    BBlocFull=nan(size(rowInds));
+    BBlocFull(find(~isnan(maxLevel)))=BBloc;
+    
+    % Remove data where distance is more than 200 m
+    BBlayer(:,isnan(BBlocFull))=nan;
+    BBlayer(:,BBlocFull>200)=nan;
+    
+    % Remove data that is too far off bright band altitude
+    
+    BBvalMax=BBlayer(linearIndBB);
+    BBvalFull=nan(size(rowInds));
+    BBvalFull(find(~isnan(maxLevel)))=BBvalMax;
+    
+    for ii=1:length(rowInds)
+        BBcol=BBlayer(:,ii);
+        dataInd=find(~isnan(BBcol));
+        if length(dataInd)>0
+            diffs=abs(ASLlayer(dataInd,ii)-BBaltFull(ii));
+            tooFar=find(diffs>300);
+            BBlayer(dataInd(tooFar),ii)=nan;
+            % remove data in low gradient areas
+            BBcol=BBlayer(:,ii);
+            dataInd=find(~isnan(BBcol));
+            if length(dataInd)>0
+                minVal=min(BBcol(dataInd));
+                BBlayer((BBvalFull(ii)-BBcol)>(BBvalFull(ii)-minVal)/1.2,ii)=nan;
+            end
+        end
+    end
+    
+    % Remove contiguous areas that are too small
+    specCut=100;
+    
+    bbTemp=BBlayer;
+    
+    maskTemp=zeros(size(bbTemp));
+    maskTemp(~isnan(bbTemp))=1;
+    
+    CC = bwconncomp(maskTemp,4);
+    
+    for ii=1:CC.NumObjects
+        area=CC.PixelIdxList{ii};
+        if length(area)<=specCut
+            BBlayer(area)=nan;
+        end
+    end
+    
+    % Re-sample altitude (we keep only data where BB is nview(2);
+    
+    BBdata=sum(BBlayer,1,'omitnan');
+    BBnan=find(BBdata==0);
+    
+    BBaltFull(BBnan)=nan;
+    
+    if min(min(isnan(BBlayer)))==0
+        BBall{end+1}=BBlayer;
+        BBaltAll{end+1}=BBaltFull;
+        timeIall{end+1}=timeInds;
     end
 end
 
-%% Re-sample altitude (we keep only data where BB is nview(2);
-colorbar
-ylim(ylimits);
-ylabel('Altitude (km)');
-xlim([data.time(1),data.time(end)]);on nan)
-BBdata=sum(BB,1,'omitnan');
-BBnan=find(BBdata==0);
+%% Put things back together
+BBfinished=nan(size(data.LDR));
 
-BBaltFull(BBnan)=nan;
+% Zero degree alt
+for ii=1:size(layerAlts,1)
+    rows1=layerInds(ii,:);
+    cols1=1:length(data.time);
+    
+    indsNonNan=cat(2,rows1',cols1');
+    indsNonNan(any(isnan(indsNonNan), 2), :) = [];
+    
+    linInds1=sub2ind(size(data.asl),indsNonNan(:,1),indsNonNan(:,2));
+    BBfinished(linInds1)=0;
+end
 
+% BB altitude
+for ii=1:size(BBaltAll,2)
+   BB1=BBaltAll{ii}; 
+   timeI1=timeIall{ii};
+   
+   timeI1(isnan(BB1))=[];
+   BB1(isnan(BB1))=[];
+   
+   for jj=1:length(BB1)
+       [min1 ind1]=(min(abs(data.asl(:,timeI1(jj))-BB1(jj))));
+       BBfinished(ind1,timeI1(jj))=1;
+   end
+end
+
+zeroInds=find(BBfinished==0);
+oneInds=find(BBfinished==1);
 %% Plot
 
 close all
@@ -320,7 +370,7 @@ if plotFields
     
     ax2=subplot(2,1,2);
     hold on;
-    sub2=surf(data.time,data.asl./1000,BB,'edgecolor','none');
+    sub2=surf(data.time,data.asl./1000,BBlayer,'edgecolor','none');
     view(2);
     colorbar
     ylim([expBBalt-3 expBBalt+3]);
@@ -353,7 +403,7 @@ if plotWholeFlight
     sub1=surf(newTime,newASL./1000,newDBZ,'edgecolor','none');
     view(2);
     sub1=colMapDBZ(sub1);
-    %scatter(data.time,BBaltFull./1000,10,'c','filled');
+    scatter(timeMat(oneInds),data.asl(oneInds)./1000,10,'c','filled');
     ax = gca;
     ax.SortMethod = 'childorder';
     ylim(ylimits);
@@ -375,6 +425,8 @@ if plotWholeFlight
        rowAlts(isnan(rowAlts))=[];
        scatter(timeMat(linPlot),rowAlts./1000,10,'filled'); 
     end
+    
+    %scatter(timeMat(zeroInds),data.asl(zeroInds)./1000,10,'b','filled');
     
     subplot(2,1,2)
     hold on;
