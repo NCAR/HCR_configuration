@@ -11,12 +11,12 @@ makeSingleFigs=1;
 addNSCAL=0; % Noise source cal will be incorporated
 addSIG0model=1; % Plot also model data from sig0 model
 
-project='otrec'; %socrates, aristo, cset, otrec
-quality='qc1'; %field, qc1, or qc2
+project='cset'; %socrates, aristo, cset, otrec
+quality='qc2'; %field, qc1, or qc2
 dataFreq='10hz';
 addName=''; % Extra name part for output files. Default is ''.
 
-attenuationFrom='era5file'; %Name part of the file that infile that states which attenuation data should be used: 
+attenuationFrom='file'; %Name part of the file that infile that states which attenuation data should be used: 
 % ecmwf, ecmwfsonde, era5, era5sonde, sonde, era5file, ecmwffile
 
 oceanTemp=27;
@@ -36,7 +36,8 @@ end
 
 outName=[outName,addName];
 
-directories.figdir=['/h/eol/romatsch/hcrCalib/oceanScans/figsCompare/',outName,'/'];
+%directories.figdir=['/h/eol/romatsch/hcrCalib/oceanScans/figsCompare/',outName,'/'];
+directories.figdir=['/h/eol/romatsch/papers/HCRcalibration/figs/',outName,'/'];
 
 if ~exist(directories.figdir, 'dir')
     mkdir(directories.figdir)

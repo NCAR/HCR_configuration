@@ -355,7 +355,7 @@ end
     
 %% Plot mean and std
 
-figure;
+figure('DefaultAxesFontSize',11);
 set(gcf,'Position',[200 500 800 800]);
 set(gcf,'renderer','painters');
 
@@ -391,10 +391,10 @@ grid on
 xlabel('Elevation angle [deg]');
 ylabel('Radar cross section [dB]');
 title(['Measured minus modeled radar cross section'],'interpreter','none');
-legend([l1,l2,l3],{'FreilichVanhoff','Wu','CoxMunk'},'location','northeast');
-text(5.5,6.5,['Mean bias FreilichVanhoff: ',num2str(meanBias(1)),', std: ',num2str(stdBias(1))],'fontsize',12);
-text(5.5,5.5,['Mean bias Wu: ',num2str(meanBias(2)),', std: ',num2str(stdBias(2))],'fontsize',12);
-text(5.5,4.5,['Mean bias CoxMunk: ',num2str(meanBias(3)),', std: ',num2str(stdBias(3))],'fontsize',12);
+legend([l1,l2,l3],{'FV model','Wu model','CM model'},'location','northeast','fontsize',12);
+text(5.5,6.5,['FV model: mean bias ',num2str(meanBias(1),2),' dB, st. dev. ',num2str(stdBias(1),2),' dB'],'fontsize',12);
+text(5.5,5.5,['Wu model: mean bias ',num2str(meanBias(2),2),' dB, st. dev. ',num2str(stdBias(2),2),' dB'],'fontsize',12);
+text(5.5,4.5,['CM model: mean bias ',num2str(meanBias(3),2),' dB, st. dev. ',num2str(stdBias(3),2),' dB'],'fontsize',12);
 
 set(gcf,'PaperPositionMode','auto')
 print([directories.figdir projName '_bias'],'-dpng','-r0')

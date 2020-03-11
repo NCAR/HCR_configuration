@@ -5,12 +5,9 @@ close all;
 
 savefig=1;
 
-addpath('/h/eol/romatsch/gitPriv/process_HCR/oceanScans/functions/');
-addpath('/h/eol/romatsch/gitPriv/process_HCR/oceanScans/colormaps/');
-addpath('/h/eol/romatsch/gitPriv/process_HCR/NSCAL/functions/');
-addpath(genpath('/h/eol/romatsch/gitPriv/utils/'));
+addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-figdir='/h/eol/romatsch/hcrCalib/oceanScans/figsCalibPaper/';
+figdir=['/h/eol/romatsch/papers/HCRcalibration/figs/'];
 
 PLT.sig0measured=0;
 PLT.elev=0:0.1:20;
@@ -60,7 +57,7 @@ close all
 wi=5;
 hi=8;
 
-fig=figure('DefaultAxesFontSize',11,'DefaultFigurePaperType','<custom>','units','inch','position',[1,100,wi,hi]);
+fig=figure('DefaultAxesFontSize',11,'DefaultFigurePaperType','<custom>','units','inch','position',[1,100,wi,hi],'renderer','painters');
 fig.PaperPositionMode = 'manual';
 fig.PaperUnits = 'inches';
 fig.Units = 'inches';
@@ -73,7 +70,7 @@ set(fig,'color','w');
 
 ax1=subplot(2,1,1,'units','inch');
 hold on;
-ax1.Position = [0.6 4.55 4.0 3.1];
+ax1.Position = [0.7 4.55 4.0 3.1];
 
 cols=jet(5);
 
@@ -86,15 +83,15 @@ plot(PLT.elev,PLT5.sig0model(:,8),'color',cols(5,:),'linewidth',2);
 xlim([0,20]);
 ylim([-5 15]);
 grid on
-xlabel('Pointing angle off nadir [deg]');
-ylabel('sig0 [dB]');
+xlabel('Incidence angle (deg)');
+ylabel('sigma_{0} (dB)');
 
 legend('2 m s^{-1}','5 m s^{-1}','10 m s^{-1}','15 m s^{-1}','20 m s^{-1}');
-title('a           Variation with surface wind speed')
+text(0,16,'(a) \sigma_0 variation with surface wind speed','fontsize',12,'fontweight','bold')
 
 ax2=subplot(2,1,2,'units','inch');
 hold on;
-ax2.Position = [0.6 0.55 4.0 3.1];
+ax2.Position = [0.7 0.55 4.0 3.1];
 
 cols=jet(5);
 
@@ -106,11 +103,11 @@ plot(PLT.elev,PLT9.sig0model(:,8),'color',cols(5,:),'linewidth',2);
 xlim([0,20]);
 ylim([-5 15]);
 grid on
-xlabel('Pointing angle off nadir [deg]');
-ylabel('sig0 [dB]');
+xlabel('Incidence angle (deg)');
+ylabel('sigma_{0} (dB)');
 
 legend('0 C','10 C','20 C','30 C');
-title('b  Variation with sea surface temperature')
+text(0,16,'(b) \sigma_0 variation with SST','fontsize',12,'fontweight','bold')
 
 if savefig
     set(gcf,'PaperPositionMode','auto')
