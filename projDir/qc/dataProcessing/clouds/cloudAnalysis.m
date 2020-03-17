@@ -189,9 +189,11 @@ blMask(:,find(data.elevation<0))=0;
 BB(blMask==1)=nan;
 
 %% Find altitude of bright band
-BBall={};
+
 BBaltAll={};
 timeIall={};
+BBaltInterpAll={};
+BBaltZeroAll={};
 
 for kk=1:size(layerAlts,1)
     timeInds=find(~isnan(layerAlts(kk,:)));
@@ -274,9 +276,43 @@ for kk=1:size(layerAlts,1)
     % Avoid jumps between gates
     BBaltRaw=movmedian(BBaltRaw,20,'omitnan');
     
+    % Interpolate between good values
+    BBaltInterp=nan(size(BBaltRaw));
+    BBaltZero=nan(size(BBaltRaw));
+    
+    % Mask
+    maskBBalt=zeros(size(BBaltRaw));
+    maskBBalt(isnan(BBaltRaw))=1;
+    diffBBalt=diff(maskBBalt);
+    
+    endInds=find(diffBBalt==-1);
+    startInds=find(diffBBalt==1);
+    
+    startInds=startInds+1;
+    
+    if endInds(1)<startInds(1)
+        startInds=[1 startInds];
+    end    
+    if length(endInds)~=length(startInds)
+        endInds=[endInds length(maskBBalt)];
+    end
+    
+    % Go through each nan stretch
+    for ll=1:length(startInds)
+        nanLength=endInds(jj)-startInds(jj);
+        % Short stretches
+        if nanLength<6000
+            
+        else
+            
+        end
+    end
+    
     if min(min(isnan(BBlayer)))==0
         BBaltAll{end+1}=BBaltRaw;
         timeIall{end+1}=timeInds;
+        BBaltInterpAll={};
+        BBaltZeroAll={};
     end
 end
 
