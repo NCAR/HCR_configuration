@@ -3,8 +3,8 @@
 clear all;
 close all;
 
-startTime=datetime(2018,2,7,20,50,0);
-endTime=datetime(2018,2,7,21,2,0);
+startTime=datetime(2018,2,5,0,10,0);
+endTime=datetime(2018,2,5,0,35,0);
 
 % startTime=datetime(2019,8,7,0,0,0);
 % endTime=datetime(2019,8,7,23,0,0);
@@ -45,8 +45,11 @@ disp('Loading data ...');
 data.DBZ=[];
 data.LDR=[];
 data.TEMP=[];
+data.WIDTH=[];
 data.FLAG=[];
+data.TOPO=[];
 data.pitch=[];
+data.roll=[];
 
 dataVars=fieldnames(data);
 
@@ -165,6 +168,26 @@ BB(data.FLAG>1)=nan;
 BB(BB<-16 | BB>-7)=nan;
 BB(data.range<150)=nan;
 
+%% Tightened backlobe
+% Initiate mask
+blMask=zeros(size(data.DBZ));
+
+blMask(data.DBZ<-18 & data.WIDTH>1)=1;
+
+% Only within right altitude
+rightAlt=data.altitude-data.TOPO;
+
+altMat=repmat(rightAlt,size(data.range,1),1);
+% Lower limit
+blMask(data.range<(altMat-100))=0;
+% Upper limit
+blMask(data.range>(altMat+2500))=0;
+
+% Only when scanning up
+blMask(:,find(data.elevation<0))=0;
+
+BB(blMask==1)=nan;
+
 %% Find altitude of bright band
 BBall={};
 BBaltAll={};
@@ -217,9 +240,6 @@ for kk=1:size(layerAlts,1)
     % Distance between raw and mean altitude
     BBloc=abs(BBaltRaw-BBalt);
     
-    % Remove data where distance is more than 200 m
-    BBaltRaw(BBloc>200)=nan;
-    
     % Remove data that is too short
     BBmask=zeros(size(BBaltRaw));
     BBmask(~isnan(BBaltRaw))=1;
@@ -247,6 +267,12 @@ for kk=1:size(layerAlts,1)
             BBaltRaw(area)=nan;
         end
     end
+    
+    % Remove data where distance is more than 200 m
+    BBaltRaw(BBloc>50)=nan;
+    
+    % Avoid jumps between gates
+    BBaltRaw=movmedian(BBaltRaw,20,'omitnan');
     
     if min(min(isnan(BBlayer)))==0
         BBaltAll{end+1}=BBaltRaw;
