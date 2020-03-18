@@ -3,14 +3,14 @@
 clear all;
 close all;
 
-startTime=datetime(2018,2,4,12,10,0);
-endTime=datetime(2018,2,5,12,35,0);
+startTime=datetime(2018,1,26,1,40,0);
+endTime=datetime(2018,1,26,1,50,0);
 
 % startTime=datetime(2019,8,7,0,0,0);
 % endTime=datetime(2019,8,7,23,0,0);
 
-plotFields=0;
-plotWholeFlight=1;
+plotFields=1;
+plotWholeFlight=0;
 
 project='socrates'; %socrates, aristo, cset
 quality='qc2'; %field, qc1, or qc2
