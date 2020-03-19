@@ -3,11 +3,11 @@
 clear all;
 close all;
 
-startTime=datetime(2018,1,26,1,40,0);
-endTime=datetime(2018,1,26,1,50,0);
+startTime=datetime(2018,1,26,2,5,0);
+endTime=datetime(2018,1,26,2,15,0);
 
-% startTime=datetime(2019,8,7,0,0,0);
-% endTime=datetime(2019,8,7,23,0,0);
+% startTime=datetime(2019,8,7,0,35,0);
+% endTime=datetime(2019,8,7,23,55,0);
 
 plotFields=1;
 plotWholeFlight=0;
@@ -260,8 +260,7 @@ for kk=1:size(layerAlts,1)
             end
         end
         
-        % Keep data that has only a few nan
-        
+        % Keep data that has only a few nan        
         zeroCut=100;
         CC = bwconncomp(BBmask);
         
@@ -313,28 +312,24 @@ for kk=1:size(layerAlts,1)
                     % Tail
                     if startInds(ll~=1)
                         startTail=startInds(ll);
-                        endTailIn=min([startInds(ll)+transLength,length(maskBBalt)]);
-                        modT=layerAltsTemp(startTail:endTailIn);
-                        [~,modTind]=min(abs(BBaltRaw(startTail-1)-modT));
-                        indsTemp=newIndsMask(startTail:endTailIn);
-                        endTail=indsTemp(modTind);
-                        
-                        modTtail=layerAltsTemp(endTail);
-                        BBaltZero(startTail:endTail)=interp1([startTail-1,endTail+1],...
+                        endTail=min([startInds(ll)+transLength,length(maskBBalt)]);
+                        modT=layerAltsTemp(startTail:endTail);
+                        modTtail=layerAltsTemp(endTail)-(layerAltsTemp(endTail)-layerAltsTemp(startTail));
+                        int1=interp1([startTail-1,endTail+1],...
                             [BBaltRaw(startTail-1),modTtail],startTail:endTail);
+                        addInt=int1-int1(end);
+                        BBaltZero(startTail:endTail)=modT+addInt;
                     end
                     % Head
                     if endInds(ll)~=length(maskBBalt)
-                        startHeadIn=max([endInds(ll)-transLength,1]);
+                        startHead=max([endInds(ll)-transLength,1]);
                         endHead=endInds(ll);
-                        modT=layerAltsTemp(startHeadIn:endHead);
-                        [~,modTind]=min(abs(BBaltRaw(endHead+1)-modT));
-                        indsTemp=newIndsMask(startHeadIn:endHead);
-                        startHead=indsTemp(modTind);
-                        
-                        modThead=layerAltsTemp(startHead);
-                        BBaltZero(startHead:endHead)=interp1([startHead-1,endHead+1],...
+                        modT=layerAltsTemp(startHead:endHead);
+                        modThead=layerAltsTemp(startHead)-(layerAltsTemp(startHead)-layerAltsTemp(endHead));
+                        int1=interp1([startHead-1,endHead+1],...
                             [modThead,BBaltRaw(endHead+1)],startHead:endHead);
+                        addInt=int1-int1(1);
+                        BBaltZero(startHead:endHead)=modT+addInt;
                     end
                 end
             end
