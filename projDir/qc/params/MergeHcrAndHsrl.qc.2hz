@@ -104,7 +104,7 @@ max_realtime_data_age_secs = 300;
 // Type: string
 //
 
-hcr_data_dir = "/scr/rain1/rsfdata/projects/socrates/hcr/qc/cfradial/velcorr/2hz";
+hcr_data_dir = "$(DATA_DIR)/$(QC_VERSION)/cfradial/final/2hz";
 
 ///////////// hsrl_data_dir ///////////////////////////
 //
@@ -116,7 +116,7 @@ hcr_data_dir = "/scr/rain1/rsfdata/projects/socrates/hcr/qc/cfradial/velcorr/2hz
 // Type: string
 //
 
-hsrl_data_dir = "/scr/rain1/rsfdata/projects/socrates/hsrl/qc/cfradial/qc_moments";
+hsrl_data_dir = "$(DATA_DIR)/$(QC_VERSION)/cfradial/hsrl_moments/2hz";
 
 ///////////// file_match_time_tolerance_sec ///////////
 //
@@ -188,23 +188,13 @@ ray_match_elevation_tolerance_deg = 10.0;
 
 hcr_fields = {
   {
-    input_field_name = "DBZ",
+    input_field_name = "DBZ_MASKED",
     output_field_name = "HCR_DBZ"
   }
   ,
   {
     input_field_name = "VEL_CORR",
-    output_field_name = "HCR_VEL_CORR"
-  }
-  ,
-  {
-    input_field_name = "VEL",
     output_field_name = "HCR_VEL"
-  }
-  ,
-  {
-    input_field_name = "WIDTH_CORR",
-    output_field_name = "HCR_WIDTH_CORR"
   }
   ,
   {
@@ -230,6 +220,41 @@ hcr_fields = {
   {
     input_field_name = "DBMVC",
     output_field_name = "HCR_DBMVC"
+  }
+  ,
+  {
+    input_field_name = "PRESS",
+    output_field_name = "PRESS"
+  }
+  ,
+  {
+    input_field_name = "TEMP",
+    output_field_name = "TEMP"
+  }
+  ,
+  {
+    input_field_name = "RH",
+    output_field_name = "RH"
+  }
+  ,
+  {
+    input_field_name = "SST",
+    output_field_name = "SST"
+  }
+  ,
+  {
+    input_field_name = "TOPO",
+    output_field_name = "TOPO"
+  }
+  ,
+  {
+    input_field_name = "U_SURF",
+    output_field_name = "U_SURF"
+  }
+  ,
+  {
+    input_field_name = "V_SURF",
+    output_field_name = "V_SURF"
   }
 };
 
@@ -309,16 +334,6 @@ hsrl_fields = {
     input_field_name = "Raw_Molecular_Backscatter_Channel",
     output_field_name = "HSRL_Raw_Molecular_Backscatter_Channel"
   }
-  ,
-  {
-    input_field_name = "Temperature",
-    output_field_name = "Temperature"
-  }
-  ,
-  {
-    input_field_name = "Pressure",
-    output_field_name = "Pressure"
-  }
 };
 
 //======================================================================
@@ -371,7 +386,7 @@ output_encoding = ENCODING_INT16;
 // Type: string
 //
 
-output_dir = "/scr/rain1/rsfdata/projects/socrates/hcr/qc/cfradial/hsrl_merge/2hz";
+output_dir = "$(DATA_DIR)/$(QC_VERSION)/cfradial/hsrl_merge/2hz";
 
 ///////////// append_day_dir_to_output_dir ////////////
 //
