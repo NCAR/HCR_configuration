@@ -368,7 +368,7 @@ fields = {
     filtered_name = "",
     units = "m/s",
     color_map = "width_w.colors",
-    shortcut = "5"
+    shortcut = "2"
   }
   ,
   {
@@ -377,7 +377,7 @@ fields = {
     filtered_name = "",
     units = "dB",
     color_map = "ldr.colors",
-    shortcut = "g"
+    shortcut = "3"
   }
   ,
   {
@@ -386,7 +386,7 @@ fields = {
     filtered_name = "",
     units = "",
     color_map = "ncp.colors",
-    shortcut = "f"
+    shortcut = "4"
   }
   ,
   {
@@ -395,7 +395,7 @@ fields = {
     filtered_name = "",
     units = "dB",
     color_map = "snr.colors",
-    shortcut = "8"
+    shortcut = "5"
   }
   ,
   {
@@ -404,7 +404,7 @@ fields = {
     filtered_name = "",
     units = "dBm",
     color_map = "dbm.colors",
-    shortcut = "c"
+    shortcut = "6"
   }
   ,
   {
@@ -413,7 +413,7 @@ fields = {
     filtered_name = "",
     units = "m-1.sr-1",
     color_map = "hsrl_backscat_coeff.colors",
-    shortcut = "0"
+    shortcut = "7"
   }
   ,
   {
@@ -422,7 +422,7 @@ fields = {
     filtered_name = "",
     units = "m-1.sr-1",
     color_map = "hsrl_backscatter_ratio.colors",
-    shortcut = "0"
+    shortcut = "8"
   }
   ,
   {
@@ -431,7 +431,7 @@ fields = {
     filtered_name = "",
     units = "",
     color_map = "particle_linear_depol.colors",
-    shortcut = "3"
+    shortcut = "9"
   }
   ,
   {
@@ -440,7 +440,7 @@ fields = {
     filtered_name = "",
     units = "",
     color_map = "particle_linear_depol.colors",
-    shortcut = "3"
+    shortcut = "0"
   }
   ,
   {
@@ -449,7 +449,7 @@ fields = {
     filtered_name = "",
     units = "",
     color_map = "volume_linear_depol.colors",
-    shortcut = "2"
+    shortcut = "a"
   }
   ,
   {
@@ -458,7 +458,7 @@ fields = {
     filtered_name = "",
     units = "",
     color_map = "volume_linear_depol.colors",
-    shortcut = "2"
+    shortcut = "b"
   }
   ,
   {
@@ -467,7 +467,7 @@ fields = {
     filtered_name = "",
     units = "",
     color_map = "hsrl_optical_depth.colors",
-    shortcut = "5"
+    shortcut = "c"
   }
   ,
   {
@@ -476,7 +476,7 @@ fields = {
     filtered_name = "",
     units = "m-1",
     color_map = "hsrl_extinction_coeff.colors",
-    shortcut = "4"
+    shortcut = "d"
   }
   ,
   {
@@ -485,7 +485,7 @@ fields = {
     filtered_name = "",
     units = "counts",
     color_map = "hsrl_combined_high.colors",
-    shortcut = "a"
+    shortcut = "e"
   }
   ,
   {
@@ -494,7 +494,7 @@ fields = {
     filtered_name = "",
     units = "counts",
     color_map = "hsrl_cross_polar.colors",
-    shortcut = "b"
+    shortcut = "f"
   }
   ,
   {
@@ -503,16 +503,16 @@ fields = {
     filtered_name = "",
     units = "",
     color_map = "hsrl_molecular.colors",
-    shortcut = "3"
+    shortcut = "g"
   }
   ,
   {
     label = "Temperature",
     raw_name = "TEMP",
     filtered_name = "",
-    units = "K",
-    color_map = "tempK_xml.colors",
-    shortcut = "d"
+    units = "C",
+    color_map = "tempC_xml.colors",
+    shortcut = "h"
   }
   ,
   {
@@ -521,7 +521,7 @@ fields = {
     filtered_name = "",
     units = "hPa",
     color_map = "pressure_xml.colors",
-    shortcut = "e"
+    shortcut = "i"
   }
   ,
   {
@@ -530,7 +530,7 @@ fields = {
     filtered_name = "",
     units = "%",
     color_map = "rh_jet.colors",
-    shortcut = "e"
+    shortcut = "j"
   }
 };
 
