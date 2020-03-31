@@ -1,0 +1,17 @@
+#! /bin/csh -f
+
+# HCR QC processing - SOCRATES
+#
+# Run RadxDwellCombine
+# Reads 10 hz data in CfRadial files, combines into 2 hz dwells
+# Writes 2hz CfRadial data
+
+source ~/git/HCR_configuration/projDir/system/params/project_info.socrates
+
+cd $PROJ_DIR/qc/params
+
+Hsrl2Radx -params Hsrl2Radx.qc.2hz.socrates -debug -f $DATA_DIR/$QC_VERSION/hsrl/python_moments/SOCRATESrf??/*.nc >& $LOG_DIR/Hsrl2Radx.qc.2hz.socrates.log &
+
+tail -f $LOG_DIR/Hsrl2Radx.qc.2hz.socrates.log
+
+
