@@ -299,7 +299,7 @@ nc_varname_altitude_msl = "GGALT";
 // Type: string
 //
 
-nc_varname_altitude_pres = "PALT_A";
+nc_varname_altitude_pres = "PALT";
 
 ///////////// nc_varname_ew_velocity //////////////////
 //
@@ -379,7 +379,7 @@ nc_varname_heading = "THDG";
 // Type: string
 //
 
-nc_varname_drift_angle = "DRFTA";
+nc_varname_drift_angle = "";
 
 ///////////// nc_varname_track ////////////////////////
 //
@@ -389,7 +389,7 @@ nc_varname_drift_angle = "DRFTA";
 // Type: string
 //
 
-nc_varname_track = "TKAT";
+nc_varname_track = "GGTRK";
 
 ///////////// nc_varname_roll /////////////////////////
 //
@@ -419,7 +419,7 @@ nc_varname_pitch = "PITCH";
 // Type: string
 //
 
-nc_varname_temperature = "AT_A";
+nc_varname_temperature = "ATX";
 
 ///////////// nc_varname_pressure /////////////////////
 //
@@ -459,7 +459,7 @@ nc_varname_angle_of_attack = "ATTACK";
 // Type: string
 //
 
-nc_varname_indicated_airspeed = "CAS_A";
+nc_varname_indicated_airspeed = "";
 
 ///////////// nc_varname_true_airspeed ////////////////
 //
@@ -469,7 +469,7 @@ nc_varname_indicated_airspeed = "CAS_A";
 // Type: string
 //
 
-nc_varname_true_airspeed = "TAS_A";
+nc_varname_true_airspeed = "TASX";
 
 ///////////// nc_varname_normal_accel /////////////////
 //
@@ -524,13 +524,6 @@ nc_specify_custom_fields = TRUE;
 //
 
 nc_varname_custom_fields = {
- "PITCH_IRS2",
- "PITCH_IRS3",
- "ROLL_IRS2",
- "ROLL_IRS3",
- "DRFTA_IRS2",
- "DRFTA_IRS3",
- "NOSETMP"
 };
 
 //======================================================================
@@ -672,29 +665,4 @@ print_surface_velocity_data = FALSE;
 //
 
 surface_velocity_print_period_secs = 2;
-
-//======================================================================
-//
-// FIR FILTERING FOR SURFACE VELOCITY ESTIMATES.
-//
-//======================================================================
- 
-///////////// surface_vel_spike_filter_difference_threshold 
-//
-// Threshold for removing spikes in the original data and resetting the 
-//   value to that form the short filter.
-//
-// We apply both the stage-1 and spike filters to the time series of 
-//   surface velocity. If the absolute difference between the two exceeds 
-//   this threshold, then the conditioned data is set to the output from 
-//   the stage-1 filter. If the absolute difference is below this 
-//   threshold then the original data point is retained. After this step 
-//   the final filter it applied to the conditioned data to compute the 
-//   final filtered value.
-//
-//
-// Type: double
-//
-
-surface_vel_spike_filter_difference_threshold = 0.11;
 
