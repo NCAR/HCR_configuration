@@ -1135,7 +1135,7 @@ override_instrument_name = FALSE;
 // Type: string
 //
 
-instrument_name = "unknown";
+instrument_name = "HSRL";
 
 ///////////// override_site_name //////////////////////
 //
@@ -1159,7 +1159,7 @@ override_site_name = FALSE;
 // Type: string
 //
 
-site_name = "unknown";
+site_name = "CSET";
 
 //======================================================================
 //
