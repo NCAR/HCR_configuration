@@ -10,7 +10,7 @@ source ~/git/HCR_configuration/projDir/system/params/project_info.cset
 
 cd $PROJ_DIR/qc/params
 
-Hsrl2Radx -params Hsrl2Radx.qc.2hz.cset -debug -f $DATA_DIR/$QC_VERSION/hsrl/mhayman_moments/*.nc >& $LOG_DIR/Hsrl2Radx.qc.2hz.cset.log &
+Hsrl2Radx -params Hsrl2Radx.qc.2hz.cset -debug -f $DATA_DIR/$QC_VERSION/hsrl/python_moments/CSET*.nc >& $LOG_DIR/Hsrl2Radx.qc.2hz.cset.log &
 
 tail -f $LOG_DIR/Hsrl2Radx.qc.2hz.cset.log
 

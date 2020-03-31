@@ -857,7 +857,7 @@ mhayman_fields = {
   {
     field_name = "Particle_Linear_Depolarization_Ratio",
     apply_mask = TRUE,
-    mask_name = "Particle_Linear_Depolarization_Ratio_mask",
+    mask_name = "Particle_Depolarization_mask",
     mask_valid_value = 0,
     output_name = "",
     cf_standard_name = "lidar_particle_linear_depolarization_ratio"
@@ -875,7 +875,7 @@ mhayman_fields = {
   {
     field_name = "Volume_Linear_Depolarization_Ratio",
     apply_mask = TRUE,
-    mask_name = "Volume_Linear_Depolarization_Ratio_mask",
+    mask_name = "Volume_Depolarization_mask",
     mask_valid_value = 0,
     output_name = "",
     cf_standard_name = "lidar_volume_linear_depolarization_ratio"
@@ -884,7 +884,7 @@ mhayman_fields = {
   {
     field_name = "Molecular_Backscatter_Coefficient",
     apply_mask = TRUE,
-    mask_name = "Volume_Linear_Depolarization_Ratio_mask",
+    mask_name = "Volume_Depolarization_mask",
     mask_valid_value = 0,
     output_name = "",
     cf_standard_name = "lidar_molecular_backscatter_coefficient"
@@ -951,24 +951,6 @@ mhayman_fields = {
     mask_valid_value = 0,
     output_name = "",
     cf_standard_name = "lidar_aerosol_extinction_coefficient"
-  }
-  ,
-  {
-    field_name = "Temperature",
-    apply_mask = TRUE,
-    mask_name = "Merged_Combined_Channel_mask",
-    mask_valid_value = 0,
-    output_name = "",
-    cf_standard_name = "air_temperature"
-  }
-  ,
-  {
-    field_name = "Pressure",
-    apply_mask = TRUE,
-    mask_name = "Merged_Combined_Channel_mask",
-    mask_valid_value = 0,
-    output_name = "",
-    cf_standard_name = "air_pressure"
   }
 };
 
