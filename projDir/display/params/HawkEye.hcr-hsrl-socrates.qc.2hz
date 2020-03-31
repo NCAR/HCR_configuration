@@ -354,30 +354,12 @@ fields = {
   }
   ,
   {
-    label = "HCR_VEL_CORR",
-    raw_name = "HCR_VEL_CORR",
-    filtered_name = "",
-    units = "m/s",
-    color_map = "vel_w_4.colors",
-    shortcut = "1"
-  }
-  ,
-  {
     label = "HCR_VEL",
     raw_name = "HCR_VEL",
     filtered_name = "",
     units = "m/s",
     color_map = "vel_w_4.colors",
     shortcut = "1"
-  }
-  ,
-  {
-    label = "HCR_WIDTH_CORR",
-    raw_name = "HCR_WIDTH_CORR",
-    filtered_name = "",
-    units = "m/s",
-    color_map = "width_w.colors",
-    shortcut = "5"
   }
   ,
   {
@@ -526,7 +508,7 @@ fields = {
   ,
   {
     label = "Temperature",
-    raw_name = "Temperature",
+    raw_name = "TEMP",
     filtered_name = "",
     units = "K",
     color_map = "tempK_xml.colors",
@@ -535,10 +517,19 @@ fields = {
   ,
   {
     label = "Pressure",
-    raw_name = "Pressure",
+    raw_name = "PRESS",
     filtered_name = "",
     units = "hPa",
     color_map = "pressure_xml.colors",
+    shortcut = "e"
+  }
+  ,
+  {
+    label = "RH",
+    raw_name = "RH",
+    filtered_name = "",
+    units = "%",
+    color_map = "rh_jet.colors",
     shortcut = "e"
   }
 };
