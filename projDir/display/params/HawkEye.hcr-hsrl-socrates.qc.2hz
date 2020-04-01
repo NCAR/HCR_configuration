@@ -214,7 +214,7 @@ archive_time_span_secs = 900;
 // Type: string
 //
 
-archive_data_url = "/scr/rain1/rsfdata/projects/socrates/hcr/qc/cfradial/hsrl_merge/2hz";
+archive_data_url = "$(DATA_DIR)/$(QC_VERSION)/cfradial/hsrl_merge/2hz";
 
 //======================================================================
 //
@@ -354,15 +354,6 @@ fields = {
   }
   ,
   {
-    label = "HCR_VEL_CORR",
-    raw_name = "HCR_VEL_CORR",
-    filtered_name = "",
-    units = "m/s",
-    color_map = "vel_w_4.colors",
-    shortcut = "1"
-  }
-  ,
-  {
     label = "HCR_VEL",
     raw_name = "HCR_VEL",
     filtered_name = "",
@@ -372,21 +363,12 @@ fields = {
   }
   ,
   {
-    label = "HCR_WIDTH_CORR",
-    raw_name = "HCR_WIDTH_CORR",
-    filtered_name = "",
-    units = "m/s",
-    color_map = "width_w.colors",
-    shortcut = "5"
-  }
-  ,
-  {
     label = "HCR_WIDTH",
     raw_name = "HCR_WIDTH",
     filtered_name = "",
     units = "m/s",
     color_map = "width_w.colors",
-    shortcut = "5"
+    shortcut = "2"
   }
   ,
   {
@@ -395,7 +377,7 @@ fields = {
     filtered_name = "",
     units = "dB",
     color_map = "ldr.colors",
-    shortcut = "g"
+    shortcut = "3"
   }
   ,
   {
@@ -404,7 +386,7 @@ fields = {
     filtered_name = "",
     units = "",
     color_map = "ncp.colors",
-    shortcut = "f"
+    shortcut = "4"
   }
   ,
   {
@@ -413,7 +395,7 @@ fields = {
     filtered_name = "",
     units = "dB",
     color_map = "snr.colors",
-    shortcut = "8"
+    shortcut = "5"
   }
   ,
   {
@@ -422,7 +404,7 @@ fields = {
     filtered_name = "",
     units = "dBm",
     color_map = "dbm.colors",
-    shortcut = "c"
+    shortcut = "6"
   }
   ,
   {
@@ -431,7 +413,7 @@ fields = {
     filtered_name = "",
     units = "m-1.sr-1",
     color_map = "hsrl_backscat_coeff.colors",
-    shortcut = "0"
+    shortcut = "7"
   }
   ,
   {
@@ -440,7 +422,7 @@ fields = {
     filtered_name = "",
     units = "m-1.sr-1",
     color_map = "hsrl_backscatter_ratio.colors",
-    shortcut = "0"
+    shortcut = "8"
   }
   ,
   {
@@ -449,7 +431,7 @@ fields = {
     filtered_name = "",
     units = "",
     color_map = "particle_linear_depol.colors",
-    shortcut = "3"
+    shortcut = "9"
   }
   ,
   {
@@ -458,7 +440,7 @@ fields = {
     filtered_name = "",
     units = "",
     color_map = "particle_linear_depol.colors",
-    shortcut = "3"
+    shortcut = "0"
   }
   ,
   {
@@ -467,7 +449,7 @@ fields = {
     filtered_name = "",
     units = "",
     color_map = "volume_linear_depol.colors",
-    shortcut = "2"
+    shortcut = "a"
   }
   ,
   {
@@ -476,7 +458,7 @@ fields = {
     filtered_name = "",
     units = "",
     color_map = "volume_linear_depol.colors",
-    shortcut = "2"
+    shortcut = "b"
   }
   ,
   {
@@ -485,7 +467,7 @@ fields = {
     filtered_name = "",
     units = "",
     color_map = "hsrl_optical_depth.colors",
-    shortcut = "5"
+    shortcut = "c"
   }
   ,
   {
@@ -494,7 +476,7 @@ fields = {
     filtered_name = "",
     units = "m-1",
     color_map = "hsrl_extinction_coeff.colors",
-    shortcut = "4"
+    shortcut = "d"
   }
   ,
   {
@@ -503,7 +485,7 @@ fields = {
     filtered_name = "",
     units = "counts",
     color_map = "hsrl_combined_high.colors",
-    shortcut = "a"
+    shortcut = "e"
   }
   ,
   {
@@ -512,7 +494,7 @@ fields = {
     filtered_name = "",
     units = "counts",
     color_map = "hsrl_cross_polar.colors",
-    shortcut = "b"
+    shortcut = "f"
   }
   ,
   {
@@ -521,25 +503,34 @@ fields = {
     filtered_name = "",
     units = "",
     color_map = "hsrl_molecular.colors",
-    shortcut = "3"
+    shortcut = "g"
   }
   ,
   {
     label = "Temperature",
-    raw_name = "Temperature",
+    raw_name = "TEMP",
     filtered_name = "",
-    units = "K",
-    color_map = "tempK_xml.colors",
-    shortcut = "d"
+    units = "C",
+    color_map = "tempC_xml.colors",
+    shortcut = "h"
   }
   ,
   {
     label = "Pressure",
-    raw_name = "Pressure",
+    raw_name = "PRESS",
     filtered_name = "",
     units = "hPa",
     color_map = "pressure_xml.colors",
-    shortcut = "e"
+    shortcut = "i"
+  }
+  ,
+  {
+    label = "RH",
+    raw_name = "RH",
+    filtered_name = "",
+    units = "%",
+    color_map = "rh_jet.colors",
+    shortcut = "j"
   }
 };
 

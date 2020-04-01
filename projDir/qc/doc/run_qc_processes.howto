@@ -228,12 +228,60 @@ $PROJ_DIR/qc/dataProcessing/biasInFiles/cal_socrates_era5file.txt
 $PROJ_DIR/qc/dataProcessing/determine_bias_nadir.m
 
 #################################################################
-# RadxMon - use to see moments are flowing
+# Copy HSRL moments data into HCR QC data area - 2Hz data
 #
-# Don't do this when re-processing the data, only as a test.
-# Iq2Dsr is writing the FMQ in blocking mode, and only 1 reader is allowed
+# The HSRL moments are computed using pythons scripts in the
+# HSRL project:
+#   https://github.com/ncar/hsrl_configuration
+# Check that repo for docs on the specifics of that processing.
 #
-# Open terminal
+# The moments computed above are referred to as the python_moments.
+#
+# When that processing is complete, the files are copied in to
+# the HCR_configuration project area, for inclusion in the HCR
+# QC processing.
+#
+# For example, for socrates, we ran the following:
+#
+source ~/hcrProjDir/system/params/project_info.socrates
+mkdir -p $DATA_DIR/$QC_VERSION/hsrl/python_moments
+cd /scr/snow2/rsfdata/projects/socrates/hsrl/qc/mhayman_moments
+rsync -av * $DATA_DIR/$QC_VERSION/hsrl/python_moments
 
-# RadxMon -fmq /tmp/fmq/qc_moments/100hz/shmem_30100 -summary -update -5
+#################################################################
+# Convert python moments to CfRadial - 2Hz data
+#
+# Run Hsrl2Radx to convert python-generated moments to CfRadial.
+#
+# This will write data to:
+#  $DATA_DIR/$QC_VERSION/cfradial/hsrl_moments/2hz
+#
+# For example, for socrates:
+#
+cd ~/hcrProjDir/qc/scripts/
+run_Hsrl2Radx.qc.2hz.cset
+# or
+run_Hsrl2Radx.qc.2hz.socrates
+#################################################################
+# Merge 2Hz HCR final moments with 2Hz HSRL moments
+#
+# Run MergeHcrAndHsr to merge HCR and HSRL 2 Hz moments
+#
+# We preserve the model-based fields from HCR.
+# And only use the HSRL moments from the HSRL files, ignoring
+# HSRL model-based fields.
+#
+# This will write data to:
+#  $DATA_DIR/$QC_VERSION/cfradial/hsrl_merge/2hz
+#
+# For example, for socrates:
+#
+cd ~/hcrProjDir/qc/scripts/
+run_MergeHcrAndHsrl.qc.2hz.cset
+# or
+run_MergeHcrAndHsrl.qc.2hz.socrates
+
+
+
+
 

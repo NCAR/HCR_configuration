@@ -1,0 +1,18 @@
+#! /bin/csh -f
+
+# HCR QC processing - cset
+#
+# Run RadxDwellCombine
+# Reads 10 hz data in CfRadial files, combines into 2 hz dwells
+# Writes 2hz CfRadial data
+
+source ~/git/HCR_configuration/projDir/system/params/project_info.cset
+
+cd $PROJ_DIR/qc/params
+
+# run for cset
+
+MergeHcrAndHsrl -params MergeHcrAndHsrl.qc.2hz -start "2015 07 01 00 00 00" -end "2015 08 13 00 00 00" -verbose >& $LOG_DIR/MergeHcrAndHsrl.qc.2hz.cset.log &
+
+tail -f $LOG_DIR/MergeHcrAndHsrl.qc.2hz.cset.log
+
