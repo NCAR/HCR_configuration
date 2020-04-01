@@ -259,6 +259,8 @@ rsync -av * $DATA_DIR/$QC_VERSION/hsrl/python_moments
 # For example, for socrates:
 #
 cd ~/hcrProjDir/qc/scripts/
+run_Hsrl2Radx.qc.2hz.cset
+# or
 run_Hsrl2Radx.qc.2hz.socrates
 #################################################################
 # Merge 2Hz HCR final moments with 2Hz HSRL moments
@@ -275,6 +277,8 @@ run_Hsrl2Radx.qc.2hz.socrates
 # For example, for socrates:
 #
 cd ~/hcrProjDir/qc/scripts/
+run_MergeHcrAndHsrl.qc.2hz.cset
+# or
 run_MergeHcrAndHsrl.qc.2hz.socrates
 
 
