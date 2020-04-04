@@ -354,6 +354,15 @@ fields = {
   }
   ,
   {
+    label = "HCR_DBZ_MASKED",
+    raw_name = "HCR_DBZ_MASKED",
+    filtered_name = "",
+    units = "dBZ",
+    color_map = "dbz_w.colors",
+    shortcut = "0"
+  }
+  ,
+  {
     label = "HCR_VEL",
     raw_name = "HCR_VEL",
     filtered_name = "",
