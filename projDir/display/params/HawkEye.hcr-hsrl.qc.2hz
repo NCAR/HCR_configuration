@@ -623,7 +623,7 @@ override_radar_name = TRUE;
 // Type: string
 //
 
-radar_name = "HCR/HSRL";
+radar_name = "HCR/HSRL - $(PROJECT_NAME)";
 
 ///////////// display_site_name ///////////////////////
 //
