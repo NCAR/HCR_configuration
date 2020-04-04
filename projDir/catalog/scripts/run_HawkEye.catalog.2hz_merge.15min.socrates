@@ -3,9 +3,9 @@
 start_Xvfb
 set display_num = 1000
 setenv DISPLAY :${display_num}.0
-set logFile = /tmp/HawkEye.catalog.2hz_merge.1hr.socrates.log
-setenv IMAGE_SCHEDULE_INTERVAL_SECS 3600
-setenv IMAGE_DURATION 1hr
+set logFile = /tmp/HawkEye.catalog.2hz_merge.15min.socrates.log
+setenv IMAGE_SCHEDULE_INTERVAL_SECS 900
+setenv IMAGE_DURATION 15min
 
 # HCR QC processing for SOCRATES
 
