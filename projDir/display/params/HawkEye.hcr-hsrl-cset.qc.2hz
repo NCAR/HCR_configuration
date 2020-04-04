@@ -214,7 +214,7 @@ archive_time_span_secs = 900;
 // Type: string
 //
 
-archive_data_url = "$(DATA_DIR)/$(QC_VERSION)/cfradial/hsrl_merge/2hz";
+archive_data_url = "$(DATA_DIR)/$(QC_VERSION)/cfradial/hcr_hsrl_merge/2hz";
 
 //======================================================================
 //
