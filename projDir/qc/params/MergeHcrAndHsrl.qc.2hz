@@ -192,12 +192,6 @@ ray_match_elevation_tolerance_deg = 10;
 
 hcr_fields = {
   {
-    input_field_name = "DBZ_MASKED",
-    output_field_name = "HCR_DBZ_MASKED",
-    apply_flag = FALSE
-  }
-  ,
-  {
     input_field_name = "DBZ",
     output_field_name = "HCR_DBZ",
     apply_flag = TRUE
@@ -236,7 +230,7 @@ hcr_fields = {
   {
     input_field_name = "DBMVC",
     output_field_name = "HCR_DBMVC",
-    apply_flag = TRUE
+    apply_flag = FALSE
   }
   ,
   {
@@ -441,7 +435,7 @@ output_encoding = ENCODING_INT16;
 // Type: string
 //
 
-output_dir = "$(DATA_DIR)/$(QC_VERSION)/cfradial/hsrl_masked/2hz";
+output_dir = "$(DATA_DIR)/$(QC_VERSION)/cfradial/hcr_hsrl_merge/2hz";
 
 ///////////// append_day_dir_to_output_dir ////////////
 //
