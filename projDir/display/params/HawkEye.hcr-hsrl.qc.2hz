@@ -70,7 +70,7 @@ register_with_procmap = FALSE;
 // Type: string
 //
 
-instance = "hcr-cset.qc.2hz";
+instance = "hcr-hsrl.qc.2hz";
 
 //======================================================================
 //
