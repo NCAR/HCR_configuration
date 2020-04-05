@@ -57,7 +57,7 @@ register_with_procmap = TRUE;
 // Type: string
 //
 
-instance = "catalog.2hz_merge.$(IMAGE_DURATION).$(PROJECT_NAME)";
+instance = "qc_images.2hz_merge.$(IMAGE_DURATION).$(PROJECT_NAME)";
 
 //======================================================================
 //
@@ -1461,7 +1461,7 @@ bscan_dwell_stats = DWELL_STATS_MEAN;
 // Type: string
 //
 
-images_output_dir = "$(DATA_DIR)/$(QC_VERSION)/images/2hz_merge_$(IMAGE_DURATION)";
+images_output_dir = "$(DATA_DIR)/$(QC_VERSION)/images/2hz_merge_$(IMAGE_DURATION).$(PROJECT_NAME)";
 
 ///////////// images_write_to_day_dir /////////////////
 //
