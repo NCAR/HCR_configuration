@@ -1,0 +1,44 @@
+#! /bin/csh -f
+
+start_Xvfb
+set display_num = 1000
+setenv DISPLAY :${display_num}.0
+set logFile = /tmp/HawkEye.qc_images.10hz_hcr.1hr.socrates.log
+setenv IMAGE_SCHEDULE_INTERVAL_SECS 3600
+setenv IMAGE_DURATION 1hr
+
+# HCR QC processing for SOCRATES
+
+source ~/git/HCR_configuration/projDir/system/params/project_info.socrates
+
+cd $PROJ_DIR/qc/params
+
+HawkEye -params HawkEye.qc_images.10hz_hcr -debug -images_start_time "2018 01 15 22 00 00" -images_end_time "2018 01 16 05 50 00" >& $logFile &
+
+HawkEye -params HawkEye.qc_images.10hz_hcr -debug -images_start_time "2018 01 19 00 00 00" -images_end_time "2018 01 19 07 20 00" >>& $logFile &
+
+HawkEye -params HawkEye.qc_images.10hz_hcr -debug -images_start_time "2018 01 22 20 00 00" -images_end_time "2018 01 23 03 55 00" >>& $logFile &
+
+HawkEye -params HawkEye.qc_images.10hz_hcr -debug -images_start_time "2018 01 23 23 00 00" -images_end_time "2018 01 24 05 59 59" >>& $logFile &
+
+HawkEye -params HawkEye.qc_images.10hz_hcr -debug -images_start_time "2018 01 25 22 00 00" -images_end_time "2018 01 26 05 30 00" >>& $logFile &
+
+HawkEye -params HawkEye.qc_images.10hz_hcr -debug -images_start_time "2018 01 28 22 00 00" -images_end_time "2018 01 29 06 20 00" >>& $logFile &
+
+HawkEye -params HawkEye.qc_images.10hz_hcr -debug -images_start_time "2018 01 31 00 00 00" -images_end_time "2018 01 31 07 45 00" >>& $logFile &
+
+HawkEye -params HawkEye.qc_images.10hz_hcr -debug -images_start_time "2018 02 03 23 00 00" -images_end_time "2018 02 04 06 55 00" >>& $logFile &
+
+HawkEye -params HawkEye.qc_images.10hz_hcr -debug -images_start_time "2018 02 04 22 00 00" -images_end_time "2018 02 05 06 55 00" >>& $logFile &
+
+HawkEye -params HawkEye.qc_images.10hz_hcr -debug -images_start_time "2018 02 07 20 00 00" -images_end_time "2018 02 08 04 59 00" >>& $logFile &
+
+HawkEye -params HawkEye.qc_images.10hz_hcr -debug -images_start_time "2018 02 17 01 00 00" -images_end_time "2018 02 17 06 25 00" >>& $logFile &
+
+HawkEye -params HawkEye.qc_images.10hz_hcr -debug -images_start_time "2018 02 17 23 00 00" -images_end_time "2018 02 18 07 52 00" >>& $logFile &
+
+HawkEye -params HawkEye.qc_images.10hz_hcr -debug -images_start_time "2018 02 19 22 00 00" -images_end_time "2018 02 20 06 34 00" >>& $logFile &
+
+HawkEye -params HawkEye.qc_images.10hz_hcr -debug -images_start_time "2018 02 21 22 00 00" -images_end_time "2018 02 22 06 46 00" >>& $logFile &
+
+HawkEye -params HawkEye.qc_images.10hz_hcr -debug -images_start_time "2018 02 24 02 00 00" -images_end_time "2018 02 24 08 44 00" >>& $logFile &
