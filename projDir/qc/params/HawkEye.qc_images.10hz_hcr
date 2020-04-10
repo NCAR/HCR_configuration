@@ -809,7 +809,7 @@ rhi_aspect_ratio = 1;
 // Type: double
 //
 
-bscan_time_span_secs = 3600;
+bscan_time_span_secs = $(IMAGE_SCHEDULE_INTERVAL_SECS);
 
 ///////////// bscan_truncate_start_time ///////////////
 //
