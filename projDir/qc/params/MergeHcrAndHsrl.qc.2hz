@@ -156,7 +156,7 @@ ray_match_time_tolerance_sec = 0.25;
 // Type: double
 //
 
-ray_match_elevation_tolerance_deg = 10.0;
+ray_match_elevation_tolerance_deg = 10;
 
 //======================================================================
 //
@@ -176,11 +176,15 @@ ray_match_elevation_tolerance_deg = 10.0;
 //
 // encoding: output encoding for the field.
 //
+// apply_flag: apply HCR flag field to censor non-weather echoes. See 
+//   'hcr_flag_field_name' and 'hcr_flag_values' parameters below.
+//
 //
 // Type: struct
 //   typedef struct {
 //      string input_field_name;
 //      string output_field_name;
+//      boolean apply_flag;
 //   }
 //
 // 1D array - variable length.
@@ -188,80 +192,125 @@ ray_match_elevation_tolerance_deg = 10.0;
 
 hcr_fields = {
   {
-    input_field_name = "DBZ_MASKED",
-    output_field_name = "HCR_DBZ"
+    input_field_name = "DBZ",
+    output_field_name = "HCR_DBZ",
+    apply_flag = TRUE
   }
   ,
   {
     input_field_name = "VEL_CORR",
-    output_field_name = "HCR_VEL"
+    output_field_name = "HCR_VEL",
+    apply_flag = TRUE
   }
   ,
   {
     input_field_name = "WIDTH",
-    output_field_name = "HCR_WIDTH"
+    output_field_name = "HCR_WIDTH",
+    apply_flag = TRUE
   }
   ,
   {
     input_field_name = "LDR",
-    output_field_name = "HCR_LDR"
+    output_field_name = "HCR_LDR",
+    apply_flag = TRUE
   }
   ,
   {
     input_field_name = "NCP",
-    output_field_name = "HCR_NCP"
+    output_field_name = "HCR_NCP",
+    apply_flag = TRUE
   }
   ,
   {
     input_field_name = "SNR",
-    output_field_name = "HCR_SNR"
+    output_field_name = "HCR_SNR",
+    apply_flag = TRUE
   }
   ,
   {
     input_field_name = "DBMVC",
-    output_field_name = "HCR_DBMVC"
+    output_field_name = "HCR_DBMVC",
+    apply_flag = FALSE
   }
   ,
   {
     input_field_name = "PRESS",
-    output_field_name = "PRESS"
+    output_field_name = "PRESS",
+    apply_flag = FALSE
   }
   ,
   {
     input_field_name = "TEMP",
-    output_field_name = "TEMP"
+    output_field_name = "TEMP",
+    apply_flag = FALSE
   }
   ,
   {
     input_field_name = "RH",
-    output_field_name = "RH"
+    output_field_name = "RH",
+    apply_flag = FALSE
   }
   ,
   {
     input_field_name = "SST",
-    output_field_name = "SST"
+    output_field_name = "SST",
+    apply_flag = FALSE
   }
   ,
   {
     input_field_name = "TOPO",
-    output_field_name = "TOPO"
+    output_field_name = "TOPO",
+    apply_flag = FALSE
   }
   ,
   {
     input_field_name = "U_SURF",
-    output_field_name = "U_SURF"
+    output_field_name = "U_SURF",
+    apply_flag = FALSE
   }
   ,
   {
     input_field_name = "V_SURF",
-    output_field_name = "V_SURF"
+    output_field_name = "V_SURF",
+    apply_flag = FALSE
   }
+};
+
+///////////// hcr_flag_field_name /////////////////////
+//
+// Name of flag field in HCR data - if available.
+//
+// See hcr_fields above. We can optionally use the flag field to censor 
+//   non-weather data from the HCR fields.
+//
+//
+// Type: string
+//
+
+hcr_flag_field_name = "FLAG";
+
+///////////// hcr_valid_flag_values ///////////////////
+//
+// Array of flag values that indicate the a valid echo.
+//
+// If 'apply_flag' is TRUE (see 'hcr_fields' above) we check the flag 
+//   values at each gate and censor the field if the flag value is not in 
+//   this valid list.
+//
+//
+// Type: int
+// 1D array - variable length.
+//
+
+hcr_valid_flag_values = {
+ 1
 };
 
 ///////////// hsrl_fields /////////////////////////////
 //
 // Specs of HSRL fields to be included.
 //
+
 //
 // input_field_name: name of field in input file.
 //
@@ -386,7 +435,7 @@ output_encoding = ENCODING_INT16;
 // Type: string
 //
 
-output_dir = "$(DATA_DIR)/$(QC_VERSION)/cfradial/hsrl_merge/2hz";
+output_dir = "$(DATA_DIR)/$(QC_VERSION)/cfradial/hcr_hsrl_merge/2hz";
 
 ///////////// append_day_dir_to_output_dir ////////////
 //
