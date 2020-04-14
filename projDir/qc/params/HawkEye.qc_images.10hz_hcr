@@ -925,7 +925,7 @@ bscan_min_range_km = -1;
 // Type: double
 //
 
-bscan_max_range_km = 9;
+bscan_max_range_km = 15;
 
 ///////////// bscan_min_altitude_km ///////////////////
 //
