@@ -511,7 +511,7 @@ fields = {
     raw_name = "TEMP",
     filtered_name = "",
     units = "C",
-    color_map = "tempC_xml.colors",
+    color_map = "tempC_jet.colors",
     shortcut = "h"
   }
   ,
@@ -520,7 +520,7 @@ fields = {
     raw_name = "PRESS",
     filtered_name = "",
     units = "hPa",
-    color_map = "pressure_xml.colors",
+    color_map = "pressure_jet.colors",
     shortcut = "i"
   }
   ,

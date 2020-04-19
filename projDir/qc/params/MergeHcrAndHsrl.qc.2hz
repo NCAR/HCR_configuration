@@ -1,5 +1,5 @@
 /**********************************************************************
- * TDRP params for MergeHcrAndHsrl
+ * TDRP params for ./MergeHcrAndHsrl
  **********************************************************************/
 
 //======================================================================
@@ -387,37 +387,38 @@ hsrl_fields = {
 
 //======================================================================
 //
-// OUTPUT DETAILS.
+// DETERMING WHETHER THE ANTENNA IS SCANNING OR POINTING.
+//
+// Sometimes the HCR antenna is scanning - say for a sea surface cal. In 
+//   that case we don't want to merge the HCR data with HSRL in the normal 
+//   manner. The HSRL is still valid, so we preserve that.
 //
 //======================================================================
  
-///////////// compression_level ///////////////////////
+///////////// max_hcr_elev_sdev_for_pointing //////////
 //
-// Compression level for output, if compressed.
+// Max SDEV of elevation angle for pointing ops (deg).
 //
-// Applies to netCDF only. Dorade compression is run-length encoding, 
-//   and has not options..
+// We compute the standard deviation of the HCR elevation angle, over a 
+//   series of dwells, to determine whether the antenna is scanning or 
+//   pointing. This is the max sdev for pointing ops.
+//
+//
+// Type: double
+//
+
+max_hcr_elev_sdev_for_pointing = 0.1;
+
+///////////// n_dwells_for_hcr_elev_sdev //////////////
+//
+// Number of dwells for computing the standard deviation of HCR 
+//   elevation angle.
 //
 //
 // Type: int
 //
 
-compression_level = 4;
-
-///////////// output_encoding /////////////////////////
-//
-// Encoding for output fields.
-//
-// Encoding with smaller types improves compression.
-//
-//
-// Type: enum
-// Options:
-//     ENCODING_FLOAT32
-//     ENCODING_INT16
-//
-
-output_encoding = ENCODING_INT16;
+n_dwells_for_hcr_elev_sdev = 7;
 
 //======================================================================
 //
