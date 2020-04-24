@@ -11,7 +11,7 @@ quality='qc2'; % field, qc0, qc1, qc2
 freq10='10hz';
 freq2='2hz';
 
-figdir=['/h/eol/romatsch/hcrCalib/check1Dfields/'];
+figdir=['/h/eol/romatsch/hcrCalib/checkData/'];
 
 infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_',project,'.txt'];
 

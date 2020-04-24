@@ -18,6 +18,8 @@ if strcmp(project,'socrates')
     elseif strcmp(quality,'qc2')
         if strcmp(freq,'2hz') | strcmp(freq,'10hz')
             indir=['/scr/snow2/rsfdata/projects/socrates/hcr/qc2/cfradial/final/',freq,'/'];
+        elseif strcmp(freq,'2hzMerged')
+            indir='/scr/snow2/rsfdata/projects/socrates/hcr/qc2/cfradial/hcr_hsrl_merge/2hz/';
         else
             disp('No 2hz data in qc2 data.');
             return
@@ -45,6 +47,8 @@ elseif strcmp(project,'cset')
     elseif strcmp(quality,'qc2')
         if strcmp(freq,'2hz') | strcmp(freq,'10hz')
             indir=['/scr/snow2/rsfdata/projects/cset/hcr/qc2/cfradial/final/',freq,'/'];
+        elseif strcmp(freq,'2hzMerged')
+            indir='/scr/snow2/rsfdata/projects/cset/hcr/qc2/cfradial/hcr_hsrl_merge/2hz/';
         end
     end
     
