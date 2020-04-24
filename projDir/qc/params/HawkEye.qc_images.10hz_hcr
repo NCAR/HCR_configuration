@@ -423,20 +423,20 @@ fields = {
   }
   ,
   {
-    label = "TEMP",
+    label = "Temperature",
     raw_name = "TEMP",
     filtered_name = "",
     units = "C",
-    color_map = "temp.colors",
+    color_map = "tempC_jet.colors",
     shortcut = "c"
   }
   ,
   {
-    label = "PRESS",
+    label = "Pressure",
     raw_name = "PRESS",
     filtered_name = "",
     units = "hPa",
-    color_map = "pressure_xml.colors",
+    color_map = "pressure_jet.colors",
     shortcut = "d"
   }
   ,
@@ -445,7 +445,7 @@ fields = {
     raw_name = "RH",
     filtered_name = "",
     units = "%",
-    color_map = "rh.colors",
+    color_map = "rh_jet.colors",
     shortcut = "d"
   }
   ,
