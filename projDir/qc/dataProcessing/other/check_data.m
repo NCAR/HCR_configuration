@@ -5,7 +5,7 @@ close all;
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-project='cset'; % socrates, cset, aristo, otrec
+project='socrates'; % socrates, cset, aristo, otrec
 qualityGood='qc2'; % field, qc0, qc1, qc2
 qualityTest='qc2'; % field, qc0, qc1, qc2
 freqGood='10hz'; % 10hz, 2hz, 2hzMerged
@@ -37,29 +37,25 @@ compareVars={'DBZ','HCR_DBZ',1;
     'TOPO','TOPO',0;
     'U_SURF','U_SURF',0;
     'V_SURF','V_SURF',0};
+    
+    dataVarsGood={};
+    dataVarsTest={};
+    
+    for jj=1:size(compareVars,1)
+        dataVarsGood{end+1}=compareVars{jj,1};
+        dataVarsTest{end+1}=compareVars{jj,2};
+    end
+    
+    dataVarsGood=dataVarsGood';
+    dataVarsTest=dataVarsTest';
 
 % Go through flights
 for ii=1:size(caseList,1)
     disp(['Flight ',num2str(ii),' of ',num2str(size(caseList,1))]);
     
     startTime=datetime(caseList(ii,1:6));
-    %endTime=datetime(caseList(ii,7:12));
-    endTime=startTime+hours(1);
-    
-    % Desired variables. The variable name comes after the . and must be spelled exactly
-    % like in the CfRadial file
-    dataGood=[];
-    dataTest=[];
-    
-    for jj=1:size(compareVars,1)
-        dataGood.(compareVars{jj,1})=[];
-    end
-    for jj=1:size(compareVars,1)
-        dataTest.(compareVars{jj,2})=[];
-    end
-       
-    dataVarsGood=fieldnames(dataGood);
-    dataVarsTest=fieldnames(dataTest);
+    endTime=datetime(caseList(ii,7:12));
+    %endTime=startTime+hours(1);
     
     %% Load good data
     disp('Loading good data.');
@@ -72,23 +68,46 @@ for ii=1:size(caseList,1)
         continue
     end
     
-    % Load data
-    dataGood=read_HCR(fileListGood,dataGood,startTime,endTime);
-    
-    if isempty(dataGood.time)
-        disp('No good data found.');
-        startTime=endTime;
-        continue
-    end
-    
-    % Check if all variables were found
-    for kk=1:length(dataVarsGood)
-        if ~isfield(dataGood,dataVarsGood{kk})
-            dataVarsGood{kk}=[];
+    % Go through each variable
+    for ll=1:size(compareVars,1)
+        
+        dataGood=[];
+        
+        if ll==1 & any([compareVars{:,3}])==1
+            dataGood.FLAG=[];
         end
+        dataGood.(compareVars{ll,1})=[];
+        
+        % Load data
+        dataGood=read_HCR(fileListGood,dataGood,startTime,endTime);
+        
+        if ll==1
+            FLAG=dataGood.FLAG;
+        end
+        
+        % Apply flag field
+        if compareVars{ll,3}==1
+            varChange=dataGood.(compareVars{ll,1});
+            varChange(FLAG>1)=nan;
+            dataGood.(compareVars{ll,1})=varChange;
+        end
+        
+        % Set up matrix
+        if ll==1            
+            goodNans=array2table(nan(length(dataGood.time),size(dataVarsGood,1)),'VariableNames',dataVarsGood);
+            goodNans=cat(2,table(dataGood.time'),goodNans);
+            goodNans.Properties.VariableNames{'Var1'}='time';
+            
+            TTgood=table2timetable(goodNans);
+            sumGood=nan(size(dataVarsGood));
+        end
+        
+        TTgood.(dataVarsGood{ll})=double(any(~isnan(dataGood.(dataVarsGood{ll})),1))';
+        sumGood(ll)=sum(TTgood.(dataVarsGood{ll}));
+    
     end
-       
-    %% Load test data
+      
+     %% Load test data
     disp('Loading test data.');
     
     fileListTest=makeFileList(indirTest,startTime,endTime,'xxxxxx20YYMMDDxhhmmss',1);
@@ -99,54 +118,36 @@ for ii=1:size(caseList,1)
         continue
     end
     
-    % Load data
-    dataTest=read_HCR(fileListTest,dataTest,startTime,endTime);
-    
-    if isempty(dataTest.time)
-        disp('No test data found.');
-        startTime=endTime;
-        continue
-    end
-    
-    % Check if all variables were found
-    for kk=1:length(dataVarsTest)
-        if ~isfield(dataTest,dataVarsTest{kk})
-            dataVarsTest{kk}=[];
+    % Go through each variable
+    for ll=1:size(compareVars,1)
+        
+        dataTest=[];
+        
+        if ll==1 & any([compareVars{:,3}])==1
+            dataTest.FLAG=[];
         end
-    end
-    
-    % Apply flag field
-    for jj=1:size(compareVars,1)
-        if compareVars{jj,3}==1
-            varChange=dataGood.(compareVars{jj,1});
-            varChange(dataGood.FLAG>1)=nan;
-            dataGood.(compareVars{jj,1})=varChange;
+        
+        dataTest.(compareVars{ll,2})=[];
+        
+        % Load data
+        dataTest=read_HCR(fileListTest,dataTest,startTime,endTime);
+        
+        % Set up matrix
+        if ll==1            
+            testNans=array2table(nan(length(dataTest.time),size(dataVarsTest,1)),'VariableNames',dataVarsTest);
+            testNans=cat(2,table(dataTest.time'),testNans);
+            testNans.Properties.VariableNames{'Var1'}='time';
+            
+            TTtest=table2timetable(testNans);
+            sumTest=nan(size(dataVarsTest));
         end
-    end
-    %% Count seconds
-    goodNans=array2table(nan(length(dataGood.time),size(dataVarsGood,1)),'VariableNames',dataVarsGood);
-    goodNans=cat(2,table(dataGood.time'),goodNans);
-    goodNans.Properties.VariableNames{'Var1'}='time';
+        
+        TTtest.(dataVarsTest{ll})=double(any(~isnan(dataTest.(dataVarsTest{ll})),1))';
+        sumTest(ll)=sum(TTtest.(dataVarsTest{ll}));
     
-    testNans=array2table(nan(length(dataTest.time),size(dataVarsTest,1)),'VariableNames',dataVarsTest);
-    testNans=cat(2,table(dataTest.time'),testNans);
-    testNans.Properties.VariableNames{'Var1'}='time';
-    
-    TTgood=table2timetable(goodNans);
-    TTtest=table2timetable(testNans);
-    
-    sumGood=nan(size(dataVarsGood));
-    sumTest=nan(size(dataVarsTest));
-    
-    for jj=1:size(dataVarsGood,1)
-        TTgood.(dataVarsGood{jj})=double(any(~isnan(dataGood.(dataVarsGood{jj})),1))';
-        sumGood(jj)=sum(TTgood.(dataVarsGood{jj}));
     end
     
-    for jj=1:size(dataVarsTest,1)
-        TTtest.(dataVarsTest{jj})=double(any(~isnan(dataTest.(dataVarsTest{jj})),1))';
-        sumTest(jj)=sum(TTtest.(dataVarsTest{jj}));
-    end
+    %% Process
     
     sumGood=cat(1,size(TTgood,1),sumGood);
     sumTest=cat(1,size(TTtest,1),sumTest);
@@ -176,24 +177,25 @@ for ii=1:size(caseList,1)
     tableAll=timetable2table(TTall);
     dataAll=table2array(tableAll(:,2:end));
     
-    missingAll=nan(size(TTall,1),size(dataVarsGood,1));
+    %% Missing good data
+    missingGood=nan(size(TTall,1),size(dataVarsGood,1));
     
     for jj=1:size(dataVarsGood,1)
-       missingAll(find(dataAll(:,jj)==1 & dataAll(:,jj+size(dataVarsGood,1))==0),jj)=jj+2;
+       missingGood(find(dataAll(:,jj)==0 & dataAll(:,jj+size(dataVarsGood,1))==1),jj)=jj+2;
     end
     
-    missingAll=cat(2,nan(size(TTall,1),2),missingAll);
-    missingAll(find(isnan(dataAll(:,1))),1)=1;
+    missingGood=cat(2,nan(size(TTall,1),2),missingGood);
+    missingGood(find(isnan(dataAll(:,1))),1)=1;
     
-    missingAll(find(isnan(dataAll(:,size(dataVarsGood,1)+1)) & missingAll(:,1)~=1),2)=2;
-    missingSingle=nan(size(missingAll));
-    missingDouble=nan(size(missingAll));
+    missingGood(find(isnan(dataAll(:,size(dataVarsGood,1)+1)) & missingGood(:,1)~=1),2)=2;
+    missingGoodSingle=nan(size(missingGood));
+    missingGoodDouble=nan(size(missingGood));
     
-    %% Remove single rays
-    maskMiss=zeros(size(missingAll));
-    maskMiss(~isnan(missingAll))=1;
+    % Remove single rays
+    maskMiss=zeros(size(missingGood));
+    maskMiss(~isnan(missingGood))=1;
     
-    for jj=1:size(missingAll,2)
+    for jj=1:size(missingGood,2)
         column=maskMiss(:,jj);
         diffCol=diff(column);
         
@@ -208,15 +210,61 @@ for ii=1:size(caseList,1)
             if length(startInds)~=length(endInds);
                 endInds=[endInds;length(column)];
             end
+            
+            for kk=1:length(startInds)
+                if endInds(kk)-startInds(kk)==0
+                    missingGood(startInds(kk),jj)=nan;
+                    missingGoodSingle(startInds(kk),jj)=jj;
+                elseif endInds(kk)-startInds(kk)==1
+                    missingGood(startInds(kk):endInds(kk),jj)=nan;
+                    missingGoodDouble(startInds(kk):endInds(kk),jj)=jj;
+                end
+            end
         end
+    end
+    
+     %% Missing test data
+    missingTest=nan(size(TTall,1),size(dataVarsGood,1));
+    
+    for jj=1:size(dataVarsGood,1)
+       missingTest(find(dataAll(:,jj)==1 & dataAll(:,jj+size(dataVarsGood,1))==0),jj)=jj+2;
+    end
+    
+    missingTest=cat(2,nan(size(TTall,1),2),missingTest);
+    missingTest(find(isnan(dataAll(:,1))),1)=1;
+    
+    missingTest(find(isnan(dataAll(:,size(dataVarsGood,1)+1)) & missingTest(:,1)~=1),2)=2;
+    missingTestSingle=nan(size(missingTest));
+    missingTestDouble=nan(size(missingTest));
+    
+    % Remove single rays
+    maskMiss=zeros(size(missingTest));
+    maskMiss(~isnan(missingTest))=1;
+    
+    for jj=1:size(missingTest,2)
+        column=maskMiss(:,jj);
+        diffCol=diff(column);
         
-        for kk=1:length(startInds)
-            if endInds(kk)-startInds(kk)==0
-                missingAll(startInds(kk),jj)=nan;
-                missingSingle(startInds(kk),jj)=jj;
-            elseif endInds(kk)-startInds(kk)==1
-                missingAll(startInds(kk):endInds(kk),jj)=nan;
-                missingDouble(startInds(kk):endInds(kk),jj)=jj;
+        startInds=find(diffCol==1);
+        startInds=startInds+1;
+        endInds=find(diffCol==-1);
+        
+        if ~isempty(startInds) & ~isempty(endInds)
+            if endInds(1)<startInds(1)
+                startInds=[1;startInds];
+            end
+            if length(startInds)~=length(endInds);
+                endInds=[endInds;length(column)];
+            end
+            
+            for kk=1:length(startInds)
+                if endInds(kk)-startInds(kk)==0
+                    missingTest(startInds(kk),jj)=nan;
+                    missingTestSingle(startInds(kk),jj)=jj;
+                elseif endInds(kk)-startInds(kk)==1
+                    missingTest(startInds(kk):endInds(kk),jj)=nan;
+                    missingTestDouble(startInds(kk):endInds(kk),jj)=jj;
+                end
             end
         end
     end
@@ -231,7 +279,9 @@ for ii=1:size(caseList,1)
     f1=figure('DefaultAxesFontSize',12,'renderer','painters','defaultAxesTickLabelInterpreter','none');
     set(f1,'Position',[5 5 1700 1000]);
     
-    subplot(2,1,1)
+    ax1=subplot(3,1,1);
+    ax1.Position = [0.1300    0.7093    0.7750    0.25];
+
     hold on
     bar(cat(2,sumGood,sumTest));
     ylabel('Seconds');
@@ -239,28 +289,55 @@ for ii=1:size(caseList,1)
     xticklabels(makeLabels);
     xtickangle(45);
     
+    text(1:size(makeLabels,1),zeros(size(makeLabels)),num2str(sumGood-sumTest),...
+        'HorizontalAlignment','center','VerticalAlignment','bottom','BackgroundColor','w',...
+        'Margin',0.2,'EdgeColor','k');
+    
     legend(freqGood,freqTest,'location','best');
     title([project,' RF ',num2str(ii),' ',qualityTest,' ',freqTest,' vs ',qualityGood,' ',freqGood]);
     
-    subplot(2,1,2)
+    ax2=subplot(3,1,2);
+    ax2.Position = [0.1300    0.36    0.7750    0.25];
     hold on
     
-    for jj=1:size(missingAll,2)
+    for jj=1:size(missingTest,2)
         hold on
-        s3=scatter(TTall.time,missingSingle(:,jj),'g+');
-        s2=scatter(TTall.time,missingDouble(:,jj),'r+');
-        s1=scatter(TTall.time,missingAll(:,jj),'b+');       
+        s3=scatter(TTall.time,missingTestSingle(:,jj),'g+');
+        s2=scatter(TTall.time,missingTestDouble(:,jj),'b+');
+        s1=scatter(TTall.time,missingTest(:,jj),'r+');       
     end
-    
-    legend([s1 s2 s3],{'Multi','Double','Single'});
-    
+        
     xlim([TTall.time(1) TTall.time(end)]);
+    ylim([0 size(missingGood,2)+1]);
     grid on
     
-    yticks(1:size(missingAll,2));
+    yticks(1:size(missingTest,2));
     yticklabels(makeLabels2);
     
-    title('Missing times');
+    title(['Missing times ',qualityTest,' ',freqTest]);
+    grid on
+        
+    ax3=subplot(3,1,3);
+    ax3.Position = [0.1300    0.05    0.7750    0.25];
+    hold on
+    
+    for jj=1:size(missingGood,2)
+        hold on
+        s3=scatter(TTall.time,missingGoodSingle(:,jj),'g+');
+        s2=scatter(TTall.time,missingGoodDouble(:,jj),'b+');
+        s1=scatter(TTall.time,missingGood(:,jj),'r+');       
+    end
+    
+    legend([s1 s2 s3],{'Multi','Double','Single'},'location','best');
+    
+    xlim([TTall.time(1) TTall.time(end)]);
+    ylim([0 size(missingGood,2)+1]);
+    grid on
+    
+    yticks(1:size(missingGood,2));
+    yticklabels(makeLabels2);
+    
+    title(['Missing times ',qualityGood,' ',freqGood]);
     grid on
     
     set(gcf,'PaperPositionMode','auto')
