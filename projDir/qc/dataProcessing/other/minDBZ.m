@@ -5,13 +5,13 @@ close all;
 addpath(genpath('/h/eol/romatsch/gitPriv/utils/'));
 
 project='otrec'; % socrates, cset, aristo, otrec
-quality='qc1'; % field, qc1, qc2
+quality='qc2'; % field, qc1, qc2
 freqData='10hz';
 
 figdir=['/h/eol/romatsch/hcrCalib/sensitivity/'];
 formatOut = 'yyyymmdd_HHMM';
 
-infile=['/h/eol/romatsch/hcrCalib/oceanScans/biasInFiles/flights_',project,'_data.txt'];
+infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_',project,'.txt'];
 
 caseList = table2array(readtable(infile));
 
@@ -49,7 +49,11 @@ for ii=1:size(caseList,1)
         end
         
         data.DBZ=[];
-        data.SNRVC=[];
+        if strcmp(quality,'qc2')
+            data.SNR=[];
+        else
+            data.SNRVC=[];
+        end
         
         dataVars=fieldnames(data);
               
@@ -82,7 +86,11 @@ for ii=1:size(caseList,1)
         asl=HCRrange2asl(data.range,data.elevation,data.altitude);
         
         dbztemp=data.DBZ;
-        snrtemp=data.SNRVC;
+        if isfield(data,'SNR')
+            snrtemp=data.SNR;
+        else
+            snrtemp=data.SNRVC;
+        end
         
         % Remove bang
         dbztemp(1:14,:)=nan;
@@ -186,6 +194,7 @@ end
             
     set(gcf,'PaperPositionMode','auto')
     print(f2,[figdir,project,'_minDBZ_1km'],'-dpng','-r0')
+    savefig([figdir,project,'_minDBZ_1km.fig'])
     
     %% 5km
     
