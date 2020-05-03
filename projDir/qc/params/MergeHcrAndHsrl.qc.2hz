@@ -1,5 +1,5 @@
 /**********************************************************************
- * TDRP params for ./MergeHcrAndHsrl
+ * TDRP params for MergeHcrAndHsrl
  **********************************************************************/
 
 //======================================================================
@@ -185,6 +185,7 @@ ray_match_elevation_tolerance_deg = 10;
 //      string input_field_name;
 //      string output_field_name;
 //      boolean apply_flag;
+//      boolean set_to_missing_if_scanning;
 //   }
 //
 // 1D array - variable length.
@@ -194,85 +195,99 @@ hcr_fields = {
   {
     input_field_name = "DBZ",
     output_field_name = "HCR_DBZ",
-    apply_flag = TRUE
+    apply_flag = FALSE,
+    set_to_missing_if_scanning = TRUE
   }
   ,
   {
     input_field_name = "VEL_CORR",
     output_field_name = "HCR_VEL",
-    apply_flag = TRUE
+    apply_flag = FALSE,
+    set_to_missing_if_scanning = TRUE
   }
   ,
   {
     input_field_name = "WIDTH",
     output_field_name = "HCR_WIDTH",
-    apply_flag = TRUE
+    apply_flag = FALSE,
+    set_to_missing_if_scanning = TRUE
   }
   ,
   {
     input_field_name = "LDR",
     output_field_name = "HCR_LDR",
-    apply_flag = TRUE
+    apply_flag = FALSE,
+    set_to_missing_if_scanning = TRUE
   }
   ,
   {
     input_field_name = "NCP",
     output_field_name = "HCR_NCP",
-    apply_flag = TRUE
+    apply_flag = FALSE,
+    set_to_missing_if_scanning = TRUE
   }
   ,
   {
     input_field_name = "SNR",
     output_field_name = "HCR_SNR",
-    apply_flag = TRUE
+    apply_flag = FALSE,
+    set_to_missing_if_scanning = TRUE
   }
   ,
   {
     input_field_name = "DBMVC",
     output_field_name = "HCR_DBMVC",
-    apply_flag = FALSE
+    apply_flag = FALSE,
+    set_to_missing_if_scanning = TRUE
   }
   ,
   {
     input_field_name = "PRESS",
     output_field_name = "PRESS",
-    apply_flag = FALSE
+    apply_flag = FALSE,
+    set_to_missing_if_scanning = FALSE
   }
   ,
   {
     input_field_name = "TEMP",
     output_field_name = "TEMP",
-    apply_flag = FALSE
+    apply_flag = FALSE,
+    set_to_missing_if_scanning = FALSE
   }
   ,
   {
     input_field_name = "RH",
     output_field_name = "RH",
-    apply_flag = FALSE
+    apply_flag = FALSE,
+    set_to_missing_if_scanning = FALSE
   }
   ,
   {
     input_field_name = "SST",
     output_field_name = "SST",
-    apply_flag = FALSE
+    apply_flag = FALSE,
+    set_to_missing_if_scanning = FALSE
   }
   ,
   {
     input_field_name = "TOPO",
     output_field_name = "TOPO",
-    apply_flag = FALSE
+    apply_flag = FALSE,
+    set_to_missing_if_scanning = FALSE
   }
   ,
   {
     input_field_name = "U_SURF",
     output_field_name = "U_SURF",
-    apply_flag = FALSE
+    apply_flag = FALSE,
+    set_to_missing_if_scanning = FALSE
   }
   ,
   {
     input_field_name = "V_SURF",
     output_field_name = "V_SURF",
-    apply_flag = FALSE
+    apply_flag = FALSE,
+    set_to_missing_if_scanning = FALSE
   }
 };
 
@@ -407,7 +422,7 @@ hsrl_fields = {
 // Type: double
 //
 
-max_hcr_elev_sdev_for_pointing = 0.1;
+max_hcr_elev_sdev_for_pointing = 0.5;
 
 ///////////// n_dwells_for_hcr_elev_sdev //////////////
 //

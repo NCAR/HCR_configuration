@@ -70,7 +70,7 @@ register_with_procmap = FALSE;
 // Type: string
 //
 
-instance = "hcr-hsrl.qc.2hz";
+instance = "hcr-cset.qc.final.2hz";
 
 //======================================================================
 //
@@ -110,7 +110,7 @@ input_mode = IWRF_FMQ_INPUT;
 // Type: string
 //
 
-input_fmq_url = "fmqp:://localhost::fmq/moments/10hz/shmem_20010";
+input_fmq_url = "fmqp:://localhost::fmq/moments/2hz/shmem_20010";
 
 ///////////// seek_to_start_of_fmq ////////////////////
 //
@@ -190,7 +190,7 @@ begin_in_archive_mode = TRUE;
 // Type: string
 //
 
-archive_start_time = "2018 01 19 04 00 00";
+archive_start_time = "2015 07 01 17 30 00";
 
 ///////////// archive_time_span_secs //////////////////
 //
@@ -202,7 +202,7 @@ archive_start_time = "2018 01 19 04 00 00";
 // Type: double
 //
 
-archive_time_span_secs = 900;
+archive_time_span_secs = 600;
 
 ///////////// archive_data_url ////////////////////////
 //
@@ -214,7 +214,7 @@ archive_time_span_secs = 900;
 // Type: string
 //
 
-archive_data_url = "$(DATA_DIR)/$(QC_VERSION)/cfradial/hcr_hsrl_merge/2hz";
+archive_data_url = "$(DATA_DIR)/$(QC_VERSION)/cfradial/final/2hz";
 
 //======================================================================
 //
@@ -344,8 +344,8 @@ color_scale_dir = "$(PROJ_DIR)/display/color_scales";
 
 fields = {
   {
-    label = "HCR_DBZ",
-    raw_name = "HCR_DBZ",
+    label = "DBZ",
+    raw_name = "DBZ",
     filtered_name = "",
     units = "dBZ",
     color_map = "dbz_w.colors",
@@ -353,174 +353,120 @@ fields = {
   }
   ,
   {
-    label = "HCR_VEL",
-    raw_name = "HCR_VEL",
+    label = "DBZ_MASKED",
+    raw_name = "DBZ_MASKED",
     filtered_name = "",
-    units = "m/s",
-    color_map = "vel_w_4.colors",
-    shortcut = "1"
-  }
-  ,
-  {
-    label = "HCR_WIDTH",
-    raw_name = "HCR_WIDTH",
-    filtered_name = "",
-    units = "m/s",
-    color_map = "width_w.colors",
-    shortcut = "2"
-  }
-  ,
-  {
-    label = "HCR_LDR",
-    raw_name = "HCR_LDR",
-    filtered_name = "",
-    units = "dB",
-    color_map = "ldr.colors",
-    shortcut = "3"
-  }
-  ,
-  {
-    label = "HCR_NCP",
-    raw_name = "HCR_NCP",
-    filtered_name = "",
-    units = "",
-    color_map = "ncp.colors",
-    shortcut = "4"
-  }
-  ,
-  {
-    label = "HCR_SNR",
-    raw_name = "HCR_SNR",
-    filtered_name = "",
-    units = "dB",
-    color_map = "snr.colors",
-    shortcut = "5"
-  }
-  ,
-  {
-    label = "HCR_DBMVC",
-    raw_name = "HCR_DBMVC",
-    filtered_name = "",
-    units = "dBm",
-    color_map = "dbm.colors",
-    shortcut = "6"
-  }
-  ,
-  {
-    label = "HSRL_Backscat_Coeff",
-    raw_name = "HSRL_Aerosol_Backscatter_Coefficient",
-    filtered_name = "",
-    units = "m-1.sr-1",
-    color_map = "hsrl_backscat_coeff.colors",
-    shortcut = "7"
-  }
-  ,
-  {
-    label = "HSRL_Backscat_Ratio",
-    raw_name = "HSRL_Backscatter_Ratio",
-    filtered_name = "",
-    units = "m-1.sr-1",
-    color_map = "hsrl_backscatter_ratio.colors",
-    shortcut = "8"
-  }
-  ,
-  {
-    label = "HSRL_Particle_LDR",
-    raw_name = "HSRL_Particle_Linear_Depolarization_Ratio",
-    filtered_name = "",
-    units = "",
-    color_map = "particle_linear_depol.colors",
-    shortcut = "9"
-  }
-  ,
-  {
-    label = "HSRL_Particle_CDR",
-    raw_name = "HSRL_Particle_Depolarization",
-    filtered_name = "",
-    units = "",
-    color_map = "particle_linear_depol.colors",
+    units = "dBZ",
+    color_map = "dbz_w.colors",
     shortcut = "0"
   }
   ,
   {
-    label = "HSRL_Volume_LDR",
-    raw_name = "HSRL_Volume_Linear_Depolarization_Ratio",
+    label = "VEL_CORR",
+    raw_name = "VEL_CORR",
+    filtered_name = "",
+    units = "m/s",
+    color_map = "vel_w_8.colors",
+    shortcut = "1"
+  }
+  ,
+  {
+    label = "VEL",
+    raw_name = "VEL",
+    filtered_name = "",
+    units = "m/s",
+    color_map = "vel_w_8.colors",
+    shortcut = "1"
+  }
+  ,
+  {
+    label = "VEL_RAW",
+    raw_name = "VEL_RAW",
+    filtered_name = "",
+    units = "m/s",
+    color_map = "vel_w_8.colors",
+    shortcut = "2"
+  }
+  ,
+  {
+    label = "WIDTH",
+    raw_name = "WIDTH",
+    filtered_name = "",
+    units = "m/s",
+    color_map = "width_w.colors",
+    shortcut = "8"
+  }
+  ,
+  {
+    label = "WIDTH_RAW",
+    raw_name = "WIDTH_RAW",
+    filtered_name = "",
+    units = "m/s",
+    color_map = "width_w.colors",
+    shortcut = "9"
+  }
+  ,
+  {
+    label = "NCP",
+    raw_name = "NCP",
     filtered_name = "",
     units = "",
-    color_map = "volume_linear_depol.colors",
-    shortcut = "a"
-  }
-  ,
-  {
-    label = "HSRL_Volume_CDR",
-    raw_name = "HSRL_Volume_Depolarization",
-    filtered_name = "",
-    units = "",
-    color_map = "volume_linear_depol.colors",
-    shortcut = "b"
-  }
-  ,
-  {
-    label = "HSRL_Optical_Depth",
-    raw_name = "HSRL_Optical_Depth",
-    filtered_name = "",
-    units = "",
-    color_map = "hsrl_optical_depth.colors",
-    shortcut = "c"
-  }
-  ,
-  {
-    label = "HSRL_Extinction_Coeff",
-    raw_name = "HSRL_Aerosol_Extinction_Coefficient",
-    filtered_name = "",
-    units = "m-1",
-    color_map = "hsrl_extinction_coeff.colors",
-    shortcut = "d"
-  }
-  ,
-  {
-    label = "HSRL_Copol_Counts",
-    raw_name = "HSRL_Merged_Combined_Channel",
-    filtered_name = "",
-    units = "counts",
-    color_map = "hsrl_combined_high.colors",
+    color_map = "ncp.colors",
     shortcut = "e"
   }
   ,
   {
-    label = "HSRL_Xpol_Counts",
-    raw_name = "HSRL_Raw_Cross_Polarization_Channel",
+    label = "LDR",
+    raw_name = "LDR",
     filtered_name = "",
-    units = "counts",
-    color_map = "hsrl_cross_polar.colors",
+    units = "dB",
+    color_map = "ldr.colors",
     shortcut = "f"
   }
   ,
   {
-    label = "HSRL_Mol_Counts",
-    raw_name = "HSRL_Raw_Molecular_Backscatter_Channel",
+    label = "SNR",
+    raw_name = "SNR",
     filtered_name = "",
-    units = "",
-    color_map = "hsrl_molecular.colors",
-    shortcut = "g"
+    units = "dB",
+    color_map = "snr.colors",
+    shortcut = "a"
   }
   ,
   {
-    label = "Temperature",
+    label = "DBMVC",
+    raw_name = "DBMVC",
+    filtered_name = "",
+    units = "dBm",
+    color_map = "dbm.colors",
+    shortcut = "c"
+  }
+  ,
+  {
+    label = "DBMHX",
+    raw_name = "DBMHX",
+    filtered_name = "",
+    units = "dBm",
+    color_map = "dbm.colors",
+    shortcut = "d"
+  }
+  ,
+  {
+    label = "TEMP",
     raw_name = "TEMP",
     filtered_name = "",
     units = "C",
     color_map = "tempC_jet.colors",
-    shortcut = "h"
+    shortcut = "c"
   }
   ,
   {
-    label = "Pressure",
+    label = "PRESS",
     raw_name = "PRESS",
     filtered_name = "",
     units = "hPa",
     color_map = "pressure_jet.colors",
-    shortcut = "i"
+    shortcut = "d"
   }
   ,
   {
@@ -529,7 +475,16 @@ fields = {
     filtered_name = "",
     units = "%",
     color_map = "rh_jet.colors",
-    shortcut = "j"
+    shortcut = "d"
+  }
+  ,
+  {
+    label = "FLAG",
+    raw_name = "FLAG",
+    filtered_name = "",
+    units = "",
+    color_map = "hcr_flag.colors",
+    shortcut = "d"
   }
 };
 
@@ -622,7 +577,7 @@ override_radar_name = TRUE;
 // Type: string
 //
 
-radar_name = "HCR/HSRL - $(PROJECT_NAME)";
+radar_name = "HCR-2hz";
 
 ///////////// display_site_name ///////////////////////
 //
@@ -708,7 +663,7 @@ main_window_start_y = 100;
 // Type: int
 //
 
-color_scale_width = 50;
+color_scale_width = 90;
 
 ///////////// label_font_size /////////////////////////
 //
@@ -1201,7 +1156,7 @@ bscan_specify_range_limits = TRUE;
 // Type: double
 //
 
-bscan_min_range_km = 0;
+bscan_min_range_km = -0.5;
 
 ///////////// bscan_max_range_km //////////////////////
 //
@@ -1394,7 +1349,7 @@ bscan_left_margin = 50;
 // Type: int
 //
 
-bscan_right_margin = 40;
+bscan_right_margin = 30;
 
 ///////////// bscan_axis_tick_len /////////////////////
 //
