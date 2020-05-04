@@ -195,50 +195,50 @@ hcr_fields = {
   {
     input_field_name = "DBZ",
     output_field_name = "HCR_DBZ",
-    apply_flag = FALSE,
-    set_to_missing_if_scanning = TRUE
+    apply_flag = TRUE,
+    set_to_missing_if_scanning = FALSE
   }
   ,
   {
     input_field_name = "VEL_CORR",
     output_field_name = "HCR_VEL",
-    apply_flag = FALSE,
-    set_to_missing_if_scanning = TRUE
+    apply_flag = TRUE,
+    set_to_missing_if_scanning = FALSE
   }
   ,
   {
     input_field_name = "WIDTH",
     output_field_name = "HCR_WIDTH",
-    apply_flag = FALSE,
-    set_to_missing_if_scanning = TRUE
+    apply_flag = TRUE,
+    set_to_missing_if_scanning = FALSE
   }
   ,
   {
     input_field_name = "LDR",
     output_field_name = "HCR_LDR",
-    apply_flag = FALSE,
-    set_to_missing_if_scanning = TRUE
+    apply_flag = TRUE,
+    set_to_missing_if_scanning = FALSE
   }
   ,
   {
     input_field_name = "NCP",
     output_field_name = "HCR_NCP",
-    apply_flag = FALSE,
-    set_to_missing_if_scanning = TRUE
+    apply_flag = TRUE,
+    set_to_missing_if_scanning = FALSE
   }
   ,
   {
     input_field_name = "SNR",
     output_field_name = "HCR_SNR",
-    apply_flag = FALSE,
-    set_to_missing_if_scanning = TRUE
+    apply_flag = TRUE,
+    set_to_missing_if_scanning = FALSE
   }
   ,
   {
     input_field_name = "DBMVC",
     output_field_name = "HCR_DBMVC",
     apply_flag = FALSE,
-    set_to_missing_if_scanning = TRUE
+    set_to_missing_if_scanning = FALSE
   }
   ,
   {
