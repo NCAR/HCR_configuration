@@ -11,8 +11,8 @@ qualityTest='qc2'; % field, qc0, qc1, qc2
 freqGood='10hz'; % 10hz, 2hz, 2hzMerged
 freqTest='2hzMerged'; % 10hz, 2hz, 2hzMerged
 
-startTime=datetime(2018,1,16,3,25,0);
-endTime=datetime(2018,1,16,3,40,0);
+startTime=datetime(2018,2,21,23,10,0);
+endTime=datetime(2018,2,21,23,20,0);
 
 figdir=['/h/eol/romatsch/hcrCalib/checkData/check_detail/'];
 
@@ -25,7 +25,7 @@ indirTest=HCRdir(project,qualityTest,freqTest);
 
 %% Run processing
 
-compareVars={'DBMVC','HCR_DBMVC',0};
+compareVars={'FLAG','FLAG',0};
 
 dataVarsGood={};
 dataVarsTest={};
@@ -144,7 +144,12 @@ end
 
 TTall=synchronize(TTgood2,TTtest,'first','fillwithmissing');
 tableAll=timetable2table(TTall);
-dataAll=table2array(tableAll(:,2:end));
+
+dataAllNum=table2array(tableAll(:,2:end));
+
+dataAll=nan(size(dataAllNum));
+dataAll(dataAllNum==0)=0;
+dataAll(dataAllNum>0)=1;
 
 %% Missing good data
 missingGood=nan(size(TTall,1),size(dataVarsGood,1));
@@ -157,6 +162,7 @@ missingGood=cat(2,nan(size(TTall,1),2),missingGood);
 missingGood(find(isnan(dataAll(:,1))),1)=1;
 
 missingGood(find(isnan(dataAll(:,size(dataVarsGood,1)+1)) & missingGood(:,1)~=1),2)=2;
+missingGoodSinglePoint=nan(size(missingGood));
 missingGoodSingle=nan(size(missingGood));
 missingGoodDouble=nan(size(missingGood));
 
@@ -183,10 +189,22 @@ for jj=1:size(missingGood,2)
         for kk=1:length(startInds)
             if endInds(kk)-startInds(kk)==0
                 missingGood(startInds(kk),jj)=nan;
-                missingGoodSingle(startInds(kk),jj)=jj;
+                if jj>2 & (dataAll(startInds(kk),jj-2)-dataAll(startInds(kk),jj+size(dataVarsGood,1)-2)<0 & ...
+                        dataAll(startInds(kk),jj-2)-dataAll(startInds(kk),jj+size(dataVarsGood,1)-2)>=-2)
+                    missingGoodSinglePoint(startInds(kk),jj)=jj;
+                else
+                    missingGoodSingle(startInds(kk),jj)=jj;
+                end
             elseif endInds(kk)-startInds(kk)==1
                 missingGood(startInds(kk):endInds(kk),jj)=nan;
-                missingGoodDouble(startInds(kk):endInds(kk),jj)=jj;
+                if jj>2 & (dataAllNum(startInds(kk),jj-2)-dataAllNum(startInds(kk),jj+size(dataVarsGood,1)-2)<0 & ...
+                        dataAllNum(startInds(kk),jj-2)-dataAllNum(startInds(kk),jj+size(dataVarsGood,1)-2)>=-2 & ...
+                        dataAllNum(endInds(kk),jj-2)-dataAllNum(endInds(kk),jj+size(dataVarsGood,1)-2)<0 & ...
+                        dataAllNum(endInds(kk),jj-2)-dataAllNum(endInds(kk),jj+size(dataVarsGood,1)-2)>=-2)
+                    missingGoodSinglePoint(startInds(kk):endInds(kk),jj)=jj;
+                else
+                    missingGoodDouble(startInds(kk):endInds(kk),jj)=jj;
+                end
             end
         end
     end
@@ -203,6 +221,7 @@ missingTest=cat(2,nan(size(TTall,1),2),missingTest);
 missingTest(find(isnan(dataAll(:,1))),1)=1;
 
 missingTest(find(isnan(dataAll(:,size(dataVarsGood,1)+1)) & missingTest(:,1)~=1),2)=2;
+missingTestSinglePoint=nan(size(missingTest));
 missingTestSingle=nan(size(missingTest));
 missingTestDouble=nan(size(missingTest));
 
@@ -229,10 +248,22 @@ for jj=1:size(missingTest,2)
         for kk=1:length(startInds)
             if endInds(kk)-startInds(kk)==0
                 missingTest(startInds(kk),jj)=nan;
-                missingTestSingle(startInds(kk),jj)=jj;
+                if jj>2 & (dataAllNum(startInds(kk),jj-2)-dataAllNum(startInds(kk),jj+size(dataVarsGood,1)-2)>0 & ...
+                        dataAllNum(startInds(kk),jj-2)-dataAllNum(startInds(kk),jj+size(dataVarsGood,1)-2)<=2)
+                    missingTestSinglePoint(startInds(kk),jj)=jj;
+                else
+                    missingTestSingle(startInds(kk),jj)=jj;
+                end
             elseif endInds(kk)-startInds(kk)==1
                 missingTest(startInds(kk):endInds(kk),jj)=nan;
-                missingTestDouble(startInds(kk):endInds(kk),jj)=jj;
+                if jj>2 & (dataAllNum(startInds(kk),jj-2)-dataAllNum(startInds(kk),jj+size(dataVarsGood,1)-2)>0 & ...
+                        dataAllNum(startInds(kk),jj-2)-dataAllNum(startInds(kk),jj+size(dataVarsGood,1)-2)<=2 & ...
+                        dataAllNum(endInds(kk),jj-2)-dataAllNum(endInds(kk),jj+size(dataVarsGood,1)-2)>0 & ...
+                        dataAllNum(endInds(kk),jj-2)-dataAllNum(endInds(kk),jj+size(dataVarsGood,1)-2)<=2)
+                    missingTestSinglePoint(startInds(kk):endInds(kk),jj)=jj;
+                else
+                    missingTestDouble(startInds(kk):endInds(kk),jj)=jj;
+                end
             end
         end
     end
@@ -255,7 +286,7 @@ ax1.Position = [0.1300    0.7093    0.7750    0.25];
 
 hold on
 surf(dataTest.time,dataTest.asl./1000,dataTest.(compareVars{1,2}),'edgecolor','none');
-        view(2);
+view(2);
 ylabel('Altitude (km)');
 c1=colorbar('Location','east');
 c1.Position=[0.94    0.7197    0.0127    0.2285];
@@ -273,7 +304,7 @@ ax2.Position = [0.1300    0.38    0.7750    0.25];
 
 hold on
 surf(dataGood.time,dataGood.asl./1000,dataGood.(compareVars{1,1}),'edgecolor','none');
-        view(2);
+view(2);
 ylabel('Altitude (km)');
 c2=colorbar('Location','east');
 c2.Position=[0.94    0.3907    0.0127    0.2285];
@@ -292,8 +323,9 @@ hold on
 
 for jj=1:size(missingTest,2)
     hold on
-    s3=scatter(TTall.time,missingTestSingle(:,jj),'g+');
-    s2=scatter(TTall.time,missingTestDouble(:,jj),'b+');
+    s4=scatter(TTall.time,missingTestSinglePoint(:,jj),'g+');
+    s3=scatter(TTall.time,missingTestSingle(:,jj),'b+');
+    s2=scatter(TTall.time,missingTestDouble(:,jj),'k+');
     s1=scatter(TTall.time,missingTest(:,jj),'r+');
 end
 
@@ -313,12 +345,13 @@ hold on
 
 for jj=1:size(missingGood,2)
     hold on
-    s3=scatter(TTall.time,missingGoodSingle(:,jj),'g+');
-    s2=scatter(TTall.time,missingGoodDouble(:,jj),'b+');
+    s4=scatter(TTall.time,missingGoodSinglePoint(:,jj),'g+');
+    s3=scatter(TTall.time,missingGoodSingle(:,jj),'b+');
+    s2=scatter(TTall.time,missingGoodDouble(:,jj),'k+');
     s1=scatter(TTall.time,missingGood(:,jj),'r+');
 end
 
-legend([s1 s2 s3],{'Multi','Double','Single'},'location','best');
+legend([s1 s2 s3 s4],{'> 2 Rays','2 Rays, > 2 Gates','1 Ray, > 2 Gates','1 or 2 Rays, 1 Gate'},'location','best');
 
 xlim([TTall.time(1) TTall.time(end)]);
 ylim([0 size(missingGood,2)+1]);

@@ -5,7 +5,7 @@ close all;
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-project='socrates'; % socrates, cset, aristo, otrec
+project='cset'; % socrates, cset, aristo, otrec
 qualityGood='qc2'; % field, qc0, qc1, qc2
 qualityTest='qc2'; % field, qc0, qc1, qc2
 freqGood='10hz'; % 10hz, 2hz, 2hzMerged
