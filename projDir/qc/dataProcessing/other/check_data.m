@@ -11,6 +11,8 @@ qualityTest='qc2'; % field, qc0, qc1, qc2
 freqGood='10hz'; % 10hz, 2hz, 2hzMerged
 freqTest='2hzMerged'; % 10hz, 2hz, 2hzMerged
 
+thresh12=[10 50];
+
 figdir=['/h/eol/romatsch/hcrCalib/checkData/'];
 
 infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_',project,'.txt'];
@@ -56,20 +58,26 @@ for ii=1:size(caseList,1)
     startTime=datetime(caseList(ii,1:6));
     endTime=datetime(caseList(ii,7:12));
     %endTime=startTime+hours(1);
+        
+    fileListGood=makeFileList(indirGood,startTime,endTime,'xxxxxx20YYMMDDxhhmmss',1);
+    fileListTest=makeFileList(indirTest,startTime,endTime,'xxxxxx20YYMMDDxhhmmss',1);
     
     %% Load good data
-    disp('Loading good data.');
-    
-    fileListGood=makeFileList(indirGood,startTime,endTime,'xxxxxx20YYMMDDxhhmmss',1);
-    
+        
     if length(fileListGood)==0
         disp('No good data files found.');
+        startTime=endTime;
+        continue
+    end
+    if length(fileListTest)==0
+        disp('No test data files found.');
         startTime=endTime;
         continue
     end
     
     % Go through each variable
     for ll=1:size(compareVars,1)
+        disp(['Loading good data ',compareVars{ll,1}]);
         
         dataGood=[];
         
@@ -81,7 +89,7 @@ for ii=1:size(caseList,1)
         % Load data
         dataGood=read_HCR(fileListGood,dataGood,startTime,endTime);
         
-        if ll==1
+        if ll==1 & any([compareVars{:,3}])==1
             FLAG=dataGood.FLAG;
         end
         
@@ -92,182 +100,159 @@ for ii=1:size(caseList,1)
             dataGood.(compareVars{ll,1})=varChange;
         end
         
-        % Set up matrix
-        if ll==1            
-            goodNans=array2table(nan(length(dataGood.time),size(dataVarsGood,1)),'VariableNames',dataVarsGood);
-            goodNans=cat(2,table(dataGood.time'),goodNans);
-            goodNans.Properties.VariableNames{'Var1'}='time';
+        % Resample
+        if ll==1
+            startTimeReal=dateshift(dataGood.time(1),'start','second');
+            endTimeReal=dateshift(dataGood.time(end),'end','second');
+            if strcmp(freqGood,'10hz') & strcmp(freqTest,'10hz')
+                newTime=startTimeReal:seconds(0.1):endTimeReal;
+            elseif strcmp(freqGood,'2hz') | strcmp(freqTest,'2hz') | strcmp(freqGood,'2hzMerged') | strcmp(freqTest,'2hzMerged')
+                newTime=startTimeReal:seconds(0.5):endTimeReal;
+            else
+                didsp('Wrong data resolution')
+                return
+            end
             
-            TTgood=table2timetable(goodNans);
-            sumGood=nan(size(dataVarsGood));
+            [~,iaG,ibG]=intersect(dataGood.time,newTime);
         end
         
-        TTgood.(dataVarsGood{ll})=double(any(~isnan(dataGood.(dataVarsGood{ll})),1))';
-        sumGood(ll)=sum(TTgood.(dataVarsGood{ll}));
-    
-    end
-      
-     %% Load test data
-    disp('Loading test data.');
-    
-    fileListTest=makeFileList(indirTest,startTime,endTime,'xxxxxx20YYMMDDxhhmmss',1);
-    
-    if length(fileListTest)==0
-        disp('No test data files found.');
-        startTime=endTime;
-        continue
-    end
-    
-    % Go through each variable
-    for ll=1:size(compareVars,1)
+        newDataG=nan(size(dataGood.(compareVars{ll,1}),1),length(newTime));
+        newDataG(:,ibG)=dataGood.(compareVars{ll,1})(:,iaG);
+        
+        %% Load test data
+        disp(['Loading test data ',compareVars{ll,2}]);
         
         dataTest=[];
-        
-        if ll==1 & any([compareVars{:,3}])==1
-            dataTest.FLAG=[];
-        end
         
         dataTest.(compareVars{ll,2})=[];
         
         % Load data
         dataTest=read_HCR(fileListTest,dataTest,startTime,endTime);
         
+        % Resample
+        if ll==1
+            [~,iaT,ibT]=intersect(dataTest.time,newTime);
+        end
+        
+        newDataT=nan(size(dataTest.(compareVars{ll,2}),1),length(newTime));
+        newDataT(:,ibT)=dataTest.(compareVars{ll,2})(:,iaT);
+        
+        % Mask with data
+        maskG=zeros(size(newDataG));
+        maskT=zeros(size(newDataT));
+        
+        maskG(isnan(newDataT) & ~isnan(newDataG))=1;
+        maskT(isnan(newDataG) & ~isnan(newDataT))=1;
+        
+        % Find speckle
+        countG=zeros(size(maskG));
+        countT=zeros(size(maskT));
+        
+        CCG = bwconncomp(maskG);
+        CCT = bwconncomp(maskT);
+        
+        for kk=1:CCG.NumObjects
+            area=CCG.PixelIdxList{kk};
+            countG(area)=length(area);
+        end
+        
+        for kk=1:CCT.NumObjects
+            area=CCT.PixelIdxList{kk};
+            countT(area)=length(area);
+        end
+        
+        maxCountG=max(countG,[],1);
+        maxCountT=max(countT,[],1);
+        
         % Set up matrix
-        if ll==1            
-            testNans=array2table(nan(length(dataTest.time),size(dataVarsTest,1)),'VariableNames',dataVarsTest);
-            testNans=cat(2,table(dataTest.time'),testNans);
-            testNans.Properties.VariableNames{'Var1'}='time';
+        if ll==1
+            plotMatG=nan(length(newTime),size(dataVarsGood,1),3);
+            plotMatT=nan(length(newTime),size(dataVarsTest,1),3);
             
-            TTtest=table2timetable(testNans);
+            sumGood=nan(size(dataVarsGood));
             sumTest=nan(size(dataVarsTest));
         end
         
-        TTtest.(dataVarsTest{ll})=double(any(~isnan(dataTest.(dataVarsTest{ll})),1))';
-        sumTest(ll)=sum(TTtest.(dataVarsTest{ll}));
-    
-    end
-    
-    %% Process
-    
-    sumGood=cat(1,size(TTgood,1),sumGood);
-    sumTest=cat(1,size(TTtest,1),sumTest);
-    
-    if strcmp(freqGood,'10hz')
-        sumGood=sumGood./10;
-    elseif strcmp(freqGood,'2hz') | strcmp(freqGood,'2hzMerged')
-        sumGood=sumGood./2;
-    end
-    
-    if strcmp(freqTest,'10hz')
-        sumTest=sumTest./10;
-    elseif strcmp(freqTest,'2hz') | strcmp(freqTest,'2hzMerged')
-        sumTest=sumTest./2;
-    end
-    
-    
-    %% Find where differences are
-    if strcmp(freqTest,'2hz') | strcmp(freqTest,'2hzMerged')
-        dt = seconds(0.5);
-        TTgood2 = retime(TTgood,'regular','fillwithmissing','TimeStep',dt);
-    else
-        TTgood2=TTgood;
-    end
-    
-    TTall=synchronize(TTgood2,TTtest,'first','fillwithmissing');
-    tableAll=timetable2table(TTall);
-    dataAll=table2array(tableAll(:,2:end));
-    
-    %% Missing good data
-    missingGood=nan(size(TTall,1),size(dataVarsGood,1));
-    
-    for jj=1:size(dataVarsGood,1)
-       missingGood(find(dataAll(:,jj)==0 & dataAll(:,jj+size(dataVarsGood,1))==1),jj)=jj+2;
-    end
-    
-    missingGood=cat(2,nan(size(TTall,1),2),missingGood);
-    missingGood(find(isnan(dataAll(:,1))),1)=1;
-    
-    missingGood(find(isnan(dataAll(:,size(dataVarsGood,1)+1)) & missingGood(:,1)~=1),2)=2;
-    missingGoodSingle=nan(size(missingGood));
-    missingGoodDouble=nan(size(missingGood));
-    
-    % Remove single rays
-    maskMiss=zeros(size(missingGood));
-    maskMiss(~isnan(missingGood))=1;
-    
-    for jj=1:size(missingGood,2)
-        column=maskMiss(:,jj);
-        diffCol=diff(column);
+        plotMatG((maxCountG>0 & maxCountG<=thresh12(1)),ll,1)=ll;
+        plotMatG((maxCountG>thresh12(1) & maxCountG<=thresh12(2)),ll,2)=ll;
+        plotMatG(maxCountG>thresh12(2),ll,3)=ll;
         
-        startInds=find(diffCol==1);
-        startInds=startInds+1;
-        endInds=find(diffCol==-1);
+        plotMatT((maxCountT>0 & maxCountT<=thresh12(1)),ll,1)=ll;
+        plotMatT((maxCountT>thresh12(1) & maxCountT<=thresh12(2)),ll,2)=ll;
+        plotMatT(maxCountT>thresh12(2),ll,3)=ll;
         
-        if ~isempty(startInds) & ~isempty(endInds)
-            if endInds(1)<startInds(1)
-                startInds=[1;startInds];
-            end
-            if length(startInds)~=length(endInds);
-                endInds=[endInds;length(column)];
-            end
-            
-            for kk=1:length(startInds)
-                if endInds(kk)-startInds(kk)==0
-                    missingGood(startInds(kk),jj)=nan;
-                    missingGoodSingle(startInds(kk),jj)=jj;
-                elseif endInds(kk)-startInds(kk)==1
-                    missingGood(startInds(kk):endInds(kk),jj)=nan;
-                    missingGoodDouble(startInds(kk):endInds(kk),jj)=jj;
-                end
-            end
-        end
+        % Sum of good data
+        allDataG=any(~isnan(newDataG),1);
+        sumGood(ll)=sum(double(allDataG));
+        
+        allDataT=any(~isnan(newDataT),1);
+        sumTest(ll)=sum(double(allDataT));
     end
     
-     %% Missing test data
-    missingTest=nan(size(TTall,1),size(dataVarsGood,1));
+    %% Add times
+    plotMatG=plotMatG+2;
+    plotMatT=plotMatT+2;
+    plotMatG=cat(2,nan(size(plotMatG,1),2,size(plotMatG,3)),plotMatG);
+    plotMatT=cat(2,nan(size(plotMatT,1),2,size(plotMatT,3)),plotMatT);
     
-    for jj=1:size(dataVarsGood,1)
-       missingTest(find(dataAll(:,jj)==1 & dataAll(:,jj+size(dataVarsGood,1))==0),jj)=jj+2;
+    timeDummyG=ones(size(dataGood.time));
+    timeDummyT=ones(size(dataTest.time));
+    
+    newDataG=nan(size(dataGood.time,1),length(newTime));
+    newDataG(:,ibG)=timeDummyG(:,iaG);
+    newDataT=nan(size(dataTest.time,1),length(newTime));
+    newDataT(:,ibT)=timeDummyT(:,iaT);
+    
+    % Mask with data
+    maskG=zeros(size(newDataG));
+    maskT=zeros(size(newDataT));
+    
+    maskG(isnan(newDataT) & ~isnan(newDataG))=1;
+    maskT(isnan(newDataG) & ~isnan(newDataT))=1;
+    
+    % Find speckle
+    countG=zeros(size(maskG));
+    countT=zeros(size(maskT));
+    
+    CCG = bwconncomp(maskG);
+    CCT = bwconncomp(maskT);
+    
+    for kk=1:CCG.NumObjects
+        area=CCG.PixelIdxList{kk};
+        countG(area)=length(area);
     end
     
-    missingTest=cat(2,nan(size(TTall,1),2),missingTest);
-    missingTest(find(isnan(dataAll(:,1))),1)=1;
-    
-    missingTest(find(isnan(dataAll(:,size(dataVarsGood,1)+1)) & missingTest(:,1)~=1),2)=2;
-    missingTestSingle=nan(size(missingTest));
-    missingTestDouble=nan(size(missingTest));
-    
-    % Remove single rays
-    maskMiss=zeros(size(missingTest));
-    maskMiss(~isnan(missingTest))=1;
-    
-    for jj=1:size(missingTest,2)
-        column=maskMiss(:,jj);
-        diffCol=diff(column);
-        
-        startInds=find(diffCol==1);
-        startInds=startInds+1;
-        endInds=find(diffCol==-1);
-        
-        if ~isempty(startInds) & ~isempty(endInds)
-            if endInds(1)<startInds(1)
-                startInds=[1;startInds];
-            end
-            if length(startInds)~=length(endInds);
-                endInds=[endInds;length(column)];
-            end
-            
-            for kk=1:length(startInds)
-                if endInds(kk)-startInds(kk)==0
-                    missingTest(startInds(kk),jj)=nan;
-                    missingTestSingle(startInds(kk),jj)=jj;
-                elseif endInds(kk)-startInds(kk)==1
-                    missingTest(startInds(kk):endInds(kk),jj)=nan;
-                    missingTestDouble(startInds(kk):endInds(kk),jj)=jj;
-                end
-            end
-        end
+    for kk=1:CCT.NumObjects
+        area=CCT.PixelIdxList{kk};
+        countT(area)=length(area);
     end
+    
+    maxCountG=max(countG,[],1);
+    maxCountT=max(countT,[],1);
+    
+    plotMatG((maxCountG>0 & maxCountG<=thresh12(1)),2,1)=2;
+    plotMatG((maxCountG>thresh12(1) & maxCountG<=thresh12(2)),2,2)=2;
+    plotMatG(maxCountG>thresh12(2),2,3)=2;
+    
+    plotMatT((maxCountT>0 & maxCountT<=thresh12(1)),2,1)=2;
+    plotMatT((maxCountT>thresh12(1) & maxCountT<=thresh12(2)),2,2)=2;
+    plotMatT(maxCountT>thresh12(2),2,3)=2;
+    
+    timeSmallG=dataGood.time(:,iaG);
+    [~,iaMissG] = setdiff(newTime,timeSmallG);
+    
+    plotMatG(iaMissG,1,3)=1;
+    
+    timeSmallT=dataTest.time(:,iaT);
+    [~,iaMissT] = setdiff(newTime,timeSmallT);
+    
+    plotMatT(iaMissT,1,3)=1;
+    
+    allDataG=any(~isnan(newDataG),1);
+    sumGood=cat(1,sum(double(allDataG)),sumGood);
+    
+    allDataT=any(~isnan(newDataT),1);
+    sumTest=cat(1,sum(double(allDataT)),sumTest);
     
     %% Plot
     
@@ -281,10 +266,10 @@ for ii=1:size(caseList,1)
     
     ax1=subplot(3,1,1);
     ax1.Position = [0.1300    0.7093    0.7750    0.25];
-
+    
     hold on
     bar(cat(2,sumGood,sumTest));
-    ylabel('Seconds');
+    ylabel('Number of rays');
     xticks(1:size(makeLabels,1));
     xticklabels(makeLabels);
     xtickangle(45);
@@ -300,44 +285,53 @@ for ii=1:size(caseList,1)
     ax2.Position = [0.1300    0.36    0.7750    0.25];
     hold on
     
-    for jj=1:size(missingTest,2)
+    for jj=1:size(plotMatT,2)
         hold on
-        s3=scatter(TTall.time,missingTestSingle(:,jj),'g+');
-        s2=scatter(TTall.time,missingTestDouble(:,jj),'b+');
-        s1=scatter(TTall.time,missingTest(:,jj),'r+');       
+        s1=scatter(newTime,plotMatT(:,jj,1),'g+');
+        s2=scatter(newTime,plotMatT(:,jj,2),'b+');
+        if jj~=1
+            s3=scatter(newTime,plotMatT(:,jj,3),'r+');
+        else
+            s4=scatter(newTime,plotMatT(:,jj,3),'m+');
+        end
     end
-        
-    xlim([TTall.time(1) TTall.time(end)]);
-    ylim([0 size(missingGood,2)+1]);
+    
+    xlim([newTime(1) newTime(end)]);
+    ylim([0 size(plotMatT,2)+1]);
     grid on
     
-    yticks(1:size(missingTest,2));
+    yticks(1:size(plotMatT,2));
     yticklabels(makeLabels2);
     
-    title(['Missing times ',qualityTest,' ',freqTest]);
+    title(['Missing contiguous points ',qualityTest,' ',freqTest]);
     grid on
-        
+    
     ax3=subplot(3,1,3);
     ax3.Position = [0.1300    0.05    0.7750    0.25];
     hold on
     
-    for jj=1:size(missingGood,2)
+    for jj=1:size(plotMatG,2)
         hold on
-        s3=scatter(TTall.time,missingGoodSingle(:,jj),'g+');
-        s2=scatter(TTall.time,missingGoodDouble(:,jj),'b+');
-        s1=scatter(TTall.time,missingGood(:,jj),'r+');       
+        s1=scatter(newTime,plotMatG(:,jj,1),'g+');
+        s2=scatter(newTime,plotMatG(:,jj,2),'b+');
+        if jj~=1
+            s3=scatter(newTime,plotMatG(:,jj,3),'r+');
+        else
+            s4=scatter(newTime,plotMatG(:,jj,3),'m+');
+        end
     end
     
-    legend([s1 s2 s3],{'Multi','Double','Single'},'location','best');
-    
-    xlim([TTall.time(1) TTall.time(end)]);
-    ylim([0 size(missingGood,2)+1]);
+    xlim([newTime(1) newTime(end)]);
+    ylim([0 size(plotMatG,2)+1]);
     grid on
     
-    yticks(1:size(missingGood,2));
+    yticks(1:size(plotMatG,2));
     yticklabels(makeLabels2);
     
-    title(['Missing times ',qualityGood,' ',freqGood]);
+    legend([s1 s2 s3 s4],{['<=',num2str(thresh12(1))],['>',num2str(thresh12(1)),', <=',num2str(thresh12(2))],...
+        ['>',num2str(thresh12(2))],'Dropouts'},'location','best');
+    
+    title(['Missing contiguous points ',qualityGood,' ',freqGood]);
     grid on
     
     set(gcf,'PaperPositionMode','auto')
