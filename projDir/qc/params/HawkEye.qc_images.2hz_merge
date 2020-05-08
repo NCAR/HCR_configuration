@@ -502,6 +502,15 @@ fields = {
     color_map = "rh_jet.colors",
     shortcut = "j"
   }
+  ,
+  {
+    label = "FLAG",
+    raw_name = "FLAG",
+    filtered_name = "",
+    units = "",
+    color_map = "hcr_flag.colors",
+    shortcut = "d"
+  }
 };
 
 ///////////// background_render_mins //////////////////
