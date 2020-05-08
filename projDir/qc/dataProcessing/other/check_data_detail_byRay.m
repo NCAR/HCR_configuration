@@ -5,14 +5,14 @@ close all;
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-project='socrates'; % socrates, cset, aristo, otrec
+project='cset'; % socrates, cset, aristo, otrec
 qualityGood='qc2'; % field, qc0, qc1, qc2
 qualityTest='qc2'; % field, qc0, qc1, qc2
 freqGood='10hz'; % 10hz, 2hz, 2hzMerged
 freqTest='2hzMerged'; % 10hz, 2hz, 2hzMerged
 
-startTime=datetime(2018,2,21,23,10,0);
-endTime=datetime(2018,2,21,23,20,0);
+startTime=datetime(2015,7,1,21,55,0);
+endTime=datetime(2015,7,1,22,5,0);
 
 figdir=['/h/eol/romatsch/hcrCalib/checkData/check_detail/'];
 
@@ -25,7 +25,7 @@ indirTest=HCRdir(project,qualityTest,freqTest);
 
 %% Run processing
 
-compareVars={'FLAG','FLAG',0};
+compareVars={'PRESS','PRESS',0};
 
 dataVarsGood={};
 dataVarsTest={};

@@ -37,10 +37,10 @@ s1.Position = [outerpos1(1)-0.0 outerpos1(2)+0.0 outerpos1(3)+0.03 outerpos1(4)+
 inget1 = get(ax1,'children');
 copyobj(inget1,s1);
 %ylim([-4 0]);
-xlim([-50,-20]);
-xlabel('Pod temperature (C)');
-ylabel('DBMVC - noise source (dB)')
-text(1,0.2,'(a) No correction','fontsize',12,'fontweight','bold')
+xlim([-50,-35]);
+ylabel('Data count');
+xlabel('Reflectivity (dBZ)')
+text(-49,3.8e+4,'(a) DBZ','fontsize',12,'fontweight','bold')
 grid on
 
 s2=subplot(2,1,2);
@@ -50,10 +50,10 @@ s2.Position = [outerpos1(1)-0.0 outerpos1(2)-0.035 outerpos1(3)+0.03 outerpos1(4
 inget2 = get(ax2,'children');
 copyobj(inget2,s2);
 %ylim([-4 0]);
-%xlim([0,30]);
-xlabel('Pod temperature (C)');
-ylabel('DBMVC - noise source (dB)')
-text(1,0.2,'(b) LNA temperature corrected','fontsize',12,'fontweight','bold')
+xlim([-20,-5]);
+ylabel('Data count');
+xlabel('Signal to Noise Ratio (dB)')
+text(-19,5.7e+4,'(b) SNR','fontsize',12,'fontweight','bold')
 grid on
 
 print(fig1, [figdir,'sensitivity.png'],'-dpng','-r0');
