@@ -14,7 +14,7 @@ dataFreq='10hz';
 
 b_drizz = 0.52; % Z<-17 dBZ
 b_rain = 0.68; % Z>-17 dBZ
-alpha = 0.21;
+%alpha = 0.21;
 salinity=35; % Ocean salinity for sig0model in per mille (world wide default is 35) and sensitivity to that number is low
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -37,7 +37,7 @@ data.DBZ = [];
 data.DBMVC=[];
 data.DBMHX=[];
 %data.PRESS=[];
-%data.TEMP=[];
+data.TEMP=[];
 %data.RH=[];
 data.SST=[];
 data.TOPO=[];
@@ -186,7 +186,8 @@ if ~max(surfMask)==0
         end
     end
     
-    LWC=specAtt*alpha;
+    alpha=1./(4.792-3.63e-2*data.TEMP-1.897e-4*data.TEMP.^2);
+    LWC=specAtt.*alpha;
     
     windSpd=sqrt(data.U_SURF.^2+data.V_SURF.^2);
     
@@ -270,7 +271,7 @@ if ~max(surfMask)==0
     
     %% Liquid attenuation
     
-    f2 = figure('Position',[200 500 1500 900],'DefaultAxesFontSize',12,'renderer','painters');
+    f2 = figure('Position',[200 500 1500 900],'DefaultAxesFontSize',12);
     
     subplot(3,1,1)
     hold on
