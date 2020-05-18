@@ -30,7 +30,7 @@ end
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-figdir=['/h/eol/romatsch/hcrCalib/clouds/',project,'/'];
+figdir=['/h/eol/romatsch/hcrCalib/clouds/brightBand/',project,'/'];
 
 if ~exist(figdir, 'dir')
     mkdir(figdir)
