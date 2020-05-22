@@ -6,8 +6,8 @@ close all;
 % startTime=datetime(2018,2,7,18,0,0);
 % endTime=datetime(2018,2,8,12,0,0);
 
-startTime=datetime(2019,10,2,15,15,0);
-endTime=datetime(2019,10,2,15,24,0);
+startTime=datetime(2019,10,2,15,0,0);
+endTime=datetime(2019,10,2,15,59,0);
 
 plotFields=1;
 plotWholeFlight=0;
@@ -197,45 +197,60 @@ end
 
 %% Split up individual clouds
 numMax=max(reshape(cloudNum,1,[]),[],'omitnan');
-edges=-50:2:30;
 
-for ii=4:numMax
-    close all;
+for ii=1:numMax
+    
     cloudInds=find(cloudNum==ii);
     
+    if length(cloudInds)>100000
+        close all;
     cloudRefl=reflLarge(cloudInds);
     
-    reflMap=nan(size(cloudNum));
-    reflMap(cloudInds)=cloudRefl;
+    reflMapBig=nan(size(cloudNum));
+    reflMapBig(cloudInds)=cloudRefl;
     
-    reflIm = mat2gray(reflMap);
-    reflIm=1-reflIm;
+    [clR clC]=ind2sub(size(cloudNum),cloudInds);
     
+    reflMap=reflMapBig(min(clR):max(clR),min(clC):max(clC));
+    aslMap=data.asl(min(clR):max(clR),min(clC):max(clC));
+    timeMap=data.time(min(clC):max(clC));
     
-    distinctClouds=watershed(reflIm);
+    % Watershed
+    bw=zeros(size(reflMap));
+    bw(~isnan(reflMap))=1;
     
-    distinctClouds(isnan(reflMap))=nan;
+    D = -bwdist(~bw);
     
+    mask = imextendedmin(D,50);
+    
+    D2 = imimposemin(D,mask);
+    Ld2 = watershed(D2);
+    
+    I2 = im2double(Ld2);
+    I2(isnan(reflMap))=nan;    
+
+    % Plot
     fig1=figure('DefaultAxesFontSize',11,'position',[100,100,1300,900]);
     
     subplot(2,1,1)
-    sub1=surf(data.time,data.asl./1000,reflMap,'edgecolor','none');
+    sub1=surf(timeMap,aslMap./1000,reflMap,'edgecolor','none');
     view(2);
     sub1=colMapDBZ(sub1);
-    ylim(ylimits);
     ylabel('Altitude (km)');
-    xlim([data.time(1),data.time(end)]);
+    xlim([timeMap(1),timeMap(end)]);
     title('Reflectivity')
     grid on
-        
+    
     subplot(2,1,2)
-    %sub3=surf(data.time,data.asl./1000,distinctClouds,'edgecolor','none');
-    %view(2);
-    ylim(ylimits);
+    
+    sub3=surf(timeMap,aslMap./1000,I2,'edgecolor','none');
+    view(2);
     ylabel('Altitude (km)');
-    %xlim([data.time(1),data.time(end)]);
+    xlim([timeMap(1),timeMap(end)]);
+    colorbar
     title('Reflectivity')
     grid on
+    end
 end
 %% Plot
 
