@@ -204,52 +204,61 @@ for ii=1:numMax
     
     if length(cloudInds)>100000
         close all;
-    cloudRefl=reflLarge(cloudInds);
-    
-    reflMapBig=nan(size(cloudNum));
-    reflMapBig(cloudInds)=cloudRefl;
-    
-    [clR clC]=ind2sub(size(cloudNum),cloudInds);
-    
-    reflMap=reflMapBig(min(clR):max(clR),min(clC):max(clC));
-    aslMap=data.asl(min(clR):max(clR),min(clC):max(clC));
-    timeMap=data.time(min(clC):max(clC));
-    
-    % Watershed
-    bw=zeros(size(reflMap));
-    bw(~isnan(reflMap))=1;
-    
-    D = -bwdist(~bw);
-    
-    mask = imextendedmin(D,50);
-    
-    D2 = imimposemin(D,mask);
-    Ld2 = watershed(D2);
-    
-    I2 = im2double(Ld2);
-    I2(isnan(reflMap))=nan;    
-
-    % Plot
-    fig1=figure('DefaultAxesFontSize',11,'position',[100,100,1300,900]);
-    
-    subplot(2,1,1)
-    sub1=surf(timeMap,aslMap./1000,reflMap,'edgecolor','none');
-    view(2);
-    sub1=colMapDBZ(sub1);
-    ylabel('Altitude (km)');
-    xlim([timeMap(1),timeMap(end)]);
-    title('Reflectivity')
-    grid on
-    
-    subplot(2,1,2)
-    
-    sub3=surf(timeMap,aslMap./1000,I2,'edgecolor','none');
-    view(2);
-    ylabel('Altitude (km)');
-    xlim([timeMap(1),timeMap(end)]);
-    colorbar
-    title('Reflectivity')
-    grid on
+        cloudRefl=reflLarge(cloudInds);
+        
+        reflMapBig=nan(size(cloudNum));
+        reflMapBig(cloudInds)=cloudRefl;
+        
+        [clR clC]=ind2sub(size(cloudNum),cloudInds);
+        
+        reflMap=reflMapBig(min(clR):max(clR),min(clC):max(clC));
+        aslMap=data.asl(min(clR):max(clR),min(clC):max(clC));
+        timeMap=data.time(min(clC):max(clC));
+        
+        % Watershed
+        bw=zeros(size(reflMap));
+        bw(~isnan(reflMap))=1;
+        
+        D = -bwdist(~bw);
+        
+        mask = imextendedmin(D,50);
+        
+        D2 = imimposemin(D,mask);
+        Ld2 = watershed(D2);
+        
+        I2 = im2double(Ld2);
+        I2(isnan(reflMap))=nan;
+        
+        noNan=I2;
+        noNan(isnan(noNan))=-999;
+        unClouds=unique(noNan);
+        unClouds(unClouds==-999)=[];
+        unClouds(unClouds==0)=[];
+        
+        if howMany>1
+            
+        
+        % Plot
+        fig1=figure('DefaultAxesFontSize',11,'position',[100,100,1300,900]);
+        
+        subplot(2,1,1)
+        sub1=surf(timeMap,aslMap./1000,reflMap,'edgecolor','none');
+        view(2);
+        sub1=colMapDBZ(sub1);
+        ylabel('Altitude (km)');
+        xlim([timeMap(1),timeMap(end)]);
+        title('Reflectivity')
+        grid on
+        
+        subplot(2,1,2)
+        
+        sub3=surf(timeMap,aslMap./1000,I2,'edgecolor','none');
+        view(2);
+        ylabel('Altitude (km)');
+        xlim([timeMap(1),timeMap(end)]);
+        colorbar
+        title('Reflectivity')
+        grid on
     end
 end
 %% Plot
@@ -289,6 +298,6 @@ if plotFields
     
     formatOut = 'yyyymmdd_HHMM';
     set(gcf,'PaperPositionMode','auto')
-   % print([figdir,'refl_',datestr(startTime,formatOut),'_to_',datestr(endTime,formatOut),'_zeroDegree'],'-dpng','-r0');
+    % print([figdir,'refl_',datestr(startTime,formatOut),'_to_',datestr(endTime,formatOut),'_zeroDegree'],'-dpng','-r0');
 end
 
