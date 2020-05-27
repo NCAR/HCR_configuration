@@ -215,33 +215,94 @@ for ii=1:numMax
         aslMap=data.asl(min(clR):max(clR),min(clC):max(clC));
         timeMap=data.time(min(clC):max(clC));
         
-        % Watershed
+        %         % Watershed
         bw=zeros(size(reflMap));
         bw(~isnan(reflMap))=1;
         
-        D = -bwdist(~bw);
+        %
+        %         D = -bwdist(~bw);
+        %
+        %         mask = imextendedmin(D,50);
+        %
+        %         D2 = imimposemin(D,mask);
+        %         Ld2 = watershed(D2);
+        %
+        %         I2 = im2double(Ld2);
+        %         I2(isnan(reflMap))=nan;
+        %
+        %         % Find unique cloud parts
+        %         noNan=I2;
+        %         noNan(isnan(noNan))=-999;
+        %         unClouds=unique(noNan);
+        %         unClouds(unClouds==-999)=[];
+        %         unClouds(unClouds==0)=[];
+        %
+        %         % Test if unique cloud parts should be separate
+        %         if length(unClouds)>1
+        %             for aa=1:length(unClouds)
+        %                 for bb=aa+1:length(unClouds)
+        %                     refl1=reflMap(I2==unClouds(aa));
+        %                     refl2=reflMap(I2==unClouds(bb));
+        %
+        %                     figure
+        %                     subplot(2,1,1);
+        %                     histogram(refl1);
+        %                     subplot(2,1,2);
+        %                     histogram(refl2);
+        %                     mean(refl1)
+        %                     mean(refl2)
+        %                 end
+        %             end
+        %         end
         
-        mask = imextendedmin(D,50);
+        % Number of layers
         
-        D2 = imimposemin(D,mask);
-        Ld2 = watershed(D2);
+        % Create mask
+        BW2 = imfill(bw,'holes');
         
-        I2 = im2double(Ld2);
-        I2(isnan(reflMap))=nan;
+        BWext=cat(1,zeros(1,size(BW2,2)),BW2,zeros(1,size(BW2,2)));
+        BWdiff=diff(BWext,1,1);
         
-        noNan=I2;
-        noNan(isnan(noNan))=-999;
-        unClouds=unique(noNan);
-        unClouds(unClouds==-999)=[];
-        unClouds(unClouds==0)=[];
+        % Metrics per ray
+        minAlt=nan(size(timeMap));
+        maxAlt=nan(size(timeMap));
+        maxRefl=nan(size(timeMap));
+        medRefl=nan(size(timeMap));
+        numLayers=ones(size(timeMap));
+        maxThick=nan(size(timeMap));
         
-        if howMany>1
+        for kk=1:size(reflMap,2)
+            reflRay=reflMap(:,kk);
+            dataRay=find(~isnan(reflRay));
             
+            closeGate=aslMap(min(dataRay),kk);
+            farGate=aslMap(max(dataRay),kk);
+            
+            minAlt(kk)=min([closeGate,farGate]);
+            maxAlt(kk)=max([closeGate,farGate]);
+            
+            maxRefl(kk)=max(reflRay,[],'omitnan');
+            medRefl(kk)=median(reflRay,'omitnan');
+            
+            % Number of layers
+            BWray=BWdiff(:,kk);
+            startBW=find(BWray==1);
+            endBW=find(BWray==-1);
+            
+            thickness=endBW-startBW;
+            maxThick(kk)=max(thickness);
+            largeLayers=length(find(thickness>10));
+            if largeLayers>0
+                numLayers(kk)=largeLayers;
+            end
+        end
+               
+        maxThickKM=maxThick.*(data.range(2)-data.range(1))./1000;
         
         % Plot
         fig1=figure('DefaultAxesFontSize',11,'position',[100,100,1300,900]);
         
-        subplot(2,1,1)
+        s1=subplot(2,1,1);
         sub1=surf(timeMap,aslMap./1000,reflMap,'edgecolor','none');
         view(2);
         sub1=colMapDBZ(sub1);
@@ -249,16 +310,23 @@ for ii=1:numMax
         xlim([timeMap(1),timeMap(end)]);
         title('Reflectivity')
         grid on
+        pos1=s1.Position;
         
-        subplot(2,1,2)
+        s2=subplot(2,1,2);
+        hold on
+        plot(timeMap,minAlt./1000,'-g','linewidth',1.5);
+        plot(timeMap,maxAlt./1000,'-b','linewidth',1.5);
+        plot(timeMap,numLayers,'-c','linewidth',1.5);
+        plot(timeMap,maxThickKM,'-k','linewidth',1.5);
         
-        sub3=surf(timeMap,aslMap./1000,I2,'edgecolor','none');
-        view(2);
-        ylabel('Altitude (km)');
+        yyaxis right
+        plot(timeMap,maxRefl,'-r','linewidth',1.5);
+        plot(timeMap,medRefl,'-m','linewidth',1.5);
         xlim([timeMap(1),timeMap(end)]);
-        colorbar
-        title('Reflectivity')
         grid on
+        pos2=s2.Position;
+        s2.Position=[pos1(1),pos2(2),pos1(3),pos1(4)];
+        show1=1;
     end
 end
 %% Plot
