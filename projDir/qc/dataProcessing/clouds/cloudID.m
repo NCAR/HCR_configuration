@@ -213,6 +213,7 @@ for ii=1:numMax
         
         reflMap=reflMapBig(min(clR):max(clR),min(clC):max(clC));
         aslMap=data.asl(min(clR):max(clR),min(clC):max(clC));
+        %zeroAltMap=zeroAlt(min(clR):max(clR),min(clC):max(clC));
         timeMap=data.time(min(clC):max(clC));
         
         %         % Watershed
@@ -258,11 +259,89 @@ for ii=1:numMax
         % Number of layers
         
         % Create mask
-        BW2 = imfill(bw,'holes');
+%         BW2 = imfill(bw,'holes');
+%         
+        BWext=cat(1,zeros(1,size(bw,2)),bw,zeros(1,size(bw,2)));
+        BWdiffOrig=abs(diff(BWext,1,1));
+        BWdiffOrig=BWdiffOrig(1:end-1,:);
+        BWdiff=BWdiffOrig;
         
-        BWext=cat(1,zeros(1,size(BW2,2)),BW2,zeros(1,size(BW2,2)));
-        BWdiff=diff(BWext,1,1);
+        % Connect layer edges
+
+disp('Connecting layer edges ...');
+
+% Find how many melting layers there are and connect the right ones
+
+% Remove contiguous layers that are too small
+% if length(timeMap)>9000
+%     zeroCut=10;
+%     CC = bwconncomp(BWdiff);
+%     
+%     for ii=1:CC.NumObjects
+%         area=CC.PixelIdxList{ii};
+%         if length(area)<=zeroCut
+%             BWdiff(area)=nan;
+%         end
+%     end
+% end
+
+numZero=sum(BWdiff,1,'omitnan');
+
+% Connect layers
+layerInds=nan(1,length(timeMap));
+layerAlts=nan(1,length(timeMap));
+
+for aa=1:length(timeMap)
+    if numZero(aa)==0
+        continue
+    end
+    colInds=find(BWdiffOrig(:,aa)==1);
+    colAltsAll=aslMap(:,aa);
+    colAlts=colAltsAll(colInds);
+    
+    if aa>1
+        prevAlts=layerAlts(:,aa-1);
+    end
+    
+    % Go through all layers
+    for bb=1:numZero(aa)
+        % First data points or after nans
+        if aa==1 | numZero(aa-1)==0
+            if aa==1 & bb==1
+                layerInds(bb,aa)=colInds(bb);
+                layerAlts(bb,aa)=colAlts(bb);
+            else
+                % Add new row
+                layerInds=cat(1,layerInds,nan(size(timeMap)));
+                layerAlts=cat(1,layerAlts,nan(size(timeMap)));
+                layerInds(size(layerInds,1),aa)=colInds(bb);
+                layerAlts(size(layerInds,1),aa)=colAlts(bb);
+            end
+        else % Find closest altitude
+            zeroAltDiffs=abs(prevAlts-colAlts(bb));
+            zeroAltDiffs(isnan(zeroAltDiffs))=100000;
+            minDiff=min(zeroAltDiffs);
+            if minDiff<50
+                diffInd=find(zeroAltDiffs==minDiff);
+                layerInds(diffInd,aa)=colInds(bb);
+                layerAlts(diffInd,aa)=colAlts(bb);
+            elseif minDiff~=100000;
+                % Add new row
+                layerInds=cat(1,layerInds,nan(size(timeMap)));
+                layerAlts=cat(1,layerAlts,nan(size(timeMap)));
+                layerInds(size(layerInds,1),aa)=colInds(bb);
+                layerAlts(size(layerInds,1),aa)=colAlts(bb);
+            end
+        end
+    end
+end
         
+edgeLength=sum(~isnan(layerInds),2);
+
+tooShort=find(edgeLength<10);
+layerInds(tooShort,:)=[];
+layerAlts(tooShort,:)=[];
+
         % Metrics per ray
         minAlt=nan(size(timeMap));
         maxAlt=nan(size(timeMap));
@@ -284,25 +363,29 @@ for ii=1:numMax
             maxRefl(kk)=max(reflRay,[],'omitnan');
             medRefl(kk)=median(reflRay,'omitnan');
             
-            % Number of layers
-            BWray=BWdiff(:,kk);
-            startBW=find(BWray==1);
-            endBW=find(BWray==-1);
-            
-            thickness=endBW-startBW;
-            maxThick(kk)=max(thickness);
-            largeLayers=length(find(thickness>10));
-            if largeLayers>0
-                numLayers(kk)=largeLayers;
-            end
+%             % Number of layers
+%             BWray=BWdiff(:,kk);
+%             startBW=find(BWray==1);
+%             endBW=find(BWray==-1);
+%             
+%             thickness=endBW-startBW;
+%             maxThick(kk)=max(thickness);
+%             largeLayers=length(find(thickness>10));
+%             if largeLayers>0
+%                 numLayers(kk)=largeLayers;
+%             end
         end
                
         maxThickKM=maxThick.*(data.range(2)-data.range(1))./1000;
         
+        
         % Plot
+        timeMat=repmat(timeMap,size(reflMap,1),1);
+        
         fig1=figure('DefaultAxesFontSize',11,'position',[100,100,1300,900]);
         
         s1=subplot(2,1,1);
+        hold on
         sub1=surf(timeMap,aslMap./1000,reflMap,'edgecolor','none');
         view(2);
         sub1=colMapDBZ(sub1);
@@ -312,11 +395,25 @@ for ii=1:numMax
         grid on
         pos1=s1.Position;
         
+        colIndsAll=1:length(timeMap);
+        for aa=1:size(layerAlts,1)
+            rowInds=layerInds(aa,:);
+            colInds=colIndsAll;
+            colInds(isnan(rowInds))=[];
+            rowInds(isnan(rowInds))=[];
+            
+            linPlot=sub2ind(size(aslMap),rowInds,colInds);
+            
+            rowAlts=layerAlts(aa,:);
+            rowAlts(isnan(rowAlts))=[];
+            scatter(timeMat(linPlot),rowAlts./1000,10,'filled');
+        end
+        
         s2=subplot(2,1,2);
         hold on
         plot(timeMap,minAlt./1000,'-g','linewidth',1.5);
         plot(timeMap,maxAlt./1000,'-b','linewidth',1.5);
-        plot(timeMap,numLayers,'-c','linewidth',1.5);
+        %plot(timeMap,numLayers,'-c','linewidth',1.5);
         plot(timeMap,maxThickKM,'-k','linewidth',1.5);
         
         yyaxis right
