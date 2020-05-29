@@ -178,6 +178,8 @@ end
 %% Split up individual clouds
 numMax=max(reshape(cloudNum,1,[]),[],'omitnan');
 
+thresh12=[-25 0];
+
 for ii=1:numMax
     
     cloudInds=find(cloudNum==ii);
@@ -196,41 +198,104 @@ for ii=1:numMax
         timeMap=data.time(min(clC):max(clC));
         
         BW=zeros(size(reflMap));
-        BW(~isnan(reflMap))=1;
-            
-        I = mat2gray(reflMap);
+        BW(reflMap>=thresh12(1) & reflMap<thresh12(2))=1;
+                
+        [B,L,N,A] = bwboundaries(BW);
+        
+        cutBound=100;
+        goodB={};
+        figure; imshow(BW); hold on;
+        % Loop through object boundaries
+        for k = 1:N
+            % Boundary k is the parent of a hole if the k-th column
+            % of the adjacency matrix A contains a non-zero element
+            if (nnz(A(:,k)) > 0)
+                %                 boundary = B{k};
+                %                 plot(boundary(:,2),...
+                %                     boundary(:,1),'r','LineWidth',2);
+                % Loop through the children of boundary k
+                for l = find(A(:,k))'
+                    boundary = B{l};
+                    if size(boundary,1)>cutBound
+                        goodB{end+1}=boundary;
+                        
+                        plot(boundary(:,2),...
+                            boundary(:,1),'g','LineWidth',2);
+                    else
+                        boundary = B{k};
+                        % Check if it already exists
+                        goodTemp=goodB;
+                        goodTemp{end+1}=boundary;
+                        M = arrayfun(@(l) sum(arrayfun(@(m) isequal(goodTemp{l}, goodTemp{m}), 1:numel(goodTemp))), 1:numel(goodTemp));
+                        if size(boundary,1)>cutBound & max(M)==1
+                            plot(boundary(:,2),...
+                                boundary(:,1),'r','LineWidth',2);
+                            goodB{end+1}=boundary;
+                        end
+                    end
+                end
+            else
+                boundary = B{k};
+                if size(boundary,1)>cutBound
+                    plot(boundary(:,2),...
+                        boundary(:,1),'r','LineWidth',2);
+                    goodB{end+1}=boundary;
+                end
+            end
+        end
+        
+       
+
+%        I = mat2gray(reflMap);
+        
+        %         % Adjust data to span data range.
+%         Iadj = imadjust(I);
+%         
+%         % Threshold image - adaptive threshold
+%         BW = imbinarize(Iadj, 'adaptive', 'Sensitivity', 0.500000, 'ForegroundPolarity', 'dark');
+%         BW(isnan(reflMap))=0;
+%         
+%         BW = imfill(BW,'holes');
+%         BW = bwareaopen(BW,1000);
+%         
+%         threshMask=double(BW);
+%         threshMask(threshMask==0)=nan;
+%         
+%         properties = regionprops(BW, {'Area', 'Eccentricity', 'EquivDiameter',...
+%             'Extent', 'FilledArea', 'MajorAxisLength', 'MinorAxisLength',...
+%             'Orientation', 'Perimeter', 'Solidity'});
+%         
+%         imageRegionAnalyzer(BW);
+
+%         
+        %imageMorphology(I)
         
         % Plot
-        timeMat=repmat(timeMap,size(reflMap,1),1);
-        
-        fig1=figure('DefaultAxesFontSize',11,'position',[100,100,1300,900]);
-        
-        s1=subplot(2,1,1);
-        hold on
-        sub1=surf(timeMap,aslMap./1000,reflMap,'edgecolor','none');
-        view(2);
-        sub1=colMapDBZ(sub1);
-        ylabel('Altitude (km)');
-        xlim([timeMap(1),timeMap(end)]);
-        title('Reflectivity')
-        grid on
-        pos1=s1.Position;
-        
-        s2=subplot(2,1,2);
-        hold on
-        plot(timeMap,minAlt./1000,'-g','linewidth',1.5);
-        plot(timeMap,maxAlt./1000,'-b','linewidth',1.5);
-        %plot(timeMap,numLayers,'-c','linewidth',1.5);
-        plot(timeMap,maxThickKM,'-k','linewidth',1.5);
-        
-        yyaxis right
-        plot(timeMap,maxRefl,'-r','linewidth',1.5);
-        plot(timeMap,medRefl,'-m','linewidth',1.5);
-        xlim([timeMap(1),timeMap(end)]);
-        grid on
-        pos2=s2.Position;
-        s2.Position=[pos1(1),pos2(2),pos1(3),pos1(4)];
-        show1=1;
+%         timeMat=repmat(timeMap,size(reflMap,1),1);
+%         
+%         fig1=figure('DefaultAxesFontSize',11,'position',[100,100,1300,900]);
+%         
+%         s1=subplot(2,1,1);
+%         hold on
+%         sub1=surf(timeMap,aslMap./1000,reflMap,'edgecolor','none');
+%         view(2);
+%         sub1=colMapDBZ(sub1);
+%         ylabel('Altitude (km)');
+%         xlim([timeMap(1),timeMap(end)]);
+%         title('Reflectivity')
+%         grid on
+%         pos1=s1.Position;
+%         
+%         s2=subplot(2,1,2);
+%         hold on
+%         sub2=surf(timeMap,aslMap./1000,threshMask,'edgecolor','none');
+%         view(2);
+%         ylabel('Altitude (km)');
+%         xlim([timeMap(1),timeMap(end)]);
+%         grid on
+%         pos2=s2.Position;
+%         s2.Position=[pos1(1),pos2(2),pos1(3),pos1(4)];
+         show1=1;
     end
 end
 %% Plot
