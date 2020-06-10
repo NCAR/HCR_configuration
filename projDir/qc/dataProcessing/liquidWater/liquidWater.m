@@ -8,7 +8,7 @@ close all;
 % If 1, plots for individual calibration events will be made, if 0, only
 % total plots will be made
 
-project='cset'; %socrates, aristo, cset, otrec
+project='otrec'; %socrates, aristo, cset, otrec
 quality='qc2'; %field, qc1, or qc2
 dataFreq='10hz';
 
@@ -26,8 +26,8 @@ figdir=['/scr/sci/romatsch/liquidWaterHCR/'];
 
 dataDir=HCRdir(project,quality,dataFreq);
 
-startTime=datetime(2015,8,12,17,42,0);
-endTime=datetime(2015,8,12,17,53,0);
+startTime=datetime(2019,8,7,17,5,0);
+endTime=datetime(2019,8,7,17,16,0);
 
 %% Get data
 
@@ -70,17 +70,14 @@ surfMask(data.elevation>-85)=0;
 surfMask(data.TOPO>0)=0;
 
 % sort out data from below 2500m altitude
-%surfMask(data.altitude<2500)=0;
+surfMask(data.altitude<2500)=0;
 
 % Find ocean surface gate
 [linInd maxGate rangeToSurf] = hcrSurfInds(data);
 
 % Calculate reflectivity sum inside and outside ocean surface to
 % distinguish clear air and cloud
-% Also, calculate warm and cold reflectivity
 reflTemp=data.DBZ;
-reflCW=data.DBZ;
-reflCW(data.FLAG>1)=nan;
 
 % Remove bang
 reflTemp(data.FLAG==6)=nan;
@@ -89,21 +86,11 @@ reflLin=10.^(reflTemp./10);
 reflOceanLin=nan(size(data.time));
 reflNoOceanLin=nan(size(data.time));
 
-reflCWLin=10.^(reflCW./10);
-reflWarmLin=nan(size(data.time));
-reflColdLin=nan(size(data.time));
-
 for ii=1:length(data.time)
     if (~(maxGate(ii)<10 | maxGate(ii)>size(reflLin,1)-5)) & ~isnan(maxGate(ii))
         reflRay=reflLin(:,ii);
         reflOceanLin(ii)=sum(reflRay(maxGate(ii)-5:maxGate(ii)+5),'omitnan');
         reflNoOceanLin(ii)=sum(reflRay(1:maxGate(ii)-6),'omitnan');
-        
-        cwRay=reflCWLin(:,ii);
-        tempRay=data.TEMP(:,ii);
-        zeroGate=max(find(tempRay<=0))+10;
-        reflColdLin(ii)=sum(cwRay(1:zeroGate),'omitnan');
-        reflWarmLin(ii)=sum(cwRay(zeroGate+1:end),'omitnan');
     end
 end
 
@@ -113,12 +100,7 @@ clearAir=find(reflNoOceanLin<=0.8);
 surfMask(clearAir)=2;
 surfMask(isnan(reflOceanLin))=0;
 
-% Remove data where warm rain is below threshold
-warmFrac=reflWarmLin./(reflColdLin+reflWarmLin);
-surfMask(warmFrac<0.95)=0;
-surfMask(any(data.FLAG==3,1))=0;
-
-% Remve 1 data that is not cloud
+% Find cloud data
 dbzMasked=data.DBZ;
 dbzMasked(data.FLAG>1)=nan;
     
@@ -127,8 +109,32 @@ surfMask(find(any(~isnan(dbzMasked),1) & surfMask~=0 & surfMask~=2))=1;
 % Remove noise source cal, ant trans, and missing
 surfMask(find(any(data.FLAG>9,1) & surfMask~=0))=0;
 
+% Remove extinct
+surfMask(find(any(data.FLAG==3,1) & surfMask~=0))=0;
+
+%% Find melting layer and separate warm and cold precip
+meltInd=nan(size(data.time));
+warmRefl=nan(size(data.DBZ));
+coldRefl=nan(size(data.DBZ));
+
+for ii=1:length(meltInd)
+    tempRay=data.TEMP(:,ii);
+    meltInd(ii)=max(find(tempRay<=0));
+    
+    warmRefl(meltInd(ii):end,ii)=dbzMasked(meltInd(ii):end,ii);
+    coldRefl(1:meltInd(ii)-1,ii)=dbzMasked(1:meltInd(ii)-1,ii);
+end
+
+%% Calculate two way ice attenuation
+coldReflLin=10.^(coldRefl./10);
+iceSpecAtt=0.0325.*coldReflLin;
+
+iceAttAll=iceSpecAtt.*(data.range(2)-data.range(1))./1000;
+iceAtt=sum(iceAttAll,1,'omitnan');
+
 if ~max(surfMask)==0
-       
+    %% Calculate clear air and cloudy ocean reflectivity
+    
     reflSurf=data.DBZ(linInd);
     
     % Remove data with clouds    
@@ -137,6 +143,9 @@ if ~max(surfMask)==0
     
     dbzClear(surfMask==2)=reflSurf(surfMask==2);
     dbzCloud(surfMask==1)=reflSurf(surfMask==1);
+    
+    % Add ice attenuation back in
+    dbzCloudUsed=dbzCloud+iceAtt;
     
     % Clear air ocean refl
     clearShort=dbzClear;
@@ -154,7 +163,7 @@ if ~max(surfMask)==0
         end
     end
     
-    %% Calculate liquid attenuation   
+    %% Calculate liquid attenuation
     
     attLiq=nan(size(data.time));        
     specAtt=nan(size(data.DBZ));
@@ -175,14 +184,14 @@ if ~max(surfMask)==0
         
         if length(cloudIndsRay)>2
             
-            attDiff=meanClear(cloudInds(ii))-reflSurf(cloudInds(ii));
+            attDiff=meanClear(cloudInds(ii))-dbzCloudUsed(cloudInds(ii));
             if attDiff>=0
                 attLiq(cloudInds(ii))=attDiff;
             else
                 attLiq(cloudInds(ii))=0;
             end
             
-            % Specific attenuation
+            % Two way specific attenuation
             % Z phi method
             dbzLinB  = (10.^(0.1.*dbzRay)).^meanB(cloudInds(ii));
             I0 = C1*meanB(cloudInds(ii))*trapz(data.range(cloudIndsRay,cloudInds(ii))./1000,dbzLinB(cloudIndsRay));
@@ -203,7 +212,7 @@ if ~max(surfMask)==0
         
     LWC(data.TEMP<=0)=nan;
 
-    %% Liquid attenuation
+    %% Plot liquid attenuation
     close all
     
     f2 = figure('Position',[200 500 1500 900],'DefaultAxesFontSize',12);
@@ -214,13 +223,14 @@ if ~max(surfMask)==0
     l2=plot(data.time,dbzCloud,'color',[0.5 0.5 0.5],'linewidth',0.5);
     l3=plot(data.time,meanClear,'-r','linewidth',2);
     l4=plot(data.time,attLiq,'-g','linewidth',1);
+    l5=plot(data.time,iceAtt,'-k','linewidth',1);
     ylabel('Refl. (dBZ), Atten. (dB)');
     ylim([0 50]);
     grid on
     
     xlim([data.time(1),data.time(end)]);
     
-    legend([l1 l3 l4],{'Refl. measured','Refl. used','Liquid Attenuation'},'location','east');
+    legend([l1 l3 l4 l5],{'Refl. measured','Refl. used','2-way Liquid Attenuation','2-way Ice Attenuation'},'location','east');
     
     title([datestr(data.time(1)),' to ',datestr(data.time(end))])
     cb=colorbar;
@@ -259,4 +269,5 @@ if ~max(surfMask)==0
     set(gcf,'PaperPositionMode','auto')
     print(f2,[figdir,project,'_lwc_',datestr(data.time(1),'yyyymmdd_HHMMSS'),'_to_',datestr(data.time(end),'yyyymmdd_HHMMSS')],'-dpng','-r0')
     
+   
 end
