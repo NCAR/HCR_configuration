@@ -3,10 +3,13 @@
 % 1=melting layer detected
 % 2=melting layer interpolated
 % 3=melting layer defined as zero degree altitude
-function [BBfinished]= f_meltLayer_altOnly(data)
+function [BBfinished]= f_meltLayer_altOnly(data,zeroAdjustMeters)
 %% Find zero degree altitude
 
 disp('Searching 0 deg altitude ...');
+
+oneGate=data.range(2)-data.range(1);
+zeroAdjustGates=round(zeroAdjustMeters/oneGate);
 
 timeMat=repmat(data.time,size(data.TEMP,1),1);
 
@@ -29,18 +32,18 @@ disp('Connecting zero degree layers ...');
 % Find how many melting layers there are and connect the right ones
 zeroTemp=zeroDeg;
 
-% Remove contiguous layers that are too small
-if length(data.time)>9000
-    zeroCut=3000;
-    CC = bwconncomp(zeroTemp);
-    
-    for ii=1:CC.NumObjects
-        area=CC.PixelIdxList{ii};
-        if length(area)<=zeroCut
-            zeroTemp(area)=nan;
-        end
-    end
-end
+% % Remove contiguous layers that are too small
+% if length(data.time)>9000
+%     zeroCut=3000;
+%     CC = bwconncomp(zeroTemp);
+%     
+%     for ii=1:CC.NumObjects
+%         area=CC.PixelIdxList{ii};
+%         if length(area)<=zeroCut
+%             zeroTemp(area)=nan;
+%         end
+%     end
+% end
 
 numZero=sum(zeroTemp,1,'omitnan');
 
@@ -93,6 +96,21 @@ for ii=1:length(data.time)
     end
 end
 
+%% Add adjusted layers
+layerIndsAdj=nan(size(layerInds));
+layerAltsAdj=nan(size(layerAlts));
+
+adjustMeters=zeroAdjustGates*oneGate;
+
+for kk=1:length(data.time)
+    if data.elevation(kk)<0
+        layerIndsAdj(:,kk)=layerInds(:,kk)+zeroAdjustGates;
+    else
+        layerIndsAdj(:,kk)=layerInds(:,kk)-zeroAdjustGates;
+    end
+    layerAltsAdj(:,kk)=layerAlts(:,kk)-adjustMeters;
+end
+
 %% Remove data that is not suitable
 BB=data.LDR;
 BB(data.FLAG>1)=nan;
@@ -129,11 +147,11 @@ timeIZeroAll={};
 
 transLength=6000;
 
-for kk=1:size(layerAlts,1)
-    timeInds=find(~isnan(layerAlts(kk,:)));
-    layerAltsTemp=layerAlts(kk,timeInds);
+for kk=1:size(layerAltsAdj,1)
+    timeInds=find(~isnan(layerAltsAdj(kk,:)));
+    layerAltsTemp=layerAltsAdj(kk,timeInds);
     
-    rowInds=layerInds(kk,timeInds);
+    rowInds=layerIndsAdj(kk,timeInds);
     maxLevel=nan(size(rowInds));
     for ii=1:length(rowInds)
         vertCol=BB(:,timeInds(ii));
@@ -269,7 +287,7 @@ for kk=1:size(layerAlts,1)
             BBaltZero(~isnan(BBaltRaw))=nan;
             BBaltZero(~isnan(BBaltInterp))=nan;
         else
-            BBaltZero=layerAlts(kk,timeInds);
+            BBaltZero=layerAltsAdj(kk,timeInds);
         end
         
         if min(min(isnan(BBlayer)))==0
@@ -278,7 +296,7 @@ for kk=1:size(layerAlts,1)
             BBaltInterpAll{end+1}=BBaltInterp;
         end
     else
-        BBaltZero=layerAlts(kk,timeInds);
+        BBaltZero=layerAltsAdj(kk,timeInds);
     end
     BBaltZeroAll{end+1}=BBaltZero;
     timeIZeroAll{end+1}=timeInds;

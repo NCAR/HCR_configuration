@@ -3,18 +3,23 @@
 clear all;
 close all;
 
-startTime=datetime(2018,1,26,2,5,0);
-endTime=datetime(2018,1,26,2,15,0);
+% startTime=datetime(2018,2,4,20,0,0);
+% endTime=datetime(2018,2,5,20,0,0);
 
-% startTime=datetime(2019,8,7,0,35,0);
-% endTime=datetime(2019,8,7,23,55,0);
+startTime=datetime(2019,8,7,16,30,0);
+endTime=datetime(2019,8,7,17,30,0);
+
+% startTime=datetime(2019,8,11,0,35,0);
+% endTime=datetime(2019,8,11,23,55,0);
 
 plotFields=1;
 plotWholeFlight=0;
 
-project='socrates'; %socrates, aristo, cset
+project='otrec'; %socrates, aristo, cset
 quality='qc2'; %field, qc1, or qc2
 freqData='10hz'; % 10hz, 100hz, or 2hz
+
+zeroAdjustMeters=350;
 
 % Expected bright band altitude. Determines plot zoom.
 if strcmp(project,'otrec')
@@ -77,6 +82,9 @@ dataVars=dataVars(~cellfun('isempty',dataVars));
 
 disp('Searching 0 deg altitude ...');
 
+oneGate=data.range(2)-data.range(1);
+zeroAdjustGates=round(zeroAdjustMeters/oneGate);
+
 timeMat=repmat(data.time,size(data.TEMP,1),1);
 
 tempTemp=data.TEMP;
@@ -97,19 +105,19 @@ disp('Connecting zero degree layers ...');
 
 % Find how many melting layers there are and connect the right ones
 zeroTemp=zeroDeg;
-
-% Remove contiguous layers that are too small
-if length(data.time)>9000
-    zeroCut=3000;
-    CC = bwconncomp(zeroTemp);
-    
-    for ii=1:CC.NumObjects
-        area=CC.PixelIdxList{ii};
-        if length(area)<=zeroCut
-            zeroTemp(area)=nan;
-        end
-    end
-end
+% 
+% % Remove contiguous layers that are too small
+% if length(data.time)>9000
+%     zeroCut=3000;
+%     CC = bwconncomp(zeroTemp);
+%     
+%     for ii=1:CC.NumObjects
+%         area=CC.PixelIdxList{ii};
+%         if length(area)<=zeroCut
+%             zeroTemp(area)=nan;
+%         end
+%     end
+% end
 
 numZero=sum(zeroTemp,1,'omitnan');
 
@@ -162,6 +170,21 @@ for ii=1:length(data.time)
     end
 end
 
+%% Add adjusted layers
+layerIndsAdj=nan(size(layerInds));
+layerAltsAdj=nan(size(layerAlts));
+
+adjustMeters=zeroAdjustGates*oneGate;
+
+for kk=1:length(data.time)
+    if data.elevation(kk)<0
+        layerIndsAdj(:,kk)=layerInds(:,kk)+zeroAdjustGates;
+    else
+        layerIndsAdj(:,kk)=layerInds(:,kk)-zeroAdjustGates;
+    end
+    layerAltsAdj(:,kk)=layerAlts(:,kk)-adjustMeters;
+end
+
 %% Remove data that is not suitable
 BB=data.LDR;
 BB(data.FLAG>1)=nan;
@@ -198,11 +221,11 @@ timeIZeroAll={};
 
 transLength=6000;
 
-for kk=1:size(layerAlts,1)
-    timeInds=find(~isnan(layerAlts(kk,:)));
-    layerAltsTemp=layerAlts(kk,timeInds);
+for kk=1:size(layerAltsAdj,1)
+    timeInds=find(~isnan(layerAltsAdj(kk,:)));
+    layerAltsTemp=layerAltsAdj(kk,timeInds);
     
-    rowInds=layerInds(kk,timeInds);
+    rowInds=layerIndsAdj(kk,timeInds);
     maxLevel=nan(size(rowInds));
     for ii=1:length(rowInds)
         vertCol=BB(:,timeInds(ii));
@@ -338,7 +361,7 @@ for kk=1:size(layerAlts,1)
             BBaltZero(~isnan(BBaltRaw))=nan;
             BBaltZero(~isnan(BBaltInterp))=nan;
         else
-            BBaltZero=layerAlts(kk,timeInds);
+            BBaltZero=layerAltsAdj(kk,timeInds);
         end
         
         if min(min(isnan(BBlayer)))==0
@@ -347,7 +370,7 @@ for kk=1:size(layerAlts,1)
             BBaltInterpAll{end+1}=BBaltInterp;
         end
     else
-        BBaltZero=layerAlts(kk,timeInds);
+        BBaltZero=layerAltsAdj(kk,timeInds);
     end
     BBaltZeroAll{end+1}=BBaltZero;
     timeIZeroAll{end+1}=timeInds;
@@ -558,3 +581,22 @@ if plotWholeFlight
     set(gcf,'PaperPositionMode','auto')
     print([figdir,'wholeFlight_',datestr(data.time(1),formatOut),'_to_',datestr(data.time(end),formatOut)],'-dpng','-r0');
 end
+
+%% Calculate difference between zero degree and detected melting layer
+diffInd=[];
+
+for ii=1:size(BBfinished,2)
+    if data.elevation(ii)<-85
+        bbRay=BBfinished(:,ii);
+        foundInd=min(find(bbRay==1));
+        if ~isempty(foundInd)
+            zeroInd=min(find(bbRay==0));
+            diffInd=[diffInd foundInd-zeroInd];
+        end
+    end
+end
+
+meanDiff=mean(diffInd);
+meanMeters=meanDiff*(data.range(2)-data.range(1));
+
+disp(['Melting layer is on average ',num2str(meanDiff),' gates or ',num2str(meanMeters),' m below the zero degree level.'])

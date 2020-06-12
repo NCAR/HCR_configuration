@@ -14,6 +14,7 @@ b_rain = 0.68; % Z>-17 dBZ
 %alpha = 0.21;
 
 ylimUpper=15;
+adjustZeroMeter=350; % Assume melting layer is adjustZeroMeter below zero degree altitude
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -23,8 +24,8 @@ figdir=['/scr/sci/romatsch/liquidWaterHCR/'];
 
 dataDir=HCRdir(project,quality,dataFreq);
 
-startTime=datetime(2019,8,11,14,0,0);
-endTime=datetime(2019,8,11,14,30,0);
+startTime=datetime(2019,8,7,16,35,0);
+endTime=datetime(2019,8,7,17,10,0);
 
 %% Get data
 
@@ -119,18 +120,19 @@ surfMask(find(any(data.FLAG==3,1) & surfMask~=0))=0;
 if ~max(surfMask)==0
     %% Find melting layer and separate warm and cold precip
     
-    findMelt=f_meltLayer_altOnly(data);
+    findMelt=f_meltLayer(data,adjustZeroMeter);
+    zeroInds=find(findMelt==0);
     oneInds=find(findMelt==1);
     twoInds=find(findMelt==2);
     threeInds=find(findMelt==3);
+    
+    meltType=sum(findMelt,1,'omitnan');
     
     meltInd=nan(size(data.time));
     warmRefl=nan(size(data.DBZ));
     coldRefl=nan(size(data.DBZ));
     
     for ii=1:length(meltInd)
-        %tempRay=data.TEMP(:,ii);
-        %meltInd(ii)=max(find(tempRay<=0));
         meltRay=findMelt(:,ii);
         meltInd(ii)=min(find(~isnan(meltRay)));
         
@@ -270,6 +272,7 @@ if ~max(surfMask)==0
     hold on
     surf(data.time,data.asl./1000,data.dbzMasked,'edgecolor','none');
     view(2);
+    scatter(timeMat(zeroInds),data.asl(zeroInds)./1000,10,'k','filled');
     scatter(timeMat(oneInds),data.asl(oneInds)./1000,10,'c','filled');
     scatter(timeMat(twoInds),data.asl(twoInds)./1000,10,'b','filled');
     scatter(timeMat(threeInds),data.asl(threeInds)./1000,10,'g','filled');
