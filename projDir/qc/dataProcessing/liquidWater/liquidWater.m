@@ -140,6 +140,9 @@ if ~max(surfMask)==0
         coldRefl(1:meltInd(ii)-1,ii)=data.dbzMasked(1:meltInd(ii)-1,ii);
     end
     
+    %% Stratiform convective partitioning
+    [stratConv liquidAlt]=f_stratConv(data,findMelt);
+    
     %% Calculate two way ice attenuation
     coldReflLin=10.^(coldRefl./10);
     iceSpecAtt=0.0325.*coldReflLin;
@@ -235,6 +238,82 @@ if ~max(surfMask)==0
     %LWC(data.TEMP<=0)=nan;
 
     %% Plot liquid attenuation
+%     close all
+%     
+%     timeMat=repmat(data.time,size(data.TEMP,1),1);
+%     
+%     f1 = figure('Position',[200 500 1500 900],'DefaultAxesFontSize',12);
+%     
+%     s1=subplot(3,1,1);
+%     hold on
+%     l1=plot(data.time,dbzClear,'-b','linewidth',1);
+%     l2=plot(data.time,dbzCloud,'color',[0.5 0.5 0.5],'linewidth',0.5);
+%     l3=plot(data.time,meanClear,'-r','linewidth',2);
+%     ylabel('Refl. (dBZ)');
+%     ylim([40 60]);
+%     
+%     yyaxis right
+%     l4=plot(data.time,gasAttCloud2,'-k','linewidth',1);
+%     l5=plot(data.time,attLiq,'-g','linewidth',1);
+%     l6=plot(data.time,iceAtt*10,'-m','linewidth',1);
+%     ylabel('Atten. (dB)');
+%     ylim([-5 15]);
+%     grid on
+%     set(gca,'YColor','k');
+%     
+%     xlim([data.time(1),data.time(end)]);
+%     
+%     legend([l1 l3 l4 l5 l6],{'Refl. measured','Refl. used','2-way gaseous atten.','2-way liquid atten.','2-way ice atten. * 10'},...
+%         'orientation','horizontal','location','south');
+%     title([datestr(data.time(1)),' to ',datestr(data.time(end))])
+%     s1pos=s1.Position;
+%         
+%     s2=subplot(3,1,2);
+%     
+%     colormap jet
+%     
+%     hold on
+%     surf(data.time,data.asl./1000,data.dbzMasked,'edgecolor','none');
+%     view(2);
+%     scatter(timeMat(zeroInds),data.asl(zeroInds)./1000,10,'k','filled');
+%     scatter(timeMat(oneInds),data.asl(oneInds)./1000,10,'c','filled');
+%     scatter(timeMat(twoInds),data.asl(twoInds)./1000,10,'b','filled');
+%     scatter(timeMat(threeInds),data.asl(threeInds)./1000,10,'g','filled');
+%     ax = gca;
+%     ax.SortMethod = 'childorder';
+%     ylabel('Altitude (km)');
+%     caxis([-25 25]);
+%     ylim([0 ylimUpper]);
+%     xlim([data.time(1),data.time(end)]);
+%     colorbar
+%     grid on
+%     title('Reflectivity (dBZ)')
+%     s2pos=s2.Position;
+%     s2.Position=[s2pos(1),s2pos(2),s1pos(3),s2pos(4)];
+%     
+%     s3=subplot(3,1,3);
+%     
+%     colmap=jet;
+%     colmap=cat(1,[1 0 1],colmap);
+%     
+%     hold on
+%     surf(data.time,data.asl./1000,LWC,'edgecolor','none');
+%     view(2);
+%     colormap(s3,colmap)
+%     ylabel('Altitude (km)');
+%     caxis([0 2]);
+%     ylim([0 ylimUpper]);
+%     xlim([data.time(1),data.time(end)]);
+%     colorbar
+%     grid on
+%     title('Liquid water content (g m^{-3})')
+%     s3pos=s3.Position;
+%     s3.Position=[s3pos(1),s3pos(2),s1pos(3),s3pos(4)];
+%     
+%     set(gcf,'PaperPositionMode','auto')
+%     print(f1,[figdir,project,'_lwc_',datestr(data.time(1),'yyyymmdd_HHMMSS'),'_to_',datestr(data.time(end),'yyyymmdd_HHMMSS')],'-dpng','-r0')
+       
+    %% Plot strat conv
     close all
     
     timeMat=repmat(data.time,size(data.TEMP,1),1);
@@ -243,25 +322,14 @@ if ~max(surfMask)==0
     
     s1=subplot(3,1,1);
     hold on
-    l1=plot(data.time,dbzClear,'-b','linewidth',1);
-    l2=plot(data.time,dbzCloud,'color',[0.5 0.5 0.5],'linewidth',0.5);
-    l3=plot(data.time,meanClear,'-r','linewidth',2);
-    ylabel('Refl. (dBZ)');
-    ylim([40 60]);
-    
-    yyaxis right
-    l4=plot(data.time,gasAttCloud2,'-k','linewidth',1);
-    l5=plot(data.time,attLiq,'-g','linewidth',1);
-    l6=plot(data.time,iceAtt*10,'-m','linewidth',1);
-    ylabel('Atten. (dB)');
-    ylim([-5 15]);
+    l1=plot(data.time,stratConv,'-b','linewidth',2);
+    ylabel('Strat (0), conv (1)');
+    ylim([-1 2]);
     grid on
     set(gca,'YColor','k');
     
     xlim([data.time(1),data.time(end)]);
-    
-    legend([l1 l3 l4 l5 l6],{'Refl. measured','Refl. used','2-way gaseous atten.','2-way liquid atten.','2-way ice atten. * 10'},...
-        'orientation','horizontal','location','south');
+   
     title([datestr(data.time(1)),' to ',datestr(data.time(end))])
     s1pos=s1.Position;
         
@@ -272,10 +340,10 @@ if ~max(surfMask)==0
     hold on
     surf(data.time,data.asl./1000,data.dbzMasked,'edgecolor','none');
     view(2);
-    scatter(timeMat(zeroInds),data.asl(zeroInds)./1000,10,'k','filled');
     scatter(timeMat(oneInds),data.asl(oneInds)./1000,10,'c','filled');
     scatter(timeMat(twoInds),data.asl(twoInds)./1000,10,'b','filled');
     scatter(timeMat(threeInds),data.asl(threeInds)./1000,10,'g','filled');
+    scatter(data.time,liquidAlt./1000,10,'k','filled');
     ax = gca;
     ax.SortMethod = 'childorder';
     ylabel('Altitude (km)');
@@ -288,26 +356,26 @@ if ~max(surfMask)==0
     s2pos=s2.Position;
     s2.Position=[s2pos(1),s2pos(2),s1pos(3),s2pos(4)];
     
-    s3=subplot(3,1,3);
-    
-    colmap=jet;
-    colmap=cat(1,[1 0 1],colmap);
-    
-    hold on
-    surf(data.time,data.asl./1000,LWC,'edgecolor','none');
-    view(2);
-    colormap(s3,colmap)
-    ylabel('Altitude (km)');
-    caxis([0 2]);
-    ylim([0 ylimUpper]);
-    xlim([data.time(1),data.time(end)]);
-    colorbar
-    grid on
-    title('Liquid water content (g m^{-3})')
-    s3pos=s3.Position;
-    s3.Position=[s3pos(1),s3pos(2),s1pos(3),s3pos(4)];
+%     s3=subplot(3,1,3);
+%     
+%     colmap=jet;
+%     colmap=cat(1,[1 0 1],colmap);
+%     
+%     hold on
+%     surf(data.time,data.asl./1000,LWC,'edgecolor','none');
+%     view(2);
+%     colormap(s3,colmap)
+%     ylabel('Altitude (km)');
+%     caxis([0 2]);
+%     ylim([0 ylimUpper]);
+%     xlim([data.time(1),data.time(end)]);
+%     colorbar
+%     grid on
+%     title('Liquid water content (g m^{-3})')
+%     s3pos=s3.Position;
+%     s3.Position=[s3pos(1),s3pos(2),s1pos(3),s3pos(4)];
     
     set(gcf,'PaperPositionMode','auto')
-    print(f1,[figdir,project,'_lwc_',datestr(data.time(1),'yyyymmdd_HHMMSS'),'_to_',datestr(data.time(end),'yyyymmdd_HHMMSS')],'-dpng','-r0')
+    print(f1,[figdir,project,'_stratConv_',datestr(data.time(1),'yyyymmdd_HHMMSS'),'_to_',datestr(data.time(end),'yyyymmdd_HHMMSS')],'-dpng','-r0')
        
 end
