@@ -143,6 +143,9 @@ if ~max(surfMask)==0
     %% Stratiform convective partitioning
     [stratConv liquidAlt]=f_stratConv(data,findMelt);
     
+    stratConvMask=repmat(stratConv,size(data.dbzMasked,1),1);
+    stratConvMask(isnan(data.dbzMasked))=nan;
+    
     %% Calculate two way ice attenuation
     coldReflLin=10.^(coldRefl./10);
     iceSpecAtt=0.0325.*coldReflLin;
@@ -356,24 +359,23 @@ if ~max(surfMask)==0
     s2pos=s2.Position;
     s2.Position=[s2pos(1),s2pos(2),s1pos(3),s2pos(4)];
     
-%     s3=subplot(3,1,3);
-%     
-%     colmap=jet;
-%     colmap=cat(1,[1 0 1],colmap);
-%     
-%     hold on
-%     surf(data.time,data.asl./1000,LWC,'edgecolor','none');
-%     view(2);
-%     colormap(s3,colmap)
-%     ylabel('Altitude (km)');
-%     caxis([0 2]);
-%     ylim([0 ylimUpper]);
-%     xlim([data.time(1),data.time(end)]);
-%     colorbar
-%     grid on
-%     title('Liquid water content (g m^{-3})')
-%     s3pos=s3.Position;
-%     s3.Position=[s3pos(1),s3pos(2),s1pos(3),s3pos(4)];
+    s3=subplot(3,1,3);
+    
+    colmap=[0 0 1;1 0 0;1 0 1];
+    
+    hold on
+    surf(data.time,data.asl./1000,stratConvMask,'edgecolor','none');
+    view(2);
+    colormap(s3,colmap)
+    ylabel('Altitude (km)');
+    caxis([0 2]);
+    ylim([0 ylimUpper]);
+    xlim([data.time(1),data.time(end)]);
+    colorbar
+    grid on
+    title('Stratiform/convective')
+    s3pos=s3.Position;
+    s3.Position=[s3pos(1),s3pos(2),s1pos(3),s3pos(4)];
     
     set(gcf,'PaperPositionMode','auto')
     print(f1,[figdir,project,'_stratConv_',datestr(data.time(1),'yyyymmdd_HHMMSS'),'_to_',datestr(data.time(end),'yyyymmdd_HHMMSS')],'-dpng','-r0')

@@ -5,7 +5,7 @@ function [stratConv maxAlt]= f_meltLayer_altOnly(data,meltLayer)
 stratConv=nan(size(data.time));
 
 % Smooth data
-dbzSmooth=movmean(data.dbzMasked,5,2);
+dbzSmooth=movmean(data.dbzMasked,1,2);
 
 % Find maximum reflectivity altitude
 [dbzMax dbzMaxInd]=max(dbzSmooth,[],1);
@@ -21,9 +21,10 @@ reflDist=maxAlt-meltAlt';
 stratConv(reflDist>500)=1;
 stratConv(reflDist<=500)=0;
 
-% for ii=1:length(data.time)
-%     dbzRay=dbzSmooth(:,ii);
-%     altRay=data.asl(:,ii);
-%     
-% end
+% Is there data at melting layer?
+meltData=data.dbzMasked(meltInds);
+
+stratConv(isnan(meltData') & reflDist>0)=0;
+stratConv(isnan(meltData') & reflDist<0)=2;
+
 end
