@@ -16,6 +16,8 @@ b_rain = 0.68; % Z>-17 dBZ
 ylimUpper=15;
 adjustZeroMeter=350; % Assume melting layer is adjustZeroMeter below zero degree altitude
 
+meltArea=2000; % melting layer +/- meltArea (meters) is considered in strat conv velocity algorithm
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
@@ -41,6 +43,7 @@ data.TOPO=[];
 data.FLAG=[];
 data.LDR=[];
 data.WIDTH=[];
+data.VEL_CORR=[];
 data.pitch=[];
 
 dataVars=fieldnames(data);
@@ -141,7 +144,7 @@ if ~max(surfMask)==0
     end
     
     %% Stratiform convective partitioning
-    [stratConv liquidAlt]=f_stratConv(data,findMelt);
+    [stratConv liquidAlt]=f_stratConv(data,findMelt,meltArea);
     
     stratConvMask=repmat(stratConv,size(data.dbzMasked,1),1);
     stratConvMask(isnan(data.dbzMasked))=nan;
