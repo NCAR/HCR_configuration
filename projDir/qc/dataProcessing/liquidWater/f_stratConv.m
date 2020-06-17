@@ -1,5 +1,5 @@
 % Find stratiform and convective
-function [stratConv maxAlt]= f_meltLayer_altOnly(data,meltLayer,meltArea)
+function [stratConv stepAlt]= f_meltLayer_altOnly(data,meltLayer,meltArea)
 
 % Initialize output
 stratConv=nan(size(data.time));
@@ -10,36 +10,46 @@ meltAlt=data.asl(meltInds);
 
 [meltInR meltInC]=ind2sub(size(data.DBZ),meltInds);
 
-% Smooth data
-%dbzSmooth=movmean(data.dbzMasked,10,2);
-
-% Velocity
+% Mask velocity
 velMasked=data.VEL_CORR;
 velMasked(data.FLAG>1)=nan;
-velSmooth=movmean(velMasked,10,2);
 
-velSmooth(:,data.elevation<0)=-velSmooth;
+% Take care of down pointing
+velMasked(:,data.elevation<0)=-velMasked;
 
 % Focus on melting layer
 pixArea=round(meltArea/(data.range(2)-data.range(1)));
 
-for ii=1:size(velSmooth,2)
-    velSmooth(1:meltInR(ii)-pixArea,ii)=nan;
-    velSmooth(meltInR(ii)+pixArea:end,ii)=nan;
+for ii=1:size(velMasked,2)
+    velMasked(1:meltInR(ii)-pixArea,ii)=nan;
+    velMasked(meltInR(ii)+pixArea:end,ii)=nan;
 end
+
+% Smooth in range direction
+velSmooth=movmedian(velMasked,10,1);
+
+% Detect steps in data
+[velSteps,S1,S2] = ischange(velSmooth,1,'MaxNumChanges',1);
+
+% figure
+% hold on
+% for ii=1:size(velSmooth2,2)
+%      plot(velSmooth2(:,ii),data.asl(:,ii));
+%  end
 
 [maxVel maxVelInd]=min(diff(velSmooth,1),[],1);
 
-% for ii=1:size(velSmooth,2)
-%     plot(velSmooth(:,ii),data.asl(:,ii));
-% end
+% Find altitude of step
+stepInLin=find(velSteps==1);
+[stepInR,stepInC]=ind2sub(size(data.DBZ),stepInLin);
 
-% Find maximum reflectivity altitude
-maxInLin=sub2ind(size(data.DBZ),maxVelInd,1:length(data.time));
-maxAlt=data.asl(maxInLin);
+stepAltLin=data.asl(stepInLin);
+
+stepAlt=nan(size(data.time));
+stepAlt(stepInC)=stepAltLin;
 
 % Distance between max vel and melt alt
-reflDist=maxAlt-meltAlt';
+reflDist=stepAlt-meltAlt';
 stratConv(abs(reflDist)<100)=0;
 stratConv(reflDist>=100)=1;
 
