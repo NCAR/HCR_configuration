@@ -16,21 +16,9 @@ project='otrec'; %socrates, aristo, cset
 quality='qc2'; %field, qc1, or qc2
 freqData='10hz'; % 10hz, 100hz, or 2hz
 
-% Expected bright band altitude. Determines plot zoom.
-if strcmp(project,'otrec')
-    expBBalt=5;
-    ylimits=[-0.2 15];
-elseif strcmp(project,'socrates')
-    expBBalt=2;
-    ylimits=[-0.2 9];
-elseif strcmp(project,'otrec')
-    expBBalt=5;
-    ylimits=[-0.2 9];
-end
-
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-figdir=['/h/eol/romatsch/hcrCalib/clouds/cloudID/',project,'/'];
+figdir=['/h/eol/romatsch/hcrCalib/clouds/cloudPuzzle/'];
 
 if ~exist(figdir, 'dir')
     mkdir(figdir)
@@ -68,7 +56,7 @@ end
 
 dataVars=dataVars(~cellfun('isempty',dataVars));
 
-cloudIDout=nan(size(data.DBZ));
+cloudPuzzleOut=nan(size(data.DBZ));
 
 %% Mask non cloud
 
@@ -76,6 +64,8 @@ refl=data.DBZ;
 refl(data.FLAG>1)=nan;
 
 %% Add extinct back in
+
+disp('Filling extinct echo ...');
 
 flagTemp=data.FLAG;
 flagTemp(data.FLAG==8)=7;
@@ -136,27 +126,29 @@ for ii=1:length(extInd)
     refl(extData,extInd(ii))=reflMed;
 end
 
-%% Smooth with convolution
+% %% Smooth with convolution
+% 
+% % Create mask for convolution
+% radius=5;
+% numPix=radius*2+1;
+% [rr cc] = meshgrid(1:numPix);
+% cirMask = sqrt((rr-(radius+1)).^2+(cc-(radius+1)).^2)<=radius;
+% cirMask=double(cirMask);
+% 
+% % Normalize
+% cirMask=cirMask./(sum(reshape(cirMask,1,[])));
+% 
+% % Convolution
+% reflConv=nanconv(refl,cirMask);
 
-% Create mask for convolution
-radius=5;
-numPix=radius*2+1;
-[rr cc] = meshgrid(1:numPix);
-cirMask = sqrt((rr-(radius+1)).^2+(cc-(radius+1)).^2)<=radius;
-cirMask=double(cirMask);
+%% Identify contiguous clouds that are too small
 
-% Normalize
-cirMask=cirMask./(sum(reshape(cirMask,1,[])));
+disp('Identifying small clouds ...');
 
-% Convolution
-reflConv=nanconv(refl,cirMask);
+reflLarge=refl;
 
-%% Remove contiguous clouds that are too small
-
-reflLarge=reflConv;
-
-reflMask=zeros(size(reflConv));
-reflMask(~isnan(reflConv))=1;
+reflMask=zeros(size(refl));
+reflMask(~isnan(refl))=1;
 
 pixCut=5000;
 CC = bwconncomp(reflMask);
@@ -168,7 +160,7 @@ for ii=1:CC.NumObjects
     area=CC.PixelIdxList{ii};
     if length(area)<=pixCut
         reflLarge(area)=nan;
-        cloudIDout(area)=1;
+        cloudPuzzleOut(area)=0;
     else
         cloudNum(area)=countCloud;
         countCloud=countCloud+1;
@@ -186,10 +178,10 @@ for ii=1:numMax
     
     if length(cloudInds)>100000
         close all;
-        cloudRefl=reflLarge(cloudInds);
+        %cloudRefl=reflLarge(cloudInds);
         
         reflMapBig=nan(size(cloudNum));
-        reflMapBig(cloudInds)=cloudRefl;
+        reflMapBig(cloudInds)=reflLarge(cloudInds);
         
         [clR clC]=ind2sub(size(cloudNum),cloudInds);
         
@@ -197,19 +189,43 @@ for ii=1:numMax
         aslMap=data.asl(min(clR):max(clR),min(clC):max(clC));
         timeMap=data.time(min(clC):max(clC));
         
-        BW=zeros(size(reflMap));
-        BW(~isnan(reflMap))=1;
+        % Zero padding
+        reflPadded=cat(1,nan(10,size(reflMap,2)),reflMap,nan(10,size(reflMap,2)));
+        reflPadded=cat(2,nan(size(reflPadded,1),10),reflPadded,nan(size(reflPadded,1),10));
+                     
+        % BW mask
+        BW=zeros(size(reflPadded));
+        BW(~isnan(reflPadded))=1;
         
-        reflInput=reflMap;
-        reflInput(isnan(reflMap))=-40;
-        I = mat2gray(reflInput);
-        %I(reflMap==1)=0;
-        %I=imadjust(I);
-        %J = im2uint8(I);
-      
-      SE=strel('disk',20,4);
-      IM2=imerode(I,SE);
+        BW2 = imfill(BW,'holes');
+                
+        %IM2=imerode(BW2,SE);
         
+        D = -bwdist(~BW2);
+        
+        %mask = imextendedmin(D,2);
+        grayIm=mat2gray(reflPadded);
+        graySmooth=imgaussfilt(grayIm,0.7);
+        
+        grayContr = localcontrast(uint8(255*grayIm),0.3,0.6);
+        %imshow(B)
+%         grayContr=imadjust(graySmooth,[0.3 0.9],[]);
+         grayContr(grayContr==255)=nan;
+        
+        maskThresh=zeros(size(reflPadded));
+        maskThresh(grayContr>120)=1;
+        
+        maskFilled= imfill(maskThresh,'holes');
+        maskBig=bwareaopen(maskFilled,1000);
+        
+        D2 = imimposemin(D,maskBig);
+        Ld2 = watershed(D2);
+        
+        I2 = im2double(Ld2);
+        
+        % Remove zero padding
+        I2=I2(11:end-10,11:end-10);
+        I2(isnan(reflMap))=nan;
         
         % Plot
         timeMat=repmat(timeMap,size(reflMap,1),1);
@@ -229,7 +245,7 @@ for ii=1:numMax
         
         s2=subplot(2,1,2);
         hold on
-        sub2=surf(timeMap,aslMap./1000,double(IM2),'edgecolor','none');
+        sub2=surf(timeMap,aslMap./1000,double(I2),'edgecolor','none');
         view(2);
         ylabel('Altitude (km)');
         xlim([timeMap(1),timeMap(end)]);
