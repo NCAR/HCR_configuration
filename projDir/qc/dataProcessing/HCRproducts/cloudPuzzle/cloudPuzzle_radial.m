@@ -121,7 +121,7 @@ numMax=max(reshape(cloudNum,1,[]),[],'omitnan');
 
 thresh12=[-25 0];
 
-cloudCount=2;
+cloudCount=1;
 
 for ii=1:numMax
     
