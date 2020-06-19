@@ -3,8 +3,8 @@
 clear all;
 close all;
 
-startTime=datetime(2018,1,16,0,15,0);
-endTime=datetime(2018,1,16,0,45,0);
+startTime=datetime(2018,1,16,2,0,0);
+endTime=datetime(2018,1,16,2,30,0);
 
 % startTime=datetime(2019,10,2,15,0,0);
 % endTime=datetime(2019,10,2,15,59,0);
@@ -65,6 +65,12 @@ cloudPuzzleOut=nan(size(data.DBZ));
 disp('Filling extinct echo ...');
 
 refl=fillExtinct(data);
+
+%% Handle missing and NS cal
+
+disp('Filling missing and NS cal ...');
+
+refl = fillMissingNScal(refl,data);
 
 %% Smooth with convolution
 

@@ -3,13 +3,14 @@
 clear all;
 close all;
 
-startTime=datetime(2018,1,16,0,15,0);
-endTime=datetime(2018,1,16,0,45,0);
+startTime=datetime(2018,1,16,2,0,0);
+endTime=datetime(2018,1,16,2,30,0);
 
 % startTime=datetime(2019,10,2,15,0,0);
 % endTime=datetime(2019,10,2,15,59,0);
 
 plotTest=0;
+testFigInterp=0;
 
 project='socrates'; %socrates, aristo, cset
 quality='qc2'; %field, qc1, or qc2
@@ -32,11 +33,11 @@ indir=HCRdir(project,quality,freqData);
 
 disp('Loading data ...');
 
-data.DBZ=[];
-data.TEMP=[];
-data.FLAG=[];
+dataRadial.DBZ=[];
+dataRadial.TEMP=[];
+dataRadial.FLAG=[];
 
-dataVars=fieldnames(data);
+dataVars=fieldnames(dataRadial);
 
 % Make list of files within the specified time frame
 fileList=makeFileList(indir,startTime,endTime,'xxxxxx20YYMMDDxhhmmss',1);
@@ -47,16 +48,22 @@ if length(fileList)==0
 end
 
 % Load data
-data=read_HCR(fileList,data,startTime,endTime);
+dataRadial=read_HCR(fileList,dataRadial,startTime,endTime);
 
 % Check if all variables were found
 for ii=1:length(dataVars)
-    if ~isfield(data,dataVars{ii})
+    if ~isfield(dataRadial,dataVars{ii})
         dataVars{ii}=[];
     end
 end
 
 dataVars=dataVars(~cellfun('isempty',dataVars));
+
+%% Interpolate to grid
+
+disp('Interpolating to grid ...');
+
+data=interp_HCR2grid(dataRadial,testFigInterp);
 
 cloudPuzzleOut=nan(size(data.DBZ));
 
@@ -65,6 +72,12 @@ cloudPuzzleOut=nan(size(data.DBZ));
 disp('Filling extinct echo ...');
 
 refl=fillExtinct(data);
+
+%% Handle missing and NS cal
+
+disp('Filling missing and NS cal ...');
+
+refl = fillMissingNScal(refl,data);
 
 %% Smooth with convolution
 
@@ -249,5 +262,5 @@ grid on
 
 formatOut = 'yyyymmdd_HHMM';
 set(gcf,'PaperPositionMode','auto')
-print([figdir,project,'_',datestr(startTime,formatOut),'_to_',datestr(endTime,formatOut),'_cloudPuzzle.png'],'-dpng','-r0');
+print([figdir,project,'_gridded_',datestr(startTime,formatOut),'_to_',datestr(endTime,formatOut),'_cloudPuzzle.png'],'-dpng','-r0');
 
