@@ -12,24 +12,6 @@ meltAlt=data.asl(meltInds);
 
 [meltInR meltInC]=ind2sub(size(data.DBZ),meltInds);
 
-% Mask velocity
-velMasked=data.VEL_CORR;
-velMasked(data.FLAG>1)=nan;
-
-% Take care of down pointing
-velMasked(:,data.elevation<0)=-velMasked;
-
-% Focus on melting layer
-pixArea=round(meltArea/(data.range(2)-data.range(1)));
-
-for ii=1:size(velMasked,2)
-    velMasked(1:meltInR(ii)-pixArea,ii)=nan;
-    velMasked(meltInR(ii)+pixArea:end,ii)=nan;
-end
-
-% Smooth in range direction
-velSmooth=movmedian(velMasked,10,1);
-
 % Loop through clouds
 numClouds=max(max(puzzle));
 
@@ -39,6 +21,8 @@ for ii=1:numClouds
     cloudInd=find(puzzle==ii);
     [cloudR cloudC]=ind2sub(size(data.dbzMasked),cloudInd);
     cloudCu=unique(cloudC);
+    cloudYes=zeros(size(data.time));
+    cloudYes(cloudCu)=1;
     
     % Max and min altitude of cloud    
 %     cloudMask=nan(size(data.dbzMasked));
@@ -61,34 +45,9 @@ for ii=1:numClouds
     meltCloud=nan(size(data.time));
     meltCloud(cloudCu)=meltYes(cloudCu);
     stratConv1D(meltCloud==1)=0;
-    
-    % Calculate velocity steps
-    % Detect steps in data
-    velMask=nan(size(data.dbzMasked));
-    velMask(cloudInd)=velSmooth(cloudInd);
-    
-    [velSteps,S1,S2] = ischange(velMask,1,'MaxNumChanges',1);
-    
-    [maxVel maxVelInd]=min(diff(velMask,1),[],1);
-    
-    % Find altitude of step
-    stepInLin=find(velSteps==1);
-    [stepInR,stepInC]=ind2sub(size(data.DBZ),stepInLin);
-    
-    stepAltLin=data.asl(stepInLin);
-    
-    stepAlt=nan(size(data.time));
-    stepAlt(stepInC)=stepAltLin;
-    
-    % Distance between max vel and melt alt
-    reflDist=stepAlt-meltAlt';
-    
-    % Check velocity data    
-    stratConv1D(abs(reflDist)<100 & isnan(stratConv1D))=0;
-    stratConv1D(reflDist>=100 & isnan(stratConv1D))=1;
-    
-    % Convective, no step in velocity found
-    stratConv1D(isnan(stepAlt) & isnan(stratConv1D))=1;
+        
+    % Convective, no melting layer found
+    stratConv1D(cloudYes & isnan(stratConv1D))=1;
     
     % Get rid of outliers
     stratConvMed=floor(movmedian(stratConv1D,9,'omitnan'));

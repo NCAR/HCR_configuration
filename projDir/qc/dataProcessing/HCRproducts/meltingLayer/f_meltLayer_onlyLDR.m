@@ -36,7 +36,7 @@ zeroTemp=zeroDeg;
 % if length(data.time)>9000
 %     zeroCut=3000;
 %     CC = bwconncomp(zeroTemp);
-%
+%     
 %     for ii=1:CC.NumObjects
 %         area=CC.PixelIdxList{ii};
 %         if length(area)<=zeroCut
@@ -112,14 +112,10 @@ for kk=1:length(data.time)
 end
 
 %% Remove data that is not suitable
-LDRdata=data.LDR;
-LDRdata(data.FLAG>1)=nan;
-LDRdata(LDRdata<-16 | LDRdata>-7)=nan;
-LDRdata(data.range<150)=nan;
-
-VELdata=data.VEL_CORR;
-VELdata(data.FLAG>1)=nan;
-VELdata(data.range<150)=nan;
+BB=data.LDR;
+BB(data.FLAG>1)=nan;
+BB(BB<-16 | BB>-7)=nan;
+BB(data.range<150)=nan;
 
 %% Tightened backlobe
 % Initiate mask
@@ -139,8 +135,7 @@ blMask(data.range>(altMat+2500))=0;
 % Only when scanning up
 blMask(:,find(data.elevation<0))=0;
 
-LDRdata(blMask==1)=nan;
-VELdata(blMask==1)=nan;
+BB(blMask==1)=nan;
 
 %% Find altitude of bright band
 
@@ -155,161 +150,48 @@ transLength=6000;
 for kk=1:size(layerAltsAdj,1)
     timeInds=find(~isnan(layerAltsAdj(kk,:)));
     layerAltsTemp=layerAltsAdj(kk,timeInds);
-    rowInds=layerIndsAdj(kk,timeInds);
     
-    % Find maximum LDR level in area around zero degree altitude
-    maxLevelLDR=nan(size(rowInds));
+    rowInds=layerIndsAdj(kk,timeInds);
+    maxLevel=nan(size(rowInds));
     for ii=1:length(rowInds)
-        vertColLDR=LDRdata(:,timeInds(ii));
-        if zeroAdjustMeters==0
-            if data.elevation(timeInds(ii))<90 % Down pointing
-                vertColLDR(rowInds(ii)+30:end)=nan;
-                vertColLDR(1:max([rowInds(ii)-10,1]))=nan;
-            else % Up pointing
-                vertColLDR(rowInds(ii)+10:end)=nan;
-                vertColLDR(1:max([rowInds(ii)-30,1]))=nan;
-            end
-        else
-            vertColLDR(rowInds(ii)+10:end)=nan;
-            vertColLDR(1:max([rowInds(ii)-10,1]))=nan;
+        vertCol=BB(:,timeInds(ii));
+        if data.elevation(timeInds(ii))<90 % Down pointing
+            vertCol(rowInds(ii)+30:end)=nan;
+            vertCol(1:max([rowInds(ii)-10,1]))=nan;
+        else % Up pointing
+            vertCol(rowInds(ii)+10:end)=nan;
+            vertCol(1:max([rowInds(ii)-30,1]))=nan;
         end
         % Check if all nan
-        if min(isnan(vertColLDR))==0
-            %vertColData=vertColLDR(~isnan(vertColLDR));
-            maxLevelLDR(ii)=min(find(vertColLDR==nanmax(vertColLDR)));
+        if min(isnan(vertCol))==0
+            vertColData=vertCol(~isnan(vertCol));
+            maxLevel(ii)=min(find(vertCol==nanmax(vertCol)));
         end
     end
     
-    % Find vel melting layer level
-    maxLevelVEL=nan(size(rowInds));
-    velMasked=VELdata;
-    velMasked(:,data.elevation<0)=-velMasked;
-    
-    velTime=velMasked(:,timeInds);
-    for ii=1:length(rowInds)
-        %vertColVEL=velMasked(:,timeInds(ii));
-        if zeroAdjustMeters==0
-            if data.elevation(timeInds(ii))<90 % Down pointing
-                velTime(rowInds(ii)+700:end,ii)=nan;
-                velTime(1:max([rowInds(ii)-50,1]),ii)=nan;
-            else % Up pointing
-                velTime(rowInds(ii)+50:end,ii)=nan;
-                velTime(1:max([rowInds(ii)-70,1]),ii)=nan;
-            end
-        else
-            velTime(rowInds(ii)+50:end,ii)=nan;
-            velTime(1:max([rowInds(ii)-50,1]),ii)=nan;
-        end
-    end
-    
-    % Find discontinuity in vel field
-    % Smooth in range direction
-    velSmooth=movmedian(velTime,10,1);
-    
-    % Calculate velocity steps
-    [velSteps,S1,S2] = ischange(velSmooth,1,'MaxNumChanges',1);
-    
-    % Difference between steps
-    diffS1=nan(1,size(velSteps,2));
-    varS2=nan(2,size(velSteps,2));
-    for ii=1:size(velSteps,2)
-        uS1=unique(S1(:,ii));
-        uS1(isnan(uS1))=[];
-        uS2=unique(S2(:,ii));
-        uS2(isnan(uS2))=[];
+    if min(isnan(maxLevel))==0
         
-        if length(uS1)==2
-            diffS1(ii)=uS1(2)-uS1(1);
-        end
-        if length(uS2)==2
-            varS2(:,ii)=uS2;
-        end
-    end
-    
-    maxVar=max(varS2,[],1);
-    
-    %[maxVel maxVelInd]=min(diff(velMask,1),[],1);
-    
-    % Find altitude of step
-    stepInLin=find(velSteps==1);
-    [stepInR,stepInC]=ind2sub(size(velSmooth),stepInLin);
-    
-    maxLevelVEL=nan(1,length(timeInds));
-    maxLevelVEL(stepInC)=stepInR; 
-    
-%     fig1=figure('DefaultAxesFontSize',11,'position',[100,100,1400,800]);
-%     colmap=jet;
-%     colormap(flipud(colmap));
-%     subplot(3,1,1)
-%     surf(velSmooth,'edgecolor','none');
-%     view(2)
-%     %colorbar
-%     caxis([-5 5])
-%     
-%     subplot(3,1,2)
-%     hold on
-%     plot(diffS1)
-%     plot(movmean(diffS1,50,'omitnan'),'linewidth',2)
-%     
-%     subplot(3,1,3)
-%     hold on
-%     plot(maxVar);
-%     plot(movmean(maxVar,50,'omitnan'),'linewidth',2)
-    
-    % Remove data that doesn't cut it
-    if min(isnan(maxLevelLDR))==0 | min(isnan(maxLevelLDR))==0
-           ASLlayer=data.asl(:,timeInds);
-           
-        % LDR       
-        colIndsLDR=1:1:size(ASLlayer,2);
-        linearIndLDR = sub2ind(size(ASLlayer), maxLevelLDR, colIndsLDR);
-        linearIndLDR(isnan(maxLevelLDR))=[];
+        BBlayer=BB(:,timeInds);
+        ASLlayer=data.asl(:,timeInds);
+        
+        colIndsBB=1:1:size(BBlayer,2);
+        linearIndBB = sub2ind(size(BBlayer), maxLevel, colIndsBB);
+        linearIndBB(isnan(maxLevel))=[];
         
         % Raw altitude of melting layer
-        LDRaltRawIn=ASLlayer(linearIndLDR);
-        LDRaltRaw=nan(size(rowInds));
-        LDRaltRaw(find(~isnan(maxLevelLDR)))=LDRaltRawIn;
+        BBaltRawIn=ASLlayer(linearIndBB);
+        BBaltRaw=nan(size(rowInds));
+        BBaltRaw(find(~isnan(maxLevel)))=BBaltRawIn;
         % Mean altitude of meltig layer
-        LDRalt=movmedian(LDRaltRaw,300,'omitnan');
-        LDRalt(isnan(LDRaltRaw))=nan;
+        BBalt=movmedian(BBaltRaw,300,'omitnan');
+        BBalt(isnan(BBaltRaw))=nan;
         % Standard deviation
-        LDRaltS=movstd(LDRaltRaw,300,'omitnan');
-        LDRaltS(isnan(LDRaltRaw))=nan;
+        BBaltS=movstd(BBaltRaw,300,'omitnan');
+        BBaltS(isnan(BBaltRaw))=nan;
         % Remove data with too much std
-        LDRaltRaw(LDRaltS>100)=nan;
+        BBaltRaw(BBaltS>100)=nan;
         % Distance between raw and mean altitude
-        LDRloc=abs(LDRaltRaw-LDRalt);
-        
-        % Remove data where distance is more than 200 m
-        LDRaltRaw(LDRloc>50)=nan;
-        
-        % VEL
-        colIndsVEL=1:1:size(ASLlayer,2);
-        linearIndVEL = sub2ind(size(ASLlayer), maxLevelVEL, colIndsVEL);
-        linearIndVEL(isnan(maxLevelVEL))=[];
-        
-        % Raw altitude of melting layer
-        VELaltRawIn=ASLlayer(linearIndVEL);
-        VELaltRaw=nan(size(rowInds));
-        VELaltRaw(find(~isnan(maxLevelVEL)))=VELaltRawIn;
-        % Mean altitude of meltig layer
-        VELalt=movmedian(VELaltRaw,300,'omitnan');
-        VELalt(isnan(VELaltRaw))=nan;
-        
-        % Distance between raw and mean altitude
-        VELloc=abs(VELaltRaw-VELalt);        
-        % Remove data where distance is more than 200 m
-        VELaltRaw(VELloc>50)=nan;
-        
-        % Standard deviation
-        VELaltS=movstd(VELaltRaw,300,'omitnan');
-        VELaltS(isnan(VELaltRaw))=nan;
-        % Remove data with too much std
-        VELaltRaw(VELaltS>100)=nan;
-                
-        % Combine max levels
-        BBaltRaw=VELaltRaw;
-        BBaltRaw(~isnan(LDRaltRaw))=LDRaltRaw(~isnan(LDRaltRaw));        
+        BBloc=abs(BBaltRaw-BBalt);
         
         % Remove data that is too short
         BBmask=zeros(size(BBaltRaw));
@@ -327,7 +209,7 @@ for kk=1:size(layerAltsAdj,1)
             end
         end
         
-        % Keep data that has only a few nan
+        % Keep data that has only a few nan        
         zeroCut=100;
         CC = bwconncomp(BBmask);
         
@@ -337,7 +219,10 @@ for kk=1:size(layerAltsAdj,1)
                 BBaltRaw(area)=nan;
             end
         end
-                
+        
+        % Remove data where distance is more than 200 m
+        BBaltRaw(BBloc>50)=nan;
+        
         % Avoid jumps between gates
         BBaltRaw=movmedian(BBaltRaw,20,'omitnan');
         
@@ -372,7 +257,7 @@ for kk=1:size(layerAltsAdj,1)
                 if nanLength<transLength*2 & startInds(ll)~=1 & endInds(ll)~=length(maskBBalt)
                     BBaltInterp(startInds(ll):endInds(ll))=interp1([startInds(ll)-1,endInds(ll)+1],...
                         [BBaltRaw(startInds(ll)-1),BBaltRaw(endInds(ll)+1)],startInds(ll):endInds(ll));
-                else
+                else                   
                     % Tail
                     if startInds(ll~=1)
                         startTail=startInds(ll);
@@ -405,9 +290,11 @@ for kk=1:size(layerAltsAdj,1)
             BBaltZero=layerAltsAdj(kk,timeInds);
         end
         
-        BBaltAll{end+1}=BBaltRaw;
-        timeIall{end+1}=timeInds;
-        BBaltInterpAll{end+1}=BBaltInterp;
+        if min(min(isnan(BBlayer)))==0
+            BBaltAll{end+1}=BBaltRaw;
+            timeIall{end+1}=timeInds;
+            BBaltInterpAll{end+1}=BBaltInterp;
+        end
     else
         BBaltZero=layerAltsAdj(kk,timeInds);
     end

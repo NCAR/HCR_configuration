@@ -58,7 +58,7 @@ end
 
 dataVars=dataVars(~cellfun('isempty',dataVars));
 
-%% Find melting layer and separate warm and cold precip
+%% Find melting layer
 
 data.dbzMasked=data.DBZ;
 data.dbzMasked(data.FLAG>1)=nan;
@@ -67,20 +67,6 @@ findMelt=f_meltLayer(data,adjustZeroMeter);
 oneInds=find(findMelt==1);
 twoInds=find(findMelt==2);
 threeInds=find(findMelt==3);
-
-meltType=sum(findMelt,1,'omitnan');
-
-meltInd=nan(size(data.time));
-warmRefl=nan(size(data.DBZ));
-coldRefl=nan(size(data.DBZ));
-
-for ii=1:length(meltInd)
-    meltRay=findMelt(:,ii);
-    meltInd(ii)=min(find(~isnan(meltRay)));
-    
-    warmRefl(meltInd(ii):end,ii)=data.dbzMasked(meltInd(ii):end,ii);
-    coldRefl(1:meltInd(ii)-1,ii)=data.dbzMasked(1:meltInd(ii)-1,ii);
-end
 
 %% Cloud puzzle
 
