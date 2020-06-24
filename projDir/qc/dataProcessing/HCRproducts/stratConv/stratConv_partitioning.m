@@ -81,20 +81,7 @@ timeMat=repmat(data.time,size(data.TEMP,1),1);
 
 f1 = figure('Position',[200 500 1500 900],'DefaultAxesFontSize',12);
 
-s1=subplot(3,1,1);
-hold on
-l1=plot(data.time,stratConv,'-b','linewidth',2);
-ylabel('Strat (0), conv (1)');
-ylim([-1 2]);
-grid on
-set(gca,'YColor','k');
-
-xlim([data.time(1),data.time(end)]);
-
-title([datestr(data.time(1)),' to ',datestr(data.time(end))])
-s1pos=s1.Position;
-
-s2=subplot(3,1,2);
+s1=subplot(2,1,1);
 
 colormap jet
 
@@ -113,17 +100,17 @@ xlim([data.time(1),data.time(end)]);
 colorbar
 grid on
 title('Reflectivity (dBZ)')
-s2pos=s2.Position;
-s2.Position=[s2pos(1),s2pos(2),s1pos(3),s2pos(4)];
+s2pos=s1.Position;
+s1.Position=[s2pos(1),s2pos(2),s1pos(3),s2pos(4)];
 
-s3=subplot(3,1,3);
+s2=subplot(2,1,2);
 
 colmap=[0 0 1;1 0 0;1 0 1];
 
 hold on
 surf(data.time,data.asl./1000,stratConv,'edgecolor','none');
 view(2);
-colormap(s3,colmap)
+colormap(s2,colmap)
 ylabel('Altitude (km)');
 caxis([0 2]);
 ylim([0 ylimUpper]);
@@ -131,8 +118,8 @@ xlim([data.time(1),data.time(end)]);
 colorbar
 grid on
 title('Stratiform/convective')
-s3pos=s3.Position;
-s3.Position=[s3pos(1),s3pos(2),s1pos(3),s3pos(4)];
+s3pos=s2.Position;
+s2.Position=[s3pos(1),s3pos(2),s1pos(3),s3pos(4)];
 
 set(gcf,'PaperPositionMode','auto')
 print(f1,[figdir,project,'_stratConv_',datestr(data.time(1),'yyyymmdd_HHMMSS'),'_to_',datestr(data.time(end),'yyyymmdd_HHMMSS')],'-dpng','-r0')

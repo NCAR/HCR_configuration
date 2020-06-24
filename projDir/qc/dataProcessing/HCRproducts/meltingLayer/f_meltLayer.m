@@ -267,24 +267,24 @@ for kk=1:size(layerAltsAdj,1)
     maxLevelVEL=nan(1,length(timeInds));
     maxLevelVEL(stepInC)=stepInR; 
     
-    fig1=figure('DefaultAxesFontSize',11,'position',[100,100,1400,800]);
-    colmap=jet;
-    colormap(flipud(colmap));
-    subplot(3,1,1)
-    surf(velSmooth,'edgecolor','none');
-    view(2)
-    %colorbar
-    caxis([-5 5])
-    
-    subplot(3,1,2)
-    hold on
-    plot(diffS1)
-    plot(movmean(diffS1,50,'omitnan'),'linewidth',2)
-    
-    subplot(3,1,3)
-    hold on
-    plot(maxVar);
-    plot(movmean(maxVar,50,'omitnan'),'linewidth',2)
+%     fig1=figure('DefaultAxesFontSize',11,'position',[100,100,1400,800]);
+%     colmap=jet;
+%     colormap(flipud(colmap));
+%     subplot(3,1,1)
+%     surf(velSmooth,'edgecolor','none');
+%     view(2)
+%     %colorbar
+%     caxis([-5 5])
+%     
+%     subplot(3,1,2)
+%     hold on
+%     plot(diffS1)
+%     plot(movmean(diffS1,50,'omitnan'),'linewidth',2)
+%     
+%     subplot(3,1,3)
+%     hold on
+%     plot(maxVar);
+%     plot(movmean(maxVar,50,'omitnan'),'linewidth',2)
     
     % Remove data that doesn't cut it
     if min(isnan(maxLevelLDR))==0 | min(isnan(maxLevelLDR))==0
@@ -301,7 +301,7 @@ for kk=1:size(layerAltsAdj,1)
         
         % Compare with zero degree layer
         VELzeroDiff=VELaltRaw-layerAltsTemp;
-        VELaltRaw(abs(VELzeroDiff)>150)=nan;
+        VELaltRaw(abs(VELzeroDiff)>200)=nan;
         
         % Mean altitude of meltig layer
         VELalt=movmedian(VELaltRaw,1000,'omitnan');
