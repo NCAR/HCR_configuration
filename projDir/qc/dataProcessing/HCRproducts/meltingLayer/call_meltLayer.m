@@ -22,8 +22,6 @@ project='otrec'; %socrates, aristo, cset
 quality='qc2'; %field, qc1, or qc2
 freqData='10hz'; % 10hz, 100hz, or 2hz
 
-adjustZeroMeter=350; % Assume melting layer is adjustZeroMeter below zero degree altitude
-
 % Expected bright band altitude. Determines plot zoom.
 if strcmp(project,'otrec')
     expBBalt=5;
@@ -86,7 +84,7 @@ dataVars=dataVars(~cellfun('isempty',dataVars));
 data.dbzMasked=data.DBZ;
 data.dbzMasked(data.FLAG>1)=nan;
 
-findMelt=f_meltLayer(data,adjustZeroMeter);
+findMelt=f_meltLayer(data);
 zeroInds=find(findMelt==0);
 oneInds=find(findMelt==1);
 twoInds=find(findMelt==2);

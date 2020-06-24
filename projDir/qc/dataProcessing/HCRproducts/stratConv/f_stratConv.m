@@ -14,19 +14,78 @@ meltAlt=data.asl(meltInds);
 
 % Loop through clouds
 numClouds=max(max(puzzle));
+countPieces=1;
+newPuzzle=nan(size(puzzle));
+keepCols=[];
 
+% Find cloud layers and split puzzle even further
 for ii=1:numClouds
+    cloudInd=find(puzzle==ii);
+    
+    cloudMask=zeros(size(puzzle));
+    cloudMask(cloudInd)=1;
+    
+    % Fill holes
+    cloudMaskFilled= imfill(cloudMask,'holes');
+    
+    for jj=1:size(cloudMaskFilled,2)
+        rayInds=find(cloudMaskFilled(:,jj)==1);
+        min1=min(rayInds);
+        max1=max(rayInds);
+        
+        cloudMaskFilled(1:min1,jj)=1;
+        cloudMaskFilled(max1:end,jj)=1;
+    end
+    
+    % Reverse image and remove small objects
+    cloudMaskRev=~cloudMaskFilled;
+    cloudMaskBig=bwareaopen(cloudMaskRev,5000);
+    
+    % Loop through contiguous areas
+    CC = bwconncomp(cloudMaskBig);
+        
+    for jj=1:CC.NumObjects
+        area=CC.PixelIdxList{jj};
+        [areaRows areaCols]=ind2sub(size(cloudMaskBig),area);
+                
+        % Width of piece
+        layerWidth=max(areaCols)-min(areaCols);
+        if layerWidth>500
+            cloudMask(:,min(areaCols))=0;
+            cloudMask(:,max(areaCols))=0;
+            %keepCols=[keepCols,min(areaCols),max(areaCols)];
+        end
+    end
+    
+    % Put new pieces in new puzzle
+    CC2 = bwconncomp(cloudMask);
+        
+    for jj=1:CC2.NumObjects
+        area2=CC2.PixelIdxList{jj};
+        newPuzzle(area2)=countPieces;
+        
+        % Fill in the emplty column
+        [areaRows2 areaCols2]=ind2sub(size(cloudMask),area2);
+        
+        maxCol=max(areaCols2);
+        if maxCol~=size(cloudMask,2);
+            colData=newPuzzle(:,maxCol);
+            rowInds=find(colData==countPieces);
+            newPuzzle(rowInds,maxCol+1)=countPieces;
+        end
+        
+        countPieces=countPieces+1;
+    end
+end
+
+for ii=1:countPieces-1
     stratConv1D=nan(size(data.time));
     
-    cloudInd=find(puzzle==ii);
+    cloudInd=find(newPuzzle==ii);
     [cloudR cloudC]=ind2sub(size(data.dbzMasked),cloudInd);
     cloudCu=unique(cloudC);
     cloudYes=zeros(size(data.time));
     cloudYes(cloudCu)=1;
-    
-    % Max and min altitude of cloud    
-%     cloudMask=nan(size(data.dbzMasked));
-%     cloudMask(cloudInd)=data.dbzMasked(cloudInd);
     
     aslMask=nan(size(data.dbzMasked));
     aslMask(cloudInd)=data.asl(cloudInd);
@@ -49,18 +108,12 @@ for ii=1:numClouds
     % Convective, no melting layer found
     stratConv1D(cloudYes & isnan(stratConv1D))=1;
     
-    % Get rid of outliers
-    stratConvMed=floor(movmedian(stratConv1D,9,'omitnan'));
-    
-    backMask=repmat(stratConvMed,size(aslMask,1),1);
+    backMask=repmat(stratConv1D,size(aslMask,1),1);
     
     % Data above melt and below melt but not at melt
     noDataMelt=isnan(aslMask(meltInds));
     noMeltCols=find(noDataMelt' & meltAlt'>minAltCloud & meltAlt'<maxAltCloud);
-    
-%     noMeltMask=zeros(size(data.dbzMasked));
-%     noMeltMask(:,noMeltCols)=1;
-    
+        
     for jj=1:length(noMeltCols)
         aslRay=aslMask(:,noMeltCols(jj));
         outRay=nan(size(aslRay));
@@ -69,7 +122,10 @@ for ii=1:numClouds
         backMask(:,noMeltCols(jj))=outRay;
     end
             
-    stratConv(~isnan(aslMask))=backMask(~isnan(aslMask));
+    % Get rid of outliers
+    stratConvMed=floor(movmedian(backMask,19,2,'omitnan'));
+
+    stratConv(~isnan(aslMask))=stratConvMed(~isnan(aslMask));
 end
 % % Find maximum reflectivity altitude
 % [dbzMax dbzMaxInd]=max(dbzSmooth,[],1);

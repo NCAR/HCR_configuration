@@ -3,10 +3,12 @@
 % 1=melting layer detected
 % 2=melting layer interpolated
 % 3=melting layer defined as zero degree altitude
-function [BBfinished]= f_meltLayer_altOnly(data,zeroAdjustMeters)
+function [BBfinished]= f_meltLayer_altOnly(data)
 %% Find zero degree altitude
 
 disp('Searching 0 deg altitude ...');
+
+zeroAdjustMeters=350;
 
 oneGate=data.range(2)-data.range(1);
 zeroAdjustGates=round(zeroAdjustMeters/oneGate);
@@ -157,22 +159,14 @@ for kk=1:size(layerAltsAdj,1)
     layerAltsTemp=layerAltsAdj(kk,timeInds);
     rowInds=layerIndsAdj(kk,timeInds);
     
+    % LDR
     % Find maximum LDR level in area around zero degree altitude
     maxLevelLDR=nan(size(rowInds));
     for ii=1:length(rowInds)
         vertColLDR=LDRdata(:,timeInds(ii));
-        if zeroAdjustMeters==0
-            if data.elevation(timeInds(ii))<90 % Down pointing
-                vertColLDR(rowInds(ii)+30:end)=nan;
-                vertColLDR(1:max([rowInds(ii)-10,1]))=nan;
-            else % Up pointing
-                vertColLDR(rowInds(ii)+10:end)=nan;
-                vertColLDR(1:max([rowInds(ii)-30,1]))=nan;
-            end
-        else
-            vertColLDR(rowInds(ii)+10:end)=nan;
-            vertColLDR(1:max([rowInds(ii)-10,1]))=nan;
-        end
+        vertColLDR(rowInds(ii)+12:end)=nan;
+        vertColLDR(1:max([rowInds(ii)-12,1]))=nan;
+        
         % Check if all nan
         if min(isnan(vertColLDR))==0
             %vertColData=vertColLDR(~isnan(vertColLDR));
@@ -180,6 +174,55 @@ for kk=1:size(layerAltsAdj,1)
         end
     end
     
+    if min(isnan(maxLevelLDR))==0
+        ASLlayer=data.asl(:,timeInds);
+           
+        % LDR       
+        colIndsLDR=1:1:size(ASLlayer,2);
+        linearIndLDR = sub2ind(size(ASLlayer), maxLevelLDR, colIndsLDR);
+        linearIndLDR(isnan(maxLevelLDR))=[];
+        
+        % Raw altitude of melting layer
+        LDRaltRawIn=ASLlayer(linearIndLDR);
+        LDRaltRaw=nan(size(rowInds));
+        LDRaltRaw(find(~isnan(maxLevelLDR)))=LDRaltRawIn;
+        % Mean altitude of meltig layer
+        LDRalt=movmedian(LDRaltRaw,300,'omitnan');
+        LDRalt(isnan(LDRaltRaw))=nan;
+        % Standard deviation
+        LDRaltS=movstd(LDRaltRaw,300,'omitnan');
+        LDRaltS(isnan(LDRaltRaw))=nan;
+        % Remove data with too much std
+        LDRaltRaw(LDRaltS>100)=nan;
+        % Distance between raw and mean altitude
+        LDRloc=abs(LDRaltRaw-LDRalt);
+        
+        % Remove data where distance is more than 200 m
+        LDRaltRaw(LDRloc>50)=nan;
+        
+        % Adjust zero degree layer
+        zeroDist=LDRalt-layerAltsTemp;
+        
+        % Remove small data stretches
+        zeroMask=zeros(size(zeroDist));
+        zeroMask(~isnan(zeroDist))=1;
+        
+        zeroMask=bwareaopen(zeroMask,5);
+        zeroDist(zeroMask==0)=nan;
+        
+        zeroDistSmooth=movmean(zeroDist,3000,'omitnan');
+        zeroDistSmooth(isnan(zeroDist))=nan;        
+        
+        noNanDist=fillmissing(zeroDistSmooth,'linear','EndValues','nearest');
+        layerAltsTemp=layerAltsTemp+noNanDist;
+        layerAltsAdj(kk,timeInds)=layerAltsTemp;
+        
+        distInds=round(noNanDist./oneGate);
+        rowInds(data.elevation>90)=rowInds(data.elevation>90)-distInds(data.elevation>90);
+        rowInds(data.elevation<=90)=rowInds(data.elevation<=90)+distInds(data.elevation<=90);
+    end
+    
+    % VEL
     % Find vel melting layer level
     maxLevelVEL=nan(size(rowInds));
     velMasked=VELdata;
@@ -187,19 +230,8 @@ for kk=1:size(layerAltsAdj,1)
     
     velTime=velMasked(:,timeInds);
     for ii=1:length(rowInds)
-        %vertColVEL=velMasked(:,timeInds(ii));
-        if zeroAdjustMeters==0
-            if data.elevation(timeInds(ii))<90 % Down pointing
-                velTime(rowInds(ii)+700:end,ii)=nan;
-                velTime(1:max([rowInds(ii)-50,1]),ii)=nan;
-            else % Up pointing
-                velTime(rowInds(ii)+50:end,ii)=nan;
-                velTime(1:max([rowInds(ii)-70,1]),ii)=nan;
-            end
-        else
-            velTime(rowInds(ii)+50:end,ii)=nan;
-            velTime(1:max([rowInds(ii)-50,1]),ii)=nan;
-        end
+        velTime(rowInds(ii)+50:end,ii)=nan;
+        velTime(1:max([rowInds(ii)-50,1]),ii)=nan;
     end
     
     % Find discontinuity in vel field
@@ -228,8 +260,6 @@ for kk=1:size(layerAltsAdj,1)
     
     maxVar=max(varS2,[],1);
     
-    %[maxVel maxVelInd]=min(diff(velMask,1),[],1);
-    
     % Find altitude of step
     stepInLin=find(velSteps==1);
     [stepInR,stepInC]=ind2sub(size(velSmooth),stepInLin);
@@ -237,52 +267,28 @@ for kk=1:size(layerAltsAdj,1)
     maxLevelVEL=nan(1,length(timeInds));
     maxLevelVEL(stepInC)=stepInR; 
     
-%     fig1=figure('DefaultAxesFontSize',11,'position',[100,100,1400,800]);
-%     colmap=jet;
-%     colormap(flipud(colmap));
-%     subplot(3,1,1)
-%     surf(velSmooth,'edgecolor','none');
-%     view(2)
-%     %colorbar
-%     caxis([-5 5])
-%     
-%     subplot(3,1,2)
-%     hold on
-%     plot(diffS1)
-%     plot(movmean(diffS1,50,'omitnan'),'linewidth',2)
-%     
-%     subplot(3,1,3)
-%     hold on
-%     plot(maxVar);
-%     plot(movmean(maxVar,50,'omitnan'),'linewidth',2)
+    fig1=figure('DefaultAxesFontSize',11,'position',[100,100,1400,800]);
+    colmap=jet;
+    colormap(flipud(colmap));
+    subplot(3,1,1)
+    surf(velSmooth,'edgecolor','none');
+    view(2)
+    %colorbar
+    caxis([-5 5])
+    
+    subplot(3,1,2)
+    hold on
+    plot(diffS1)
+    plot(movmean(diffS1,50,'omitnan'),'linewidth',2)
+    
+    subplot(3,1,3)
+    hold on
+    plot(maxVar);
+    plot(movmean(maxVar,50,'omitnan'),'linewidth',2)
     
     % Remove data that doesn't cut it
     if min(isnan(maxLevelLDR))==0 | min(isnan(maxLevelLDR))==0
-           ASLlayer=data.asl(:,timeInds);
-           
-        % LDR       
-        colIndsLDR=1:1:size(ASLlayer,2);
-        linearIndLDR = sub2ind(size(ASLlayer), maxLevelLDR, colIndsLDR);
-        linearIndLDR(isnan(maxLevelLDR))=[];
-        
-        % Raw altitude of melting layer
-        LDRaltRawIn=ASLlayer(linearIndLDR);
-        LDRaltRaw=nan(size(rowInds));
-        LDRaltRaw(find(~isnan(maxLevelLDR)))=LDRaltRawIn;
-        % Mean altitude of meltig layer
-        LDRalt=movmedian(LDRaltRaw,300,'omitnan');
-        LDRalt(isnan(LDRaltRaw))=nan;
-        % Standard deviation
-        LDRaltS=movstd(LDRaltRaw,300,'omitnan');
-        LDRaltS(isnan(LDRaltRaw))=nan;
-        % Remove data with too much std
-        LDRaltRaw(LDRaltS>100)=nan;
-        % Distance between raw and mean altitude
-        LDRloc=abs(LDRaltRaw-LDRalt);
-        
-        % Remove data where distance is more than 200 m
-        LDRaltRaw(LDRloc>50)=nan;
-        
+                
         % VEL
         colIndsVEL=1:1:size(ASLlayer,2);
         linearIndVEL = sub2ind(size(ASLlayer), maxLevelVEL, colIndsVEL);
@@ -292,8 +298,13 @@ for kk=1:size(layerAltsAdj,1)
         VELaltRawIn=ASLlayer(linearIndVEL);
         VELaltRaw=nan(size(rowInds));
         VELaltRaw(find(~isnan(maxLevelVEL)))=VELaltRawIn;
+        
+        % Compare with zero degree layer
+        VELzeroDiff=VELaltRaw-layerAltsTemp;
+        VELaltRaw(abs(VELzeroDiff)>150)=nan;
+        
         % Mean altitude of meltig layer
-        VELalt=movmedian(VELaltRaw,300,'omitnan');
+        VELalt=movmedian(VELaltRaw,1000,'omitnan');
         VELalt(isnan(VELaltRaw))=nan;
         
         % Distance between raw and mean altitude

@@ -10,7 +10,6 @@ quality='qc2'; %field, qc1, or qc2
 dataFreq='10hz';
 
 ylimUpper=15;
-adjustZeroMeter=350; % Assume melting layer is adjustZeroMeter below zero degree altitude
 
 meltArea=2000; % melting layer +/- meltArea (meters) is considered in strat conv velocity algorithm
 
@@ -63,7 +62,7 @@ dataVars=dataVars(~cellfun('isempty',dataVars));
 data.dbzMasked=data.DBZ;
 data.dbzMasked(data.FLAG>1)=nan;
 
-findMelt=f_meltLayer(data,adjustZeroMeter);
+findMelt=f_meltLayer(data);
 oneInds=find(findMelt==1);
 twoInds=find(findMelt==2);
 threeInds=find(findMelt==3);
