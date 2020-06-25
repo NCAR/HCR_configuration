@@ -21,8 +21,8 @@ figdir=['/h/eol/romatsch/hcrCalib/clouds/stratConv/'];
 
 dataDir=HCRdir(project,quality,dataFreq);
 
-startTime=datetime(2019,8,7,16,35,0);
-endTime=datetime(2019,8,7,16,45,0);
+startTime=datetime(2019,8,7,17,25,0);
+endTime=datetime(2019,8,7,17,34,0);
 
 %% Get data
 
@@ -88,7 +88,7 @@ colormap jet
 hold on
 surf(data.time,data.asl./1000,data.dbzMasked,'edgecolor','none');
 view(2);
-scatter(timeMat(oneInds),data.asl(oneInds)./1000,10,'c','filled');
+scatter(timeMat(oneInds),data.asl(oneInds)./1000,10,'k','filled');
 scatter(timeMat(twoInds),data.asl(twoInds)./1000,10,'b','filled');
 scatter(timeMat(threeInds),data.asl(threeInds)./1000,10,'g','filled');
 ax = gca;
@@ -100,12 +100,11 @@ xlim([data.time(1),data.time(end)]);
 colorbar
 grid on
 title('Reflectivity (dBZ)')
-s2pos=s1.Position;
-s1.Position=[s2pos(1),s2pos(2),s1pos(3),s2pos(4)];
+s1pos=s1.Position;
 
 s2=subplot(2,1,2);
 
-colmap=[0 0 1;1 0 0;1 0 1];
+colmap=[0 0 1;1 0 0];
 
 hold on
 surf(data.time,data.asl./1000,stratConv,'edgecolor','none');

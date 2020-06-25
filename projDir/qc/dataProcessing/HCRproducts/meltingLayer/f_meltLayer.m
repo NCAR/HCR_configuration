@@ -218,8 +218,8 @@ for kk=1:size(layerAltsAdj,1)
         layerAltsAdj(kk,timeInds)=layerAltsTemp;
         
         distInds=round(noNanDist./oneGate);
-        rowInds(data.elevation>90)=rowInds(data.elevation>90)-distInds(data.elevation>90);
-        rowInds(data.elevation<=90)=rowInds(data.elevation<=90)+distInds(data.elevation<=90);
+        rowInds(data.elevation>0)=rowInds(data.elevation>0)-distInds(data.elevation>0);
+        rowInds(data.elevation<=0)=rowInds(data.elevation<=0)+distInds(data.elevation<=0);
     end
     
     % VEL
@@ -271,10 +271,12 @@ for kk=1:size(layerAltsAdj,1)
 %     colmap=jet;
 %     colormap(flipud(colmap));
 %     subplot(3,1,1)
+%     hold on
 %     surf(velSmooth,'edgecolor','none');
 %     view(2)
 %     %colorbar
 %     caxis([-5 5])
+%     plot(maxLevelVEL,'-b')
 %     
 %     subplot(3,1,2)
 %     hold on
@@ -310,7 +312,7 @@ for kk=1:size(layerAltsAdj,1)
         % Distance between raw and mean altitude
         VELloc=abs(VELaltRaw-VELalt);        
         % Remove data where distance is more than 200 m
-        VELaltRaw(VELloc>50)=nan;
+        VELaltRaw(VELloc>100)=nan;
         
         % Standard deviation
         VELaltS=movstd(VELaltRaw,300,'omitnan');
@@ -339,7 +341,7 @@ for kk=1:size(layerAltsAdj,1)
         end
         
         % Keep data that has only a few nan
-        zeroCut=100;
+        zeroCut=20;
         CC = bwconncomp(BBmask);
         
         for ii=1:CC.NumObjects

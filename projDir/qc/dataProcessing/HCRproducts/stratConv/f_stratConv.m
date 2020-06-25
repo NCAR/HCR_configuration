@@ -64,7 +64,7 @@ for ii=1:numClouds
         area2=CC2.PixelIdxList{jj};
         newPuzzle(area2)=countPieces;
         
-        % Fill in the emplty column
+        % Fill in the empty column
         [areaRows2 areaCols2]=ind2sub(size(cloudMask),area2);
         
         maxCol=max(areaCols2);
@@ -94,10 +94,7 @@ for ii=1:countPieces-1
     minAltCloud=min(aslMask,[],1);
     
     % Shallow convection
-    stratConv1D(meltAlt'>maxAltCloud)=2;
-    
-    % Stratiform because above melting layer
-    stratConv1D(meltAlt'<minAltCloud)=0;   
+    stratConv1D(meltAlt'>maxAltCloud)=1;
     
     % Stratiform because melting layer detected
     meltYes=any(meltLayer==1,1);
@@ -108,6 +105,26 @@ for ii=1:countPieces-1
     % Convective, no melting layer found
     stratConv1D(cloudYes & isnan(stratConv1D))=1;
     
+    % But if VEL above melting layer > 2.5 m/s -> convective
+    velMask=nan(size(data.dbzMasked));
+    velMask(cloudInd)=data.VEL_CORR(cloudInd);
+    
+    for jj=1:size(velMask,2);
+        aslRay=aslMask(:,jj);
+        velMask(aslRay<=meltAlt(jj)+200,jj)=nan;
+    end
+    
+    velMask(:,data.elevation<0)=-velMask(:,data.elevation<0);   
+    largeFallMask=zeros(size(velMask));
+    largeFallMask(velMask<=-2)=1;
+    
+    largeFall=sum(largeFallMask,1);
+    stratConv1D(largeFall>3)=1;
+    
+    % Stratiform because above melting layer
+    stratConv1D(meltAlt'<minAltCloud)=0;   
+    
+    % Make it 2D
     backMask=repmat(stratConv1D,size(aslMask,1),1);
     
     % Data above melt and below melt but not at melt
@@ -117,16 +134,36 @@ for ii=1:countPieces-1
     for jj=1:length(noMeltCols)
         aslRay=aslMask(:,noMeltCols(jj));
         outRay=nan(size(aslRay));
-        outRay(aslRay>meltAlt(noMeltCols(jj)))=0;
+        outRay(aslRay>=meltAlt(noMeltCols(jj)))=0;
         outRay(aslRay<meltAlt(noMeltCols(jj)))=2;
         backMask(:,noMeltCols(jj))=outRay;
     end
-            
+    
     % Get rid of outliers
-    stratConvMed=floor(movmedian(backMask,19,2,'omitnan'));
-
+    backMask(~isnan(aslMask))=backMask(~isnan(aslMask));
+    stratConvMed=floor(movmedian(backMask,49,2,'omitnan'));
+    stratConvMed=floor(movmedian(stratConvMed,9,1,'omitnan'));
+    
     stratConv(~isnan(aslMask))=stratConvMed(~isnan(aslMask));
 end
+
+% Take care of number 2
+belowMask=zeros(size(stratConv));
+belowMask(stratConv==2)=1;
+
+CC = bwconncomp(belowMask);
+
+for jj=1:CC.NumObjects
+    area=CC.PixelIdxList{jj};
+    [aR aC]=ind2sub(size(belowMask),area);
+    rows=unique(aR);
+    minColN=max([min(aC)-1,1]);
+    maxColN=min([max(aC)+1,size(stratConv,2)]);
+    
+    neighbors=[stratConv(rows,minColN);stratConv(rows,maxColN)];
+    stratConv(area)=ceil(median(neighbors,'omitnan'));
+end
+
 % % Find maximum reflectivity altitude
 % [dbzMax dbzMaxInd]=max(dbzSmooth,[],1);
 % maxInLin=sub2ind(size(data.DBZ),dbzMaxInd,1:length(data.time));
