@@ -8,6 +8,9 @@ flagTemp=data.FLAG;
 flagTemp(data.FLAG==8)=7;
 surfMask=ones(1,size(flagTemp,2));
 surfMask(find(any(data.FLAG==7 | data.FLAG==8,1)))=0;
+
+% Add in up pointing
+surfMask(data.elevation>0)=0;
 surfDiff=diff(surfMask);
 
 % Add surface echo back in

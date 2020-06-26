@@ -214,19 +214,21 @@ for kk=1:size(layerAltsAdj,1)
         zeroDistSmooth(isnan(zeroDist))=nan;        
         
         noNanDist=fillmissing(zeroDistSmooth,'linear','EndValues','nearest');
-        layerAltsTemp=layerAltsTemp+noNanDist;
-        layerAltsAdj(kk,timeInds)=layerAltsTemp;
-        
-        distInds=round(noNanDist./oneGate);
-        rowInds(data.elevation>0)=rowInds(data.elevation>0)-distInds(data.elevation>0);
-        rowInds(data.elevation<=0)=rowInds(data.elevation<=0)+distInds(data.elevation<=0);
+        if sum(~isnan(noNanDist))>0
+            layerAltsTemp=layerAltsTemp+noNanDist;
+            layerAltsAdj(kk,timeInds)=layerAltsTemp;
+            
+            distInds=round(noNanDist./oneGate);
+            rowInds(data.elevation(timeInds)>0)=rowInds(data.elevation(timeInds)>0)-distInds(data.elevation(timeInds)>0);
+            rowInds(data.elevation(timeInds)<=0)=rowInds(data.elevation(timeInds)<=0)+distInds(data.elevation(timeInds)<=0);
+        end
     end
     
     % VEL
     % Find vel melting layer level
     maxLevelVEL=nan(size(rowInds));
     velMasked=VELdata;
-    velMasked(:,data.elevation<0)=-velMasked;
+    velMasked(:,data.elevation<0)=-velMasked(:,data.elevation<0);
     
     velTime=velMasked(:,timeInds);
     for ii=1:length(rowInds)

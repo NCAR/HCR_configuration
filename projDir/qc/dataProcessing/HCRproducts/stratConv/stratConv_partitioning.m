@@ -21,8 +21,8 @@ figdir=['/h/eol/romatsch/hcrCalib/clouds/stratConv/'];
 
 dataDir=HCRdir(project,quality,dataFreq);
 
-startTime=datetime(2019,8,7,17,25,0);
-endTime=datetime(2019,8,7,17,34,0);
+startTime=datetime(2019,8,11,12,57,0);
+endTime=datetime(2019,8,11,13,4,0);
 
 %% Get data
 
@@ -36,6 +36,7 @@ data.PRESS=[];
 data.RH=[];
 data.TOPO=[];
 data.FLAG=[];
+data.ANTFLAG=[];
 data.LDR=[];
 data.WIDTH=[];
 data.VEL_CORR=[];
@@ -72,7 +73,7 @@ threeInds=find(findMelt==3);
 cloudPuzzle=f_cloudPuzzle_radial(data);
 
 %% Stratiform convective partitioning
-stratConv=f_stratConv(data,cloudPuzzle,findMelt,meltArea);
+[stratConv liquidAlt]=f_stratConv(data,cloudPuzzle,findMelt,meltArea);
 
 %% Plot strat conv
 close all
@@ -91,6 +92,7 @@ view(2);
 scatter(timeMat(oneInds),data.asl(oneInds)./1000,10,'k','filled');
 scatter(timeMat(twoInds),data.asl(twoInds)./1000,10,'b','filled');
 scatter(timeMat(threeInds),data.asl(threeInds)./1000,10,'g','filled');
+scatter(data.time,liquidAlt./1000,10,'m','filled');
 ax = gca;
 ax.SortMethod = 'childorder';
 ylabel('Altitude (km)');
@@ -104,7 +106,7 @@ s1pos=s1.Position;
 
 s2=subplot(2,1,2);
 
-colmap=[0 0 1;1 0 0];
+colmap=[0 0 1;1 0 0;0.5 0 0.5];
 
 hold on
 surf(data.time,data.asl./1000,stratConv,'edgecolor','none');

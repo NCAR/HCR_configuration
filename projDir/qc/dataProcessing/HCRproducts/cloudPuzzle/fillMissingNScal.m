@@ -11,9 +11,9 @@ holeStart=find(surfDiff==1);
 holeStart=holeStart+1;
 holeEnd=find(surfDiff==-1);
 
-if ~isempty(holeStart) | ~isempty(holeEnd)
+if ~isempty(holeStart) & ~isempty(holeEnd)
     if holeStart(1)>holeEnd(1)
-        holeStart=[1 holeStart];
+        hole=[1 holeStart];
     end
     if length(holeStart)~=length(holeEnd)
         holeEnd=[holeEnd,size(flagTemp,2)-1];

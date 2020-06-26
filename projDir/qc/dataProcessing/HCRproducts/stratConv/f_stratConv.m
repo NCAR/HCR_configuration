@@ -1,5 +1,5 @@
 % Find stratiform and convective
-function stratConv= f_meltLayer_altOnly(data,puzzle,meltLayer,meltArea)
+function [stratConv liquidAlt]= f_meltLayer_altOnly(data,puzzle,meltLayer,meltArea)
 
 disp('Finding stratiform and convective echo ...');
 
@@ -8,9 +8,13 @@ stratConv=nan(size(data.DBZ));
 
 % Find melting layer altitude
 meltInds=find(meltLayer>0);
-meltAlt=data.asl(meltInds);
+meltAltIn=data.asl(meltInds);
 
 [meltInR meltInC]=ind2sub(size(data.DBZ),meltInds);
+
+meltAlt=nan(size(data.time))';
+meltAlt(:,:)=100000;
+meltAlt(meltInC)=meltAltIn;
 
 % Loop through clouds
 numClouds=max(max(puzzle));
@@ -121,21 +125,27 @@ for ii=1:countPieces-1
     largeFall=sum(largeFallMask,1);
     stratConv1D(largeFall>3)=1;
     
+    % Sea surface cals and antenna transition are unknown
+    stratConv1D((data.ANTFLAG==3 | data.ANTFLAG==4) & (meltAlt'<=maxAltCloud))=2;
+    
     % Stratiform because above melting layer
-    stratConv1D(meltAlt'<minAltCloud)=0;   
+    stratConv1D(meltAlt'<minAltCloud)=0;  
     
     % Make it 2D
     backMask=repmat(stratConv1D,size(aslMask,1),1);
     
     % Data above melt and below melt but not at melt
-    noDataMelt=isnan(aslMask(meltInds));
+    noDataMeltIn=isnan(aslMask(meltInds));
+    noDataMelt=nan(size(data.time))';
+    noDataMelt(:,:)=100000;
+    noDataMelt(meltInC)=noDataMeltIn;
     noMeltCols=find(noDataMelt' & meltAlt'>minAltCloud & meltAlt'<maxAltCloud);
-        
+    
     for jj=1:length(noMeltCols)
         aslRay=aslMask(:,noMeltCols(jj));
         outRay=nan(size(aslRay));
         outRay(aslRay>=meltAlt(noMeltCols(jj)))=0;
-        outRay(aslRay<meltAlt(noMeltCols(jj)))=2;
+        outRay(aslRay<meltAlt(noMeltCols(jj)))=4;
         backMask(:,noMeltCols(jj))=outRay;
     end
     
@@ -147,9 +157,9 @@ for ii=1:countPieces-1
     stratConv(~isnan(aslMask))=stratConvMed(~isnan(aslMask));
 end
 
-% Take care of number 2
+% Take care of number 4
 belowMask=zeros(size(stratConv));
-belowMask(stratConv==2)=1;
+belowMask(stratConv==4)=1;
 
 CC = bwconncomp(belowMask);
 
@@ -164,24 +174,32 @@ for jj=1:CC.NumObjects
     stratConv(area)=ceil(median(neighbors,'omitnan'));
 end
 
-% % Find maximum reflectivity altitude
-% [dbzMax dbzMaxInd]=max(dbzSmooth,[],1);
-% maxInLin=sub2ind(size(data.DBZ),dbzMaxInd,1:length(data.time));
-% maxAlt=data.asl(maxInLin);
-% 
-% % Find melting layer altitude
-% meltInds=find(meltLayer>0);
-% meltAlt=data.asl(meltInds);
-% 
-% % Distance between max refl and melt alt
-% reflDist=maxAlt-meltAlt';
-% stratConv(reflDist>500)=1;
-% stratConv(reflDist<=500)=0;
-% 
-% % Is there data at melting layer?
-% meltData=data.dbzMasked(meltInds);
-% 
-% stratConv(isnan(meltData') & reflDist>0)=0;
-% stratConv(isnan(meltData') & reflDist<0)=2;
+% Find maximum reflectivity altitude
+typeMeltIn=stratConv(meltInds);
+typeMelt=nan(size(data.time))';
+typeMelt(meltInC)=typeMeltIn;
+
+onlyConv=stratConv;
+onlyConv(stratConv~=1)=nan;
+onlyConv(onlyConv==1)=data.dbzMasked(onlyConv==1);
+
+[dbzMax dbzMaxInd]=max(onlyConv,[],1);
+maxInLin=sub2ind(size(data.DBZ),dbzMaxInd,1:length(data.time));
+liquidAlt=data.asl(maxInLin)';
+
+liquidAlt(liquidAlt<=meltAlt+100)=nan; % Remove data that is too close to melting layer
+liquidAlt(dbzMaxInd==1)=nan;
+
+% Add data for strat and no data at melting layer
+liquidAlt(isnan(liquidAlt) & (typeMelt==0 | isnan(typeMelt)))=meltAlt(isnan(liquidAlt) & (typeMelt==0 | isnan(typeMelt)));
+
+% Remove data when the plane is in the convective cloud
+inCloud=stratConv(18,:);
+inCloud(data.elevation>0)=nan;
+inCloud(inCloud~=1)=nan;
+
+% If plane is really high the data is good
+inCloud(data.asl(18,:)>13000)=nan;
+liquidAlt(inCloud==1)=nan;
 
 end
