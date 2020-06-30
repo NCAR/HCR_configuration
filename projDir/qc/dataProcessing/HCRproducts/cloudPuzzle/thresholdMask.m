@@ -16,6 +16,10 @@ newThresh=startThresh-1;
 
 maskGoodL=maskBig;
 
+if newThresh<=minRefl
+    maskLast=maskGoodL;
+end
+
 % Enlarge thresholding mask as long as it has the same number of
 % objects
 while outNum==maskNum & newThresh>minRefl

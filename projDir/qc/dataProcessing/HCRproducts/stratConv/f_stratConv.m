@@ -1,9 +1,10 @@
 % Find stratiform and convective
-function [stratConv liquidAlt]= f_meltLayer_altOnly(data,puzzle,meltLayer,meltArea)
+function [stratConv liquidAlt]= f_meltLayer_altOnly(data,puzzle,meltLayer)
 
 disp('Finding stratiform and convective echo ...');
 
 % Initialize output
+stratConvC=nan(size(data.DBZ));
 stratConv=nan(size(data.DBZ));
 
 % Find melting layer altitude
@@ -100,11 +101,12 @@ for ii=1:countPieces-1
     % Shallow convection
     stratConv1D(meltAlt'>maxAltCloud)=1;
     
-    % Stratiform because melting layer detected
+    % Stratiform because melting layer detected, but not if cloud is
+    % below melting layer
     meltYes=any(meltLayer==1,1);
     meltCloud=nan(size(data.time));
     meltCloud(cloudCu)=meltYes(cloudCu);
-    stratConv1D(meltCloud==1)=0;
+    stratConv1D(meltCloud==1 & isnan(stratConv1D))=0;
         
     % Convective, no melting layer found
     stratConv1D(cloudYes & isnan(stratConv1D))=1;
@@ -149,17 +151,12 @@ for ii=1:countPieces-1
         backMask(:,noMeltCols(jj))=outRay;
     end
     
-    % Get rid of outliers
-    backMask(~isnan(aslMask))=backMask(~isnan(aslMask));
-    stratConvMed=floor(movmedian(backMask,49,2,'omitnan'));
-    stratConvMed=floor(movmedian(stratConvMed,9,1,'omitnan'));
-    
-    stratConv(~isnan(aslMask))=stratConvMed(~isnan(aslMask));
+    stratConvC(~isnan(aslMask))=backMask(~isnan(aslMask));
 end
 
 % Take care of number 4
-belowMask=zeros(size(stratConv));
-belowMask(stratConv==4)=1;
+belowMask=zeros(size(stratConvC));
+belowMask(stratConvC==4)=1;
 
 CC = bwconncomp(belowMask);
 
@@ -168,10 +165,39 @@ for jj=1:CC.NumObjects
     [aR aC]=ind2sub(size(belowMask),area);
     rows=unique(aR);
     minColN=max([min(aC)-1,1]);
-    maxColN=min([max(aC)+1,size(stratConv,2)]);
+    maxColN=min([max(aC)+1,size(stratConvC,2)]);
     
-    neighbors=[stratConv(rows,minColN);stratConv(rows,maxColN)];
-    stratConv(area)=ceil(median(neighbors,'omitnan'));
+    neighbors=[stratConvC(rows,minColN);stratConvC(rows,maxColN)];
+    stratConvC(area)=ceil(median(neighbors,'omitnan'));
+end
+
+% Get rid of outliers
+stratConvFilled=nan(size(stratConvC));
+for jj=1:size(stratConvC,2)
+    stratConvFilled(:,jj)=fillmissing(stratConvC(:,jj),'nearest');
+end
+
+stratConvBig=floor(movmedian(stratConvFilled,99,2,'omitnan'));
+stratConvBig=floor(movmedian(stratConvBig,99,2,'omitnan'));
+stratConvBig(isnan(stratConvC))=nan;
+
+% Make it vertically consistent
+for jj=1:size(stratConvBig,2)
+    scRay=stratConvBig(:,jj);
+    if data.elevation(jj)<0;
+        scRay=flipud(scRay);
+    end
+    nanMask=zeros(size(scRay));
+    nanMask(~isnan(scRay))=1;
+    firstNonNan=min(find(~isnan(scRay)));
+    firstVal=scRay(firstNonNan);
+    nanMask(1:firstNonNan-1)=1;
+    firstNan=min(find(nanMask==0));
+    scRay(firstNonNan:firstNan)=firstVal;
+    if data.elevation(jj)<0;
+        scRay=flipud(scRay);
+    end
+    stratConv(:,jj)=scRay;
 end
 
 % Find maximum reflectivity altitude
