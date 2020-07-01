@@ -111,27 +111,30 @@ for ii=1:countPieces-1
     % Convective, no melting layer found
     stratConv1D(cloudYes & isnan(stratConv1D))=1;
     
-    % But if VEL above melting layer > 2.5 m/s -> convective
-    velMask=nan(size(data.dbzMasked));
-    velMask(cloudInd)=data.VEL_CORR(cloudInd);
-    
-    for jj=1:size(velMask,2);
-        aslRay=aslMask(:,jj);
-        velMask(aslRay<=meltAlt(jj)+200,jj)=nan;
-    end
-    
-    velMask(:,data.elevation<0)=-velMask(:,data.elevation<0);   
-    largeFallMask=zeros(size(velMask));
-    largeFallMask(velMask<=-2)=1;
-    
-    largeFall=sum(largeFallMask,1);
-    stratConv1D(largeFall>3)=1;
+%     % But if VEL above melting layer > 2.5 m/s -> convective
+%     velMask=nan(size(data.dbzMasked));
+%     velMask(cloudInd)=data.VEL_CORR(cloudInd);
+%     
+%     for jj=1:size(velMask,2);
+%         aslRay=aslMask(:,jj);
+%         velMask(aslRay<=meltAlt(jj)+200,jj)=nan;
+%     end
+%     
+%     velMask(:,data.elevation<0)=-velMask(:,data.elevation<0);   
+%     largeFallMask=zeros(size(velMask));
+%     largeFallMask(velMask<=-2)=1;
+%     
+%     largeFall=sum(largeFallMask,1);
+%     stratConv1D(largeFall>3)=1;
     
     % Sea surface cals and antenna transition are unknown
     stratConv1D((data.ANTFLAG==3 | data.ANTFLAG==4) & (meltAlt'<=maxAltCloud))=2;
     
-    % Stratiform because above melting layer
-    stratConv1D(meltAlt'<minAltCloud)=0;  
+    % Stratiform because majority of data above melting layer
+    aboveMelt=maxAltCloud-meltAlt';
+    totCloud=maxAltCloud-minAltCloud;
+    stratConv1D((aboveMelt./totCloud)>0.8)=0;
+    
     
     % Make it 2D
     backMask=repmat(stratConv1D,size(aslMask,1),1);
@@ -177,8 +180,8 @@ for jj=1:size(stratConvC,2)
     stratConvFilled(:,jj)=fillmissing(stratConvC(:,jj),'nearest');
 end
 
-stratConvBig=floor(movmedian(stratConvFilled,99,2,'omitnan'));
-stratConvBig=floor(movmedian(stratConvBig,99,2,'omitnan'));
+stratConvBig=floor(movmedian(stratConvFilled,19,2,'omitnan'));
+%stratConvBig=floor(movmedian(stratConvBig,99,2,'omitnan'));
 stratConvBig(isnan(stratConvC))=nan;
 
 % Make it vertically consistent
