@@ -17,6 +17,9 @@ meltAlt=nan(size(data.time))';
 meltAlt(:,:)=100000;
 meltAlt(meltInC)=meltAltIn;
 
+meltR=nan(size(data.time))';
+meltR(meltInC)=meltInR;
+
 % Loop through clouds
 numClouds=max(max(puzzle));
 countPieces=1;
@@ -130,15 +133,42 @@ for ii=1:countPieces-1
     % Sea surface cals and antenna transition are unknown
     stratConv1D((data.ANTFLAG==3 | data.ANTFLAG==4) & (meltAlt'<=maxAltCloud))=2;
     
-    % Stratiform because majority of data above melting layer
-    aboveMelt=maxAltCloud-meltAlt';
-    totCloud=maxAltCloud-minAltCloud;
-    stratConv1D((aboveMelt./totCloud)>0.8)=0;
-    
-    
     % Make it 2D
     backMask=repmat(stratConv1D,size(aslMask,1),1);
     
+    % Stratiform because majority of data above melting layer
+    maskMask=zeros(size(aslMask));
+    maskMask(~isnan(aslMask))=1;
+    maskMask=imfill(maskMask,'holes');
+        
+    for jj=1:size(maskMask,2)
+        mRay=maskMask(:,jj);
+        altRay=aslMask(:,jj);
+        if data.elevation(jj)>0;
+            mRay=flipud(mRay);
+            altRay=flipud(altRay);
+        end
+        if ~isnan(meltR(jj))
+            mRay(1:meltR(jj))=0;
+            firstNonNanM=min(find(mRay==1));
+            mRay(1:firstNonNanM-1)=1;
+            firstNanM=min(find(mRay==0));
+            if ~isempty(firstNanM) & firstNanM~=1 & newMinAlt>minAltCloud(jj)
+                newMinAlt=altRay(firstNanM-1);
+            else
+                newMinAlt=minAltCloud(jj);
+            end
+        else
+            newMinAlt=minAltCloud(jj);
+        end
+        aboveMelt=maxAltCloud(jj)-meltAlt(jj);
+        totCloud=maxAltCloud(jj)-newMinAlt;
+        altRayReal=aslMask(:,jj);
+        if (aboveMelt./totCloud)>0.8
+            backMask(find(altRayReal>=newMinAlt),jj)=0;
+        end
+    end
+            
     % Data above melt and below melt but not at melt
     noDataMeltIn=isnan(aslMask(meltInds));
     noDataMelt=nan(size(data.time))';
@@ -174,14 +204,85 @@ for jj=1:CC.NumObjects
     stratConvC(area)=ceil(median(neighbors,'omitnan'));
 end
 
+cutSmall=5000;
+
+% Take care of small stratiform areas
+stratMask=zeros(size(stratConvC));
+stratMask(stratConvC==0)=1;
+
+CC = bwconncomp(stratMask);
+
+for jj=1:CC.NumObjects
+    area=CC.PixelIdxList{jj};
+    if length(area)<cutSmall
+        [aR aC]=ind2sub(size(stratMask),area);
+        rows=unique(aR);
+        minColN=max([min(aC)-1,1]);
+        maxColN=min([max(aC)+1,size(stratConvC,2)]);
+        
+        neighbors=[stratConvC(rows,minColN);stratConvC(rows,maxColN)];
+        if any(neighbors==1)
+            stratConvC(area)=1;
+        elseif any(neighbors==2)
+            stratConvC(area)=2;
+        end
+    end
+end
+
+% Take care of small convective areas
+convMask=zeros(size(stratConvC));
+convMask(stratConvC==1)=1;
+
+CC = bwconncomp(convMask);
+
+for jj=1:CC.NumObjects
+    area=CC.PixelIdxList{jj};
+    if length(area)<cutSmall
+        [aR aC]=ind2sub(size(convMask),area);
+        rows=unique(aR);
+        minColN=max([min(aC)-1,1]);
+        maxColN=min([max(aC)+1,size(stratConvC,2)]);
+        
+        neighbors=[stratConvC(rows,minColN);stratConvC(rows,maxColN)];
+        if any(neighbors==0)
+            stratConvC(area)=0;
+        elseif any(neighbors==2)
+            stratConvC(area)=2;
+        end
+    end
+end
+
+% Take care of small unknown areas
+ukMask=zeros(size(stratConvC));
+ukMask(stratConvC==2)=1;
+
+CC = bwconncomp(ukMask);
+
+for jj=1:CC.NumObjects
+    area=CC.PixelIdxList{jj};
+    if length(area)<cutSmall
+        [aR aC]=ind2sub(size(ukMask),area);
+        rows=unique(aR);
+        minColN=max([min(aC)-1,1]);
+        maxColN=min([max(aC)+1,size(stratConvC,2)]);
+        
+        neighbors=[stratConvC(rows,minColN);stratConvC(rows,maxColN)];
+        if any(neighbors==0)
+            stratConvC(area)=0;
+        elseif any(neighbors==1)
+            stratConvC(area)=1;
+        end
+    end
+end
+
 % Get rid of outliers
 stratConvFilled=nan(size(stratConvC));
 for jj=1:size(stratConvC,2)
     stratConvFilled(:,jj)=fillmissing(stratConvC(:,jj),'nearest');
 end
 
-stratConvBig=floor(movmedian(stratConvFilled,19,2,'omitnan'));
-%stratConvBig=floor(movmedian(stratConvBig,99,2,'omitnan'));
+stratConvBig=floor(movmedian(stratConvFilled,49,2,'omitnan'));
+%stratConvBig=floor(movmedian(stratConvBig,19,2,'omitnan'));
 stratConvBig(isnan(stratConvC))=nan;
 
 % Make it vertically consistent

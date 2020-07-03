@@ -44,7 +44,7 @@ if ~isempty(holeStart) | ~isempty(holeEnd)
         holeLength=holeEnd(ii)-holeStart(ii);
         
         if holeLength==0
-            dataFill=holeStart(ii);
+            dataFill=minStart;
         else
             x=[holeStart(ii),holeEnd(ii)];
             v=[minStart,minEnd];
