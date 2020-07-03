@@ -169,7 +169,7 @@ for ii=1:countPieces-1
         end
     end
             
-    % Data above melt and below melt but not at melt
+    % Data above melt (strat) and below melt but not at melt
     noDataMeltIn=isnan(aslMask(meltInds));
     noDataMelt=nan(size(data.time))';
     noDataMelt(:,:)=100000;
@@ -281,7 +281,8 @@ for jj=1:size(stratConvC,2)
     stratConvFilled(:,jj)=fillmissing(stratConvC(:,jj),'nearest');
 end
 
-stratConvBig=floor(movmedian(stratConvFilled,49,2,'omitnan'));
+%stratConvBig=stratConvFilled;
+stratConvBig=floor(movmedian(stratConvFilled,19,2,'omitnan'));
 %stratConvBig=floor(movmedian(stratConvBig,19,2,'omitnan'));
 stratConvBig(isnan(stratConvC))=nan;
 
