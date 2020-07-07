@@ -8,7 +8,7 @@ function [BBfinished]= f_meltLayer_altOnly(data)
 
 disp('Searching 0 deg altitude ...');
 
-zeroAdjustMeters=350;
+zeroAdjustMeters=400;
 
 oneGate=data.range(2)-data.range(1);
 zeroAdjustGates=round(zeroAdjustMeters/oneGate);
@@ -164,8 +164,8 @@ for kk=1:size(layerAltsAdj,1)
     maxLevelLDR=nan(size(rowInds));
     for ii=1:length(rowInds)
         vertColLDR=LDRdata(:,timeInds(ii));
-        vertColLDR(rowInds(ii)+12:end)=nan;
-        vertColLDR(1:max([rowInds(ii)-12,1]))=nan;
+        vertColLDR(rowInds(ii)+18:end)=nan;
+        vertColLDR(1:max([rowInds(ii)-18,1]))=nan;
         
         % Check if all nan
         if min(isnan(vertColLDR))==0

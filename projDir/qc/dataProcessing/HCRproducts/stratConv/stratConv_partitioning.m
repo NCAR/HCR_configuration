@@ -29,7 +29,7 @@ caseStart=datetime(caseList.Var1,caseList.Var2,caseList.Var3, ...
 caseEnd=datetime(caseList.Var6,caseList.Var7,caseList.Var8, ...
     caseList.Var9,caseList.Var10,0);
 
-for aa=3:length(caseStart)
+for aa=12:length(caseStart)
     startTime=caseStart(aa);
     endTime=caseEnd(aa);
     %% Get data
@@ -100,10 +100,10 @@ for aa=3:length(caseStart)
     hold on
     surf(data.time,data.asl./1000,data.dbzMasked,'edgecolor','none');
     view(2);
+    scatter(data.time,liquidAlt./1000,10,'m','filled');
     scatter(timeMat(oneInds),data.asl(oneInds)./1000,10,'k','filled');
     scatter(timeMat(twoInds),data.asl(twoInds)./1000,10,'b','filled');
     scatter(timeMat(threeInds),data.asl(threeInds)./1000,10,'g','filled');
-    scatter(data.time,liquidAlt./1000,10,'m','filled');
     ax = gca;
     ax.SortMethod = 'childorder';
     ylabel('Altitude (km)');

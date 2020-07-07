@@ -27,11 +27,16 @@ if ~isempty(holeStart) | ~isempty(holeEnd)
     end
     
     for ii=1:length(holeStart)
-        flagColStart=flagTemp(:,holeStart(ii)-1);
-        flagColEnd=flagTemp(:,holeEnd(ii)+1);
         
-        minStart=min(find(flagColStart==7));
+        flagColEnd=flagTemp(:,holeEnd(ii)+1);
         minEnd=min(find(flagColEnd==7));
+        
+        if holeStart(ii)>1
+            flagColStart=flagTemp(:,holeStart(ii)-1);
+            minStart=min(find(flagColStart==7));
+        else
+            minStart=minEnd;
+        end
         
         if isempty(minStart)
             minStart=minEnd;

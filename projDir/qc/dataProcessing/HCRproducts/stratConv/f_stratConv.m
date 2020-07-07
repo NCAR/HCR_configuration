@@ -114,24 +114,25 @@ for ii=1:countPieces-1
     % Convective, no melting layer found
     stratConv1D(cloudYes & isnan(stratConv1D))=1;
     
-%     % But if VEL above melting layer > 2.5 m/s -> convective
-%     velMask=nan(size(data.dbzMasked));
-%     velMask(cloudInd)=data.VEL_CORR(cloudInd);
-%     
-%     for jj=1:size(velMask,2);
-%         aslRay=aslMask(:,jj);
-%         velMask(aslRay<=meltAlt(jj)+200,jj)=nan;
-%     end
-%     
-%     velMask(:,data.elevation<0)=-velMask(:,data.elevation<0);   
-%     largeFallMask=zeros(size(velMask));
-%     largeFallMask(velMask<=-2)=1;
-%     
-%     largeFall=sum(largeFallMask,1);
-%     stratConv1D(largeFall>3)=1;
+    % But if VEL above melting layer > 2.5 m/s -> convective
+    velMask=nan(size(data.dbzMasked));
+    velMask(cloudInd)=data.VEL_CORR(cloudInd);
+    
+    for jj=1:size(velMask,2);
+        aslRay=aslMask(:,jj);
+        velMask(aslRay<=meltAlt(jj)+200,jj)=nan;
+    end
+    
+    velMask(:,data.elevation<0)=-velMask(:,data.elevation<0);   
+    largeFallMask=zeros(size(velMask));
+    largeFallMask(velMask<=-4)=1;
+    
+    largeFall=sum(largeFallMask,1);
+    stratConv1D(largeFall>3)=1;
     
     % Sea surface cals and antenna transition are unknown
-    stratConv1D((data.ANTFLAG==3 | data.ANTFLAG==4) & (meltAlt'<=maxAltCloud))=2;
+    meanAntFlag=movmean(data.ANTFLAG,500);
+    stratConv1D(meanAntFlag>2.5 & (meltAlt'<=maxAltCloud))=2;
     
     % Make it 2D
     backMask=repmat(stratConv1D,size(aslMask,1),1);
@@ -153,7 +154,7 @@ for ii=1:countPieces-1
             firstNonNanM=min(find(mRay==1));
             mRay(1:firstNonNanM-1)=1;
             firstNanM=min(find(mRay==0));
-            if ~isempty(firstNanM) & firstNanM~=1 & newMinAlt>minAltCloud(jj)
+            if ~isempty(firstNanM) & firstNanM~=1 & altRay(firstNanM-1)>minAltCloud(jj)
                 newMinAlt=altRay(firstNanM-1);
             else
                 newMinAlt=minAltCloud(jj);
@@ -166,6 +167,7 @@ for ii=1:countPieces-1
         altRayReal=aslMask(:,jj);
         if (aboveMelt./totCloud)>0.8
             backMask(find(altRayReal>=newMinAlt),jj)=0;
+            backMask(find(altRayReal<newMinAlt),jj)=4;
         end
     end
             
@@ -187,6 +189,87 @@ for ii=1:countPieces-1
     stratConvC(~isnan(aslMask))=backMask(~isnan(aslMask));
 end
 
+cutSmall=5000;
+cutWidth=20;
+
+% Take care of small convective areas
+convMask=zeros(size(stratConvC));
+convMask(stratConvC==1)=1;
+
+CC = bwconncomp(convMask);
+
+for jj=1:CC.NumObjects
+    area=CC.PixelIdxList{jj};
+    [aR aC]=ind2sub(size(convMask),area);
+    areaWidth=max(aC)-min(aC);
+    if length(area)<cutSmall | areaWidth<cutWidth
+        rows=unique(aR);
+        minColN=max([min(aC)-1,1]);
+        maxColN=min([max(aC)+1,size(stratConvC,2)]);
+        
+        neighbors=[stratConvC(rows,minColN);stratConvC(rows,maxColN)];
+        if any(neighbors==0)
+            stratConvC(area)=0;
+        elseif any(neighbors==2)
+            stratConvC(area)=2;
+        elseif any(neighbors==4)
+            stratConvC(area)=4;
+        end
+    end
+end
+
+% Take care of small stratiform areas
+stratMask=zeros(size(stratConvC));
+stratMask(stratConvC==0)=1;
+
+CC = bwconncomp(stratMask);
+
+for jj=1:CC.NumObjects
+    area=CC.PixelIdxList{jj};
+    [aR aC]=ind2sub(size(stratMask),area);
+    areaWidth=max(aC)-min(aC);
+    if length(area)<cutSmall | areaWidth<cutWidth
+        rows=unique(aR);
+        minColN=max([min(aC)-1,1]);
+        maxColN=min([max(aC)+1,size(stratConvC,2)]);
+        
+        neighbors=[stratConvC(rows,minColN);stratConvC(rows,maxColN)];
+        if any(neighbors==1)
+            stratConvC(area)=1;
+        elseif any(neighbors==2)
+            stratConvC(area)=2;
+        elseif any(neighbors==4)
+            stratConvC(area)=4;
+        end
+    end
+end
+
+% Take care of small unknown areas
+ukMask=zeros(size(stratConvC));
+ukMask(stratConvC==2)=1;
+
+CC = bwconncomp(ukMask);
+
+for jj=1:CC.NumObjects
+    area=CC.PixelIdxList{jj};
+    [aR aC]=ind2sub(size(ukMask),area);
+    areaWidth=max(aC)-min(aC);
+    if length(area)<cutSmall | areaWidth<cutWidth
+        rows=unique(aR);
+        minColN=max([min(aC)-1,1]);
+        maxColN=min([max(aC)+1,size(stratConvC,2)]);
+        
+        neighbors=[stratConvC(rows,minColN);stratConvC(rows,maxColN)];
+        if any(neighbors==0)
+            stratConvC(area)=0;
+        elseif any(neighbors==1)
+            stratConvC(area)=1;
+        elseif any(neighbors==4)
+            stratConvC(area)=4;
+        end
+    end
+end
+
 % Take care of number 4
 belowMask=zeros(size(stratConvC));
 belowMask(stratConvC==4)=1;
@@ -204,87 +287,7 @@ for jj=1:CC.NumObjects
     stratConvC(area)=ceil(median(neighbors,'omitnan'));
 end
 
-cutSmall=5000;
-
-% Take care of small stratiform areas
-stratMask=zeros(size(stratConvC));
-stratMask(stratConvC==0)=1;
-
-CC = bwconncomp(stratMask);
-
-for jj=1:CC.NumObjects
-    area=CC.PixelIdxList{jj};
-    if length(area)<cutSmall
-        [aR aC]=ind2sub(size(stratMask),area);
-        rows=unique(aR);
-        minColN=max([min(aC)-1,1]);
-        maxColN=min([max(aC)+1,size(stratConvC,2)]);
-        
-        neighbors=[stratConvC(rows,minColN);stratConvC(rows,maxColN)];
-        if any(neighbors==1)
-            stratConvC(area)=1;
-        elseif any(neighbors==2)
-            stratConvC(area)=2;
-        end
-    end
-end
-
-% Take care of small convective areas
-convMask=zeros(size(stratConvC));
-convMask(stratConvC==1)=1;
-
-CC = bwconncomp(convMask);
-
-for jj=1:CC.NumObjects
-    area=CC.PixelIdxList{jj};
-    if length(area)<cutSmall
-        [aR aC]=ind2sub(size(convMask),area);
-        rows=unique(aR);
-        minColN=max([min(aC)-1,1]);
-        maxColN=min([max(aC)+1,size(stratConvC,2)]);
-        
-        neighbors=[stratConvC(rows,minColN);stratConvC(rows,maxColN)];
-        if any(neighbors==0)
-            stratConvC(area)=0;
-        elseif any(neighbors==2)
-            stratConvC(area)=2;
-        end
-    end
-end
-
-% Take care of small unknown areas
-ukMask=zeros(size(stratConvC));
-ukMask(stratConvC==2)=1;
-
-CC = bwconncomp(ukMask);
-
-for jj=1:CC.NumObjects
-    area=CC.PixelIdxList{jj};
-    if length(area)<cutSmall
-        [aR aC]=ind2sub(size(ukMask),area);
-        rows=unique(aR);
-        minColN=max([min(aC)-1,1]);
-        maxColN=min([max(aC)+1,size(stratConvC,2)]);
-        
-        neighbors=[stratConvC(rows,minColN);stratConvC(rows,maxColN)];
-        if any(neighbors==0)
-            stratConvC(area)=0;
-        elseif any(neighbors==1)
-            stratConvC(area)=1;
-        end
-    end
-end
-
-% Get rid of outliers
-stratConvFilled=nan(size(stratConvC));
-for jj=1:size(stratConvC,2)
-    stratConvFilled(:,jj)=fillmissing(stratConvC(:,jj),'nearest');
-end
-
-%stratConvBig=stratConvFilled;
-stratConvBig=floor(movmedian(stratConvFilled,19,2,'omitnan'));
-%stratConvBig=floor(movmedian(stratConvBig,19,2,'omitnan'));
-stratConvBig(isnan(stratConvC))=nan;
+stratConvBig=stratConvC;
 
 % Make it vertically consistent
 for jj=1:size(stratConvBig,2)

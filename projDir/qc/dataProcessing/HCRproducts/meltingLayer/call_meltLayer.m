@@ -6,8 +6,8 @@ close all;
 % startTime=datetime(2018,2,4,20,0,0);
 % endTime=datetime(2018,2,5,20,0,0);
 
-startTime=datetime(2019,8,7,16,30,0);
-endTime=datetime(2019,8,7,17,5,0);
+startTime=datetime(2019,8,11,17,40,0);
+endTime=datetime(2019,8,11,17,47,0);
 
 % startTime=datetime(2019,8,11,0,35,0);
 % endTime=datetime(2019,8,11,23,55,0);
@@ -97,7 +97,7 @@ timeMat=repmat(data.time,size(data.TEMP,1),1);
 %close all
 
 if plotPartFlight
-    fig1=figure('DefaultAxesFontSize',11,'position',[100,100,1400,800]);
+    fig1=figure('DefaultAxesFontSize',11,'position',[100,1300,1200,800]);
     
     %%%%%%%%%%%%%%%%%%%%%%%% DBZ%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ax1=subplot(2,1,1);
