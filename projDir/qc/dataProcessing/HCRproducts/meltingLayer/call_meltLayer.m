@@ -3,11 +3,11 @@
 clear all;
 close all;
 
-% startTime=datetime(2018,2,4,20,0,0);
-% endTime=datetime(2018,2,5,20,0,0);
+% startTime=datetime(2015,8,12,20,35,0);
+% endTime=datetime(2015,8,12,20,55,0);
 
-startTime=datetime(2019,8,11,17,40,0);
-endTime=datetime(2019,8,11,17,47,0);
+startTime=datetime(2018,1,23,0,13,0);
+endTime=datetime(2018,1,23,0,19,0);
 
 % startTime=datetime(2019,8,11,0,35,0);
 % endTime=datetime(2019,8,11,23,55,0);
@@ -18,19 +18,16 @@ else
     plotPartFlight=0;
 end
 
-project='otrec'; %socrates, aristo, cset
+project='socrates'; %socrates, aristo, cset
 quality='qc2'; %field, qc1, or qc2
 freqData='10hz'; % 10hz, 100hz, or 2hz
 
-% Expected bright band altitude. Determines plot zoom.
+% Determines plot zoom.
 if strcmp(project,'otrec')
-    expBBalt=5;
     ylimits=[-0.2 15];
 elseif strcmp(project,'socrates')
-    expBBalt=2;
-    ylimits=[-0.2 9];
-elseif strcmp(project,'otrec')
-    expBBalt=5;
+    ylimits=[-0.2 5];
+elseif strcmp(project,'cset')
     ylimits=[-0.2 9];
 end
 

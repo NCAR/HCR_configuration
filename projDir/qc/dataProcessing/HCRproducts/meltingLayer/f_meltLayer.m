@@ -269,26 +269,26 @@ for kk=1:size(layerAltsAdj,1)
     maxLevelVEL=nan(1,length(timeInds));
     maxLevelVEL(stepInC)=stepInR; 
     
-%     fig1=figure('DefaultAxesFontSize',11,'position',[100,100,1400,800]);
-%     colmap=jet;
-%     colormap(flipud(colmap));
-%     subplot(3,1,1)
-%     hold on
-%     surf(velSmooth,'edgecolor','none');
-%     view(2)
-%     %colorbar
-%     caxis([-5 5])
-%     plot(maxLevelVEL,'-b')
-%     
-%     subplot(3,1,2)
-%     hold on
-%     plot(diffS1)
-%     plot(movmean(diffS1,50,'omitnan'),'linewidth',2)
-%     
-%     subplot(3,1,3)
-%     hold on
-%     plot(maxVar);
-%     plot(movmean(maxVar,50,'omitnan'),'linewidth',2)
+    fig1=figure('DefaultAxesFontSize',11,'position',[100,100,1400,800]);
+    colmap=jet;
+    colormap(flipud(colmap));
+    subplot(3,1,1)
+    hold on
+    surf(velSmooth,'edgecolor','none');
+    view(2)
+    %colorbar
+    caxis([-5 5])
+    plot(maxLevelVEL,'-b')
+    
+    subplot(3,1,2)
+    hold on
+    plot(diffS1)
+    plot(movmean(diffS1,50,'omitnan'),'linewidth',2)
+    
+    subplot(3,1,3)
+    hold on
+    plot(maxVar);
+    plot(movmean(maxVar,50,'omitnan'),'linewidth',2)
     
     % Remove data that doesn't cut it
     if min(isnan(maxLevelLDR))==0 | min(isnan(maxLevelLDR))==0
@@ -373,7 +373,7 @@ for kk=1:size(layerAltsAdj,1)
             
             startInds=startInds+1;
             
-            if endInds(1)<startInds(1)
+            if isempty(startInds) | endInds(1)<startInds(1)
                 startInds=[1 startInds];
             end
             if length(endInds)~=length(startInds)
