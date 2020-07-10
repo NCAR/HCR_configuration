@@ -4,6 +4,9 @@
 % 2=melting layer interpolated
 % 3=melting layer defined as zero degree altitude
 function [BBfinished]= f_meltLayer_altOnly(data)
+
+debugFig=0;
+
 %% Find zero degree altitude
 
 disp('Searching 0 deg altitude ...');
@@ -174,9 +177,10 @@ for kk=1:size(layerAltsAdj,1)
         end
     end
     
+    ASLlayer=data.asl(:,timeInds);
+    
     if min(isnan(maxLevelLDR))==0
-        ASLlayer=data.asl(:,timeInds);
-           
+                   
         % LDR       
         colIndsLDR=1:1:size(ASLlayer,2);
         linearIndLDR = sub2ind(size(ASLlayer), maxLevelLDR, colIndsLDR);
@@ -243,56 +247,16 @@ for kk=1:size(layerAltsAdj,1)
     % Calculate velocity steps
     [velSteps,S1,S2] = ischange(velSmooth,1,'MaxNumChanges',1);
     
-    % Difference between steps
-    diffS1=nan(1,size(velSteps,2));
-    varS2=nan(2,size(velSteps,2));
-    for ii=1:size(velSteps,2)
-        uS1=unique(S1(:,ii));
-        uS1(isnan(uS1))=[];
-        uS2=unique(S2(:,ii));
-        uS2(isnan(uS2))=[];
-        
-        if length(uS1)==2
-            diffS1(ii)=uS1(2)-uS1(1);
-        end
-        if length(uS2)==2
-            varS2(:,ii)=uS2;
-        end
-    end
-    
-    maxVar=max(varS2,[],1);
-    
     % Find altitude of step
     stepInLin=find(velSteps==1);
     [stepInR,stepInC]=ind2sub(size(velSmooth),stepInLin);
     
     maxLevelVEL=nan(1,length(timeInds));
-    maxLevelVEL(stepInC)=stepInR; 
-    
-    fig1=figure('DefaultAxesFontSize',11,'position',[100,100,1400,800]);
-    colmap=jet;
-    colormap(flipud(colmap));
-    subplot(3,1,1)
-    hold on
-    surf(velSmooth,'edgecolor','none');
-    view(2)
-    %colorbar
-    caxis([-5 5])
-    plot(maxLevelVEL,'-b')
-    
-    subplot(3,1,2)
-    hold on
-    plot(diffS1)
-    plot(movmean(diffS1,50,'omitnan'),'linewidth',2)
-    
-    subplot(3,1,3)
-    hold on
-    plot(maxVar);
-    plot(movmean(maxVar,50,'omitnan'),'linewidth',2)
+    maxLevelVEL(stepInC)=stepInR;
     
     % Remove data that doesn't cut it
-    if min(isnan(maxLevelLDR))==0 | min(isnan(maxLevelLDR))==0
-                
+    if min(isnan(maxLevelLDR))==0 | min(isnan(maxLevelVEL))==0
+        
         % VEL
         colIndsVEL=1:1:size(ASLlayer,2);
         linearIndVEL = sub2ind(size(ASLlayer), maxLevelVEL, colIndsVEL);
@@ -303,6 +267,51 @@ for kk=1:size(layerAltsAdj,1)
         VELaltRaw=nan(size(rowInds));
         VELaltRaw(find(~isnan(maxLevelVEL)))=VELaltRawIn;
         
+        % Difference between steps
+        diffS1=nan(1,size(velSteps,2));
+        udS1=nan(2,size(velSteps,2));
+        %         varS2=nan(2,size(velSteps,2));
+        for ii=1:size(velSteps,2)
+            uS1=unique(S1(:,ii));
+            uS1(isnan(uS1))=[];
+            %             uS2=unique(S2(:,ii));
+            %             uS2(isnan(uS2))=[];
+            
+            if length(uS1)==2
+                diffS1(ii)=uS1(2)-uS1(1);
+                udS1(:,ii)=uS1;
+            end
+            %             if length(uS2)==2
+            %                 varS2(:,ii)=uS2;
+            %             end
+        end
+        
+        %        maxVar=max(varS2,[],1);
+        
+        if debugFig & ~isempty(maxLevelVEL)
+            fig1=figure('DefaultAxesFontSize',11,'position',[100,100,1400,800]);
+            colmap=jet;
+            colormap(flipud(colmap));
+            subplot(4,1,1)
+            hold on
+            surf(velSmooth,'edgecolor','none');
+            view(2)
+            %colorbar
+            caxis([-5 5])
+            plot(maxLevelVEL,'-b')
+            
+            subplot(4,1,2)
+            hold on
+            plot(diffS1)
+            plot(movmean(diffS1,50,'omitnan'),'linewidth',2)
+            ylim([0 3]);
+            grid on
+        end
+        
+        VELaltRaw(movmean(udS1(1,:),50,'omitnan')>0)=nan;
+        VELaltRaw(movmean(udS1(2,:),50,'omitnan')>0)=nan;
+        VELaltRaw(movmean(diffS1,50,'omitnan')<0.7)=nan;
+        
         % Compare with zero degree layer
         VELzeroDiff=VELaltRaw-layerAltsTemp;
         VELaltRaw(abs(VELzeroDiff)>200)=nan;
@@ -312,7 +321,7 @@ for kk=1:size(layerAltsAdj,1)
         VELalt(isnan(VELaltRaw))=nan;
         
         % Distance between raw and mean altitude
-        VELloc=abs(VELaltRaw-VELalt);        
+        VELloc=abs(VELaltRaw-VELalt);
         % Remove data where distance is more than 200 m
         VELaltRaw(VELloc>100)=nan;
         
@@ -320,11 +329,26 @@ for kk=1:size(layerAltsAdj,1)
         VELaltS=movstd(VELaltRaw,300,'omitnan');
         VELaltS(isnan(VELaltRaw))=nan;
         % Remove data with too much std
-        VELaltRaw(VELaltS>100)=nan;
-                
+        VELaltRaw(VELaltS>35)=nan;
+        
+        if debugFig & ~isempty(maxLevelVEL)
+            subplot(4,1,3:4)
+            hold on
+            plot(VELzeroDiff);
+            plot(VELloc);
+            plot(VELaltRaw,'linewidth',2)
+            yyaxis right
+            plot(VELaltS)
+            legend('Difference to zero deg','Difference from mean','Good data','Std',...
+                'location','northoutside','orientation','horizontal');
+            grid on
+        end
+        
         % Combine max levels
         BBaltRaw=VELaltRaw;
-        BBaltRaw(~isnan(LDRaltRaw))=LDRaltRaw(~isnan(LDRaltRaw));        
+        if exist('LDRaltRaw')
+            BBaltRaw(~isnan(LDRaltRaw))=LDRaltRaw(~isnan(LDRaltRaw));
+        end
         
         % Remove data that is too short
         BBmask=zeros(size(BBaltRaw));
@@ -352,7 +376,7 @@ for kk=1:size(layerAltsAdj,1)
                 BBaltRaw(area)=nan;
             end
         end
-                
+        
         % Avoid jumps between gates
         BBaltRaw=movmedian(BBaltRaw,20,'omitnan');
         
