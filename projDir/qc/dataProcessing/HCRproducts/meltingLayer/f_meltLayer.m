@@ -205,7 +205,7 @@ for kk=1:size(layerAltsAdj,1)
         LDRaltRaw(LDRloc>50)=nan;
         
         % Adjust zero degree layer
-        zeroDist=LDRalt-layerAltsTemp;
+        zeroDist=LDRaltRaw-layerAltsTemp;
         
         % Remove small data stretches
         zeroMask=zeros(size(zeroDist));

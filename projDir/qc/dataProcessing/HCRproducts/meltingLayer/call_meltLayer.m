@@ -3,7 +3,7 @@
 clear all;
 close all;
 
-project='cset'; %socrates, aristo, cset
+project='socrates'; %socrates, aristo, cset
 quality='qc2'; %field, qc1, or qc2
 freqData='10hz'; % 10hz, 100hz, or 2hz
 
@@ -37,6 +37,9 @@ caseEnd=datetime(caseList.Var6,caseList.Var7,caseList.Var8, ...
     caseList.Var9,caseList.Var10,0);
 
 for aa=1:length(caseStart)
+    
+    disp(['Case ',num2str(aa),' of ',num2str(length(caseStart))]);
+    
     startTime=caseStart(aa);
     endTime=caseEnd(aa);
     
