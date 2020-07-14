@@ -3,7 +3,7 @@
 clear all;
 close all;
 
-project='cset'; %socrates, aristo, cset
+project='otrec'; %socrates, aristo, cset
 quality='qc2'; %field, qc1, or qc2
 freqData='10hz'; % 10hz, 100hz, or 2hz
 
@@ -15,14 +15,7 @@ if ~exist(figdir, 'dir')
     mkdir(figdir)
 end
 
-% Determines plot zoom.
-if strcmp(project,'otrec')
-    ylimits=[-0.2 15];
-elseif strcmp(project,'socrates')
-    ylimits=[-0.2 9];
-elseif strcmp(project,'otrec')
-    ylimits=[-0.2 9];
-end
+ylimits=[-0.2 8];
 
 indir=HCRdir(project,quality,freqData);
 
@@ -30,7 +23,7 @@ infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_
 
 caseList = table2array(readtable(infile));
 
-for aa=1:size(caseList,1)
+for aa=4:size(caseList,1)
     disp(['Flight ',num2str(aa)]);
     
     startTime=datetime(caseList(aa,1:6));
@@ -79,6 +72,10 @@ for aa=1:size(caseList,1)
         end
         
         dataVars=dataVars(~cellfun('isempty',dataVars));
+        
+        if isempty(data.DBZ)
+            continue
+        end
         
         %% Find melting layer
         data.dbzMasked=data.DBZ;

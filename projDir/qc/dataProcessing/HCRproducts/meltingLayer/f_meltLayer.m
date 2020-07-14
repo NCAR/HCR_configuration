@@ -350,6 +350,8 @@ for kk=1:size(layerAltsAdj,1)
             BBaltRaw(~isnan(LDRaltRaw))=LDRaltRaw(~isnan(LDRaltRaw));
         end
         
+        clear LDRaltRaw
+        
         % Remove data that is too short
         BBmask=zeros(size(BBaltRaw));
         BBmask(~isnan(BBaltRaw))=1;
