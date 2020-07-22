@@ -128,7 +128,7 @@ output_n_slots = 1000;
 // Type: int
 //
 
-output_buf_size = 2000000000;
+output_buf_size = 1500000000;
 
 ///////////// write_blocking //////////////////////////
 //
@@ -150,5 +150,5 @@ write_blocking = FALSE;
 // Type: int
 //
 
-max_cache_size = 100;
+max_cache_size = 50;
 
