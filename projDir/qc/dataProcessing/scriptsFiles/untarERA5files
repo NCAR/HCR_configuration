@@ -1,0 +1,21 @@
+#! /bin/csh
+
+# untar reanalysis files
+
+setenv INDIR /scr/snow2/rsfdata/projects/cset/model/era5
+cd $INDIR
+
+setenv FILES *.tar
+
+#ls $FILES
+
+foreach file ($FILES)
+echo $file
+tar -xvf $file
+end
+
+rm -f *.tar
+rm -f Authentication.log
+rm -f auth.rda_ucar_edu
+rm -f download_ds*
+

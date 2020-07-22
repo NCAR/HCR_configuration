@@ -1,0 +1,9 @@
+#! /bin/csh
+
+source ~/hcrProjDir/system/params/project_info.cset
+
+cd $PROJ_DIR/qc/params
+
+AcGeoref2Spdb -params AcGeoref2Spdb.raf_1hz -debug -f /scr/snow2/rsfdata/projects/cset/GV/gv_field/CSETrf??.nc -debug
+
+

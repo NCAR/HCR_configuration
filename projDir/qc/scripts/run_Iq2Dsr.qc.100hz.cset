@@ -1,46 +1,46 @@
 #! /bin/csh -f
 
-# HCR 100Hz QC processing for socrates
+# HCR 100Hz QC processing for cset
 #
 # Run Iq2Dsr, writing 100 hz data to fmq
 # This will be read in by Dsr2Radx, to write CfRadial files
 
-source ~/git/HCR_configuration/projDir/qc/scripts/set_env_qc.cset
+source ~/git/HCR_configuration/projDir/system/params/project_info.cset
 cd $PROJ_DIR/qc/params
 
 # flight by flight
 
-Iq2Dsr -params Iq2Dsr.qc.100hz.cset -debug -start "2015 07 01 14 40 00" -end "2015 07 01 22 25 00" >& /tmp/Iq2Dsr.rf01.100hz.cset.log
+Iq2Dsr -params Iq2Dsr.qc.100hz.cset -debug -start "2015 07 01 14 40 00" -end "2015 07 01 22 25 00"
 
-Iq2Dsr -params Iq2Dsr.qc.100hz.cset -debug -start "2015 07 07 13 55 00" -end "2015 07 07 21 20 00" >& /tmp/Iq2Dsr.rf02.100hz.cset.log
+Iq2Dsr -params Iq2Dsr.qc.100hz.cset -debug -start "2015 07 07 13 55 00" -end "2015 07 07 21 20 00" 
 
-Iq2Dsr -params Iq2Dsr.qc.100hz.cset -debug -start "2015 07 09 16 25 00" -end "2015 07 09 23 45 00" >& /tmp/Iq2Dsr.rf03.100hz.cset.log
+Iq2Dsr -params Iq2Dsr.qc.100hz.cset -debug -start "2015 07 09 16 25 00" -end "2015 07 09 23 45 00" 
 
-Iq2Dsr -params Iq2Dsr.qc.100hz.cset -debug -start "2015 07 12 13 50 00" -end "2015 07 12 21 35 00" >& /tmp/Iq2Dsr.rf04.100hz.cset.log
+Iq2Dsr -params Iq2Dsr.qc.100hz.cset -debug -start "2015 07 12 13 50 00" -end "2015 07 12 21 35 00" 
 
-Iq2Dsr -params Iq2Dsr.qc.100hz.cset -debug -start "2015 07 14 15 20 00" -end "2015 07 15 00 25 00" >& /tmp/Iq2Dsr.rf05.100hz.cset.log
+Iq2Dsr -params Iq2Dsr.qc.100hz.cset -debug -start "2015 07 14 15 20 00" -end "2015 07 15 00 25 00" 
 
-Iq2Dsr -params Iq2Dsr.qc.100hz.cset -debug -start "2015 07 17 14 55 00" -end "2015 07 17 21 50 00" >& /tmp/Iq2Dsr.rf06.100hz.cset.log
+Iq2Dsr -params Iq2Dsr.qc.100hz.cset -debug -start "2015 07 17 14 55 00" -end "2015 07 17 21 50 00" 
 
-Iq2Dsr -params Iq2Dsr.qc.100hz.cset -debug -start "2015 07 19 15 05 00" -end "2015 07 20 00 05 00" >& /tmp/Iq2Dsr.rf07.100hz.cset.log
+Iq2Dsr -params Iq2Dsr.qc.100hz.cset -debug -start "2015 07 19 15 05 00" -end "2015 07 20 00 05 00" 
 
-Iq2Dsr -params Iq2Dsr.qc.100hz.cset -debug -start "2015 07 22 13 55 00" -end "2015 07 22 22 10 00" >& /tmp/Iq2Dsr.rf08.100hz.cset.log
+Iq2Dsr -params Iq2Dsr.qc.100hz.cset -debug -start "2015 07 22 13 55 00" -end "2015 07 22 22 10 00" 
 
-Iq2Dsr -params Iq2Dsr.qc.100hz.cset -debug -start "2015 07 24 15 00 00" -end "2015 07 25 00 30 00" >& /tmp/Iq2Dsr.rf09.100hz.cset.log
+Iq2Dsr -params Iq2Dsr.qc.100hz.cset -debug -start "2015 07 24 15 00 00" -end "2015 07 25 00 30 00" 
 
-Iq2Dsr -params Iq2Dsr.qc.100hz.cset -debug -start "2015 07 27 14 40 00" -end "2015 07 27 22 15 00" >& /tmp/Iq2Dsr.rf10.100hz.cset.log
+Iq2Dsr -params Iq2Dsr.qc.100hz.cset -debug -start "2015 07 27 14 40 00" -end "2015 07 27 22 15 00" 
 
-Iq2Dsr -params Iq2Dsr.qc.100hz.cset -debug -start "2015 07 29 15 20 00" -end "2015 07 30 00 10 00" >& /tmp/Iq2Dsr.rf11.100hz.cset.log
+Iq2Dsr -params Iq2Dsr.qc.100hz.cset -debug -start "2015 07 29 15 20 00" -end "2015 07 30 00 10 00" 
 
-Iq2Dsr -params Iq2Dsr.qc.100hz.cset -debug -start "2015 08 01 13 30 00" -end "2015 08 01 22 40 00" >& /tmp/Iq2Dsr.rf12.100hz.cset.log
+Iq2Dsr -params Iq2Dsr.qc.100hz.cset -debug -start "2015 08 01 13 30 00" -end "2015 08 01 22 40 00" 
 
-Iq2Dsr -params Iq2Dsr.qc.100hz.cset -debug -start "2015 08 03 15 05 00" -end "2015 08 03 23 45 00" >& /tmp/Iq2Dsr.rf13.100hz.cset.log
+Iq2Dsr -params Iq2Dsr.qc.100hz.cset -debug -start "2015 08 03 15 05 00" -end "2015 08 03 23 45 00" 
 
-Iq2Dsr -params Iq2Dsr.qc.100hz.cset -debug -start "2015 08 07 13 25 00" -end "2015 08 07 22 10 00" >& /tmp/Iq2Dsr.rf14.100hz.cset.log
+Iq2Dsr -params Iq2Dsr.qc.100hz.cset -debug -start "2015 08 07 13 25 00" -end "2015 08 07 22 10 00" 
 
-Iq2Dsr -params Iq2Dsr.qc.100hz.cset -debug -start "2015 08 09 14 55 00" -end "2015 08 09 23 50 00" >& /tmp/Iq2Dsr.rf15.100hz.cset.log
+Iq2Dsr -params Iq2Dsr.qc.100hz.cset -debug -start "2015 08 09 14 55 00" -end "2015 08 09 23 50 00" 
 
-Iq2Dsr -params Iq2Dsr.qc.100hz.cset -debug -start "2015 08 12 14 55 00" -end "2015 08 12 22 05 00" >& /tmp/Iq2Dsr.rf15.100hz.cset.log
+Iq2Dsr -params Iq2Dsr.qc.100hz.cset -debug -start "2015 08 12 14 55 00" -end "2015 08 12 22 05 00" 
 
 
 

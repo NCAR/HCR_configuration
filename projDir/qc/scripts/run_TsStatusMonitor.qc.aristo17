@@ -1,6 +1,6 @@
 #! /bin/csh
 
-source ~/git/HCR_configuration/projDir/qc/scripts/set_env_qc
+source ~/git/HCR_configuration/projDir/system/params/project_info
 
 cd $PROJ_DIR/qc/params
 

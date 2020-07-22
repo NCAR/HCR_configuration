@@ -130,7 +130,7 @@ aircraft_callsign = "N677F";
 // Type: string
 //
 
-output_spdb_url = "/scr/rain1/rsfdata/projects/socrates/hcr/spdb/ac_georef/raf_1hz";
+output_spdb_url = "$(DATA_DIR)/$(QC_VERSION)/spdb/ac_georef/raf_1hz";
 
 ///////////// spdb_nchunks_per_write //////////////////
 //

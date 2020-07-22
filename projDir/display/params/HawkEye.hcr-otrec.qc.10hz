@@ -214,8 +214,7 @@ archive_time_span_secs = 600;
 // Type: string
 //
 
-archive_data_url = "$(DATA_DIR)/qc/cfradial/velcorr/10hz";
-// archive_data_url = "$(DATA_DIR)/cfradial/moments/10hz";
+archive_data_url = "$(DATA_DIR)/$(QC_VERSION)/cfradial/moments/10hz";
 
 //======================================================================
 //
@@ -354,43 +353,7 @@ fields = {
   }
   ,
   {
-    label = "VEL_CORR4",
-    raw_name = "VEL_CORR",
-    filtered_name = "",
-    units = "m/s",
-    color_map = "vel_w_4.colors",
-    shortcut = "1"
-  }
-  ,
-  {
-    label = "VEL_CORR8",
-    raw_name = "VEL_CORR",
-    filtered_name = "",
-    units = "m/s",
-    color_map = "vel_w_8.colors",
-    shortcut = "2"
-  }
-  ,
-  {
-    label = "VEL_DELTA",
-    raw_name = "VEL_DELTA",
-    filtered_name = "",
-    units = "m/s",
-    color_map = "vel_delta.colors",
-    shortcut = "3"
-  }
-  ,
-  {
-    label = "VEL4",
-    raw_name = "VEL",
-    filtered_name = "",
-    units = "m/s",
-    color_map = "vel_w_4.colors",
-    shortcut = "4"
-  }
-  ,
-  {
-    label = "VEL8",
+    label = "VEL",
     raw_name = "VEL",
     filtered_name = "",
     units = "m/s",
@@ -399,16 +362,16 @@ fields = {
   }
   ,
   {
-    label = "VEL_RAW4",
-    raw_name = "VEL_RAW",
+    label = "VEL_VERT",
+    raw_name = "VEL_VERT",
     filtered_name = "",
     units = "m/s",
-    color_map = "vel_w_4.colors",
-    shortcut = "6"
+    color_map = "vel_w_8.colors",
+    shortcut = "7"
   }
   ,
   {
-    label = "VEL_RAW8",
+    label = "VEL_RAW",
     raw_name = "VEL_RAW",
     filtered_name = "",
     units = "m/s",
@@ -426,12 +389,12 @@ fields = {
   }
   ,
   {
-    label = "WIDTH_CORR",
-    raw_name = "WIDTH_CORR",
+    label = "WIDTH_RAW",
+    raw_name = "WIDTH_RAW",
     filtered_name = "",
     units = "m/s",
     color_map = "width_w.colors",
-    shortcut = "9"
+    shortcut = "8"
   }
   ,
   {
@@ -495,6 +458,24 @@ fields = {
     units = "dBm",
     color_map = "dbm.colors",
     shortcut = "d"
+  }
+  ,
+  {
+    label = "NOISE_BIAS_DB_VC",
+    raw_name = "NOISE_BIAS_DB_VC",
+    filtered_name = "",
+    units = "dB",
+    color_map = "noise_bias.colors",
+    shortcut = "i"
+  }
+  ,
+  {
+    label = "NOISE_BIAS_DB_HX",
+    raw_name = "NOISE_BIAS_DB_HX",
+    filtered_name = "",
+    units = "dB",
+    color_map = "noise_bias.colors",
+    shortcut = "i"
   }
 };
 
@@ -1166,7 +1147,7 @@ bscan_specify_range_limits = TRUE;
 // Type: double
 //
 
-bscan_min_range_km = 0;
+bscan_min_range_km = -0.5;
 
 ///////////// bscan_max_range_km //////////////////////
 //
@@ -1188,7 +1169,7 @@ bscan_max_range_km = 15;
 // Type: double
 //
 
-bscan_min_altitude_km = -1;
+bscan_min_altitude_km = $(BSCAN_MIN_ALTITUDE_KM);
 
 ///////////// bscan_max_altitude_km ///////////////////
 //
@@ -1198,7 +1179,7 @@ bscan_min_altitude_km = -1;
 // Type: double
 //
 
-bscan_max_altitude_km = 9;
+bscan_max_altitude_km = $(BSCAN_MAX_ALTITUDE_KM);
 
 ///////////// bscan_altitude_in_feet //////////////////
 //

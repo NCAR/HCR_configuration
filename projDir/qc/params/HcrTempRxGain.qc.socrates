@@ -220,7 +220,7 @@ pod_temperature_tags = {
 // Type: double
 //
 
-v_lna_reference_temperature_c = 29.73897;
+v_lna_reference_temperature_c = 29.739;
 
 ///////////// v_lna_gain_change_per_c /////////////////
 //
@@ -234,7 +234,7 @@ v_lna_reference_temperature_c = 29.73897;
 // Type: double
 //
 
-v_lna_gain_change_per_c = 0.19851;
+v_lna_gain_change_per_c = 0.198513595769777;
 
 ///////////// pod_reference_temperature_c /////////////
 //
@@ -263,7 +263,7 @@ pod_reference_temperature_c = 19.39;
 // Type: double
 //
 
-v_rx_gain_change_per_c = -0.115120;
+v_rx_gain_change_per_c = -0.115197214345761;
 
 ///////////// v_lna_temperature_time_lag_secs /////////
 //
@@ -278,7 +278,7 @@ v_rx_gain_change_per_c = -0.115120;
 // Type: int
 //
 
-v_lna_temperature_time_lag_secs = -7;
+v_lna_temperature_time_lag_secs = -7.1;
 
 ///////////// temperature_smoothing_interval_secs /////
 //

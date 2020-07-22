@@ -118,7 +118,7 @@ mode = ARCHIVE;
 // Type: string
 //
 
-input_dir = "$(DATA_DIR)/cfradial/moments/10hz";
+input_dir = "$(DATA_DIR)/$(QC_VERSION)/cfradial/moments/10hz";
 
 ///////////// max_realtime_data_age_secs //////////////
 //
@@ -367,7 +367,7 @@ width_correction_beamwidth_deg = 0.69;
 // Type: boolean
 //
 
-correct_altitude_for_egm = TRUE;
+correct_altitude_for_egm = FALSE;
 
 ///////////// egm_2008_geoid_file /////////////////////
 //
@@ -458,7 +458,7 @@ compression_level = 4;
 // Type: string
 //
 
-output_dir = "$(DATA_DIR)/qc/cfradial/velcorr/10hz";
+output_dir = "$(DATA_DIR)/$(QC_VERSION)/cfradial/velcorr/10hz";
 
 ///////////// output_filename_mode ////////////////////
 //
@@ -649,7 +649,7 @@ noise_filter_length_secs = 3;
 // Type: double
 //
 
-wave_filter_length_secs = 20;
+wave_filter_length_secs = $(WAVE_FILTER_LENGTH_SECS);
 
 ///////////// wave_filter_polynomial_order ////////////
 //

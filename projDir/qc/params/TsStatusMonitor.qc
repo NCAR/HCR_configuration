@@ -2808,7 +2808,7 @@ write_to_spdb = TRUE;
 // Type: string
 //
 
-spdb_url = "$(DATA_DIR)/spdb/monitor/qc";
+spdb_url = "$(DATA_DIR)/$(QC_VERSION)/spdb/monitor";
 
 ///////////// spdb_interval_secs //////////////////////
 //

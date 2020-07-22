@@ -1,21 +1,23 @@
 #############################################
 # project-specific parameters for HCR
-#
-# Mike Dixon Jan 2008
 #############################################
 
 # Project-specific info
 
-setenv  PROJECT_NAME               "otrec"
-setenv  SITE_NAME                  "OTREC"
+setenv  PROJECT_NAME               otrec
+
 setenv  BSCAN_MAX_ALTITUDE_KM      14.326     # OTREC (47000 ft.)
-#setenv BSCAN_MAX_ALTITUDE_KM      8.0        # SOCRATES
+setenv  BSCAN_MIN_ALTITUDE_KM      -0.5
 
-# The following are set as default parameters
-# until the INS/GPS data comes in
+setenv  BSCAN_MAX_ALTITUDE_KM      14.5       # OTREC 47500 ft
+setenv  BSCAN_MIN_ALTITUDE_KM      -0.5
 
-setenv RADAR_LAT                  40.0
-setenv RADAR_LON                  -105.0
-setenv RADAR_ALT_KM               1.6
-setenv RADAR_ALT_M                1600
+# previous projects
+
+#setenv  PROJECT_NAME               cset
+#setenv  PROJECT_NAME               socrates
+
+#setenv BSCAN_MAX_ALTITUDE_KM      8.0        # CSET
+#setenv BSCAN_MAX_ALTITUDE_KM      9.0        # SOCRATES
+
 

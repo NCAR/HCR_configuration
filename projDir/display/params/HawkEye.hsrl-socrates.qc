@@ -1157,7 +1157,7 @@ bscan_max_range_km = 15;
 // Type: double
 //
 
-bscan_min_altitude_km = -1;
+bscan_min_altitude_km = $(BSCAN_MIN_ALTITUDE_KM);
 
 ///////////// bscan_max_altitude_km ///////////////////
 //
@@ -1167,7 +1167,7 @@ bscan_min_altitude_km = -1;
 // Type: double
 //
 
-bscan_max_altitude_km = 8;
+bscan_max_altitude_km = $(BSCAN_MAX_ALTITUDE_KM);
 
 ///////////// bscan_altitude_in_feet //////////////////
 //

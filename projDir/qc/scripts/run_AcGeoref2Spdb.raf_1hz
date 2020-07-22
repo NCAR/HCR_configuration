@@ -1,5 +1,0 @@
-#! /bin/csh
-
-cd ~/git/HCR_configuration/projDir/qc/params
-
-AcGeoref2Spdb -params AcGeoref2Spdb.raf_1hz -debug -f /export/rain1/rsfdata/projects/socrates/GV/SOCRATESrf??.nc

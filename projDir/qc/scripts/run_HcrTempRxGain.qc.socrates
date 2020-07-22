@@ -2,7 +2,7 @@
 
 # run the temperate vs gain analysis for HCR in socrates
 
-source ~/git/HCR_configuration/projDir/qc/scripts/set_env_qc
+source ~/git/HCR_configuration/projDir/system/params/project_info.socrates
 cd $PROJ_DIR/qc/params
 
 HcrTempRxGain -params HcrTempRxGain.qc.socrates -debug -start "2018 01 15 00 00 00" -end "2018 02 25 00 00 00" > $DATA_DIR/logs/HcrTempRxGain.qc.socrates.log &

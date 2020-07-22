@@ -216,7 +216,7 @@ archive_n_scans = 12;
 // Type: string
 //
 
-archive_data_url = "/scr/snow2/rsfdata/projects/otrec/hcr/cfradial/moments/10hz";
+archive_data_url = "$(DATA_DIR)/cfradial/moments/10hz";
 
 ///////////// archive_search_margin_secs //////////////
 //
@@ -1201,7 +1201,7 @@ bscan_max_range_km = 25;
 // Type: double
 //
 
-bscan_min_altitude_km = -1;
+bscan_min_altitude_km = $(BSCAN_MIN_ALTITUDE_KM);
 
 ///////////// bscan_max_altitude_km ///////////////////
 //
@@ -1211,7 +1211,7 @@ bscan_min_altitude_km = -1;
 // Type: double
 //
 
-bscan_max_altitude_km = 15;
+bscan_max_altitude_km = $(BSCAN_MAX_ALTITUDE_KM);
 
 ///////////// bscan_altitude_in_feet //////////////////
 //
