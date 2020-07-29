@@ -1,4 +1,4 @@
-function[classOut, m]=precip_cld(dBZ,LDR, vel, sigmav,temp);
+function[classOut, m]=calc_pid_hcr_clean(dBZ,LDR, vel,sigmav,temp)
 vel=abs(vel);
 %   Membership functions for particle detection
 % 1:Beta  2:Delta

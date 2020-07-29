@@ -1,4 +1,4 @@
-function plot_hsrl_hcr(data,pid_comb,backscatLog,cscale_comb,units_str_comb,ylimits)
+function plot_hsrl_hcr_clean(data,pid_comb,backscatLog,cscale_comb,units_str_comb,ylimits)
 %Plot hsrl and hcr pid
 f2=figure('DefaultAxesFontSize',12,'Position',[400 300 1000 1000]);
 
@@ -11,7 +11,7 @@ caxis([-30 15]);
 colorbar;
 ylabel('Altitude (km)');
 title('Radar reflectivity (dBZ)');
-colormap(s1,cid_cmap2)
+colormap(s1,jet)
 
 s2=subplot(4,1,2);
 fig1=surf(data.time,data.asl,backscatLog,'edgecolor','none');

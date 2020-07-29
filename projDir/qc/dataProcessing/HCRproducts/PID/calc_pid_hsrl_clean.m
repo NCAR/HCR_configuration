@@ -1,4 +1,4 @@
-function[classOut]=aer_cld2c(Beta,Delta,temp);
+function[classOut]=calc_pid_hsrl_clean(Beta,Delta,temp);
 
 %   Membership functions for particle detection
 % 1:Beta  2:Delta

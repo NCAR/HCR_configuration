@@ -31,8 +31,8 @@ ylimits=[0 6.0];
 plotlidars=1; % 1 to plot lidar data, 0 to not plot lidar
 plotradars=1; % 1 to plot radar data, 0 to not plot radar
 
-%indir='/Volumes/RSF-Vivek/SOCRATES/HCR_HSRL_qc2_RF04_20180123_230524_to_20180124_060037/';
-indir='/scr/snow2/rsfdata/projects/socrates/hcr/qc2/cfradial/hcr_hsrl_merge/2hz/';
+indir='/Volumes/RSF-Vivek/SOCRATES/HCR_HSRL_qc2_RF04_20180123_230524_to_20180124_060037/';
+%indir='/scr/snow2/rsfdata/projects/socrates/hcr/qc2/cfradial/hcr_hsrl_merge/2hz/';
 
 fileList=makeFileList(indir,startTime,endTime,'xxxxxx20YYMMDDxhhmmss',1);
 
@@ -98,20 +98,20 @@ if ~isempty(fileList)
     vol_depol=data.HSRL_Volume_Depolarization./(2-data.HSRL_Volume_Depolarization);
     lin_depol=vol_depol./(2-vol_depol);
     
-    pid_hsrl=aer_cld2c_ver5(data.HSRL_Aerosol_Backscatter_Coefficient,lin_depol,data.temp);
+    pid_hsrl=calc_pid_hsrl_clean(data.HSRL_Aerosol_Backscatter_Coefficient,lin_depol,data.temp);
     pid_hsrl(isnan(data.HSRL_Aerosol_Backscatter_Coefficient))=nan;
     pid_hsrl(isnan(pid_hsrl))=1;
     
     % HCR
-    [pid_hcr,m]=precip_cld_a(dBZ_cor,data.HCR_LDR,data.HCR_VEL,data.HCR_WIDTH,data.temp);
+    [pid_hcr,m]=calc_pid_hcr_clean(dBZ_cor,data.HCR_LDR,data.HCR_VEL,data.HCR_WIDTH,data.temp);
     pid_hcr(isnan(dBZ_cor))=nan;
     pid_hcr(isnan(pid_hcr))=1;
     
     % Combined from merging hcr and hsrl pid
-    pid_comb=combine_pid_hcr_hsrl(pid_hcr,pid_hsrl);
+    pid_comb=combine_pid_hcr_hsrl_clean(pid_hcr,pid_hsrl);
     
     % Combined by using both data sets in one process
-    pid_comb2=precip_aerosol(data.HSRL_Aerosol_Backscatter_Coefficient,lin_depol,...
+    pid_comb2=calc_pid_direct_clean(data.HSRL_Aerosol_Backscatter_Coefficient,lin_depol,...
         dBZ_cor,data.HCR_LDR,data.HCR_VEL,data.HCR_WIDTH,data.temp);
     
     %% Scales and units
@@ -129,19 +129,19 @@ if ~isempty(fileList)
     %% Plot lidar
     close all
     if plotlidars==1
-        plot_hsrl(data,pid_hsrl,backscatLog,cscale_hsrl,units_str_hsrl,ylimits);
+        plot_hsrl_clean(data,pid_hsrl,backscatLog,cscale_hsrl,units_str_hsrl,ylimits);
     end
     
     % Plot radar
     if plotradars==1
-        plot_hcr(data,pid_hcr,cscale_hcr,units_str_hcr,ylimits);
+        plot_hcr_clean(data,pid_hcr,cscale_hcr,units_str_hcr,ylimits);
     end
     
     % Plot radar and lidar
     if plotradars==1 & plotlidars==1
-        plot_hsrl_hcr(data,pid_comb,backscatLog,cscale_comb,units_str_comb,ylimits);
+        plot_hsrl_hcr_clean(data,pid_comb,backscatLog,cscale_comb,units_str_comb,ylimits);
     end
     
     %% PIDs
-    plot_pids(data,pid_comb,pid_comb2,cscale_comb,units_str_comb,ylimits);
+    plot_pids_clean(data,pid_comb,pid_comb2,cscale_comb,units_str_comb,ylimits);
 end

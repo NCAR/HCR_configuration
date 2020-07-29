@@ -1,4 +1,4 @@
-function plot_hsrl(data,pid_hsrl,backscatLog,cscale_hsrl,units_str_hsrl,ylimits)
+function plot_hsrl_clean(data,pid_hsrl,backscatLog,cscale_hsrl,units_str_hsrl,ylimits)
 %Plot hsrl and hsrl pid
 f1=figure('DefaultAxesFontSize',12,'Position',[400 300 1000 1000]);
 

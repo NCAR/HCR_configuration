@@ -1,4 +1,4 @@
-function plot_pids(data,pid_comb,pid_comb2,cscale_comb,units_str_comb,ylimits)
+function plot_pids_clean(data,pid_comb,pid_comb2,cscale_comb,units_str_comb,ylimits)
 f4=figure('DefaultAxesFontSize',12,'Position',[400 300 1000 800]);
 
 s1=subplot(2,1,1);

@@ -1,4 +1,4 @@
-function pid_comb= combine_pid_hcr_hsrl(pid_hcr,pid_hsrl)
+function pid_comb= combine_pid_hcr_hsrl_clean(pid_hcr,pid_hsrl)
 
 % pid_hsrl
 %  1   no signal

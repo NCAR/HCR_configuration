@@ -1,4 +1,4 @@
-function[classOut, m]=precip_aerosol(Beta, Delta,dBZ,LDR, vel, sigmav,temp);
+function[classOut, m]=calc_pid_direct_clean(Beta, Delta,dBZ,LDR, vel, sigmav,temp)
 vel=abs(vel);
 %   Membership functions for particle detection
 

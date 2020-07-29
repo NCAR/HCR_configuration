@@ -1,4 +1,4 @@
-function plot_hcr(data,pid_hcr,cscale_hcr,units_str_hcr,ylimits)
+function plot_hcr_clean(data,pid_hcr,cscale_hcr,units_str_hcr,ylimits)
 %Plot hcr pid
 f3=figure('DefaultAxesFontSize',12,'Position',[400 300 1000 1000]);
 
@@ -11,7 +11,7 @@ caxis([-30 15]);
 colorbar;
 ylabel('Altitude (km)');
 title('Reflectivity (dBZ)');
-colormap(s1,cid_cmap2)
+colormap(s1,jet)
 
 s2=subplot(5,1,2);
 fig1=surf(data.time,data.asl,data.HCR_VEL,'edgecolor','none');
@@ -33,7 +33,7 @@ caxis([-30 -5]);
 colorbar;
 ylabel('Altitude (km)');
 title(['LDR (dB)']);
-colormap(s3,cid_cmap)
+colormap(s3,jet)
 
 s4=subplot(5,1,4);
 fig1=surf(data.time,data.asl,data.HCR_WIDTH,'edgecolor','none');
@@ -44,7 +44,7 @@ caxis([0 2]);
 colorbar;
 ylabel('Altitude (km)');
 title(['Spectrum width (m s^{-1})']);
-colormap(s4,cid_cmap)
+colormap(s4,jet)
 
 s5=subplot(5,1,5);
 fig1=surf(data.time,data.asl,pid_hcr,'edgecolor','none');
