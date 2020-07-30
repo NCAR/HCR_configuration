@@ -81,9 +81,9 @@ elseif strcmp(project,'otrec')
         end
     elseif strcmp(quality,'qc2')
         if strcmp(freq,'100hz') | strcmp(freq,'10hz')
-            indir=['/scr/snow1/rsfdata/projects/otrec/hcr/qc2/cfradial/final/',freq,'/'];
+            indir=['/scr/snow1/rsfdata/projects/otrec/hcr/qc2/cfradial/final2/',freq,'/'];
         else
-            disp('No 2hz data in qc1 data.');
+            disp('No 2hz data in qc2 data.');
             return
         end
     end

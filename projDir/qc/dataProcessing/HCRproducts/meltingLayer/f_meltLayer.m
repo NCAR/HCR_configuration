@@ -3,20 +3,16 @@
 % 1=melting layer detected
 % 2=melting layer interpolated
 % 3=melting layer defined as zero degree altitude
-function [BBfinished]= f_meltLayer_altOnly(data)
+function [BBfinishedOut]= f_meltLayer(data,zeroAdjustMeters)
 
 debugFig=0;
 
 %% Find zero degree altitude
 
-disp('Searching 0 deg altitude ...');
-
-zeroAdjustMeters=400;
+disp('Searching zero degree altitude ...');
 
 oneGate=data.range(2)-data.range(1);
 zeroAdjustGates=round(zeroAdjustMeters/oneGate);
-
-timeMat=repmat(data.time,size(data.TEMP,1),1);
 
 tempTemp=data.TEMP;
 tempTemp(1:16,:)=nan;
@@ -27,8 +23,14 @@ zeroDeg(isnan(zeroDeg))=0;
 zeroDeg=cat(1,zeroDeg,zeros(size(data.time)));
 zeroDeg(zeroDeg~=0)=1;
 
-zeroAlt=nan(size(data.asl));
-zeroAlt(zeroDeg==1)=data.asl(zeroDeg==1);
+zeroSum=sum(zeroDeg,1);
+tempDataY=find(zeroSum~=0);
+zeroSum=zeroSum(tempDataY);
+zeroDeg=zeroDeg(:,tempDataY);
+
+zeroAlt=nan(size(zeroDeg));
+aslTemp=data.asl(:,tempDataY);
+zeroAlt(zeroDeg==1)=aslTemp(zeroDeg==1);
 
 %% Connect zero degree layers
 
@@ -53,10 +55,10 @@ zeroTemp=zeroDeg;
 numZero=sum(zeroTemp,1,'omitnan');
 
 % Connect layers
-layerInds=nan(1,length(data.time));
-layerAlts=nan(1,length(data.time));
+layerInds=nan(1,length(tempDataY));
+layerAlts=nan(1,length(tempDataY));
 
-for ii=1:length(data.time)
+for ii=1:length(tempDataY)
     if numZero==0
         continue
     end
@@ -77,8 +79,8 @@ for ii=1:length(data.time)
                 layerAlts(jj,ii)=colAlts(jj);
             else
                 % Add new row
-                layerInds=cat(1,layerInds,nan(size(data.time)));
-                layerAlts=cat(1,layerAlts,nan(size(data.time)));
+                layerInds=cat(1,layerInds,nan(size(tempDataY)));
+                layerAlts=cat(1,layerAlts,nan(size(tempDataY)));
                 layerInds(size(layerInds,1),ii)=colInds(jj);
                 layerAlts(size(layerInds,1),ii)=colAlts(jj);
             end
@@ -86,14 +88,14 @@ for ii=1:length(data.time)
             zeroAltDiffs=abs(prevAlts-colAlts(jj));
             zeroAltDiffs(isnan(zeroAltDiffs))=100000;
             minDiff=min(zeroAltDiffs);
-            if minDiff<50
+            if minDiff<50 | (numZero(ii)==1 & numZero(ii-1)==1)
                 diffInd=find(zeroAltDiffs==minDiff);
                 layerInds(diffInd,ii)=colInds(jj);
                 layerAlts(diffInd,ii)=colAlts(jj);
             elseif minDiff~=100000;
                 % Add new row
-                layerInds=cat(1,layerInds,nan(size(data.time)));
-                layerAlts=cat(1,layerAlts,nan(size(data.time)));
+                layerInds=cat(1,layerInds,nan(size(tempDataY)));
+                layerAlts=cat(1,layerAlts,nan(size(tempDataY)));
                 layerInds(size(layerInds,1),ii)=colInds(jj);
                 layerAlts(size(layerInds,1),ii)=colAlts(jj);
             end
@@ -102,13 +104,16 @@ for ii=1:length(data.time)
 end
 
 %% Add adjusted layers
+
+disp('Adjusting zero degree layers ...');
 layerIndsAdj=nan(size(layerInds));
 layerAltsAdj=nan(size(layerAlts));
 
 adjustMeters=zeroAdjustGates*oneGate;
+elevTemp=data.elevation(tempDataY);
 
-for kk=1:length(data.time)
-    if data.elevation(kk)<0
+for kk=1:length(tempDataY)
+    if elevTemp(kk)<0
         layerIndsAdj(:,kk)=layerInds(:,kk)+zeroAdjustGates;
     else
         layerIndsAdj(:,kk)=layerInds(:,kk)-zeroAdjustGates;
@@ -117,37 +122,43 @@ for kk=1:length(data.time)
 end
 
 %% Remove data that is not suitable
-LDRdata=data.LDR;
-LDRdata(data.FLAG>1)=nan;
+LDRdata=data.LDR(:,tempDataY);
+tempFlag=data.FLAG(:,tempDataY);
+LDRdata(tempFlag>1)=nan;
 LDRdata(LDRdata<-16 | LDRdata>-7)=nan;
-LDRdata(data.range<150)=nan;
+tempRange=data.range(tempDataY);
+LDRdata(tempRange<150)=nan;
 
-VELdata=data.VEL_CORR;
-VELdata(data.FLAG>1)=nan;
-VELdata(data.range<150)=nan;
+VELdata=data.VEL_CORR(:,tempDataY);
+VELdata(tempFlag>1)=nan;
+VELdata(tempRange<150)=nan;
 
 %% Tightened backlobe
 % Initiate mask
-blMask=zeros(size(data.DBZ));
+blMask=zeros(size(zeroDeg));
 
-blMask(data.DBZ<-18 & data.WIDTH>1)=1;
+tempDBZ=data.DBZ(:,tempDataY);
+tempWIDTH=data.WIDTH(:,tempDataY);
+blMask(tempDBZ<-18 & tempWIDTH>1)=1;
 
 % Only within right altitude
-rightAlt=data.altitude-data.TOPO;
+rightAlt=data.altitude(tempDataY)-data.TOPO(tempDataY);
 
-altMat=repmat(rightAlt,size(data.range,1),1);
+altMat=repmat(rightAlt,size(tempRange,1),1);
 % Lower limit
-blMask(data.range<(altMat-100))=0;
+blMask(tempRange<(altMat-100))=0;
 % Upper limit
-blMask(data.range>(altMat+2500))=0;
+blMask(tempRange>(altMat+2500))=0;
 
 % Only when scanning up
-blMask(:,find(data.elevation<0))=0;
+blMask(:,find(elevTemp<0))=0;
 
 LDRdata(blMask==1)=nan;
 VELdata(blMask==1)=nan;
 
 %% Find altitude of bright band
+
+disp('Searching for melting layer ...');
 
 BBaltAll={};
 timeIall={};
@@ -177,10 +188,10 @@ for kk=1:size(layerAltsAdj,1)
         end
     end
     
-    ASLlayer=data.asl(:,timeInds);
+    ASLlayer=aslTemp(:,timeInds);
     
     if min(isnan(maxLevelLDR))==0
-                   
+        disp('Searching LDR ...');
         % LDR       
         colIndsLDR=1:1:size(ASLlayer,2);
         linearIndLDR = sub2ind(size(ASLlayer), maxLevelLDR, colIndsLDR);
@@ -223,16 +234,17 @@ for kk=1:size(layerAltsAdj,1)
             layerAltsAdj(kk,timeInds)=layerAltsTemp;
             
             distInds=round(noNanDist./oneGate);
-            rowInds(data.elevation(timeInds)>0)=rowInds(data.elevation(timeInds)>0)-distInds(data.elevation(timeInds)>0);
-            rowInds(data.elevation(timeInds)<=0)=rowInds(data.elevation(timeInds)<=0)+distInds(data.elevation(timeInds)<=0);
+            rowInds(elevTemp(timeInds)>0)=rowInds(elevTemp(timeInds)>0)-distInds(elevTemp(timeInds)>0);
+            rowInds(elevTemp(timeInds)<=0)=rowInds(elevTemp(timeInds)<=0)+distInds(elevTemp(timeInds)<=0);
         end
     end
     
     % VEL
+    disp('Searching VEL ...');
     % Find vel melting layer level
     maxLevelVEL=nan(size(rowInds));
     velMasked=VELdata;
-    velMasked(:,data.elevation<0)=-velMasked(:,data.elevation<0);
+    velMasked(:,elevTemp<0)=-velMasked(:,elevTemp<0);
     
     velTime=velMasked(:,timeInds);
     for ii=1:length(rowInds)
@@ -256,6 +268,7 @@ for kk=1:size(layerAltsAdj,1)
     
     % Remove data that doesn't cut it
     if min(isnan(maxLevelLDR))==0 | min(isnan(maxLevelVEL))==0
+        disp('Removing bad data ...');
         
         % VEL
         colIndsVEL=1:1:size(ASLlayer,2);
@@ -270,24 +283,18 @@ for kk=1:size(layerAltsAdj,1)
         % Difference between steps
         diffS1=nan(1,size(velSteps,2));
         udS1=nan(2,size(velSteps,2));
-        %         varS2=nan(2,size(velSteps,2));
+        
         for ii=1:size(velSteps,2)
             uS1=unique(S1(:,ii));
             uS1(isnan(uS1))=[];
-            %             uS2=unique(S2(:,ii));
-            %             uS2(isnan(uS2))=[];
             
             if length(uS1)==2
                 diffS1(ii)=uS1(2)-uS1(1);
                 udS1(:,ii)=uS1;
             end
-            %             if length(uS2)==2
-            %                 varS2(:,ii)=uS2;
-            %             end
+            
         end
-        
-        %        maxVar=max(varS2,[],1);
-        
+                
         if debugFig & ~isempty(maxLevelVEL)
             fig1=figure('DefaultAxesFontSize',11,'position',[100,100,1400,800]);
             colmap=jet;
@@ -457,17 +464,19 @@ for kk=1:size(layerAltsAdj,1)
 end
 
 %% Put things back together
-BBfinished=nan(size(data.LDR));
+BBfinished=nan(size(zeroDeg));
+
+disp('Creating melting layer output ...');
 
 % Zero degree alt
 for ii=1:size(layerAlts,1)
     rows1=layerInds(ii,:);
-    cols1=1:length(data.time);
+    cols1=1:length(tempDataY);
     
     indsNonNan=cat(2,rows1',cols1');
     indsNonNan(any(isnan(indsNonNan), 2), :) = [];
     
-    linInds1=sub2ind(size(data.asl),indsNonNan(:,1),indsNonNan(:,2));
+    linInds1=sub2ind(size(aslTemp),indsNonNan(:,1),indsNonNan(:,2));
     BBfinished(linInds1)=0;
 end
 
@@ -480,7 +489,7 @@ for ii=1:size(BBaltAll,2)
     BB1(isnan(BB1))=[];
     
     for jj=1:length(BB1)
-        [min1 ind1]=(min(abs(data.asl(:,timeI1(jj))-BB1(jj))));
+        [min1 ind1]=(min(abs(aslTemp(:,timeI1(jj))-BB1(jj))));
         BBfinished(ind1,timeI1(jj))=1;
     end
 end
@@ -494,7 +503,7 @@ for ii=1:size(BBaltInterpAll,2)
     BB1(isnan(BB1))=[];
     
     for jj=1:length(BB1)
-        [min1 ind1]=(min(abs(data.asl(:,timeI1(jj))-BB1(jj))));
+        [min1 ind1]=(min(abs(aslTemp(:,timeI1(jj))-BB1(jj))));
         BBfinished(ind1,timeI1(jj))=2;
     end
 end
@@ -508,9 +517,11 @@ for ii=1:size(BBaltZeroAll,2)
     BB1(isnan(BB1))=[];
     
     for jj=1:length(BB1)
-        [min1 ind1]=(min(abs(data.asl(:,timeI1(jj))-BB1(jj))));
+        [min1 ind1]=(min(abs(aslTemp(:,timeI1(jj))-BB1(jj))));
         BBfinished(ind1,timeI1(jj))=3;
     end
 end
 
+BBfinishedOut=nan(size(data.DBZ));
+BBfinishedOut(:,tempDataY)=BBfinished;
 end
