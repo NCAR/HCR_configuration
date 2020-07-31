@@ -5,11 +5,11 @@ close all;
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-project='cset'; % socrates, cset, aristo, otrec
+project='otrec'; % socrates, cset, aristo, otrec
 qualityGood='qc2'; % field, qc0, qc1, qc2
-qualityTest='qc2'; % field, qc0, qc1, qc2
+qualityTest='qc2.1'; % field, qc0, qc1, qc2
 freqGood='10hz'; % 10hz, 2hz, 2hzMerged
-freqTest='2hzMerged'; % 10hz, 2hz, 2hzMerged
+freqTest='10hz'; % 10hz, 2hz, 2hzMerged
 
 thresh12=[10 50];
 
@@ -24,17 +24,22 @@ indirTest=HCRdir(project,qualityTest,freqTest);
 
 %% Run processing
 
-compareVars={'DBZ','HCR_DBZ',1;
-    'WIDTH','HCR_WIDTH',1;
-    'SNR','HCR_SNR',1;
-    'DBMVC','HCR_DBMVC',0;
-    'NCP','HCR_NCP',1;
-    'LDR','HCR_LDR',1;
+compareVars={'DBZ','DBZ',0;
+    'VEL','VEL',0;
+    'VEL_RAW','VEL_RAW',0;
+    'WIDTH','WIDTH',0;
+    'WIDTH_RAW','WIDTH_RAW',0;
+    'SNR','SNR',0;
+    'DBMVC','DBMVC',0;
+    'DBMHX','DBMHX',0;
+    'NCP','NCP',0;
+    'LDR','LDR',0;
     'PRESS','PRESS',0;
     'TEMP','TEMP',0;
     'RH','RH',0;
     'FLAG','FLAG',0;
-    'VEL_CORR','HCR_VEL',1;
+    'DBZ_MASKED','DBZ_MASKED',0;
+    'VEL_CORR','VEL_CORR',0;
     'SST','SST',0;
     'TOPO','TOPO',0;
     'U_SURF','U_SURF',0;
@@ -113,7 +118,7 @@ for ii=1:size(caseList,1)
                 return
             end
             
-            [~,iaG,ibG]=intersect(dataGood.time,newTime);
+            [~,iaG,ibG]=intersect(datenum(dataGood.time),datenum(newTime));
         end
         
         newDataG=nan(size(dataGood.(compareVars{ll,1}),1),length(newTime));
@@ -131,7 +136,7 @@ for ii=1:size(caseList,1)
         
         % Resample
         if ll==1
-            [~,iaT,ibT]=intersect(dataTest.time,newTime);
+            [~,iaT,ibT]=intersect(datenum(dataTest.time),datenum(newTime));
         end
         
         newDataT=nan(size(dataTest.(compareVars{ll,2}),1),length(newTime));
@@ -239,12 +244,12 @@ for ii=1:size(caseList,1)
     plotMatT(maxCountT>thresh12(2),2,3)=2;
     
     timeSmallG=dataGood.time(:,iaG);
-    [~,iaMissG] = setdiff(newTime,timeSmallG);
+    [~,iaMissG] = setdiff(datenum(newTime),datenum(timeSmallG));
     
     plotMatG(iaMissG,1,3)=1;
     
     timeSmallT=dataTest.time(:,iaT);
-    [~,iaMissT] = setdiff(newTime,timeSmallT);
+    [~,iaMissT] = setdiff(datenum(newTime),datenum(timeSmallT));
     
     plotMatT(iaMissT,1,3)=1;
     
