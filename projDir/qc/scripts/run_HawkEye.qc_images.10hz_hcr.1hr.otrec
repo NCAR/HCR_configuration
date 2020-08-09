@@ -1,0 +1,59 @@
+#! /bin/csh -f
+
+start_Xvfb
+set display_num = 1000
+setenv DISPLAY :${display_num}.0
+set logFile = /tmp/HawkEye.qc_images.10hz_hcr.1hr.otrec.log
+setenv IMAGE_SCHEDULE_INTERVAL_SECS 3600
+setenv IMAGE_DURATION 1hr
+
+# HCR QC processing for OTREC
+
+source ~/git/HCR_configuration/projDir/system/params/project_info.otrec
+
+cd $PROJ_DIR/qc/params
+
+HawkEye -params HawkEye.qc_images.10hz_hcr -debug -images_start_time "2019 08 07 11 00 00" -images_end_time "2019 08 07 18 00 00" >& $LOG_DIR/HawkEye.qc_images.10hz_hcr.otrec.20190807.log &
+
+HawkEye -params HawkEye.qc_images.10hz_hcr -debug -images_start_time "2019 08 11 11 00 00" -images_end_time "2019 08 11 18 00 00" >& $LOG_DIR/HawkEye.qc_images.10hz_hcr.otrec.20190811.log &
+
+HawkEye -params HawkEye.qc_images.10hz_hcr -debug -images_start_time "2019 08 12 11 00 00" -images_end_time "2019 08 12 18 00 00" >& $LOG_DIR/HawkEye.qc_images.10hz_hcr.otrec.20190812.log &
+
+HawkEye -params HawkEye.qc_images.10hz_hcr -debug -images_start_time "2019 08 16 11 00 00" -images_end_time "2019 08 16 18 00 00" >& $LOG_DIR/HawkEye.qc_images.10hz_hcr.otrec.20190816.log &
+
+HawkEye -params HawkEye.qc_images.10hz_hcr -debug -images_start_time "2019 08 17 11 00 00" -images_end_time "2019 08 17 18 00 00" >& $LOG_DIR/HawkEye.qc_images.10hz_hcr.otrec.20190817.log &
+
+HawkEye -params HawkEye.qc_images.10hz_hcr -debug -images_start_time "2019 08 18 11 00 00" -images_end_time "2019 08 18 18 00 00" >& $LOG_DIR/HawkEye.qc_images.10hz_hcr.otrec.20190818.log &
+
+HawkEye -params HawkEye.qc_images.10hz_hcr -debug -images_start_time "2019 08 22 13 00 00" -images_end_time "2019 08 22 19 00 00" >& $LOG_DIR/HawkEye.qc_images.10hz_hcr.otrec.20190822.log &
+
+HawkEye -params HawkEye.qc_images.10hz_hcr -debug -images_start_time "2019 08 23 11 00 00" -images_end_time "2019 08 23 18 00 00" >& $LOG_DIR/HawkEye.qc_images.10hz_hcr.otrec.20190823.log &
+
+HawkEye -params HawkEye.qc_images.10hz_hcr -debug -images_start_time "2019 08 25 11 00 00" -images_end_time "2019 08 25 18 00 00" >& $LOG_DIR/HawkEye.qc_images.10hz_hcr.otrec.20190825.log &
+
+HawkEye -params HawkEye.qc_images.10hz_hcr -debug -images_start_time "2019 09 03 11 00 00" -images_end_time "2019 09 03 18 00 00" >& $LOG_DIR/HawkEye.qc_images.10hz_hcr.otrec.20190903.log &
+
+HawkEye -params HawkEye.qc_images.10hz_hcr -debug -images_start_time "2019 09 04 11 00 00" -images_end_time "2019 09 04 18 00 00" >& $LOG_DIR/HawkEye.qc_images.10hz_hcr.otrec.20190904.log &
+
+HawkEye -params HawkEye.qc_images.10hz_hcr -debug -images_start_time "2019 09 09 14 00 00" -images_end_time "2019 09 09 20 00 00" >& $LOG_DIR/HawkEye.qc_images.10hz_hcr.otrec.20190909.log &
+
+HawkEye -params HawkEye.qc_images.10hz_hcr -debug -images_start_time "2019 09 17 14 00 00" -images_end_time " 2019 09 17 19 00 00" >& $LOG_DIR/HawkEye.qc_images.10hz_hcr.otrec.20190917.log &
+
+HawkEye -params HawkEye.qc_images.10hz_hcr -debug -images_start_time "2019 09 21 11 00 00" -images_end_time "2019 09 21 18 00 00" >& $LOG_DIR/HawkEye.qc_images.10hz_hcr.otrec.20190921.log &
+
+HawkEye -params HawkEye.qc_images.10hz_hcr -debug -images_start_time "2019 09 22 11 00 00" -images_end_time "2019 09 22 18 00 00" >& $LOG_DIR/HawkEye.qc_images.10hz_hcr.otrec.20190922.log &
+
+HawkEye -params HawkEye.qc_images.10hz_hcr -debug -images_start_time "2019 09 24 11 00 00" -images_end_time "2019 09 24 18 00 00" >& $LOG_DIR/HawkEye.qc_images.10hz_hcr.otrec.20190924.log &
+
+HawkEye -params HawkEye.qc_images.10hz_hcr -debug -images_start_time "2019 09 25 11 00 00" -images_end_time "2019 09 25 18 00 00" >& $LOG_DIR/HawkEye.qc_images.10hz_hcr.otrec.20190925.log &
+
+HawkEye -params HawkEye.qc_images.10hz_hcr -debug -images_start_time "2019 09 27 11 00 00" -images_end_time "2019 09 27 18 00 00" >& $LOG_DIR/HawkEye.qc_images.10hz_hcr.otrec.20190927.log &
+
+HawkEye -params HawkEye.qc_images.10hz_hcr -debug -images_start_time "2019 09 28 14 00 00" -images_end_time "2019 09 28 19 00 00" >& $LOG_DIR/HawkEye.qc_images.10hz_hcr.otrec.20190928.log &
+
+HawkEye -params HawkEye.qc_images.10hz_hcr -debug -images_start_time "2019 09 30 11 00 00" -images_end_time "2019 09 30 18 00 00" >& $LOG_DIR/HawkEye.qc_images.10hz_hcr.otrec.20190930.log &
+
+HawkEye -params HawkEye.qc_images.10hz_hcr -debug -images_start_time "2019 10 01 11 00 00" -images_end_time "2019 10 01 18 00 00" >& $LOG_DIR/HawkEye.qc_images.10hz_hcr.otrec.20191001.log &
+
+HawkEye -params HawkEye.qc_images.10hz_hcr -debug -images_start_time "2019 10 02 11 00 00" -images_end_time "2019 10 02 18 00 00" >& $LOG_DIR/HawkEye.qc_images.10hz_hcr.otrec.20191002.log &
+

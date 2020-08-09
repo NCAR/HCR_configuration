@@ -457,6 +457,15 @@ fields = {
     color_map = "hcr_flag.colors",
     shortcut = "d"
   }
+  ,
+  {
+    label = "FZLEVEL",
+    raw_name = "FREEZING_LEVEL",
+    filtered_name = "",
+    units = "",
+    color_map = "fzlevel.colors",
+    shortcut = "g"
+  }
 };
 
 ///////////// background_render_mins //////////////////
