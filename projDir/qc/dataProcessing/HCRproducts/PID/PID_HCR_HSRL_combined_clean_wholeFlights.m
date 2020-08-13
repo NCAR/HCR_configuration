@@ -8,41 +8,31 @@ addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 project='socrates'; %socrates, aristo, cset
 quality='qc2'; %field, qc1, or qc2
 freqData='2hzMerged'; % 10hz, 100hz, or 2hz
-
-% startTime=datetime(2018,1,24,3,59,00);
-% endTime=datetime(2018,1,24,4,00,00);
-
-% startTime=datetime(2018,1,23,00,00,0);
-% endTime=datetime(2018,1,23,01,00,0);
-
-% startTime=datetime(2018,1,24,3,50,0); %BAMS Jeff Stith
-% %  startTime=datetime(2018,1,24,4,01,0); %BAMS Jeff Stith
-%  endTime=datetime(2018,1,24,4,05,0); %BAMS Jeff Stith
-
-
-startTime=datetime(2018,1,24,01,09,30); %Wang_Rauber
-endTime=datetime(2018,1,24,01,12,30); %Wang_Rauber
-%
-%
-% startTime=datetime(2015,7,24,19,15,0);
-% endTime=datetime(2015,7,24,19,20,0);
-
-%  startTime=datetime(2018,2,20,3,19,0);% JGR
-%  endTime=datetime(2018,2,20,3,24,0); %  JGR
-
-ylimits=[0 6.0];
-
-plotlidars=1; % 1 to plot lidar data, 0 to not plot lidar
-plotradars=1; % 1 to plot radar data, 0 to not plot radar
-
-%indir='/Volumes/RSF-Vivek/SOCRATES/HCR_HSRL_qc2_RF04_20180123_230524_to_20180124_060037/';
+whichModel='era5';
 
 indir=HCRdir(project,quality,freqData);
 
-fileList=makeFileList(indir,startTime,endTime,'xxxxxx20YYMMDDxhhmmss',1);
+[~,directories.modeldir]=modelDir(project,whichModel,freqData);
+outdir=directories.modeldir;
 
-if ~isempty(fileList)
+infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_',project,'_data.txt'];
+
+caseList = table2array(readtable(infile));
+
+for aa=3:size(caseList,1)
+    disp(['Flight ',num2str(aa)]);
+    disp('Loading data ...')
+    
+    startTime=datetime(caseList(aa,1:6));
+    endTime=datetime(caseList(aa,7:12));
+    
+    fileList=makeFileList(indir,startTime,endTime,'xxxxxx20YYMMDDxhhmmss',1);
+    
+    disp([datestr(startTime,'yyyy-mm-dd HH:MM'),' to ',datestr(endTime,'yyyy-mm-dd HH:MM')]);
+
     %% Load data
+    
+    data=[];
     
     %HCR data
     data.HCR_DBZ=[];
@@ -71,6 +61,7 @@ if ~isempty(fileList)
     data.asl=data.asl./1000;
     
     %% Initialize and calculate variables
+    disp('Calculating variables ...');
     
     Z_95_lin=10.^(data.HCR_DBZ*0.1);
     Z_95_lin(data.HCR_DBZ < -200)=0.;
@@ -92,6 +83,8 @@ if ~isempty(fileList)
     Z_95_lin_cor=10.^(dBZ_cor*0.1);
     
     %% Calculate PID
+    
+    disp('Make PID ...')
     
     data.temp=data.TEMP+273.15;
     
@@ -116,37 +109,19 @@ if ~isempty(fileList)
     pid_comb=combine_pid_hcr_hsrl_clean(pid_hcr,pid_hsrl);
     
     % Combined by using both data sets in one process
-    pid_comb2=calc_pid_direct_clean(data.HSRL_Aerosol_Backscatter_Coefficient,lin_depol,...
-        dBZ_cor,data.HCR_LDR,data.HCR_VEL,data.HCR_WIDTH,data.temp);
+%     pid_comb2=calc_pid_direct_clean(data.HSRL_Aerosol_Backscatter_Coefficient,lin_depol,...
+%         dBZ_cor,data.HCR_LDR,data.HCR_VEL,data.HCR_WIDTH,data.temp);
     
-    %% Scales and units
-    cscale_hsrl=[1,1,1;0,0,1.0;0,1,0;1,0.67,0;1,0,1;0,1,1;1,0.67,0];
-    cscale_hcr=[1,1,1; 0,0,1.0; 0,1,0.; 1,0,0; 1,0,1; 0,1,1; 1,1,0; 0.5,0,0];
-    cscale_comb=[1,1,1; 0,0,1; 0,1,0.; 1,0,0; 1,0,1; 0,1,1; 1,1,0; 0.5,0,0; 1,0.67,0];
-   
-    units_str_hsrl={'No signal','Cloud liquid','Drizzle',...
-        'Aerosol1','SLW','Ice crystals','Aerosol2'};
-    units_str_hcr={'No signal','Cloud liquid','Drizzle',...
-        'Rain','SLW','Ice crystals','Snow','Wet snow/rimed ice'};
-    units_str_comb={'No signal','Cloud liquid','Drizzle','Rain',...
-        'SLW','Ice crystals','Snow','Wet snow/rimed ice','Aerosols'};
+   %% Save
+    disp('Saving PID ...')
     
-    %% Plot lidar
-    close all
-    if plotlidars==1
-        plot_hsrl_clean(data,pid_hsrl,backscatLog,cscale_hsrl,units_str_hsrl,ylimits);
-    end
+    pid=pid_comb;
+    pid(pid==1)=nan;
+    pid=pid-1;
+    save([outdir,whichModel,'.pid.',datestr(data.time(1),'YYYYmmDD_HHMMSS'),'_to_',...
+        datestr(data.time(end),'YYYYmmDD_HHMMSS'),'.Flight',num2str(aa),'.mat'],'pid');
     
-    % Plot radar
-    if plotradars==1
-        plot_hcr_clean(data,pid_hcr,cscale_hcr,units_str_hcr,ylimits);
-    end
-    
-    % Plot radar and lidar
-    if plotradars==1 & plotlidars==1
-        plot_hsrl_hcr_clean(data,pid_comb,backscatLog,cscale_comb,units_str_comb,ylimits);
-    end
-    
-    %% PIDs
-    plot_pids_clean(data,pid_comb,pid_comb2,cscale_comb,units_str_comb,ylimits);
+    timeHCR=data.time;
+    save([outdir,whichModel,'.time.',datestr(data.time(1),'YYYYmmDD_HHMMSS'),'_to_',...
+        datestr(data.time(end),'YYYYmmDD_HHMMSS'),'.Flight',num2str(aa),'.mat'],'timeHCR');
 end

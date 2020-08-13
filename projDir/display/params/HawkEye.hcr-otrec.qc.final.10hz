@@ -358,7 +358,7 @@ fields = {
     filtered_name = "",
     units = "dBZ",
     color_map = "dbz_w.colors",
-    shortcut = "0"
+    shortcut = "1"
   }
   ,
   {
@@ -367,7 +367,7 @@ fields = {
     filtered_name = "",
     units = "m/s",
     color_map = "vel_w_8.colors",
-    shortcut = "1"
+    shortcut = "2"
   }
   ,
   {
@@ -376,7 +376,7 @@ fields = {
     filtered_name = "",
     units = "m/s",
     color_map = "vel_w_8.colors",
-    shortcut = "1"
+    shortcut = "3"
   }
   ,
   {
@@ -385,7 +385,7 @@ fields = {
     filtered_name = "",
     units = "m/s",
     color_map = "vel_w_8.colors",
-    shortcut = "2"
+    shortcut = "4"
   }
   ,
   {
@@ -394,7 +394,7 @@ fields = {
     filtered_name = "",
     units = "m/s",
     color_map = "width_w.colors",
-    shortcut = "8"
+    shortcut = "5"
   }
   ,
   {
@@ -403,7 +403,7 @@ fields = {
     filtered_name = "",
     units = "m/s",
     color_map = "width_w.colors",
-    shortcut = "9"
+    shortcut = "6"
   }
   ,
   {
@@ -412,7 +412,7 @@ fields = {
     filtered_name = "",
     units = "",
     color_map = "ncp.colors",
-    shortcut = "e"
+    shortcut = "7"
   }
   ,
   {
@@ -421,7 +421,7 @@ fields = {
     filtered_name = "",
     units = "dB",
     color_map = "ldr.colors",
-    shortcut = "f"
+    shortcut = "8"
   }
   ,
   {
@@ -430,7 +430,7 @@ fields = {
     filtered_name = "",
     units = "dB",
     color_map = "snr.colors",
-    shortcut = "a"
+    shortcut = "9"
   }
   ,
   {
@@ -439,7 +439,7 @@ fields = {
     filtered_name = "",
     units = "dBm",
     color_map = "dbm.colors",
-    shortcut = "c"
+    shortcut = "a"
   }
   ,
   {
@@ -448,7 +448,7 @@ fields = {
     filtered_name = "",
     units = "dBm",
     color_map = "dbm.colors",
-    shortcut = "d"
+    shortcut = "b"
   }
   ,
   {
@@ -475,7 +475,7 @@ fields = {
     filtered_name = "",
     units = "%",
     color_map = "rh.colors",
-    shortcut = "d"
+    shortcut = "e"
   }
   ,
   {
@@ -484,7 +484,16 @@ fields = {
     filtered_name = "",
     units = "",
     color_map = "hcr_flag.colors",
-    shortcut = "d"
+    shortcut = "f"
+  }
+  ,
+  {
+    label = "FZLEVEL",
+    raw_name = "FREEZING_LEVEL",
+    filtered_name = "",
+    units = "",
+    color_map = "fzlevel.colors",
+    shortcut = "g"
   }
 };
 
