@@ -126,5 +126,11 @@ maxReflTemp=dataCut.TEMP(wholeMaxReflInds);
 
 cloudParams.meanMaxReflAgl=mean(maxReflAgl,'omitnan');
 cloudParams.meanMaxReflTemp=mean(maxReflTemp,'omitnan');
+
+% Mean latitude
+cloudParams.meanLat=mean(dataCut.latitude,'omitnan');
+
+% Cloud length in km
+[cloudParams.lengthKM ~]=lldistkm([dataCut.latitude(1) dataCut.longitude(1)],[dataCut.latitude(end) dataCut.longitude(end)]);
 end
 
