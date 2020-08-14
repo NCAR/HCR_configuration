@@ -1,4 +1,8 @@
 % Cloud classification algorithm
+% Small clouds or not classified because e.g. plane in cloud (0)
+% Low clouds: Deep (1), Ns (2), Cu (3), Sc (4), St (5)
+% Middle clouds: As (6), Ac (7)
+% High clouds (8)
 
 clear all;
 close all;
@@ -9,7 +13,7 @@ close all;
 startTime=datetime(2019,10,2,15,0,0);
 endTime=datetime(2019,10,2,15,59,0);
 
-getFreezeL=0;
+%getFreezeL=0;
 
 project='otrec'; %socrates, aristo, cset
 quality='qc2'; %field, qc1, or qc2
@@ -34,16 +38,16 @@ disp('Loading data ...');
 data=[];
 data.DBZ=[];
 data.FLAG=[];
+data.TOPO=[];
+data.TEMP=[];
 
-if getFreezeL
-    data.LDR=[];
-    data.VEL_CORR=[];
-    data.TEMP=[];
-    data.WIDTH=[];
-    data.TOPO=[];
-else
-    data.FREEZING_LEVEL=[];
-end
+% if getFreezeL
+%     data.LDR=[];
+%     data.VEL_CORR=[];
+%     data.WIDTH=[];
+% else
+%     data.FREEZING_LEVEL=[];
+% end
 
 dataVars=fieldnames(data);
 
@@ -72,117 +76,134 @@ data.dbzMasked=data.DBZ;
 data.dbzMasked(data.FLAG>1)=nan;
 
 %% Get freezing level
-
-if getFreezeL
-    data.FREEZING_LEVEL=f_meltLayer(data,200);
-end
+% 
+% if getFreezeL
+%     data.FREEZING_LEVEL=f_meltLayer(data,200);
+% end
 
 %% Cloud puzzle
 
-cloudPuzzle=f_cloudPuzzle_radial(data);
+data.cloudPuzzle=f_cloudPuzzle_radial(data);
 
 %% Loop through clouds
 
-puzzleReplace=cloudPuzzle;
+puzzleReplace=data.cloudPuzzle;
 puzzleReplace(isnan(puzzleReplace))=-99;
 
 cloudNums=unique(puzzleReplace);
 cloudNums(cloudNums==0 | cloudNums==-99)=[];
 
+% Output
+cloudClass=nan(size(data.DBZ));
+
 for ii=1:length(cloudNums)
-    [rowInd colInd]=find(cloudPuzzle==cloudNums(ii));
-    %wholeInd=find(cloudPuzzle==cloudNums(ii));
+    [rowInd colInd]=find(data.cloudPuzzle==cloudNums(ii));
+    wholeInd=find(data.cloudPuzzle==cloudNums(ii));
     
-    puzzleOne=cloudPuzzle;
-    puzzleOne(puzzleOne~=cloudNums(ii))=nan;
+    %% Cut out columns with cloud data
+    allVars=fields(data);
     
-    puzzleCut=puzzleOne(:,min(colInd):max(colInd));
-    
-    aslCut=data.asl(:,min(colInd):max(colInd));
-    aslCut(isnan(puzzleCut))=nan;
-    elevCut=data.elevation(min(colInd):max(colInd));
-    altCut=data.altitude(min(colInd):max(colInd));
-    
-    %% Calculate cloud properties
-    
-    % min/max asl
-    minAsl=nan(1,size(puzzleCut,2));
-    maxAsl=nan(1,size(puzzleCut,2));
-    
-    for jj=1:size(puzzleCut,2)
-        aslCol=aslCut(:,jj);
-        [minAsl(jj) minIndAsl]=min(aslCol);
-        [maxAsl(jj) maxIndAsl]=max(aslCol);
-        % Check if flying in cloud
-        % Pointing down
-        if elevCut(jj)<0 & maxAsl(jj)<10000 & maxIndAsl==18
-            maxAsl(jj)=nan;
-        end
-        % Pointing up
-        if elevCut(jj)>=0 & minAsl(jj)<10000 & minIndAsl==18
-            minAsl(jj)=nan;
+    for jj=1:size(allVars,1)
+        varIn=data.(allVars{jj});
+        if min(size(varIn))==1
+            dataCut.(allVars{jj})=varIn(min(colInd):max(colInd));
+        else
+            dataCut.(allVars{jj})=varIn(:,min(colInd):max(colInd));
         end
     end
     
-    percWanted=0.1;
-    
-    % Make sure we have enough data and calculate percentiles
-    if length(find(~isnan(minAsl)))>length(minAsl)/2
-        sortedMin=sort(minAsl,'ascend');
-        percIndMin=round(percWanted*length(minAsl));
-        minPerc=sortedMin(percIndMin);
-    end
-    if length(find(~isnan(maxAsl)))>length(maxAsl)/2
-        sortedMax=sort(maxAsl,'descend');
-        percIndMax=round(percWanted*length(maxAsl));
-        maxPerc=sortedMax(percIndMax);
-    end
-    
-    %% Plot
-    
-    timeMat=repmat(data.time,size(data.DBZ,1),1);
+    dataCut.puzzleOne=dataCut.cloudPuzzle;
+    dataCut.puzzleOne(dataCut.puzzleOne~=cloudNums(ii))=nan;
         
-    close all
+    dataCut.asl=dataCut.asl./1000; % In km
+    dataCut.FLAG(dataCut.FLAG==8)=7;
+    dataCut.flagCensored=dataCut.FLAG;
+    dataCut.flagCensored(isnan(dataCut.cloudPuzzle))=nan;
     
-    fig1=figure('DefaultAxesFontSize',11,'position',[100,1300,1200,900]);
+    %% Calculate cloud parameters
+    cloudParams=calcCloudParams(dataCut);
     
-    ax1=subplot(3,1,1);
-    hold on;
-    sub1=surf(data.time,data.asl./1000,data.dbzMasked,'edgecolor','none');
-    view(2);
-    sub1=colMapDBZ(sub1);
-    ylim(ylimits);
-    ylabel('Altitude (km)');
-    xlim([data.time(1),data.time(end)]);
-    title('Reflectivity')
-    grid on
+    %% Precip cloud classifier
+    if (maxAsl>2.5 & precCloud) % Precipitating clouds: Deep (1), Ns (2), Cu (3), Sc (4), St (5), Ac (7)
+        
+        cloudFlag=precipCloudClass();
+    else
+        % Mean temperature
+        tempCut=data.TEMP(wholeInd); % !!!!!!!!!!!!!!!! fix this!
+        meanTemp=mean(tempCut,'omitnan');
+        
+        % Mean max refl and mean max refl height
+        reflCut=data.DBZ(:,min(colInd):max(colInd)); % In km
+        reflCut(isnan(puzzleCut))=nan;
+        
+        [maxRefl maxReflInds]=max(reflCut,[],1);
+        meanMaxRefl=mean(maxRefl,'omitnan');
+        wholeMaxReflInds=sub2ind(size(reflCut),maxReflInds,1:size(reflCut,2));
+        maxReflAsl=aslCut(wholeMaxReflInds);
+        
+        maxReflAgl=maxReflAsl-topoCut;
+        meanMaxReflAgl=mean(maxReflAgl,'omitnan');
+        
+        %% High low or middle cloud classifier
+        if (meanTemp<-23 & meanMaxRefl<-3 & meanMaxReflAgl>5 & minAgl>5) | minAgl>10 % High clouds (8)
+            cloudFlag=highCloudClass();
+        elseif (meanTemp>-15 & meanMaxReflAgl<2) | minAgl<1.5 % Low clouds: Deep (1), Ns (2), Cu (3), Sc (4), St (5)
+            cloudFlag=lowCloudClass();
+        else
+            cloudFlag=middleCloudClass(); % Middle clouds: As (6), Ac (7)
+        end
+    end
     
-    %%%%%%%%%%%%%%%%%%%%%%%% LDR%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    ax2=subplot(3,1,2);
-    hold on;
-    sub3=surf(data.time,data.asl./1000,puzzleOne,'edgecolor','none');
-    view(2);
-    ylim(ylimits);
-    ylabel('Altitude (km)');
-    xlim([data.time(1),data.time(end)]);
-    title('Current cloud')
-    grid on
+    cloudClass(wholeInd)=cloudFlag;
+end
     
-%     ax3=subplot(3,1,3);
-%     ax3.Colormap=jet;
-%     hold on;
-%     sub3=surf(data.time,data.asl./1000,velMasked,'edgecolor','none');
-%     view(2);
-%     caxis([-5 5]);
-%     colorbar
-%     ylim(ylimits);
-%     ylabel('Altitude (km)');
-%     xlim([data.time(1),data.time(end)]);
-%     title('VEL')
-%     grid on
-    
+cloudClass(cloudPuzzle==0)=0; % Small, unclassified echos
+
+%% Plot
+
+timeMat=repmat(data.time,size(data.DBZ,1),1);
+
+close all
+
+fig1=figure('DefaultAxesFontSize',11,'position',[100,1300,1200,900]);
+
+ax1=subplot(3,1,1);
+hold on;
+sub1=surf(data.time,data.asl./1000,data.dbzMasked,'edgecolor','none');
+view(2);
+sub1=colMapDBZ(sub1);
+ylim(ylimits);
+ylabel('Altitude (km)');
+xlim([data.time(1),data.time(end)]);
+title('Reflectivity')
+grid on
+
+%%%%%%%%%%%%%%%%%%%%%%%% LDR%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ax2=subplot(3,1,2);
+ax2.Colormap=lines;
+hold on;
+sub3=surf(data.time,data.asl./1000,cloudPuzzle,'edgecolor','none');
+view(2);
+ylim(ylimits);
+ylabel('Altitude (km)');
+xlim([data.time(1),data.time(end)]);
+title('Current cloud')
+grid on
+
+ax3=subplot(3,1,3);
+colmap=jet(8);
+ax3.Colormap=cat(1,[0 0 0],colmap);
+hold on;
+sub3=surf(data.time,data.asl./1000,cloudClass,'edgecolor','none');
+view(2);
+caxis([0 8]);
+colorbar
+ylim(ylimits);
+ylabel('Altitude (km)');
+xlim([data.time(1),data.time(end)]);
+title('Cloud classification')
+grid on
+
 %     formatOut = 'yyyymmdd_HHMM';
 %     set(gcf,'PaperPositionMode','auto')
 %     print([figdir,'cloudID',datestr(startTime,formatOut),'_to_',datestr(endTime,formatOut)],'-dpng','-r0');
-    
-end
