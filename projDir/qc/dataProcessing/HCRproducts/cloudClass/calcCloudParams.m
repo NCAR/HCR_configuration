@@ -3,68 +3,128 @@ function cloudParams=calcCloudParams(dataCut);
 
 cloudParams=[];
 
-%% Max and min altitude and precipitation
+%% Max and min altitude, temperature, and precipitation
 
-% min/max asl
-minAslAll=nan(1,size(dataCut.cloudPuzzle,2));
-maxAslAll=nan(1,size(dataCut.cloudPuzzle,2));
+% Convert from ASL to AGL
+agl=dataCut.asl-dataCut.TOPO./1000;
+
+% Mean temperature
+%cloudParams.meanTemp=mean(dataCut.TEMP,'omitnan');
+
+% Initialize min/max agl, temp, and precip
+minAglAll=nan(1,size(dataCut.cloudPuzzle,2));
+maxAglAll=nan(1,size(dataCut.cloudPuzzle,2));
+minTempAll=nan(1,size(dataCut.cloudPuzzle,2));
+maxTempAll=nan(1,size(dataCut.cloudPuzzle,2));
 precip=nan(1,size(dataCut.cloudPuzzle,2));
 
 for jj=1:size(dataCut.cloudPuzzle,2)
     % Min/max alt
-    aslCol=dataCut.asl(:,jj);
-    [minAslAll(jj) minIndAsl]=min(aslCol);
-    [maxAslAll(jj) maxIndAsl]=max(aslCol);
+    aglCol=agl(:,jj);
+    [minAglAll(jj) minIndagl]=min(aglCol);
+    [maxAglAll(jj) maxIndagl]=max(aglCol);
+    
+    % Temperature
+    minTempAll(jj)=dataCut.TEMP(minIndagl,jj);
+    maxTempAll(jj)=dataCut.TEMP(maxIndagl,jj);
+    
     % Check if flying in cloud
     % Pointing down
-    if dataCut.elevation(jj)<0 & maxAslAll(jj)<10000 & maxIndAsl==18
-        maxAslAll(jj)=nan;
+    if dataCut.elevation(jj)<0 & maxAglAll(jj)<10000 & maxIndagl==18
+        maxAglAll(jj)=nan;
+        maxTempAll(jj)=nan;
     end
     % Pointing up
-    if dataCut.elevation(jj)>=0 & minAslAll(jj)<10000 & minIndAsl==18
-        minAslAll(jj)=nan;
+    if dataCut.elevation(jj)>=0 & minAglAll(jj)<10000 & minIndagl==18
+        minAglAll(jj)=nan;
+        minTempAll(jj)=nan;
     end
     
     % Precip
     if dataCut.elevation(jj)<0
         surfInd=min(find(dataCut.FLAG(:,jj)==7));
         if ~isempty(surfInd)
-            precip(jj)=mean(dataCut.cloudPuzzle(surfInd-5:surfInd-1,jj));
+            precip(jj)=mean(dataCut.puzzleOne(surfInd-5:surfInd-1,jj));
         elseif any(dataCut.flagCensored(:,jj)==3)
             precip(jj)=1;
         end
     end
 end
-percWanted=0.1;
 
-% Make sure we have enough data and calculate percentiles
-if length(find(~isnan(minAslAll)))>length(minAslAll)/2
-    sortedMin=sort(minAslAll,'ascend');
-    percIndMin=round(percWanted*length(minAslAll));
-    minAsl=sortedMin(percIndMin);
+percWanted=0.02;
+
+% AGL: Make sure we have enough data and calculate percentiles
+if length(find(~isnan(minAglAll)))>length(minAglAll)/2
+    sortedMin=sort(minAglAll,'ascend');
+    percIndMin=round(percWanted*length(minAglAll));
+    cloudParams.minAgl=sortedMin(percIndMin);
+    cloudParams.meanMinAgl=mean(minAglAll,'omitnan');
+    cloudParams.stdMinAgl=std(minAglAll,'omitnan');
 else
-    minAsl=nan;
+    cloudParams.minAgl=nan;
+    cloudParams.meanMinAgl=nan;
+    cloudParams.stdMinAgl=nan;
 end
 
-if length(find(~isnan(maxAslAll)))>length(maxAslAll)/2
-    sortedMax=sort(maxAslAll,'descend');
-    percIndMax=round(percWanted*length(maxAslAll));
-    maxAsl=sortedMax(percIndMax);
+if length(find(~isnan(maxAglAll)))>length(maxAglAll)/2
+    sortedMax=sort(maxAglAll,'descend');
+    percIndMax=round(percWanted*length(maxAglAll));
+    cloudParams.maxAgl=sortedMax(percIndMax);
+    cloudParams.meanMaxAgl=mean(maxAglAll,'omitnan');
+    cloudParams.stdMaxAgl=std(maxAglAll,'omitnan');
 else
-    maxAsl=nan;
+    cloudParams.maxAgl=nan;
+    cloudParams.meanMaxAgl=nan;
+    cloudParams.stdMaxAgl=nan;
 end
 
-% Above ground level
-cloudParams.minAgl=minAsl-mean(dataCut.TOPO,'omitnan')./1000;
-cloudParams.maxAgl=maxAsl-mean(dataCut.TOPO,'omitnan')./1000;
+% TEMP: Make sure we have enough data and calculate percentiles
+if length(find(~isnan(minTempAll)))>length(minTempAll)/2
+    sortedMinTemp=sort(minTempAll,'ascend');
+    percIndMinTemp=round(percWanted*length(minTempAll));
+    cloudParams.minBaseTemp=sortedMinTemp(percIndMinTemp);
+    %cloudParams.meanBaseTemp=mean(minTempAll,'omitnan');
+else
+    cloudParams.minBaseTemp=nan;
+    %cloudParams.meanBaseTemp=nan;
+end
+
+if length(find(~isnan(maxTempAll)))>length(maxTempAll)/2
+    sortedMaxTemp=sort(maxTempAll,'ascend');
+    percIndMaxTemp=round(percWanted*length(maxTempAll));
+    cloudParams.minTopTemp=sortedMaxTemp(percIndMaxTemp);
+    cloudParams.meanTopTemp=mean(maxTempAll,'omitnan');
+else
+    cloudParams.minTopTemp=nan;
+    cloudParams.meanTopTemp=nan;
+end
 
 % Precip
-if length(find(~isnan(precip)))>length(precip)*0.03
+cloudParams.numPrecip=length(find(~isnan(precip)));
+if cloudParams.numPrecip>length(precip)*0.03
     precCloud=1;
 else
     precCloud=0;
 end
 
 cloudParams.precip=precCloud;
+
+% Mean max refl and mean max refl height, mean temp at max refl height
+[maxRefl maxReflInds]=max(dataCut.DBZ,[],1);
+cloudParams.meanMaxRefl=mean(maxRefl,'omitnan');
+cloudParams.stdMaxRefl=std(maxRefl,'omitnan');
+
+% Total maximum refl
+sortedMaxRefl=sort(maxRefl,'descend');
+percIndMaxRefl=round(percWanted*length(maxRefl));
+cloudParams.maxMaxRefl=sortedMaxRefl(percIndMaxRefl);
+
+% Temperature and height of max refl
+wholeMaxReflInds=sub2ind(size(dataCut.DBZ),maxReflInds,1:size(dataCut.DBZ,2));
+maxReflAgl=agl(wholeMaxReflInds);
+maxReflTemp=dataCut.TEMP(wholeMaxReflInds);
+
+cloudParams.meanMaxReflAgl=mean(maxReflAgl,'omitnan');
+cloudParams.meanMaxReflTemp=mean(maxReflTemp,'omitnan');
 end
 

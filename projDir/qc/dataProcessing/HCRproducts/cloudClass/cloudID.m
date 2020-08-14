@@ -116,6 +116,9 @@ for ii=1:length(cloudNums)
     dataCut.puzzleOne(dataCut.puzzleOne~=cloudNums(ii))=nan;
         
     dataCut.asl=dataCut.asl./1000; % In km
+    dataCut.asl(dataCut.puzzleOne~=cloudNums(ii))=nan;
+    dataCut.TEMP(dataCut.puzzleOne~=cloudNums(ii))=nan;
+    dataCut.DBZ(dataCut.puzzleOne~=cloudNums(ii))=nan;
     dataCut.FLAG(dataCut.FLAG==8)=7;
     dataCut.flagCensored=dataCut.FLAG;
     dataCut.flagCensored(isnan(dataCut.cloudPuzzle))=nan;
@@ -123,40 +126,20 @@ for ii=1:length(cloudNums)
     %% Calculate cloud parameters
     cloudParams=calcCloudParams(dataCut);
     
-    %% Precip cloud classifier
-    if (maxAsl>2.5 & precCloud) % Precipitating clouds: Deep (1), Ns (2), Cu (3), Sc (4), St (5), Ac (7)
-        
+    %% Cloud classifier
+    if (maxAsl>2.5 & precCloud) % Precipitating clouds: Deep (1), Ns (2), Cu (3), Sc (4), St (5), Ac (7)        
         cloudFlag=precipCloudClass();
+    elseif (meanTemp<-23 & meanMaxRefl<-3 & meanMaxReflAgl>5 & minAgl>5) | minAgl>10 % High clouds (8)
+        cloudFlag=highCloudClass();
+    elseif (meanTemp>-15 & meanMaxReflAgl<2) | minAgl<1.5 % Low clouds: Deep (1), Ns (2), Cu (3), Sc (4), St (5)
+        cloudFlag=lowCloudClass();
     else
-        % Mean temperature
-        tempCut=data.TEMP(wholeInd); % !!!!!!!!!!!!!!!! fix this!
-        meanTemp=mean(tempCut,'omitnan');
-        
-        % Mean max refl and mean max refl height
-        reflCut=data.DBZ(:,min(colInd):max(colInd)); % In km
-        reflCut(isnan(puzzleCut))=nan;
-        
-        [maxRefl maxReflInds]=max(reflCut,[],1);
-        meanMaxRefl=mean(maxRefl,'omitnan');
-        wholeMaxReflInds=sub2ind(size(reflCut),maxReflInds,1:size(reflCut,2));
-        maxReflAsl=aslCut(wholeMaxReflInds);
-        
-        maxReflAgl=maxReflAsl-topoCut;
-        meanMaxReflAgl=mean(maxReflAgl,'omitnan');
-        
-        %% High low or middle cloud classifier
-        if (meanTemp<-23 & meanMaxRefl<-3 & meanMaxReflAgl>5 & minAgl>5) | minAgl>10 % High clouds (8)
-            cloudFlag=highCloudClass();
-        elseif (meanTemp>-15 & meanMaxReflAgl<2) | minAgl<1.5 % Low clouds: Deep (1), Ns (2), Cu (3), Sc (4), St (5)
-            cloudFlag=lowCloudClass();
-        else
-            cloudFlag=middleCloudClass(); % Middle clouds: As (6), Ac (7)
-        end
+        cloudFlag=middleCloudClass(); % Middle clouds: As (6), Ac (7)
     end
     
     cloudClass(wholeInd)=cloudFlag;
 end
-    
+
 cloudClass(cloudPuzzle==0)=0; % Small, unclassified echos
 
 %% Plot
