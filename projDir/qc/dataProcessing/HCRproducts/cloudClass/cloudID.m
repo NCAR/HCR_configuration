@@ -127,14 +127,16 @@ for ii=1:length(cloudNums)
     cloudParams=calcCloudParams(dataCut);
     
     %% Cloud classifier
-    if (maxAsl>2.5 & precCloud) % Precipitating clouds: Deep (1), Ns (2), Cu (3), Sc (4), St (5), Ac (7)        
-        cloudFlag=precipCloudClass();
-    elseif (meanTemp<-23 & meanMaxRefl<-3 & meanMaxReflAgl>5 & minAgl>5) | minAgl>10 % High clouds (8)
-        cloudFlag=highCloudClass();
-    elseif (meanTemp>-15 & meanMaxReflAgl<2) | minAgl<1.5 % Low clouds: Deep (1), Ns (2), Cu (3), Sc (4), St (5)
-        cloudFlag=lowCloudClass();
+    if (cloudParams.maxAgl>2.5 & cloudParams.precip) % Precipitating clouds: Deep (1), Ns (2), Cu (3), Sc (4), St (5), Ac (7)        
+        cloudFlag=precipCloudClass(cloudParams);
+    elseif (cloudParams.meanMaxReflTemp<-23 & cloudParams.meanMaxRefl<-3 & ...
+            cloudParams.meanMaxReflAgl>5 & cloudParams.meanMinAgl>5) | cloudParams.meanMinAgl>10 % High clouds (8)
+        cloudFlag=highCloudClass(cloudParams);
+    elseif (cloudParams.meanMaxReflTemp>-15 & cloudParams.meanMaxReflAgl<2) ...
+            | cloudParams.meanMinAgl<1.5 % Low clouds: Deep (1), Ns (2), Cu (3), Sc (4), St (5)
+        cloudFlag=lowCloudClass(cloudParams);
     else
-        cloudFlag=middleCloudClass(); % Middle clouds: As (6), Ac (7)
+        cloudFlag=middleCloudClass(cloudParams); % Middle clouds: As (6), Ac (7)
     end
     
     cloudClass(wholeInd)=cloudFlag;

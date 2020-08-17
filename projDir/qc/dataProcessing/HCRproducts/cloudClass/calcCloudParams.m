@@ -132,5 +132,30 @@ cloudParams.meanLat=mean(dataCut.latitude,'omitnan');
 
 % Cloud length in km
 [cloudParams.lengthKM ~]=lldistkm([dataCut.latitude(1) dataCut.longitude(1)],[dataCut.latitude(end) dataCut.longitude(end)]);
+
+% Maximum 10 dBZ height
+tenDBZ=dataCut.DBZ;
+tenDBZ(tenDBZ<10)=nan;
+
+agl10dbz=agl(~isnan(tenDBZ));
+if isempty(agl10dbz)
+    cloudParams.max10dbzAgl=nan;
+else
+    sortedAgl10=sort(magl10dbz,'descend');
+    percIndAgl10=round(percWanted*length(sortedAgl10));
+    cloudParams.max10dbzAgl=sortedAgl10(percIndAgl10);
+end
+
+% Cloud thickness
+cloudThick=abs(maxAglAll-minAglAll);
+cloudParams.meanThickness=mean(cloudThick,'omitnan');
+
+sortedThick=sort(cloudThick,'descend');
+percIndThick=round(percWanted*length(sortedThick));
+cloudParams.maxThickness=sortedThick(percIndThick);
+
+% Inhomogeneity
+maxReflLin=10.^(maxRefl./10);
+cloudParams.inhomo=std(maxReflLin,'omitnan')/mean(maxReflLin,'omitnan');
 end
 
