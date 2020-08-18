@@ -136,13 +136,13 @@ for ii=1:length(cloudNums)
             | cloudParams.meanMinAgl<1.5 % Low clouds: Deep (1), Ns (2), Cu (3), Sc (4), St (5)
         cloudFlag=lowCloudClass(cloudParams);
     else
-        cloudFlag=middleCloudClass(cloudParams); % Middle clouds: As (6), Ac (7)
+        cloudFlag=middleCloudClass(cloudParams); % Middle clouds: Ns (2), Cu (3), Sc (4), St (5), As (6), Ac (7)
     end
     
     cloudClass(wholeInd)=cloudFlag;
 end
 
-cloudClass(cloudPuzzle==0)=0; % Small, unclassified echos
+cloudClass(data.cloudPuzzle==0)=0; % Small, unclassified echos
 
 %% Plot
 
@@ -167,7 +167,7 @@ grid on
 ax2=subplot(3,1,2);
 ax2.Colormap=lines;
 hold on;
-sub3=surf(data.time,data.asl./1000,cloudPuzzle,'edgecolor','none');
+sub3=surf(data.time,data.asl./1000,data.cloudPuzzle,'edgecolor','none');
 view(2);
 ylim(ylimits);
 ylabel('Altitude (km)');
@@ -181,7 +181,7 @@ ax3.Colormap=cat(1,[0 0 0],colmap);
 hold on;
 sub3=surf(data.time,data.asl./1000,cloudClass,'edgecolor','none');
 view(2);
-caxis([0 8]);
+%caxis([0 8]);
 colorbar
 ylim(ylimits);
 ylabel('Altitude (km)');

@@ -82,11 +82,11 @@ end
 if length(find(~isnan(minTempAll)))>length(minTempAll)/2
     sortedMinTemp=sort(minTempAll,'ascend');
     percIndMinTemp=round(percWanted*length(minTempAll));
-    cloudParams.minBaseTemp=sortedMinTemp(percIndMinTemp);
-    %cloudParams.meanBaseTemp=mean(minTempAll,'omitnan');
+    %cloudParams.minBaseTemp=sortedMinTemp(percIndMinTemp);
+    cloudParams.meanBaseTemp=mean(minTempAll,'omitnan');
 else
-    cloudParams.minBaseTemp=nan;
-    %cloudParams.meanBaseTemp=nan;
+    %cloudParams.minBaseTemp=nan;
+    cloudParams.meanBaseTemp=nan;
 end
 
 if length(find(~isnan(maxTempAll)))>length(maxTempAll)/2
@@ -141,7 +141,7 @@ agl10dbz=agl(~isnan(tenDBZ));
 if isempty(agl10dbz)
     cloudParams.max10dbzAgl=nan;
 else
-    sortedAgl10=sort(magl10dbz,'descend');
+    sortedAgl10=sort(agl10dbz,'descend');
     percIndAgl10=round(percWanted*length(sortedAgl10));
     cloudParams.max10dbzAgl=sortedAgl10(percIndAgl10);
 end
