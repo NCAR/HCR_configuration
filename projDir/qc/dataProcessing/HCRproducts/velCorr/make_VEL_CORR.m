@@ -14,7 +14,7 @@ freqData='10hz'; % 10hz, 100hz, or 2hz
 plotLine=1;
 plotSurf=1;
 
-testCases=readtable(['~/git/HCR_configuration/projDir/qc/dataProcessing/velCorr/inFiles/testCases_cset.dat']);
+testCases=readtable(['~/git/HCR_configuration/projDir/qc/dataProcessing/HCRproducts/velCorr/inFiles/testCases_cset.dat']);
 
 figdir=['/h/eol/romatsch/hcrCalib/velCorr/',project,'/velFigs_final/'];
 formatOut = 'yyyymmdd_HHMM';
