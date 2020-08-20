@@ -131,9 +131,9 @@ for ii=1:length(cloudNums)
         cloudFlag=precipCloudClass(cloudParams);
     elseif (cloudParams.meanMaxReflTemp<-23 & cloudParams.meanMaxRefl<-3 & ...
             cloudParams.meanMaxReflAgl>5 & cloudParams.meanMinAgl>5) | cloudParams.meanMinAgl>10 % High clouds (8)
-        cloudFlag=highCloudClass(cloudParams);
+        cloudFlag=highCloudClass(cloudParams); % High clouds: Deep (1), Cu (3), As (6), High (8)
     elseif (cloudParams.meanMaxReflTemp>-15 & cloudParams.meanMaxReflAgl<2) ...
-            | cloudParams.meanMinAgl<1.5 % Low clouds: Deep (1), Ns (2), Cu (3), Sc (4), St (5)
+            | cloudParams.meanMinAgl<1.5 % Low clouds: Deep (1), Ns (2), Cu (3), Sc (4), St (5), As (6), Ac (7)
         cloudFlag=lowCloudClass(cloudParams);
     else
         cloudFlag=middleCloudClass(cloudParams); % Middle clouds: Ns (2), Cu (3), Sc (4), St (5), As (6), Ac (7)
