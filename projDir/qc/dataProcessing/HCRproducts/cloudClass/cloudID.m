@@ -105,10 +105,18 @@ for ii=1:length(cloudNums)
     
     for jj=1:size(allVars,1)
         varIn=data.(allVars{jj});
+        startVar=min(colInd);
+        if startVar~=1
+            startVar=startVar-1;
+        end
+        endVar=max(colInd);
+        if endVar~=length(data.time)
+            endVar=endVar+1;
+        end
         if min(size(varIn))==1
-            dataCut.(allVars{jj})=varIn(min(colInd):max(colInd));
+            dataCut.(allVars{jj})=varIn(startVar:endVar);
         else
-            dataCut.(allVars{jj})=varIn(:,min(colInd):max(colInd));
+            dataCut.(allVars{jj})=varIn(:,startVar:endVar);
         end
     end
     
@@ -127,19 +135,34 @@ for ii=1:length(cloudNums)
     cloudParams=calcCloudParams(dataCut);
     
     %% Cloud classifier
-    if (cloudParams.maxAgl>2.5 & cloudParams.precip) % Precipitating clouds: Deep (1), Ns (2), Cu (3), Sc (4), St (5), Ac (7)        
-        cloudFlag=precipCloudClass(cloudParams);
-    elseif (cloudParams.meanMaxReflTemp<-23 & cloudParams.meanMaxRefl<-3 & ...
-            cloudParams.meanMaxReflAgl>5 & cloudParams.meanMinAgl>5) | cloudParams.meanMinAgl>10 % High clouds (8)
-        cloudFlag=highCloudClass(cloudParams); % High clouds: Deep (1), Cu (3), As (6), High (8)
-    elseif (cloudParams.meanMaxReflTemp>-15 & cloudParams.meanMaxReflAgl<2) ...
-            | cloudParams.meanMinAgl<1.5 % Low clouds: Deep (1), Ns (2), Cu (3), Sc (4), St (5), As (6), Ac (7)
-        cloudFlag=lowCloudClass(cloudParams);
-    else
-        cloudFlag=middleCloudClass(cloudParams); % Middle clouds: Ns (2), Cu (3), Sc (4), St (5), As (6), Ac (7)
+    % Remove cloudParams if they are nan so they cannot be used. Then
+    % try statement below will go into catch.
+    fieldParams=fields(cloudParams);
+    
+    for ii=1:length(fieldParams)
+        if isnan(cloudParams.(fieldParams{ii}))
+            cloudParams=rmfield(cloudParams,(fieldParams{ii}));
+        end
     end
     
-    cloudClass(wholeInd)=cloudFlag;
+    % Cloud classification
+    try
+        if (cloudParams.maxAgl>2.5 & cloudParams.precip) % Precipitating clouds: Deep (1), Ns (2), Cu (3), Sc (4), St (5), Ac (7)
+            cloudFlag=precipCloudClass(cloudParams);
+        elseif (cloudParams.meanMaxReflTemp<-23 & cloudParams.meanMaxRefl<-3 & ...
+                cloudParams.meanMaxReflAgl>5 & cloudParams.meanMinAgl>5) | cloudParams.meanMinAgl>10 % High clouds (8)
+            cloudFlag=highCloudClass(cloudParams); % High clouds: Deep (1), Cu (3), As (6), High (8)
+        elseif (cloudParams.meanMaxReflTemp>-15 & cloudParams.meanMaxReflAgl<2) ...
+                | cloudParams.meanMinAgl<1.5 % Low clouds: Deep (1), Ns (2), Cu (3), Sc (4), St (5), As (6), Ac (7)
+            cloudFlag=lowCloudClass(cloudParams);
+        else
+            cloudFlag=middleCloudClass(cloudParams); % Middle clouds: Ns (2), Cu (3), Sc (4), St (5), As (6), Ac (7)
+        end
+        
+        cloudClass(wholeInd)=cloudFlag;
+    catch
+        cloudClass(wholeInd)=0;
+    end
 end
 
 cloudClass(data.cloudPuzzle==0)=0; % Small, unclassified echos
@@ -181,8 +204,8 @@ ax3.Colormap=cat(1,[0 0 0],colmap);
 hold on;
 sub3=surf(data.time,data.asl./1000,cloudClass,'edgecolor','none');
 view(2);
-%caxis([0 8]);
-colorbar
+caxis([0 9]);
+colorbar('Ticks',(0.5:1:9.5),'YTickLabel',{'N/A','Deep','Ns','Cu','Sc','St','As','Ac','High'});
 ylim(ylimits);
 ylabel('Altitude (km)');
 xlim([data.time(1),data.time(end)]);
