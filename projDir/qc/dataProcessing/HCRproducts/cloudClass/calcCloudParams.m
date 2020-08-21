@@ -133,10 +133,16 @@ cloudParams.meanLat=mean(dataCut.latitude,'omitnan');
 % Cloud length in km (make sure length is not cut off because of a/descent
 % or missing data
 sumDBZ=sum(dataCut.DBZ,1,'omitnan');
-if sumDBZ(1)~=0 | sumDBZ(end)~=0
+startColZ=dataCut.DBZ(:,2);
+startColF=dataCut.FLAG(:,1);
+startColF(isnan(startColZ))=nan;
+
+endColZ=dataCut.DBZ(:,end-1);
+endColF=dataCut.FLAG(:,end);
+endColF(isnan(endColZ))=nan;
+
+if sumDBZ(1)~=0 | sumDBZ(end)~=0 | sum(startColF,'omitnan')~=0 | sum(endColF,'omitnan')~=0
     cloudParams.lengthKM=nan;
-elseif
-    
 else
     [cloudParams.lengthKM ~]=lldistkm([dataCut.latitude(1) dataCut.longitude(1)],[dataCut.latitude(end) dataCut.longitude(end)]);
 end
