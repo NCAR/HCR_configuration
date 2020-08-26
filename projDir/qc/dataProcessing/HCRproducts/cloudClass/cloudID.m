@@ -85,6 +85,10 @@ data.dbzMasked(data.FLAG>1)=nan;
 
 data.cloudPuzzle=f_cloudPuzzle_radial(data);
 
+%% Surface refl
+[linInd rowInd rangeToSurf] = hcrSurfInds(data);
+data.surfRefl=data.DBZ(linInd);
+
 %% Loop through clouds
 
 puzzleReplace=data.cloudPuzzle;
@@ -99,6 +103,8 @@ cloudClass=nan(size(data.DBZ));
 for ii=1:length(cloudNums)
     [rowInd colInd]=find(data.cloudPuzzle==cloudNums(ii));
     wholeInd=find(data.cloudPuzzle==cloudNums(ii));
+    
+    disp(['Identifying cloud ',num2str(ii),' of ',num2str(length(cloudNums)),' ...']);
     
     %% Cut out columns with cloud data
     allVars=fields(data);
@@ -129,7 +135,7 @@ for ii=1:length(cloudNums)
     dataCut.DBZ(dataCut.puzzleOne~=cloudNums(ii))=nan;
     dataCut.FLAG(dataCut.FLAG==8)=7;
     dataCut.flagCensored=dataCut.FLAG;
-    dataCut.flagCensored(isnan(dataCut.cloudPuzzle))=nan;
+    dataCut.flagCensored(dataCut.puzzleOne~=cloudNums(ii))=nan;
     
     %% Calculate cloud parameters
     cloudParams=calcCloudParams(dataCut);
@@ -140,17 +146,20 @@ for ii=1:length(cloudNums)
     fieldParams=fields(cloudParams);
     
     for ii=1:length(fieldParams)
-        if isnan(cloudParams.(fieldParams{ii}))
+        if isnan(cloudParams.(fieldParams{ii})) & ~strcmp(fieldParams{ii},'max10dbzAgl')
             cloudParams=rmfield(cloudParams,(fieldParams{ii}));
         end
     end
     
     % Cloud classification
+    cloudFlag=[];
     try
-        if (cloudParams.maxAgl>2.5 & cloudParams.precip) % Precipitating clouds: Deep (1), Ns (2), Cu (3), Sc (4), St (5), Ac (7)
+        if cloudParams.meanMinAgl>10 & ~cloudParams.precip % High cloud (8)
+            cloudFlag=8;
+        elseif (cloudParams.meanMaxAgl>2.5 & cloudParams.precip) % Precipitating clouds: Deep (1), Ns (2), Cu (3), Sc (4), St (5), Ac (7)
             cloudFlag=precipCloudClass(cloudParams);
         elseif (cloudParams.meanMaxReflTemp<-23 & cloudParams.meanMaxRefl<-3 & ...
-                cloudParams.meanMaxReflAgl>5 & cloudParams.meanMinAgl>5) | cloudParams.meanMinAgl>10 % High clouds (8)
+                cloudParams.meanMaxReflAgl>5 & cloudParams.meanMinAgl>5)
             cloudFlag=highCloudClass(cloudParams); % High clouds: Deep (1), Cu (3), As (6), High (8)
         elseif (cloudParams.meanMaxReflTemp>-15 & cloudParams.meanMaxReflAgl<2) ...
                 | cloudParams.meanMinAgl<1.5 % Low clouds: Deep (1), Ns (2), Cu (3), Sc (4), St (5), As (6), Ac (7)

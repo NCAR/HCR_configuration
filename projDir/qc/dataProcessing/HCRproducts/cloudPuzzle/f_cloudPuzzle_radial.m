@@ -13,7 +13,7 @@ refl=fillExtinct(data);
 
 %% Handle missing and NS cal
 
-disp('Filling missing and NS cal ...');
+disp('Filling missing, transition, and NS cal ...');
 
 refl = fillMissingNScal(refl,data);
 

@@ -3,6 +3,23 @@ function cloudParams=calcCloudParams(dataCut);
 
 cloudParams=[];
 
+debugFig=1;
+
+if debugFig
+    close all
+    fig1=figure('DefaultAxesFontSize',11,'position',[100,1300,900,800]);
+    
+    hold on;
+    sub1=surf(dataCut.time,dataCut.asl,dataCut.DBZ,'edgecolor','none');
+    view(2);
+    sub1=colMapDBZ(sub1);
+    %ylim(ylimits);
+    ylabel('Altitude (km)');
+    xlim([dataCut.time(1),dataCut.time(end)]);
+    title('Reflectivity')
+    grid on
+end
+
 %% Max and min altitude, temperature, and precipitation
 
 % Convert from ASL to AGL
@@ -103,11 +120,37 @@ end
 cloudParams.numPrecip=length(find(~isnan(precip)));
 if cloudParams.numPrecip>length(precip)*0.03
     precCloud=1;
-else
+elseif mean(dataCut.elevation<0)
     precCloud=0;
+else
+    precCloud=nan;
 end
 
 cloudParams.precip=precCloud;
+
+% Intense and very intense precip
+cloudParams.intPrecip=0;
+cloudParams.veryIntPrecip=0;
+
+if cloudParams.precip
+    oceanLand=nan(size(dataCut.time)); % Ocean=1, land=2
+    oceanLand(any(dataCut.FLAG==7,1))=1;
+    oceanLand(any(dataCut.FLAG==8,1))=2;
+    
+    oceanLand=fillmissing(oceanLand,'nearest');
+        
+    surfReflMasked=dataCut.surfRefl;
+    surfReflMasked(isnan(precip))=nan;
+    
+    % Missing surface echo
+    cloudParams.veryIntPrecip=cloudParams.veryIntPrecip+length(find(~isnan(precip) & isnan(surfReflMasked)));
+    % Very intense
+    cloudParams.veryIntPrecip=cloudParams.veryIntPrecip+length(find(surfReflMasked<-10));
+    % Ocean
+    cloudParams.intPrecip=cloudParams.intPrecip+length(find(oceanLand==1 & surfReflMasked<20));
+    % Land
+    cloudParams.intPrecip=cloudParams.intPrecip+length(find(oceanLand==2 & surfReflMasked<10));
+end
 
 % Mean max refl and mean max refl height, mean temp at max refl height
 [maxRefl maxReflInds]=max(dataCut.DBZ,[],1);
@@ -132,13 +175,16 @@ cloudParams.meanLat=mean(dataCut.latitude,'omitnan');
 
 % Cloud length in km (make sure length is not cut off because of a/descent
 % or missing data
+testLength=dataCut.FLAG;
+testLength(~isnan(dataCut.cloudPuzzle))=nan;
+
 sumDBZ=sum(dataCut.DBZ,1,'omitnan');
 startColZ=dataCut.DBZ(:,2);
-startColF=dataCut.FLAG(:,1);
+startColF=testLength(:,1);
 startColF(isnan(startColZ))=nan;
 
 endColZ=dataCut.DBZ(:,end-1);
-endColF=dataCut.FLAG(:,end);
+endColF=testLength(:,end);
 endColF(isnan(endColZ))=nan;
 
 if sumDBZ(1)~=0 | sumDBZ(end)~=0 | sum(startColF,'omitnan')~=0 | sum(endColF,'omitnan')~=0
@@ -162,11 +208,16 @@ end
 
 % Cloud thickness
 cloudThick=abs(maxAglAll-minAglAll);
-cloudParams.meanThickness=mean(cloudThick,'omitnan');
-
-sortedThick=sort(cloudThick,'descend');
-percIndThick=round(percWanted*length(sortedThick));
-cloudParams.maxThickness=sortedThick(percIndThick);
+if length(find(~isnan(cloudThick)))>length(cloudThick)/2
+    cloudParams.meanThickness=mean(cloudThick,'omitnan');
+    
+    sortedThick=sort(cloudThick,'descend');
+    percIndThick=round(percWanted*length(sortedThick));
+    cloudParams.maxThickness=sortedThick(percIndThick);
+else
+    cloudParams.meanThickness=nan;
+    cloudParams.maxThickness=nan;
+end
 
 % Inhomogeneity
 maxReflLin=10.^(maxRefl./10);
