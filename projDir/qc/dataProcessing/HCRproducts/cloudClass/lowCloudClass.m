@@ -6,7 +6,7 @@ if cloudParams.meanLat<-65 & cloudParams.meanBaseTemp<-30 & cloudParams.meanTopT
     cloudFlag=6;
     % There is a check for cloud fraction from MODIS in the CloudSat
     % algorithm
-elseif cloudParams.inhomo<0.5 & cloudParams.maxAgl<3 & cloudParams.meanMinAgl<1.8 & intPrecip==0 % CloudSat checks also cloud fracion
+elseif cloudParams.inhomo<0.5 & cloudParams.maxAgl<3 & cloudParams.meanMinAgl<1.8 & cloudParams.intPrecip==0 % CloudSat checks also cloud fracion
     cloudFlag=5;
 elseif cloudParams.inhomo>0.3 & cloudParams.maxAgl>3 & cloudParams.minTopTemp>-35 & ...
         cloudParams.meanMaxRefl<2 & cloudParams.meanThickness<8 & ...
