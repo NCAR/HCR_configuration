@@ -91,6 +91,7 @@ percWanted=0.02;
 % AGL: Make sure we have enough data and calculate percentiles
 if length(find(~isnan(minAglAll)))>length(minAglAll)/2
     sortedMin=sort(minAglAllOrig,'ascend');
+    sortedMin(isnan(sortedMin))=[];
     percIndMin=round(percWanted*length(minAglAllOrig));
     cloudParams.minAgl=sortedMin(percIndMin);
     cloudParams.meanMinAgl=mean(minAglAllOrig,'omitnan');
@@ -103,6 +104,7 @@ end
 
 if length(find(~isnan(maxAglAll)))>length(maxAglAll)/2
     sortedMax=sort(maxAglAllOrig,'descend');
+    sortedMax(isnan(sortedMax))=[];
     percIndMax=round(percWanted*length(maxAglAllOrig));
     cloudParams.maxAgl=sortedMax(percIndMax);
     cloudParams.meanMaxAgl=mean(maxAglAllOrig,'omitnan');
@@ -116,6 +118,7 @@ end
 % TEMP: Make sure we have enough data and calculate percentiles
 if length(find(~isnan(minTempAll)))>length(minTempAll)/2
     sortedMinTemp=sort(minTempAllOrig,'ascend');
+    sortedMinTemp(isnan(sortedMinTemp))=[];
     percIndMinTemp=round(percWanted*length(minTempAllOrig));
     %cloudParams.minBaseTemp=sortedMinTemp(percIndMinTemp);
     cloudParams.meanBaseTemp=mean(minTempAllOrig,'omitnan');
@@ -126,6 +129,7 @@ end
 
 if length(find(~isnan(maxTempAll)))>length(maxTempAll)/2
     sortedMaxTemp=sort(maxTempAllOrig,'ascend');
+    sortedMaxTemp(isnan(sortedMaxTemp))=[];
     percIndMaxTemp=round(percWanted*length(maxTempAllOrig));
     cloudParams.minTopTemp=sortedMaxTemp(percIndMaxTemp);
     cloudParams.meanTopTemp=mean(maxTempAllOrig,'omitnan');
@@ -172,6 +176,7 @@ end
 
 % Mean max refl and mean max refl height, mean temp at max refl height
 [maxRefl maxReflInds]=max(dataCut.DBZ,[],1);
+maxRefl(isnan(maxRefl))=[];
 cloudParams.meanMaxRefl=mean(maxRefl,'omitnan');
 cloudParams.stdMaxRefl=std(maxRefl,'omitnan');
 
@@ -221,7 +226,8 @@ if isempty(agl10dbz)
     cloudParams.max10dbzAgl=nan;
 else
     sortedAgl10=sort(agl10dbz,'descend');
-    percIndAgl10=round(percWanted*length(sortedAgl10));
+    sortedAgl10(isnan(sortedAgl10))=[];
+    percIndAgl10=ceil(percWanted*length(sortedAgl10));
     cloudParams.max10dbzAgl=sortedAgl10(percIndAgl10);
 end
 
@@ -231,7 +237,7 @@ cloudThick=abs(maxAglAllOrig-minAglAllOrig);
 cloudParams.meanThickness=mean(cloudThick,'omitnan');
 
 sortedThick=sort(cloudThick,'descend');
-%sortedThick(isnan(sortedThick))=[];
+sortedThick(isnan(sortedThick))=[];
 percIndThick=ceil(percWanted*length(sortedThick));
 cloudParams.maxThickness=sortedThick(percIndThick);
 

@@ -3,15 +3,15 @@
 clear all;
 close all;
 
-startTime=datetime(2018,1,16,2,0,0);
-endTime=datetime(2018,1,16,2,30,0);
+startTime=datetime(2019,8,11,17,40,0);
+endTime=datetime(2019,8,11,17,55,0);
 
 % startTime=datetime(2019,10,2,15,0,0);
 % endTime=datetime(2019,10,2,15,59,0);
 
 plotTest=0;
 
-project='socrates'; %socrates, aristo, cset
+project='otrec'; %socrates, aristo, cset
 quality='qc2'; %field, qc1, or qc2
 freqData='10hz'; % 10hz, 100hz, or 2hz
 
