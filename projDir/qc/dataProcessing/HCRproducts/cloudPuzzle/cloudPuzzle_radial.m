@@ -60,17 +60,46 @@ dataVars=dataVars(~cellfun('isempty',dataVars));
 
 cloudPuzzleOut=nan(size(data.DBZ));
 
-%% Add extinct back in
-
-disp('Filling extinct echo ...');
-
-refl=fillExtinct(data);
+refl=data.DBZ;
+refl(data.FLAG>1)=nan;
 
 %% Handle missing and NS cal
 
 disp('Filling missing and NS cal ...');
 
 refl = fillMissingNScal(refl,data);
+
+%% Identify contiguous clouds that are too small
+
+disp('Identifying small clouds ...');
+
+%reflLarge=refl;
+
+reflMask=zeros(size(refl));
+reflMask(~isnan(refl))=1;
+
+pixCut=5000;
+CC = bwconncomp(reflMask);
+
+cloudNumOrig=nan(size(data.DBZ));
+countCloud=1;
+
+for ii=1:CC.NumObjects
+    area=CC.PixelIdxList{ii};
+    if length(area)<=pixCut
+        %reflLarge(area)=nan;
+        cloudPuzzleOut(area)=0;
+    else
+        cloudNumOrig(area)=countCloud;
+        countCloud=countCloud+1;
+    end
+end
+
+%% Add extinct back in
+
+disp('Filling extinct echo ...');
+
+[cloudNum reflExt]=fillExtinct(data,cloudNumOrig,refl);
 
 %% Smooth with convolution
 
@@ -85,33 +114,7 @@ cirMask=double(cirMask);
 cirMask=cirMask./(sum(reshape(cirMask,1,[])));
 
 % Convolution
-reflConv=nanconv(refl,cirMask);
-
-%% Identify contiguous clouds that are too small
-
-disp('Identifying small clouds ...');
-
-reflLarge=refl;
-
-reflMask=zeros(size(refl));
-reflMask(~isnan(refl))=1;
-
-pixCut=5000;
-CC = bwconncomp(reflMask);
-
-cloudNum=nan(size(data.DBZ));
-countCloud=1;
-
-for ii=1:CC.NumObjects
-    area=CC.PixelIdxList{ii};
-    if length(area)<=pixCut
-        reflLarge(area)=nan;
-        cloudPuzzleOut(area)=0;
-    else
-        cloudNum(area)=countCloud;
-        countCloud=countCloud+1;
-    end
-end
+reflConv=nanconv(reflExt,cirMask);
 
 %% Split up individual clouds
 
