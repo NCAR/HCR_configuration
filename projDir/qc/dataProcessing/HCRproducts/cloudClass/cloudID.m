@@ -33,7 +33,7 @@ caseStart=datetime(caseList.Var1,caseList.Var2,caseList.Var3, ...
 caseEnd=datetime(caseList.Var6,caseList.Var7,caseList.Var8, ...
     caseList.Var9,caseList.Var10,0);
 
-for aa=12:length(caseStart)
+for aa=8:length(caseStart)
     startTime=caseStart(aa);
     endTime=caseEnd(aa);
     
@@ -191,15 +191,23 @@ for aa=12:length(caseStart)
     ax1.Position=[0.13 0.7093 0.775 0.2157];
     
     ax2=subplot(3,1,2);
-    ax2.Colormap=lines;
+    cloudsInPuz=unique(data.cloudPuzzle);
+    cloudsInPuz(isnan(cloudsInPuz))=[];
+    cloudCount=length(cloudsInPuz);
+    
+    colMapLines=lines(cloudCount-1);
+    colMapLines=cat(1,[0 0 0],colMapLines);
+    ax2.Colormap=colMapLines;
     hold on;
     sub2=surf(data.time,data.asl./1000,data.cloudPuzzle,'edgecolor','none');
     view(2);
     ylim(ylimits);
+    caxis([-0.5 cloudCount-1+0.5])
     ylabel('Altitude (km)');
     xlim([data.time(1),data.time(end)]);
     title('Cloud puzzle')
     grid on
+    colorbar
     ax2.Position=[0.13 0.4096 0.775 0.2157];
     
     ax3=subplot(3,1,3);

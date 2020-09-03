@@ -1,7 +1,7 @@
 function cloudPuzzleOut = f_cloudPuzzle_radial(data)
 % Make cloud puzzle
 
-startThresh=-20;
+startThresh=-30;
 
 cloudPuzzleOut=nan(size(data.DBZ));
 

@@ -1,5 +1,5 @@
 function maskLast = thresholdMask(inData,startThresh,minArea)
-% Find optimal threshold for clouds
+% Find optimal reflectivity threshold for clouds
 minRefl=min(min(inData));
 
 maskThresh=zeros(size(inData));

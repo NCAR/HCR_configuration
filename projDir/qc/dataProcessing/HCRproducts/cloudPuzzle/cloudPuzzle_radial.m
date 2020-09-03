@@ -3,8 +3,8 @@
 clear all;
 close all;
 
-startTime=datetime(2019,8,11,17,40,0);
-endTime=datetime(2019,8,11,17,55,0);
+startTime=datetime(2019,8,7,16,45,0);
+endTime=datetime(2019,8,7,17,10,0);
 
 % startTime=datetime(2019,10,2,15,0,0);
 % endTime=datetime(2019,10,2,15,59,0);
@@ -15,7 +15,7 @@ project='otrec'; %socrates, aristo, cset
 quality='qc2'; %field, qc1, or qc2
 freqData='10hz'; % 10hz, 100hz, or 2hz
 
-startThresh=-20; % starting threshold for cloud segmentation
+startThresh=-30; % starting threshold for cloud segmentation
 ylimits=[0 15];
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
@@ -138,8 +138,6 @@ for ii=1:numMax
         [clR clC]=ind2sub(size(cloudNum),cloudInds);
         
         reflMap=reflMapBig(min(clR):max(clR),min(clC):max(clC));
-        aslMap=data.asl(min(clR):max(clR),min(clC):max(clC));
-        timeMap=data.time(min(clC):max(clC));
         
         % Zero padding
         reflPadded=cat(1,nan(10,size(reflMap,2)),reflMap,nan(10,size(reflMap,2)));
@@ -151,20 +149,29 @@ for ii=1:numMax
         
         BW2 = imfill(BW,'holes');
                  
-        % Distance
+        % Distance of each cloud pixel from cloud border
         D = -bwdist(~BW2);
                
-        % Thresholding
+        % Find a good reflectivity threshold that represents the major
+        % parts of the cloud
         maskBig = thresholdMask(reflPadded,startThresh,500);
                 
+        % Enlarge minima that are then used in the watershed process to the
+        % threshold areas from the previous step
         newMin = imimposemin(D,maskBig);
+
+        % Watershed is an image segmentation method that looks for
+        % ridges and valleys in an image
         waterShed = watershed(newMin);
         
+        % Watershed usually over-segments so we join areas back together
+        % that share a large border
         waterMasked=joinCloudParts(waterShed,BW2);
         
         maskJoined=zeros(size(BW2));
         maskJoined(waterMasked>0)=1;
         
+        % Reverser zero padding
         maskJoined=maskJoined(11:end-10,11:end-10);
         
         maskBack=zeros(size(reflMapBig));
@@ -181,6 +188,10 @@ for ii=1:numMax
         % Plot sub plot with individual cloud
         if plotTest
             close all
+            
+            aslMap=data.asl(min(clR):max(clR),min(clC):max(clC));
+            timeMap=data.time(min(clC):max(clC));
+            
             cloudOut=nan(size(maskJoined));
             
             uniqueClouds2=bwconncomp(maskJoined);
@@ -243,18 +254,20 @@ grid on
 
 ax2=subplot(2,1,2);
 
-colMap=lines;
+colMap=lines(cloudCount-1);
 colMap=cat(1,[0 0 0],colMap);
 
 hold on;
 sub2=surf(data.time,data.asl./1000,cloudPuzzleOut,'edgecolor','none');
 view(2);
 ax2.Colormap=colMap;
+caxis([-0.5 cloudCount-1+0.5])
 ylim(ylimits);
 ylabel('Altitude (km)');
 xlim([data.time(1),data.time(end)]);
 title('Cloud Puzzle')
 grid on
+colorbar
 
 formatOut = 'yyyymmdd_HHMM';
 set(gcf,'PaperPositionMode','auto')
