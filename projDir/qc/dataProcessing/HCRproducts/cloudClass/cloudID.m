@@ -33,7 +33,10 @@ caseStart=datetime(caseList.Var1,caseList.Var2,caseList.Var3, ...
 caseEnd=datetime(caseList.Var6,caseList.Var7,caseList.Var8, ...
     caseList.Var9,caseList.Var10,0);
 
-for aa=8:length(caseStart)
+for aa=1:length(caseStart)
+
+    disp(['Case ',num2str(aa),' of ',num2str(length(caseStart))]);
+
     startTime=caseStart(aa);
     endTime=caseEnd(aa);
     
@@ -172,6 +175,8 @@ for aa=8:length(caseStart)
     
     %% Plot
     
+    disp('Plotting ...');
+
     timeMat=repmat(data.time,size(data.DBZ,1),1);
     
     close all
@@ -195,7 +200,7 @@ for aa=8:length(caseStart)
     cloudsInPuz(isnan(cloudsInPuz))=[];
     cloudCount=length(cloudsInPuz);
     
-    colMapLines=lines(cloudCount-1);
+    colMapLines=jet(cloudCount-1);
     colMapLines=cat(1,[0 0 0],colMapLines);
     ax2.Colormap=colMapLines;
     hold on;

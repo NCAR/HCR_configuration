@@ -74,7 +74,7 @@ if ~isempty(holeStart) | ~isempty(holeEnd)
         
         reflCol=refl(:,extInd(ii));
         reflCol(cloudCol~=cloudNumOut)=nan;
-        reflMed=median(cloudCol,'omitnan');
+        reflMed=median(reflCol,'omitnan');
         refl(extData,extInd(ii))=reflMed;
     end
 end

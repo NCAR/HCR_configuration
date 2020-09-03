@@ -73,8 +73,6 @@ refl = fillMissingNScal(refl,data);
 
 disp('Identifying small clouds ...');
 
-%reflLarge=refl;
-
 reflMask=zeros(size(refl));
 reflMask(~isnan(refl))=1;
 
@@ -87,7 +85,6 @@ countCloud=1;
 for ii=1:CC.NumObjects
     area=CC.PixelIdxList{ii};
     if length(area)<=pixCut
-        %reflLarge(area)=nan;
         cloudPuzzleOut(area)=0;
     else
         cloudNumOrig(area)=countCloud;
@@ -115,6 +112,7 @@ cirMask=cirMask./(sum(reshape(cirMask,1,[])));
 
 % Convolution
 reflConv=nanconv(reflExt,cirMask);
+reflConv(isnan(reflExt))=nan;
 
 %% Split up individual clouds
 
@@ -231,6 +229,8 @@ for ii=1:numMax
         cloudCount=cloudCount+1;
     end
 end
+
+cloudPuzzleOut(isnan(reflExt))=nan;
 %% Plot
 
 disp('Plotting ...');
@@ -254,7 +254,7 @@ grid on
 
 ax2=subplot(2,1,2);
 
-colMap=lines(cloudCount-1);
+colMap=jet(cloudCount-1);
 colMap=cat(1,[0 0 0],colMap);
 
 hold on;

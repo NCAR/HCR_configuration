@@ -60,6 +60,7 @@ cirMask=cirMask./(sum(reshape(cirMask,1,[])));
 
 % Convolution
 reflConv=nanconv(reflExt,cirMask);
+reflConv(isnan(reflExt))=nan;
 
 %% Split up individual clouds
 
@@ -125,4 +126,6 @@ for ii=1:numMax
         cloudCount=cloudCount+1;
     end
 end
+
+cloudPuzzleOut(isnan(reflExt))=nan;
 end
