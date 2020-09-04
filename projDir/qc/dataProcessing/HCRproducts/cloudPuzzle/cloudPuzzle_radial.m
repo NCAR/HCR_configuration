@@ -3,19 +3,19 @@
 clear all;
 close all;
 
-startTime=datetime(2018,1,16,2,0,0);
-endTime=datetime(2018,1,16,2,30,0);
+startTime=datetime(2019,8,7,16,45,0);
+endTime=datetime(2019,8,7,17,10,0);
 
 % startTime=datetime(2019,10,2,15,0,0);
 % endTime=datetime(2019,10,2,15,59,0);
 
 plotTest=0;
 
-project='socrates'; %socrates, aristo, cset
+project='otrec'; %socrates, aristo, cset
 quality='qc2'; %field, qc1, or qc2
 freqData='10hz'; % 10hz, 100hz, or 2hz
 
-startThresh=-20; % starting threshold for cloud segmentation
+startThresh=-30; % starting threshold for cloud segmentation
 ylimits=[0 15];
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
@@ -60,17 +60,43 @@ dataVars=dataVars(~cellfun('isempty',dataVars));
 
 cloudPuzzleOut=nan(size(data.DBZ));
 
-%% Add extinct back in
-
-disp('Filling extinct echo ...');
-
-refl=fillExtinct(data);
+refl=data.DBZ;
+refl(data.FLAG>1)=nan;
 
 %% Handle missing and NS cal
 
 disp('Filling missing and NS cal ...');
 
 refl = fillMissingNScal(refl,data);
+
+%% Identify contiguous clouds that are too small
+
+disp('Identifying small clouds ...');
+
+reflMask=zeros(size(refl));
+reflMask(~isnan(refl))=1;
+
+pixCut=5000;
+CC = bwconncomp(reflMask);
+
+cloudNumOrig=nan(size(data.DBZ));
+countCloud=1;
+
+for ii=1:CC.NumObjects
+    area=CC.PixelIdxList{ii};
+    if length(area)<=pixCut
+        cloudPuzzleOut(area)=0;
+    else
+        cloudNumOrig(area)=countCloud;
+        countCloud=countCloud+1;
+    end
+end
+
+%% Add extinct back in
+
+disp('Filling extinct echo ...');
+
+[cloudNum reflExt]=fillExtinct(data,cloudNumOrig,refl);
 
 %% Smooth with convolution
 
@@ -85,33 +111,8 @@ cirMask=double(cirMask);
 cirMask=cirMask./(sum(reshape(cirMask,1,[])));
 
 % Convolution
-reflConv=nanconv(refl,cirMask);
-
-%% Identify contiguous clouds that are too small
-
-disp('Identifying small clouds ...');
-
-reflLarge=refl;
-
-reflMask=zeros(size(refl));
-reflMask(~isnan(refl))=1;
-
-pixCut=5000;
-CC = bwconncomp(reflMask);
-
-cloudNum=nan(size(data.DBZ));
-countCloud=1;
-
-for ii=1:CC.NumObjects
-    area=CC.PixelIdxList{ii};
-    if length(area)<=pixCut
-        reflLarge(area)=nan;
-        cloudPuzzleOut(area)=0;
-    else
-        cloudNum(area)=countCloud;
-        countCloud=countCloud+1;
-    end
-end
+reflConv=nanconv(reflExt,cirMask);
+reflConv(isnan(reflExt))=nan;
 
 %% Split up individual clouds
 
@@ -135,8 +136,6 @@ for ii=1:numMax
         [clR clC]=ind2sub(size(cloudNum),cloudInds);
         
         reflMap=reflMapBig(min(clR):max(clR),min(clC):max(clC));
-        aslMap=data.asl(min(clR):max(clR),min(clC):max(clC));
-        timeMap=data.time(min(clC):max(clC));
         
         % Zero padding
         reflPadded=cat(1,nan(10,size(reflMap,2)),reflMap,nan(10,size(reflMap,2)));
@@ -148,20 +147,29 @@ for ii=1:numMax
         
         BW2 = imfill(BW,'holes');
                  
-        % Distance
+        % Distance of each cloud pixel from cloud border
         D = -bwdist(~BW2);
                
-        % Thresholding
+        % Find a good reflectivity threshold that represents the major
+        % parts of the cloud
         maskBig = thresholdMask(reflPadded,startThresh,500);
                 
+        % Enlarge minima that are then used in the watershed process to the
+        % threshold areas from the previous step
         newMin = imimposemin(D,maskBig);
+
+        % Watershed is an image segmentation method that looks for
+        % ridges and valleys in an image
         waterShed = watershed(newMin);
         
+        % Watershed usually over-segments so we join areas back together
+        % that share a large border
         waterMasked=joinCloudParts(waterShed,BW2);
         
         maskJoined=zeros(size(BW2));
         maskJoined(waterMasked>0)=1;
         
+        % Reverser zero padding
         maskJoined=maskJoined(11:end-10,11:end-10);
         
         maskBack=zeros(size(reflMapBig));
@@ -178,6 +186,10 @@ for ii=1:numMax
         % Plot sub plot with individual cloud
         if plotTest
             close all
+            
+            aslMap=data.asl(min(clR):max(clR),min(clC):max(clC));
+            timeMap=data.time(min(clC):max(clC));
+            
             cloudOut=nan(size(maskJoined));
             
             uniqueClouds2=bwconncomp(maskJoined);
@@ -217,6 +229,8 @@ for ii=1:numMax
         cloudCount=cloudCount+1;
     end
 end
+
+cloudPuzzleOut(isnan(reflExt))=nan;
 %% Plot
 
 disp('Plotting ...');
@@ -240,18 +254,20 @@ grid on
 
 ax2=subplot(2,1,2);
 
-colMap=lines;
+colMap=jet(cloudCount-1);
 colMap=cat(1,[0 0 0],colMap);
 
 hold on;
 sub2=surf(data.time,data.asl./1000,cloudPuzzleOut,'edgecolor','none');
 view(2);
 ax2.Colormap=colMap;
+caxis([-0.5 cloudCount-1+0.5])
 ylim(ylimits);
 ylabel('Altitude (km)');
 xlim([data.time(1),data.time(end)]);
 title('Cloud Puzzle')
 grid on
+colorbar
 
 formatOut = 'yyyymmdd_HHMM';
 set(gcf,'PaperPositionMode','auto')

@@ -1,11 +1,11 @@
-function refl = fillExtinct(data)
+function [cloud refl] = fillExtinct(data,cloud,reflIn)
 % Fill in extinct echo
-
-refl=data.DBZ;
-refl(data.FLAG>1)=nan;
+refl=reflIn;
+%refl(data.FLAG>1)=nan;
 
 flagTemp=data.FLAG;
 flagTemp(data.FLAG==8)=7;
+flagTemp(flagTemp==3)=99;
 surfMask=ones(1,size(flagTemp,2));
 surfMask(find(any(data.FLAG==7 | data.FLAG==8,1)))=0;
 
@@ -62,14 +62,19 @@ if ~isempty(holeStart) | ~isempty(holeEnd)
     
     
     % Fill in extinct echo with median of column above
-    extInd=find(any(data.FLAG==3,1));
+    extInd=find(any(flagTemp==99,1));
     
     for ii=1:length(extInd)
-        reflCol=refl(:,extInd(ii));
-        reflMed=median(reflCol,'omitnan');
+        cloudCol=cloud(:,extInd(ii));
         
         extCol=flagTemp(:,extInd(ii));
-        extData=find(extCol==3);
+        extData=find(extCol==99);
+        cloudNumOut=cloudCol(min(extData-1));
+        cloud(extData,extInd(ii))=cloudNumOut;
+        
+        reflCol=refl(:,extInd(ii));
+        reflCol(cloudCol~=cloudNumOut)=nan;
+        reflMed=median(reflCol,'omitnan');
         refl(extData,extInd(ii))=reflMed;
     end
 end

@@ -3,7 +3,7 @@ function cloudParams=calcCloudParams(dataCut);
 
 cloudParams=[];
 
-debugFig=1;
+debugFig=0;
 
 if debugFig
     close all
@@ -25,6 +25,8 @@ end
 % Convert from ASL to AGL
 agl=dataCut.asl-dataCut.TOPO./1000;
 
+planeAlt=dataCut.altitude-dataCut.TOPO;
+
 % Mean temperature
 %cloudParams.meanTemp=mean(dataCut.TEMP,'omitnan');
 
@@ -33,7 +35,11 @@ minAglAll=nan(1,size(dataCut.cloudPuzzle,2));
 maxAglAll=nan(1,size(dataCut.cloudPuzzle,2));
 minTempAll=nan(1,size(dataCut.cloudPuzzle,2));
 maxTempAll=nan(1,size(dataCut.cloudPuzzle,2));
-precip=nan(1,size(dataCut.cloudPuzzle,2));
+minAglAllOrig=nan(1,size(dataCut.cloudPuzzle,2));
+maxAglAllOrig=nan(1,size(dataCut.cloudPuzzle,2));
+minTempAllOrig=nan(1,size(dataCut.cloudPuzzle,2));
+maxTempAllOrig=nan(1,size(dataCut.cloudPuzzle,2));
+precipIn=nan(1,size(dataCut.cloudPuzzle,2));
 
 for jj=1:size(dataCut.cloudPuzzle,2)
     % Min/max alt
@@ -47,24 +53,36 @@ for jj=1:size(dataCut.cloudPuzzle,2)
     
     % Check if flying in cloud
     % Pointing down
+    maxAglAllOrig(jj)=maxAglAll(jj);
+    maxTempAllOrig(jj)=maxTempAll(jj);
     if dataCut.elevation(jj)<0 & maxAglAll(jj)<10000 & maxIndagl==18
         maxAglAll(jj)=nan;
         maxTempAll(jj)=nan;
     end
     % Pointing up
-    if dataCut.elevation(jj)>=0 & minAglAll(jj)<10000 & minIndagl==18
+    minAglAllOrig(jj)=minAglAll(jj);
+    minTempAllOrig(jj)=minTempAll(jj);
+    if dataCut.elevation(jj)>=0 & minAglAll(jj)<10000 & minIndagl==18 & abs(planeAlt(jj))>20
         minAglAll(jj)=nan;
         minTempAll(jj)=nan;
     end
     
     % Precip
-    if dataCut.elevation(jj)<0
-        surfInd=min(find(dataCut.FLAG(:,jj)==7));
-        if ~isempty(surfInd)
-            precip(jj)=mean(dataCut.puzzleOne(surfInd-5:surfInd-1,jj));
-        elseif any(dataCut.flagCensored(:,jj)==3)
-            precip(jj)=1;
+    if ~isnan(minAglAll(jj)) | (abs(planeAlt(jj))<20 & dataCut.elevation>=0)
+        if abs(planeAlt(jj))<20 & dataCut.elevation>=0
+            surfInd=18;
+        else
+            surfInd=min(find(dataCut.FLAG(:,jj)==7));
         end
+        if ~isempty(surfInd) & dataCut.elevation<0
+            precipIn(jj)=mean(dataCut.puzzleOne(surfInd-5:surfInd-1,jj));
+        elseif ~isempty(surfInd) & dataCut.elevation>=0
+            precipIn(jj)=mean(dataCut.puzzleOne(surfInd+1:surfInd+5,jj));
+        elseif any(dataCut.flagCensored(:,jj)==3)
+            precipIn(jj)=1;
+        end
+    else
+        precipIn(jj)=nan;
     end
 end
 
@@ -72,10 +90,11 @@ percWanted=0.02;
 
 % AGL: Make sure we have enough data and calculate percentiles
 if length(find(~isnan(minAglAll)))>length(minAglAll)/2
-    sortedMin=sort(minAglAll,'ascend');
-    percIndMin=round(percWanted*length(minAglAll));
+    sortedMin=sort(minAglAllOrig,'ascend');
+    sortedMin(isnan(sortedMin))=[];
+    percIndMin=round(percWanted*length(minAglAllOrig));
     cloudParams.minAgl=sortedMin(percIndMin);
-    cloudParams.meanMinAgl=mean(minAglAll,'omitnan');
+    cloudParams.meanMinAgl=mean(minAglAllOrig,'omitnan');
     cloudParams.stdMinAgl=std(minAglAll,'omitnan');
 else
     cloudParams.minAgl=nan;
@@ -84,10 +103,11 @@ else
 end
 
 if length(find(~isnan(maxAglAll)))>length(maxAglAll)/2
-    sortedMax=sort(maxAglAll,'descend');
-    percIndMax=round(percWanted*length(maxAglAll));
+    sortedMax=sort(maxAglAllOrig,'descend');
+    sortedMax(isnan(sortedMax))=[];
+    percIndMax=round(percWanted*length(maxAglAllOrig));
     cloudParams.maxAgl=sortedMax(percIndMax);
-    cloudParams.meanMaxAgl=mean(maxAglAll,'omitnan');
+    cloudParams.meanMaxAgl=mean(maxAglAllOrig,'omitnan');
     cloudParams.stdMaxAgl=std(maxAglAll,'omitnan');
 else
     cloudParams.maxAgl=nan;
@@ -97,30 +117,32 @@ end
 
 % TEMP: Make sure we have enough data and calculate percentiles
 if length(find(~isnan(minTempAll)))>length(minTempAll)/2
-    sortedMinTemp=sort(minTempAll,'ascend');
-    percIndMinTemp=round(percWanted*length(minTempAll));
+    sortedMinTemp=sort(minTempAllOrig,'ascend');
+    sortedMinTemp(isnan(sortedMinTemp))=[];
+    percIndMinTemp=round(percWanted*length(minTempAllOrig));
     %cloudParams.minBaseTemp=sortedMinTemp(percIndMinTemp);
-    cloudParams.meanBaseTemp=mean(minTempAll,'omitnan');
+    cloudParams.meanBaseTemp=mean(minTempAllOrig,'omitnan');
 else
     %cloudParams.minBaseTemp=nan;
     cloudParams.meanBaseTemp=nan;
 end
 
 if length(find(~isnan(maxTempAll)))>length(maxTempAll)/2
-    sortedMaxTemp=sort(maxTempAll,'ascend');
-    percIndMaxTemp=round(percWanted*length(maxTempAll));
+    sortedMaxTemp=sort(maxTempAllOrig,'ascend');
+    sortedMaxTemp(isnan(sortedMaxTemp))=[];
+    percIndMaxTemp=round(percWanted*length(maxTempAllOrig));
     cloudParams.minTopTemp=sortedMaxTemp(percIndMaxTemp);
-    cloudParams.meanTopTemp=mean(maxTempAll,'omitnan');
+    cloudParams.meanTopTemp=mean(maxTempAllOrig,'omitnan');
 else
     cloudParams.minTopTemp=nan;
     cloudParams.meanTopTemp=nan;
 end
 
 % Precip
-cloudParams.numPrecip=length(find(~isnan(precip)));
-if cloudParams.numPrecip>length(precip)*0.03
+cloudParams.numPrecip=length(find(~isnan(precipIn)));
+if cloudParams.numPrecip>length(precipIn)*0.03
     precCloud=1;
-elseif mean(dataCut.elevation<0)
+elseif mean(dataCut.elevation<0) | cloudParams.minAgl>0.5
     precCloud=0;
 else
     precCloud=nan;
@@ -132,18 +154,18 @@ cloudParams.precip=precCloud;
 cloudParams.intPrecip=0;
 cloudParams.veryIntPrecip=0;
 
-if cloudParams.precip
-    oceanLand=nan(size(dataCut.time)); % Ocean=1, land=2
+if cloudParams.precip==1
+    oceanLand=nan(size(dataCut.time)); % Ocean=1, land=2, extinct=3
     oceanLand(any(dataCut.FLAG==7,1))=1;
     oceanLand(any(dataCut.FLAG==8,1))=2;
     
     oceanLand=fillmissing(oceanLand,'nearest');
         
     surfReflMasked=dataCut.surfRefl;
-    surfReflMasked(isnan(precip))=nan;
+    surfReflMasked(isnan(precipIn))=nan;
     
     % Missing surface echo
-    cloudParams.veryIntPrecip=cloudParams.veryIntPrecip+length(find(~isnan(precip) & isnan(surfReflMasked)));
+    cloudParams.veryIntPrecip=cloudParams.veryIntPrecip+length(find(~isnan(precipIn) & isnan(surfReflMasked)));
     % Very intense
     cloudParams.veryIntPrecip=cloudParams.veryIntPrecip+length(find(surfReflMasked<-10));
     % Ocean
@@ -154,6 +176,7 @@ end
 
 % Mean max refl and mean max refl height, mean temp at max refl height
 [maxRefl maxReflInds]=max(dataCut.DBZ,[],1);
+maxRefl(isnan(maxRefl))=[];
 cloudParams.meanMaxRefl=mean(maxRefl,'omitnan');
 cloudParams.stdMaxRefl=std(maxRefl,'omitnan');
 
@@ -177,6 +200,7 @@ cloudParams.meanLat=mean(dataCut.latitude,'omitnan');
 % or missing data
 testLength=dataCut.FLAG;
 testLength(~isnan(dataCut.cloudPuzzle))=nan;
+testLength(testLength==4)=nan;
 
 sumDBZ=sum(dataCut.DBZ,1,'omitnan');
 startColZ=dataCut.DBZ(:,2);
@@ -187,10 +211,10 @@ endColZ=dataCut.DBZ(:,end-1);
 endColF=testLength(:,end);
 endColF(isnan(endColZ))=nan;
 
-if sumDBZ(1)~=0 | sumDBZ(end)~=0 | sum(startColF,'omitnan')~=0 | sum(endColF,'omitnan')~=0
+[cloudParams.lengthKM ~]=lldistkm([dataCut.latitude(1) dataCut.longitude(1)],[dataCut.latitude(end) dataCut.longitude(end)]);
+
+if (sumDBZ(1)~=0 | sumDBZ(end)~=0 | sum(startColF,'omitnan')~=0 | sum(endColF,'omitnan')~=0) & cloudParams.lengthKM<=271
     cloudParams.lengthKM=nan;
-else
-    [cloudParams.lengthKM ~]=lldistkm([dataCut.latitude(1) dataCut.longitude(1)],[dataCut.latitude(end) dataCut.longitude(end)]);
 end
 
 % Maximum 10 dBZ height
@@ -202,20 +226,29 @@ if isempty(agl10dbz)
     cloudParams.max10dbzAgl=nan;
 else
     sortedAgl10=sort(agl10dbz,'descend');
-    percIndAgl10=round(percWanted*length(sortedAgl10));
+    sortedAgl10(isnan(sortedAgl10))=[];
+    percIndAgl10=ceil(percWanted*length(sortedAgl10));
     cloudParams.max10dbzAgl=sortedAgl10(percIndAgl10);
 end
 
 % Cloud thickness
-cloudThick=abs(maxAglAll-minAglAll);
-if length(find(~isnan(cloudThick)))>length(cloudThick)/2
-    cloudParams.meanThickness=mean(cloudThick,'omitnan');
-    
-    sortedThick=sort(cloudThick,'descend');
-    percIndThick=round(percWanted*length(sortedThick));
-    cloudParams.maxThickness=sortedThick(percIndThick);
-else
+cloudThick=abs(maxAglAllOrig-minAglAllOrig);
+
+cloudParams.meanThickness=mean(cloudThick,'omitnan');
+
+sortedThick=sort(cloudThick,'descend');
+sortedThick(isnan(sortedThick))=[];
+percIndThick=ceil(percWanted*length(sortedThick));
+cloudParams.maxThickness=sortedThick(percIndThick);
+
+cloudThickTest=maxAglAll-minAglAll;
+cloudThickTest(isnan(cloudThickTest))=[];
+
+if length(cloudThickTest)<=length(cloudThick)/2
     cloudParams.meanThickness=nan;
+end
+
+if length(cloudThickTest)<=length(cloudThick)/2 & cloudParams.maxThickness<=10
     cloudParams.maxThickness=nan;
 end
 
