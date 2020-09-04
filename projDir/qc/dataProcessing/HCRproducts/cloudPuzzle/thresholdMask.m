@@ -1,60 +1,39 @@
-function maskLast = thresholdMask(inData,startThresh,minArea)
+function maskLast = thresholdMask(inData)
 % Find optimal reflectivity threshold for clouds
-minRefl=min(min(inData));
+minRefl=round(min(min(inData)));
+maxRefl=round(max(max(inData)));
 
-maskThresh=zeros(size(inData));
-maskThresh(inData>startThresh)=1;
+allReflNumFrac=max([minRefl,-40]):min([maxRefl,0]);
+allReflNumFrac=cat(2,allReflNumFrac',nan(length(allReflNumFrac),2));
 
-maskFilled= imfill(maskThresh,'holes');
-maskBig=bwareaopen(maskFilled,500);
+totArea=length(find(~isnan(inData)));
 
-maskConn=bwconncomp(maskBig);
-maskNum=maskConn.NumObjects;
-
-outNum=maskNum;
-newThresh=startThresh-1;
-
-maskGoodL=maskBig;
-
-if newThresh<=minRefl
-    maskLast=maskGoodL;
+for ii=2:size(allReflNumFrac,1)
+    indII=size(allReflNumFrac,1)-ii+1;
+    
+    maskThresh=zeros(size(inData));
+    maskThresh(inData>allReflNumFrac(indII,1))=1;
+    
+    maskFilled= imfill(maskThresh,'holes');
+    maskBig=bwareaopen(maskFilled,500);
+    
+    maskConn=bwconncomp(maskBig);
+    maskNum=maskConn.NumObjects;
+    allReflNumFrac(indII,2)=maskNum;
+    allReflNumFrac(indII,3)=sum(sum(maskBig))/totArea;
 end
 
-% Enlarge thresholding mask as long as it has the same number of
-% objects
-while outNum==maskNum & newThresh>minRefl
-    maskLast=maskGoodL;
-    
-    % Make bigger mask
-    maskThreshL=zeros(size(inData));
-    maskThreshL(inData>newThresh)=1;
-    
-    maskFilledL= imfill(maskThreshL,'holes');
-    maskBigL=bwareaopen(maskFilledL,minArea);
-    
-    maskConnL=bwconncomp(maskBigL);
-    maskNumL=maskConnL.NumObjects;
-    
-    maskGoodL=zeros(size(maskBig));
-    
-    % Find new areas that overlap old areas
-    if maskNumL>1
-        for ii=1:maskNumL
-            maskTest=maskGoodL;
-            compMask=zeros(size(maskBig));
-            area=maskConnL.PixelIdxList{ii};
-            compMask(area)=1;
-            maskAdded=compMask+maskBig;
-            if max(max(maskAdded))>1
-                maskGoodL(area)=1;
-            end
-        end
-    end
-    
-    maskConnEnd=bwconncomp(maskGoodL);
-    outNum=maskConnEnd.NumObjects;
-    
-    newThresh=newThresh-1;
-end
+allReflNumFrac(allReflNumFrac(:,3)<0.75,:)=[];
+
+[~,maxNum]=max(allReflNumFrac(:,2));
+
+realThresh=allReflNumFrac(maxNum,1);
+
+maskThreshOut=zeros(size(inData));
+maskThreshOut(inData>realThresh)=1;
+
+maskFilledOut= imfill(maskThreshOut,'holes');
+maskLast=bwareaopen(maskFilledOut,500);
+
 end
 

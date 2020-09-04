@@ -7,21 +7,27 @@
 clear all;
 close all;
 
-project='otrec'; %socrates, aristo, cset
+project='socrates'; %socrates, aristo, cset
 quality='qc2'; %field, qc1, or qc2
 freqData='10hz'; % 10hz, 100hz, or 2hz
 
-ylimits=[-0.2 15];
+if strcmp(project,'otrec')
+    ylimits=[-0.2 15];
+else
+    ylimits=[-0.2 10];
+end
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-figdir=['/scr/sci/romatsch/cloudClassHCR/',project,'/'];
+%figdir=['/scr/sci/romatsch/cloudClassHCR/',project,'/'];
+figdir=['/home/romatsch/plots/HCR/cloudClass/',project,'/'];
 
 if ~exist(figdir, 'dir')
     mkdir(figdir)
 end
 
-indir=HCRdir(project,quality,freqData);
+%indir=HCRdir(project,quality,freqData);
+indir=['/run/media/romatsch/RSF0006/rsf/hcr/',project,'/'];
 
 casefile=['~/git/HCR_configuration/projDir/qc/dataProcessing/HCRproducts/caseFiles/cloudID_',project,'.txt'];
 
@@ -57,7 +63,7 @@ for aa=1:length(caseStart)
     
     if length(fileList)==0
         disp('No data files found.');
-        return
+        continue
     end
     
     % Load data
