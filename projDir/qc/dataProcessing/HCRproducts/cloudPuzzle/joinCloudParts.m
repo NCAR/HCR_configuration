@@ -10,6 +10,10 @@ waterMasked(BW2==0)=0;
 
 for kk=1:length(ridges)
     thisRidge=ridges{kk};
+    if length(thisRidge)>50
+        waterMasked(ridges{kk})=1;
+        continue
+    end
     thisRidgeIm=zeros(size(BW2));
     thisRidgeIm(thisRidge)=1;
     largerRidge=imdilate(thisRidgeIm, strel('disk', 1));
@@ -53,8 +57,7 @@ for kk=1:length(ridges)
     maxFrac=max(length(ridges{kk})./cir);
     maxWidth=max(areaWidth);
     maxHeight=max(areaHeight);
-    if length(ridges{kk})>50 | maxFrac>0.001 | ...
-            length(ridges{kk})/maxWidth>0.3 | length(ridges{kk})/maxHeight>0.3
+    if maxFrac>0.001 | length(ridges{kk})/maxWidth>0.3 | length(ridges{kk})/maxHeight>0.3
         waterMasked(ridges{kk})=1;
     end
 end

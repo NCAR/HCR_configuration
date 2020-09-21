@@ -1,9 +1,9 @@
 % Analyze HCR clouds
 
 clear all;
-close all;
+%close all;
 
-plotTest=0;
+plotTest=1;
 
 project='otrec'; %socrates, aristo, cset
 quality='qc2'; %field, qc1, or qc2
@@ -158,34 +158,39 @@ for aa=1:length(caseStart)
             % Zero padding
             reflPadded=cat(1,nan(10,size(reflMap,2)),reflMap,nan(10,size(reflMap,2)));
             reflPadded=cat(2,nan(size(reflPadded,1),10),reflPadded,nan(size(reflPadded,1),10));
-            
-            % BW mask with filled holes
-            BW=zeros(size(reflPadded));
-            BW(~isnan(reflPadded))=1;
-            
-            BW2 = imfill(BW,'holes');
-            
-            % Distance of each cloud pixel from cloud border
-            D = -bwdist(~BW2);
-            
+                                   
             % Find a good reflectivity threshold that represents the major
             % parts of the cloud
-            maskBig = thresholdMaskOrig(reflPadded,startThresh,500);
-            %maskBig = thresholdMask(reflPadded);
+            %maskBig = thresholdMaskOrig(reflPadded,startThresh,500);
+            maskBig = thresholdMask(reflPadded);
             
-            % Enlarge minima that are then used in the watershed process to the
-            % threshold areas from the previous step
-            newMin = imimposemin(D,maskBig);
+            % Distance of each cloud pixel from reflectivity threshold mask
+            D = bwdist(maskBig);
             
             % Watershed is an image segmentation method that looks for
             % ridges and valleys in an image
-            waterShed = watershed(newMin);
+            waterShed = watershed(D);
             
             % Watershed usually over-segments so we join areas back together
             % that share a large border
-            waterMasked=joinCloudParts(waterShed,BW2);
             
-            maskJoined=zeros(size(BW2));
+            % BW mask
+            BW=zeros(size(reflPadded));
+            BW(~isnan(reflPadded))=1;
+            
+            if plotTest
+                close all
+                
+                w2=waterShed;
+                w2(~BW)=nan;
+                rgb = label2rgb(w2,'jet',[.5 .5 .5]);
+                figure
+                imshow(rgb);
+            end
+            
+            waterMasked=joinCloudParts(waterShed,BW);
+            
+            maskJoined=zeros(size(BW));
             maskJoined(waterMasked>0)=1;
             
             % Reverser zero padding
@@ -204,7 +209,6 @@ for aa=1:length(caseStart)
             
             % Plot sub plot with individual cloud
             if plotTest
-                close all
                 
                 aslMap=data.asl(min(clR):max(clR),min(clC):max(clC));
                 timeMap=data.time(min(clC):max(clC));
