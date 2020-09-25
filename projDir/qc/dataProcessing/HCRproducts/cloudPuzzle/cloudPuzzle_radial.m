@@ -164,9 +164,38 @@ for aa=1:length(caseStart)
             %maskBig = thresholdMaskOrig(reflPadded,startThresh,500);
             maskBig = thresholdMask(reflPadded);
             
+            % Label areas
+            maskLabel=nan(size(maskBig));
+            uniqueRefls=bwconncomp(maskBig);
+            
+            reflCount=1;
+            for kk=1:uniqueRefls.NumObjects
+                areaRefl=uniqueRefls.PixelIdxList{kk};
+                maskLabel(areaRefl)=reflCount;
+                reflCount=reflCount+1;
+            end
+            
+            % Good data
+            linIn=find(~isnan(maskLabel));
+            [xIn yIn]=ind2sub(size(maskLabel),linIn);
+            labelIn=maskLabel(linIn);
+            
+            % Fill in data that is nan in reflPadded so only cloud data is
+            % still nan -> find query points
+            maskQuery=maskLabel;
+            maskQuery(isnan(reflPadded))=0;           
+            [x y]=find(isnan(maskQuery)); 
+            labelOut=find(isnan(maskQuery));
+            
+            % Interpolate in 2D with nearest
+            F = scatteredInterpolant(xIn,yIn,labelIn,'nearest');
+            newLabel=maskLabel;
+            newLabel(labelOut) = F(x,y);
+            
+            
             % Distance of each cloud pixel from reflectivity threshold mask
             D = bwdist(maskBig);
-            
+                        
             % Watershed is an image segmentation method that looks for
             % ridges and valleys in an image
             waterShed = watershed(D);
@@ -177,20 +206,21 @@ for aa=1:length(caseStart)
             % BW mask
             BW=zeros(size(reflPadded));
             BW(~isnan(reflPadded))=1;
-            
+            BW2=imdilate(BW, strel('disk', 10));
+                        
             if plotTest
                 close all
                 
                 w2=waterShed;
-                w2(~BW)=nan;
+                w2(~BW2)=nan;
                 rgb = label2rgb(w2,'jet',[.5 .5 .5]);
                 figure
                 imshow(rgb);
             end
             
-            waterMasked=joinCloudParts(waterShed,BW);
+            waterMasked=joinCloudParts(waterShed,reflPadded);
             
-            maskJoined=zeros(size(BW));
+            maskJoined=zeros(size(BW2));
             maskJoined(waterMasked>0)=1;
             
             % Reverser zero padding
