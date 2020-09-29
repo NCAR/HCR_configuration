@@ -224,6 +224,25 @@ for aa=1:length(caseStart)
     end
     
     cloudPuzzleOut(isnan(reflExt))=nan;
+    
+    % Fill in pixels that are not in small areas (i.e. not zero) that have
+    % reflectivities but are nan in cloudPuzzle
+    
+    disp('Filling in final pixels ...');
+    allReflMask=zeros(size(reflExt));
+    allReflMask(~isnan(reflExt))=1;
+    allReflMask(cloudPuzzleOut==0)=0;
+    
+    puzzleMask=zeros(size(reflExt));
+    puzzleMask(cloudPuzzleOut>0)=1;
+    
+    [oldR oldC]=find(puzzleMask==1);
+    [addR addC]=find(puzzleMask==0 & allReflMask==1);
+    idx = knnsearch([oldR oldC], [addR addC]);
+    nearest_OldValue = cloudPuzzleOut(sub2ind(size(cloudPuzzleOut), oldR(idx), oldC(idx)));
+    cloudPuzzleFinal=cloudPuzzleOut;
+    cloudPuzzleFinal(sub2ind(size(cloudPuzzleOut), addR, addC))=nearest_OldValue;
+
     %% Plot
     
     disp('Plotting ...');
@@ -251,7 +270,7 @@ for aa=1:length(caseStart)
     colMap=cat(1,[0 0 0],colMap);
     
     hold on;
-    sub2=surf(data.time,data.asl./1000,cloudPuzzleOut,'edgecolor','none');
+    sub2=surf(data.time,data.asl./1000,cloudPuzzleFinal,'edgecolor','none');
     view(2);
     ax2.Colormap=colMap;
     caxis([-0.5 cloudCount-1+0.5])
