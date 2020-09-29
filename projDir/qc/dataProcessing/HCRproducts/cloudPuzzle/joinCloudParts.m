@@ -1,75 +1,127 @@
-function waterMasked = joinCloudParts(waterShed,refl)
-% Joind areas that have a long border
-ridgeLines=waterShed==0;
-%ridgeLines(refl==0)=0;
+function waterMasked = joinCloudParts(waterShed)
+% Join areas that have a long border or where one area is small, etc.
 
-ridgeSize=bwconncomp(ridgeLines);
-ridges=ridgeSize.PixelIdxList;
-waterMasked=waterShed;
-waterMasked(refl==0)=0;
+% Output
+waterMasked=zeros(size(waterShed));
+waterMasked(waterShed>0)=1;
+waterMasked=bwareaopen(waterMasked,500);
 
-for kk=1:length(ridges)
+waterRidges=zeros(size(waterShed));
+waterRidges(waterShed==0)=1;
+
+% Clean it up
+largerRidges=imdilate(waterRidges, strel('disk', 3));
+
+%% In the first round, we only take care of areas with large boundaries
+ridgesAll=bwconncomp(largerRidges);
+ridges=ridgesAll.PixelIdxList;
+
+% Label areas with individual numbers
+forLabel=bwconncomp(waterMasked);
+maskLabel=labelmatrix(forLabel);            
+
+for kk=1:ridgesAll.NumObjects
     thisRidge=ridges{kk};
-    if length(thisRidge)>50
+            
+    % Find bordering regions
+    maskThis=zeros(size(largerRidges));
+    maskThis(thisRidge)=1;
+    
+    % Skeleton
+    thisRidgeSkel=bwskel(logical(maskThis));    
+    ridgePixSum=sum(sum(thisRidgeSkel));
+    
+    if ridgePixSum>50
+        waterMasked(ridges{kk})=1;
+        largerRidges(ridges{kk})=1;
+        continue
+    end
+        
+    surrPix=maskLabel(thisRidge);
+    surrPix(surrPix==0)=[];
+    unPix=unique(surrPix);    
+       
+    if length(unPix)==1
+        waterMasked(ridges{kk})=1;
+        largerRidges(ridges{kk})=1;
+        continue
+    end
+    
+    % Check circumfirence
+    cir=[];
+    
+    for ll=1:length(unPix)
+        % Mask surrounding areas
+        maskUn=zeros(size(waterShed));
+        maskUn(maskLabel==unPix(ll))=1;
+                
+        % Circumference
+        cirAll=bwconncomp(maskUn);
+        cir=[cir length(cirAll.PixelIdxList{1})];
+    end
+    
+    if length(unPix)>2
+        error('Ridge divides more than one area.');
+        disp(num2str(length(unPix)));
+    end
+    
+    maxFrac=max(ridgePixSum./cir);
+    if maxFrac>0.005
+        waterMasked(ridges{kk})=1;
+        largerRidges(ridges{kk})=1;
+    end
+end
+
+%% In the second round, we only take care of areas that are too small
+ridgesAll=bwconncomp(largerRidges);
+ridges=ridgesAll.PixelIdxList;
+
+% Label areas with individual numbers
+forLabel=bwconncomp(waterMasked);
+maskLabel=labelmatrix(forLabel);            
+
+for kk=1:ridgesAll.NumObjects
+    thisRidge=ridges{kk};
+            
+    % Find bordering regions
+    maskThis=zeros(size(largerRidges));
+    maskThis(thisRidge)=1;
+    
+    % Skeleton
+    thisRidgeSkel=bwskel(logical(maskThis));    
+    ridgePixSum=sum(sum(thisRidgeSkel));
+    
+    if ridgePixSum>50
         waterMasked(ridges{kk})=1;
         continue
     end
-    thisRidgeIm=zeros(size(refl));
-    thisRidgeIm(thisRidge)=1;
-    largerRidge=imdilate(thisRidgeIm, strel('disk', 1));
-    areaPix=waterMasked(largerRidge==1);
-    areaPix(areaPix==0)=[];
-    unPix=unique(areaPix);
-    
+        
+    surrPix=maskLabel(thisRidge);
+    surrPix(surrPix==0)=[];
+    unPix=unique(surrPix);    
+       
     if length(unPix)==1
         waterMasked(ridges{kk})=1;
         continue
     end
     
+    % Check siae of adjacent regions
+    areaSize=[];
+    
+    for ll=1:length(unPix)
+        % Mask surrounding areas
+        maskUn=zeros(size(waterShed));
+        maskUn(maskLabel==unPix(ll))=1;
+        areaSize=[areaSize length(find(maskUn==1))];
+    end
+    
     if length(unPix)>2
+        error('Ridge divides more than one area.');
         disp(num2str(length(unPix)));
     end
     
-    % Check circumfirence and proportions of adjacent regions
-    cir=[];
-    areaWidth=[];
-    areaHeight=[];
-    areaSize=[];
-    for ll=1:length(unPix)
-        % Mask surrounding areas
-        maskUn=zeros(size(refl));
-        maskUn(waterMasked==unPix(ll))=1;
-        areaSize=[areaSize length(find(maskUn==1))];
-        
-        % Circumference
-        cirAll=bwconncomp(maskUn);
-        cir=[cir length(cirAll.PixelIdxList{1})];
-        
-        % Width
-        widthAll=zeros(size(maskUn,1),1);
-        for ii=1:size(maskUn,1)
-            oneData=find(maskUn(ii,:)==1);
-            if ~isempty(oneData)
-                widthAll(ii)=max(oneData)-min(oneData);
-            end
-        end
-        areaWidth=[areaWidth max(widthAll)];
-        
-        % Height
-        heightAll=zeros(size(maskUn,2),1);
-        for ii=1:size(maskUn,2)
-            oneData=find(maskUn(:,ii)==1);
-            if ~isempty(oneData)
-                heightAll(ii)=max(oneData)-min(oneData);
-            end
-        end
-        areaHeight=[areaHeight max(heightAll)];
-    end
-    maxFrac=max(length(ridges{kk})./cir);
-    maxWidth=max(areaWidth);
-    maxHeight=max(areaHeight);
     minSize=min(areaSize);
-    if minSize<=10000 | maxFrac>0.001 | length(ridges{kk})/maxWidth>0.3 | length(ridges{kk})/maxHeight>0.3
+    if minSize<=10000
         waterMasked(ridges{kk})=1;
     end
 end

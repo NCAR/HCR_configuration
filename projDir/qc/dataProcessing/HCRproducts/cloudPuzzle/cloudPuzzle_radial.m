@@ -1,15 +1,13 @@
 % Analyze HCR clouds
 
 clear all;
-%close all;
+close all;
 
-plotTest=1;
+plotTest=0;
 
 project='otrec'; %socrates, aristo, cset
 quality='qc2'; %field, qc1, or qc2
 freqData='10hz'; % 10hz, 100hz, or 2hz
-
-startThresh=-10; % starting threshold for cloud segmentation
 
 if strcmp(project,'otrec')
     ylimits=[-0.2 15];
@@ -114,31 +112,13 @@ for aa=1:length(caseStart)
     
     disp('Filling extinct echo ...');
     
-    [cloudNum reflExt]=fillExtinct(data,cloudNumOrig,refl);
-    
-    %% Smooth with convolution
-    
-    % Create mask for convolution
-    radius=5;
-    numPix=radius*2+1;
-    [rr cc] = meshgrid(1:numPix);
-    cirMask = sqrt((rr-(radius+1)).^2+(cc-(radius+1)).^2)<=radius;
-    cirMask=double(cirMask);
-    
-    % Normalize
-    cirMask=cirMask./(sum(reshape(cirMask,1,[])));
-    
-    % Convolution
-    reflConv=nanconv(reflExt,cirMask);
-    reflConv(isnan(reflExt))=nan;
-    
+    [cloudNum,reflExt]=fillExtinct(data,cloudNumOrig,refl);
+        
     %% Split up individual clouds
     
     disp('Splitting clouds ...');
     
     numMax=max(reshape(cloudNum,1,[]),[],'omitnan');
-    
-    thresh12=[-25 0];
     
     cloudCount=1;
     
@@ -149,76 +129,36 @@ for aa=1:length(caseStart)
         if length(cloudInds)>100000
             
             reflMapBig=nan(size(cloudNum));
-            reflMapBig(cloudInds)=reflConv(cloudInds);
+            reflMapBig(cloudInds)=reflExt(cloudInds);
             
-            [clR clC]=ind2sub(size(cloudNum),cloudInds);
+            [clR,clC]=ind2sub(size(cloudNum),cloudInds);
             
             reflMap=reflMapBig(min(clR):max(clR),min(clC):max(clC));
             
             % Zero padding
             reflPadded=cat(1,nan(10,size(reflMap,2)),reflMap,nan(10,size(reflMap,2)));
             reflPadded=cat(2,nan(size(reflPadded,1),10),reflPadded,nan(size(reflPadded,1),10));
-                                   
-            % Find a good reflectivity threshold that represents the major
-            % parts of the cloud
-            %maskBig = thresholdMaskOrig(reflPadded,startThresh,500);
-            maskBig = thresholdMask(reflPadded);
+                         
+            BW=zeros(size(reflPadded));
+            BW(~isnan(reflPadded))=1;
             
-            % Label areas
-            maskLabel=nan(size(maskBig));
-            uniqueRefls=bwconncomp(maskBig);
-            
-            reflCount=1;
-            for kk=1:uniqueRefls.NumObjects
-                areaRefl=uniqueRefls.PixelIdxList{kk};
-                maskLabel(areaRefl)=reflCount;
-                reflCount=reflCount+1;
-            end
-            
-            % Good data
-            linIn=find(~isnan(maskLabel));
-            [xIn yIn]=ind2sub(size(maskLabel),linIn);
-            labelIn=maskLabel(linIn);
-            
-            % Fill in data that is nan in reflPadded so only cloud data is
-            % still nan -> find query points
-            maskQuery=maskLabel;
-            maskQuery(isnan(reflPadded))=0;           
-            [x y]=find(isnan(maskQuery)); 
-            labelOut=find(isnan(maskQuery));
-            
-            % Interpolate in 2D with nearest
-            F = scatteredInterpolant(xIn,yIn,labelIn,'nearest');
-            newLabel=maskLabel;
-            newLabel(labelOut) = F(x,y);
-            
+            BW2=imerode(BW, strel('disk', 5));
+            BW3 = bwareaopen(BW2,1000);
             
             % Distance of each cloud pixel from reflectivity threshold mask
-            D = bwdist(maskBig);
-                        
+            D = bwdist(BW3);
+            
             % Watershed is an image segmentation method that looks for
             % ridges and valleys in an image
             waterShed = watershed(D);
             
             % Watershed usually over-segments so we join areas back together
-            % that share a large border
+            % that share a large border or where one area is too small
             
-            % BW mask
-            BW=zeros(size(reflPadded));
-            BW(~isnan(reflPadded))=1;
-            BW2=imdilate(BW, strel('disk', 10));
-                        
-            if plotTest
-                close all
-                
-                w2=waterShed;
-                w2(~BW2)=nan;
-                rgb = label2rgb(w2,'jet',[.5 .5 .5]);
-                figure
-                imshow(rgb);
-            end
+            waterCensored=double(waterShed);
+            waterCensored(~BW)=nan;
             
-            waterMasked=joinCloudParts(waterShed,reflPadded);
+            waterMasked=joinCloudParts(waterCensored);
             
             maskJoined=zeros(size(BW2));
             maskJoined(waterMasked>0)=1;

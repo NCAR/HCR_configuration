@@ -1,4 +1,4 @@
-function maskLast = thresholdMask(inData)
+function [maskThreshOut realThresh] = thresholdMask(inData)
 % Find optimal reflectivity threshold for clouds
 minRefl=round(min(min(inData)));
 maxRefl=round(max(max(inData)));
@@ -32,8 +32,8 @@ realThresh=allReflNumFrac(maxNum,1);
 maskThreshOut=zeros(size(inData));
 maskThreshOut(inData>realThresh)=1;
 
-maskFilledOut= imfill(maskThreshOut,'holes');
-maskLast=bwareaopen(maskFilledOut,500);
+%maskFilledOut= imfill(maskThreshOut,'holes');
+%maskLast=bwareaopen(maskFilledOut,500);
 
 end
 
