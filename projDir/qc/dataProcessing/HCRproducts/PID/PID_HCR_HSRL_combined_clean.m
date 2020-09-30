@@ -20,8 +20,8 @@ freqData='2hzMerged'; % 10hz, 100hz, or 2hz
 %  endTime=datetime(2018,1,24,4,05,0); %BAMS Jeff Stith
 
 
-startTime=datetime(2018,1,24,01,09,30); %Wang_Rauber
-endTime=datetime(2018,1,24,01,12,30); %Wang_Rauber
+startTime=datetime(2018,1,29,01,50,0); %Wang_Rauber
+endTime=datetime(2018,1,29,02,0,0); %Wang_Rauber
 %
 %
 % startTime=datetime(2015,7,24,19,15,0);
@@ -30,14 +30,15 @@ endTime=datetime(2018,1,24,01,12,30); %Wang_Rauber
 %  startTime=datetime(2018,2,20,3,19,0);% JGR
 %  endTime=datetime(2018,2,20,3,24,0); %  JGR
 
-ylimits=[0 6.0];
+ylimits=[0 1.5];
 
 plotlidars=1; % 1 to plot lidar data, 0 to not plot lidar
 plotradars=1; % 1 to plot radar data, 0 to not plot radar
 
 %indir='/Volumes/RSF-Vivek/SOCRATES/HCR_HSRL_qc2_RF04_20180123_230524_to_20180124_060037/';
 
-indir=HCRdir(project,quality,freqData);
+%indir=HCRdir(project,quality,freqData);
+indir=['/run/media/romatsch/RSF0006/rsf/combined_hcr_hsrl/',project,'/'];
 
 fileList=makeFileList(indir,startTime,endTime,'xxxxxx20YYMMDDxhhmmss',1);
 

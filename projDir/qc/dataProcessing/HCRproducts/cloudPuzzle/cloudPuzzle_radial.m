@@ -36,7 +36,7 @@ caseStart=datetime(caseList.Var1,caseList.Var2,caseList.Var3, ...
 caseEnd=datetime(caseList.Var6,caseList.Var7,caseList.Var8, ...
     caseList.Var9,caseList.Var10,0);
 
-for aa=1:length(caseStart)
+for aa=8:length(caseStart)
     
     disp(['Case ',num2str(aa),' of ',num2str(length(caseStart))]);
     
@@ -225,7 +225,7 @@ for aa=1:length(caseStart)
     
     cloudPuzzleOut(isnan(reflExt))=nan;
     
-    % Fill in pixels that are not in small areas (i.e. not zero) that have
+    %% Fill in pixels that are not in small areas (i.e. not zero) that have
     % reflectivities but are nan in cloudPuzzle
     
     disp('Filling in final pixels ...');
@@ -240,8 +240,32 @@ for aa=1:length(caseStart)
     [addR addC]=find(puzzleMask==0 & allReflMask==1);
     idx = knnsearch([oldR oldC], [addR addC]);
     nearest_OldValue = cloudPuzzleOut(sub2ind(size(cloudPuzzleOut), oldR(idx), oldC(idx)));
-    cloudPuzzleFinal=cloudPuzzleOut;
-    cloudPuzzleFinal(sub2ind(size(cloudPuzzleOut), addR, addC))=nearest_OldValue;
+    cloudPuzzleAttached=cloudPuzzleOut;
+    cloudPuzzleAttached(sub2ind(size(cloudPuzzleOut), addR, addC))=nearest_OldValue;
+    
+    % Sometimes areas get attached to wrong area
+    cloudPuzzleFinal=cloudPuzzleAttached;
+    for jj=1:cloudCount-1
+        maskNumber=zeros(size(cloudPuzzleAttached));
+        maskNumber(cloudPuzzleAttached==jj)=1;
+        individs=bwconncomp(maskNumber);
+        if individs.NumObjects>1
+            indivClouds=individs.PixelIdxList;
+            for ll=1:individs.NumObjects
+                if length(indivClouds{ll})<1001
+                    maskIndiv=zeros(size(cloudPuzzleAttached));
+                    maskIndiv(indivClouds{ll})=1;
+                    maskExp=imdilate(maskIndiv, strel('disk', 2));
+                    pixExp=cloudPuzzleAttached(find(maskExp==1));
+                    pixExp(find(pixExp==0 | pixExp==jj | isnan(pixExp)))=[];
+                    if ~isempty(pixExp)
+                        pixU=unique(pixExp);
+                        cloudPuzzleFinal(indivClouds{ll})=pixU;
+                    end
+                end
+            end
+        end
+    end
 
     %% Plot
     
@@ -266,8 +290,12 @@ for aa=1:length(caseStart)
     
     ax2=subplot(2,1,2);
     
-    colMap=jet(cloudCount-1);
-    colMap=cat(1,[0 0 0],colMap);
+    colMapIn=jet(cloudCount-1);
+    % Make order random
+    indsCol=randperm(size(colMapIn,1));
+    colMapInds=cat(2,indsCol',colMapIn);
+    colMapInds=sortrows(colMapInds);
+    colMap=cat(1,[0 0 0],colMapInds(:,2:end));
     
     hold on;
     sub2=surf(data.time,data.asl./1000,cloudPuzzleFinal,'edgecolor','none');

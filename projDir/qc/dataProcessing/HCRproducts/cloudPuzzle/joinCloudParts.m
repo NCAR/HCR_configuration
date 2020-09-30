@@ -4,13 +4,15 @@ function waterMasked = joinCloudParts(waterShed)
 % Output
 waterMasked=zeros(size(waterShed));
 waterMasked(waterShed>0)=1;
-waterMasked=bwareaopen(waterMasked,500);
+waterMasked=bwareaopen(waterMasked,1000);
 
 waterRidges=zeros(size(waterShed));
 waterRidges(waterShed==0)=1;
 
 % Clean it up
-largerRidges=imdilate(waterRidges, strel('disk', 3));
+largerRidges=imclose(waterRidges, strel('disk', 7));
+largerRidges=imdilate(largerRidges,strel('disk',5));
+%largerRidges=imdilate(waterRidges,strel('disk',3));
 
 %% In the first round, we only take care of areas with large boundaries
 ridgesAll=bwconncomp(largerRidges);
@@ -31,7 +33,7 @@ for kk=1:ridgesAll.NumObjects
     thisRidgeSkel=bwskel(logical(maskThis));    
     ridgePixSum=sum(sum(thisRidgeSkel));
     
-    if ridgePixSum>50
+    if ridgePixSum>100
         waterMasked(ridges{kk})=1;
         largerRidges(ridges{kk})=1;
         continue
@@ -66,7 +68,7 @@ for kk=1:ridgesAll.NumObjects
     end
     
     maxFrac=max(ridgePixSum./cir);
-    if maxFrac>0.005
+    if maxFrac>0.02
         waterMasked(ridges{kk})=1;
         largerRidges(ridges{kk})=1;
     end
@@ -91,7 +93,7 @@ for kk=1:ridgesAll.NumObjects
     thisRidgeSkel=bwskel(logical(maskThis));    
     ridgePixSum=sum(sum(thisRidgeSkel));
     
-    if ridgePixSum>50
+    if ridgePixSum>100
         waterMasked(ridges{kk})=1;
         continue
     end
@@ -125,5 +127,6 @@ for kk=1:ridgesAll.NumObjects
         waterMasked(ridges{kk})=1;
     end
 end
+
 end
 
