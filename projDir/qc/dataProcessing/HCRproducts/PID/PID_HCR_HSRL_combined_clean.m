@@ -90,7 +90,7 @@ if ~isempty(fileList)
     att_cumul=2.*0.0192*cumsum((wt_coef.*Z_95_lin.^wt_exp),2,'omitnan');
     att_cumul(data.HCR_DBZ < -200)=NaN;
     dBZ_cor=data.HCR_DBZ+att_cumul;
-    Z_95_lin_cor=10.^(dBZ_cor*0.1);
+    %Z_95_lin_cor=10.^(dBZ_cor*0.1);
     
     %% Calculate PID
     
@@ -104,12 +104,12 @@ if ~isempty(fileList)
     vol_depol=data.HSRL_Volume_Depolarization./(2-data.HSRL_Volume_Depolarization);
     lin_depol=vol_depol./(2-vol_depol);
     
-    pid_hsrl=calc_pid_hsrl_clean(data.HSRL_Aerosol_Backscatter_Coefficient,lin_depol,data.temp);
+    pid_hsrl=calc_pid_hsrl_clean_eff(data.HSRL_Aerosol_Backscatter_Coefficient,lin_depol,data.temp);
     pid_hsrl(isnan(data.HSRL_Aerosol_Backscatter_Coefficient))=nan;
     pid_hsrl(isnan(pid_hsrl))=1;
     
     % HCR
-    [pid_hcr,m]=calc_pid_hcr_clean(dBZ_cor,data.HCR_LDR,data.HCR_VEL,data.HCR_WIDTH,data.temp);
+    [pid_hcr]=calc_pid_hcr_clean_eff(dBZ_cor,data.HCR_LDR,data.HCR_VEL,data.HCR_WIDTH,data.temp);
     pid_hcr(isnan(dBZ_cor))=nan;
     pid_hcr(isnan(pid_hcr))=1;
     

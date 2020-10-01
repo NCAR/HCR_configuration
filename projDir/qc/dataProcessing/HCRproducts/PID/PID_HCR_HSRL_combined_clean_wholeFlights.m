@@ -10,16 +10,18 @@ quality='qc2'; %field, qc1, or qc2
 freqData='2hzMerged'; % 10hz, 100hz, or 2hz
 whichModel='era5';
 
-indir=HCRdir(project,quality,freqData);
+%indir=HCRdir(project,quality,freqData);
+indir=['/run/media/romatsch/RSF0006/rsf/combined_hcr_hsrl/',project,'/'];
 
-[~,directories.modeldir]=modelDir(project,whichModel,freqData);
-outdir=directories.modeldir;
+%[~,directories.modeldir]=modelDir(project,whichModel,freqData);
+%outdir=directories.modeldir;
+outdir='/run/media/romatsch/RSF0006/rsf/pid/socratesMat2/';
 
 infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_',project,'_data.txt'];
 
 caseList = table2array(readtable(infile));
 
-for aa=3:size(caseList,1)
+for aa=6:size(caseList,1)
     disp(['Flight ',num2str(aa)]);
     disp('Loading data ...')
     
@@ -80,11 +82,13 @@ for aa=3:size(caseList,1)
     att_cumul=2.*0.0192*cumsum((wt_coef.*Z_95_lin.^wt_exp),2,'omitnan');
     att_cumul(data.HCR_DBZ < -200)=NaN;
     dBZ_cor=data.HCR_DBZ+att_cumul;
-    Z_95_lin_cor=10.^(dBZ_cor*0.1);
+    %Z_95_lin_cor=10.^(dBZ_cor*0.1);
+    
+    clear wt_coef wt_exp att_cumul
     
     %% Calculate PID
     
-    disp('Make PID ...')
+    disp('Make HSRL PID ...')
     
     data.temp=data.TEMP+273.15;
     
@@ -96,14 +100,23 @@ for aa=3:size(caseList,1)
     vol_depol=data.HSRL_Volume_Depolarization./(2-data.HSRL_Volume_Depolarization);
     lin_depol=vol_depol./(2-vol_depol);
     
-    pid_hsrl=calc_pid_hsrl_clean(data.HSRL_Aerosol_Backscatter_Coefficient,lin_depol,data.temp);
+    pid_hsrl=calc_pid_hsrl_clean_eff(data.HSRL_Aerosol_Backscatter_Coefficient,lin_depol,data.temp);
     pid_hsrl(isnan(data.HSRL_Aerosol_Backscatter_Coefficient))=nan;
     pid_hsrl(isnan(pid_hsrl))=1;
     
+    clear backscatLog extLog depolLog lidarRatio vol_depol lin_depol
+    data.HSRL_Aerosol_Backscatter_Coefficient=[];
+    data.HSRL_Volume_Depolarization=[];
+    data.HSRL_Aerosol_Extinction_Coefficient=[];
+    
+    disp('Make HCR PID ...')
+    
     % HCR
-    [pid_hcr,m]=calc_pid_hcr_clean(dBZ_cor,data.HCR_LDR,data.HCR_VEL,data.HCR_WIDTH,data.temp);
+    [pid_hcr]=calc_pid_hcr_clean_eff(dBZ_cor,data.HCR_LDR,data.HCR_VEL,data.HCR_WIDTH,data.temp);
     pid_hcr(isnan(dBZ_cor))=nan;
     pid_hcr(isnan(pid_hcr))=1;
+    
+    disp('Combine PIDs ...')
     
     % Combined from merging hcr and hsrl pid
     pid_comb=combine_pid_hcr_hsrl_clean(pid_hcr,pid_hsrl);

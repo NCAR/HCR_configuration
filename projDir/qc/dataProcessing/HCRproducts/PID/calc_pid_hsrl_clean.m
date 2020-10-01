@@ -53,6 +53,8 @@ for ii=1:7
     result(ii,:,:)=mii(1,:,:)*w(1)+mii(2,:,:)*w(2)+mii(3,:,:)*w(3);
 end
 
+clear m
+
 max1=squeeze(nanmax(result,[],1));
 maxMat=repmat(max1,[1,1,7]);
 maxMat=permute(maxMat,[3,1,2]);
