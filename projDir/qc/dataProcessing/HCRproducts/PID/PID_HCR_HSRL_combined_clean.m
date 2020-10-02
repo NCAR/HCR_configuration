@@ -20,7 +20,7 @@ freqData='2hzMerged'; % 10hz, 100hz, or 2hz
 %  endTime=datetime(2018,1,24,4,05,0); %BAMS Jeff Stith
 
 
-startTime=datetime(2018,1,29,01,50,0); %Wang_Rauber
+startTime=datetime(2018,1,29,1,30,0); %Wang_Rauber
 endTime=datetime(2018,1,29,02,0,0); %Wang_Rauber
 %
 %
@@ -32,8 +32,8 @@ endTime=datetime(2018,1,29,02,0,0); %Wang_Rauber
 
 ylimits=[0 1.5];
 
-plotlidars=1; % 1 to plot lidar data, 0 to not plot lidar
-plotradars=1; % 1 to plot radar data, 0 to not plot radar
+plotlidars=0; % 1 to plot lidar data, 0 to not plot lidar
+plotradars=0; % 1 to plot radar data, 0 to not plot radar
 
 %indir='/Volumes/RSF-Vivek/SOCRATES/HCR_HSRL_qc2_RF04_20180123_230524_to_20180124_060037/';
 
@@ -87,7 +87,7 @@ if ~isempty(fileList)
     wt_coef(data.HCR_DBZ > -15)=0.22;
     wt_exp(data.HCR_DBZ > -15)=0.68;
     
-    att_cumul=2.*0.0192*cumsum((wt_coef.*Z_95_lin.^wt_exp),2,'omitnan');
+    att_cumul=2.*0.0192*cumsum((wt_coef.*Z_95_lin.^wt_exp),1,'omitnan');
     att_cumul(data.HCR_DBZ < -200)=NaN;
     dBZ_cor=data.HCR_DBZ+att_cumul;
     %Z_95_lin_cor=10.^(dBZ_cor*0.1);
@@ -149,5 +149,6 @@ if ~isempty(fileList)
     end
     
     %% PIDs
-    plot_pids_clean(data,pid_comb,pid_comb2,cscale_comb,units_str_comb,ylimits);
+    plot_pids_clean(data,pid_comb,pid_comb,cscale_comb,units_str_comb,ylimits);
+    xlim([datetime(2018,1,29,1,50,0),datetime(2018,1,29,2,0,0)]);
 end

@@ -79,7 +79,7 @@ for aa=6:size(caseList,1)
     wt_coef(data.HCR_DBZ > -15)=0.22;
     wt_exp(data.HCR_DBZ > -15)=0.68;
     
-    att_cumul=2.*0.0192*cumsum((wt_coef.*Z_95_lin.^wt_exp),2,'omitnan');
+    att_cumul=2.*0.0192*cumsum((wt_coef.*Z_95_lin.^wt_exp),1,'omitnan');
     att_cumul(data.HCR_DBZ < -200)=NaN;
     dBZ_cor=data.HCR_DBZ+att_cumul;
     %Z_95_lin_cor=10.^(dBZ_cor*0.1);
