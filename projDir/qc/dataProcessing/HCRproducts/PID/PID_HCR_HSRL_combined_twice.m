@@ -20,7 +20,7 @@ freqData='2hzMerged'; % 10hz, 100hz, or 2hz
 %  endTime=datetime(2018,1,24,4,05,0); %BAMS Jeff Stith
 
 
-startTime=datetime(2018,1,29,1,30,0); %Wang_Rauber
+startTime=datetime(2018,1,29,1,50,0); %Wang_Rauber
 endTime=datetime(2018,1,29,02,0,0); %Wang_Rauber
 %
 %
@@ -70,8 +70,36 @@ if ~isempty(fileList)
     end
     
     data.asl=data.asl./1000;
+    data.temp=data.TEMP+273.15;
     
-    %% Initialize and calculate variables
+    %% Calculate HSRL PID
+    
+    % HSRL
+    backscatLog = real(log10(data.HSRL_Aerosol_Backscatter_Coefficient));
+    extLog = real(log10(data.HSRL_Aerosol_Extinction_Coefficient));
+    depolLog = real(log10(data.HSRL_Volume_Depolarization));
+    lidarRatio=10.^(extLog-backscatLog);
+    vol_depol=data.HSRL_Volume_Depolarization./(2-data.HSRL_Volume_Depolarization);
+    lin_depol=vol_depol./(2-vol_depol);
+    
+    pid_hsrl=calc_pid_hsrl_clean_eff(data.HSRL_Aerosol_Backscatter_Coefficient,lin_depol,data.temp);
+    pid_hsrl(isnan(data.HSRL_Aerosol_Backscatter_Coefficient))=nan;
+    pid_hsrl(isnan(pid_hsrl))=1;
+    
+    %% Calculate HCR without attenuation correction
+    
+    [pid_hcr]=calc_pid_hcr_clean_eff(data.HCR_DBZ,data.HCR_LDR,data.HCR_VEL,data.HCR_WIDTH,data.temp);
+    pid_hcr(isnan(data.HCR_DBZ))=nan;
+    pid_hcr(isnan(pid_hcr))=1;
+    
+    % Combined from merging hcr and hsrl pid
+    pid_comb=combine_pid_hcr_hsrl_clean(pid_hcr,pid_hsrl);
+    
+    % Combined by using both data sets in one process
+    pid_comb2=calc_pid_direct_clean_eff(data.HSRL_Aerosol_Backscatter_Coefficient,lin_depol,...
+        data.HCR_DBZ,data.HCR_LDR,data.HCR_VEL,data.HCR_WIDTH,data.temp);
+    
+    %% Calculate attenuation correction
     
     Z_95_lin=10.^(data.HCR_DBZ*0.1);
     Z_95_lin(data.HCR_DBZ < -200)=0.;
@@ -89,35 +117,27 @@ if ~isempty(fileList)
     
     att_cumul=2.*0.0192*cumsum((wt_coef.*Z_95_lin.^wt_exp),1,'omitnan');
     att_cumul(data.HCR_DBZ < -200)=NaN;
-    dBZ_cor=data.HCR_DBZ+att_cumul;
-    %Z_95_lin_cor=10.^(dBZ_cor*0.1);
+    dBZ_cor_all=data.HCR_DBZ+att_cumul;
     
-    %% Calculate PID
-    
-    data.temp=data.TEMP+273.15;
-    
-    % HSRL
-    backscatLog = real(log10(data.HSRL_Aerosol_Backscatter_Coefficient));
-    extLog = real(log10(data.HSRL_Aerosol_Extinction_Coefficient));
-    depolLog = real(log10(data.HSRL_Volume_Depolarization));
-    lidarRatio=10.^(extLog-backscatLog);
-    vol_depol=data.HSRL_Volume_Depolarization./(2-data.HSRL_Volume_Depolarization);
-    lin_depol=vol_depol./(2-vol_depol);
-    
-    pid_hsrl=calc_pid_hsrl_clean_eff(data.HSRL_Aerosol_Backscatter_Coefficient,lin_depol,data.temp);
-    pid_hsrl(isnan(data.HSRL_Aerosol_Backscatter_Coefficient))=nan;
-    pid_hsrl(isnan(pid_hsrl))=1;
+    % Replace dBZ values with attenuation corrected values in liquid and
+    % melting regions
+    dBZ_cor=data.HCR_DBZ;
+    liqMeltInds=find(pid_comb==2 | pid_comb==3 | pid_comb==4 | pid_comb==5);
+    dBZ_cor(liqMeltInds)=dBZ_cor_all(liqMeltInds);
+    dBZ_cor(isnan(data.HCR_DBZ))=nan;
+        
+    %% Calculate PID with attenuation correction
     
     % HCR
-    [pid_hcr]=calc_pid_hcr_clean_eff(dBZ_cor,data.HCR_LDR,data.HCR_VEL,data.HCR_WIDTH,data.temp);
-    pid_hcr(isnan(dBZ_cor))=nan;
-    pid_hcr(isnan(pid_hcr))=1;
+    [pid_hcr_cor]=calc_pid_hcr_clean_eff(dBZ_cor,data.HCR_LDR,data.HCR_VEL,data.HCR_WIDTH,data.temp);
+    pid_hcr_cor(isnan(dBZ_cor))=nan;
+    pid_hcr_cor(isnan(pid_hcr_cor))=1;
     
     % Combined from merging hcr and hsrl pid
-    pid_comb=combine_pid_hcr_hsrl_clean(pid_hcr,pid_hsrl);
+    pid_comb_cor=combine_pid_hcr_hsrl_clean(pid_hcr_cor,pid_hsrl);
     
     % Combined by using both data sets in one process
-    pid_comb2=calc_pid_direct_clean_eff(data.HSRL_Aerosol_Backscatter_Coefficient,lin_depol,...
+    pid_comb2_cor=calc_pid_direct_clean_eff(data.HSRL_Aerosol_Backscatter_Coefficient,lin_depol,...
         dBZ_cor,data.HCR_LDR,data.HCR_VEL,data.HCR_WIDTH,data.temp);
     
     %% Scales and units
@@ -132,23 +152,25 @@ if ~isempty(fileList)
     units_str_comb={'No signal','Cloud liquid','Drizzle','Rain',...
         'SLW','Ice crystals','Snow','Wet snow/rimed ice','Aerosols'};
     
-    %% Plot lidar
-    close all
-    if plotlidars==1
-        plot_hsrl_clean(data,pid_hsrl,backscatLog,cscale_hsrl,units_str_hsrl,ylimits);
-    end
-    
-    % Plot radar
-    if plotradars==1
-        plot_hcr_clean(data,pid_hcr,cscale_hcr,units_str_hcr,ylimits);
-    end
-    
-    % Plot radar and lidar
-    if plotradars==1 & plotlidars==1
-        plot_hsrl_hcr_clean(data,pid_comb,backscatLog,cscale_comb,units_str_comb,ylimits);
-    end
+%     %% Plot lidar
+%     close all
+%     if plotlidars==1
+%         plot_hsrl_clean(data,pid_hsrl,backscatLog,cscale_hsrl,units_str_hsrl,ylimits);
+%     end
+%     
+%     % Plot radar
+%     if plotradars==1
+%         plot_hcr_clean(data,pid_hcr,cscale_hcr,units_str_hcr,ylimits);
+%     end
+%     
+%     % Plot radar and lidar
+%     if plotradars==1 & plotlidars==1
+%         plot_hsrl_hcr_clean(data,pid_comb,backscatLog,cscale_comb,units_str_comb,ylimits);
+%     end
     
     %% PIDs
-    plot_pids_clean(data,pid_comb,pid_comb,cscale_comb,units_str_comb,ylimits);
-    xlim([datetime(2018,1,29,1,50,0),datetime(2018,1,29,2,0,0)]);
+    plot_pids_clean(data,pid_comb,pid_comb2,cscale_comb,units_str_comb,ylimits);
+        
+    plot_pids_clean(data,pid_comb_cor,pid_comb2_cor,cscale_comb,units_str_comb,ylimits);
+    
 end

@@ -122,7 +122,7 @@ for aa=6:size(caseList,1)
     pid_comb=combine_pid_hcr_hsrl_clean(pid_hcr,pid_hsrl);
     
     % Combined by using both data sets in one process
-%     pid_comb2=calc_pid_direct_clean(data.HSRL_Aerosol_Backscatter_Coefficient,lin_depol,...
+%     pid_comb2=calc_pid_direct_clean_eff(data.HSRL_Aerosol_Backscatter_Coefficient,lin_depol,...
 %         dBZ_cor,data.HCR_LDR,data.HCR_VEL,data.HCR_WIDTH,data.temp);
     
    %% Save
