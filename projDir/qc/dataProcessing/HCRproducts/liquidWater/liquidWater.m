@@ -23,6 +23,8 @@ meltArea=2000; % melting layer +/- meltArea (meters) is considered in strat conv
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
 %figdir=['/scr/sci/romatsch/liquidWaterHCR/'];
+figdir='/home/romatsch/plots/HCR/liquidWater/';
+outDataDir='/home/romatsch/workThings/forHuang/';
 
 dataDir=HCRdir(project,quality,dataFreq);
 dataDir=['/run/media/romatsch/RSF0006/rsf/hcr/',project,'/'];
@@ -30,8 +32,8 @@ dataDir=['/run/media/romatsch/RSF0006/rsf/hcr/',project,'/'];
 % startTime=datetime(2018,2,24,2,23,0);
 % endTime=datetime(2018,2,24,2,31,0);
 
-startTime=datetime(2019,8,7,16,35,0);
-endTime=datetime(2019,8,7,17,10,0);
+startTime=datetime(2019,10,2,15,45,0);
+endTime=datetime(2019,10,2,15,54,0);
 
 %% Get data
 
@@ -133,7 +135,7 @@ if ~max(surfMask)==0
     twoInds=find(findMelt==2);
     threeInds=find(findMelt==3);
     
-    meltType=sum(findMelt,1,'omitnan');
+    %meltType=sum(findMelt,1,'omitnan');
     
     meltInd=nan(size(data.time));
     warmRefl=nan(size(data.DBZ));
@@ -160,9 +162,9 @@ if ~max(surfMask)==0
     iceAttAll=iceSpecAtt.*(data.range(2)-data.range(1))./1000;
     iceAtt=sum(iceAttAll,1,'omitnan');
     
-    %% One way gaseous attenuation
+    %% One way and two way gaseous attenuation
     
-    [gasAttClear,gasAttCloud]=get_atten(frq/1e+9,data);
+    [gasAttClear,gasAttCloud,gasAttClearMat,gasAttCloudMat]=get_atten(frq/1e+9,data);
     gasAttCloud2=2*gasAttCloud';
     
     %% Calculate clear air and cloudy ocean reflectivity
@@ -320,9 +322,12 @@ if ~max(surfMask)==0
     s3pos=s3.Position;
     s3.Position=[s3pos(1),s3pos(2),s1pos(3),s3pos(4)];
     
-%     set(gcf,'PaperPositionMode','auto')
-%     print(f1,[figdir,project,'_lwc_',datestr(data.time(1),'yyyymmdd_HHMMSS'),'_to_',datestr(data.time(end),'yyyymmdd_HHMMSS')],'-dpng','-r0')
-       
+    set(gcf,'PaperPositionMode','auto')
+    print(f1,[figdir,project,'_lwc_',datestr(data.time(1),'yyyymmdd_HHMMSS'),'_to_',datestr(data.time(end),'yyyymmdd_HHMMSS')],'-dpng','-r0')
+    
+    time=data.time;
+    save([outDataDir,project,'_att_',datestr(data.time(1),'yyyymmdd_HHMMSS'),'_to_',...
+        datestr(data.time(end),'yyyymmdd_HHMMSS')],'time','gasAttCloudMat','attLiq');
      %% Plot strat conv
 %     close all
 %     
