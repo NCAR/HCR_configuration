@@ -104,6 +104,10 @@ if ~isempty(fileList)
     Z_95_lin=10.^(data.HCR_DBZ*0.1);
     Z_95_lin(data.HCR_DBZ < -200)=0.;
     
+    % Mask out non liquid data
+    liqMeltInds=find(pid_comb==2 | pid_comb==3 | pid_comb==4 | pid_comb==5);
+    Z_95_lin(liqMeltInds)=nan;
+    
     %DBZ_temp=data.HCR_DBZ;
     wt_coef=nan(size(data.HCR_DBZ));
     wt_exp=nan(size(data.HCR_DBZ));
@@ -122,7 +126,6 @@ if ~isempty(fileList)
     % Replace dBZ values with attenuation corrected values in liquid and
     % melting regions
     dBZ_cor=data.HCR_DBZ;
-    liqMeltInds=find(pid_comb==2 | pid_comb==3 | pid_comb==4 | pid_comb==5);
     dBZ_cor(liqMeltInds)=dBZ_cor_all(liqMeltInds);
     dBZ_cor(isnan(data.HCR_DBZ))=nan;
         
