@@ -468,7 +468,7 @@ BBfinished=nan(size(zeroDeg));
 
 disp('Creating melting layer output ...');
 
-% Zero degree alt
+% Zero degree alt (0)
 for ii=1:size(layerAlts,1)
     rows1=layerInds(ii,:);
     cols1=1:length(tempDataY);
@@ -480,7 +480,7 @@ for ii=1:size(layerAlts,1)
     BBfinished(linInds1)=0;
 end
 
-% BB altitude
+% BB altitude (1)
 for ii=1:size(BBaltAll,2)
     BB1=BBaltAll{ii};
     timeI1=timeIall{ii};
@@ -494,7 +494,7 @@ for ii=1:size(BBaltAll,2)
     end
 end
 
-% BB altitude interpolated
+% BB altitude interpolated (2)
 for ii=1:size(BBaltInterpAll,2)
     BB1=BBaltInterpAll{ii};
     timeI1=timeIall{ii};
@@ -508,7 +508,7 @@ for ii=1:size(BBaltInterpAll,2)
     end
 end
 
-% BB altitude zero
+% BB altitude inferred from zero (3)
 for ii=1:size(BBaltZeroAll,2)
     BB1=BBaltZeroAll{ii};
     timeI1=timeIZeroAll{ii};
