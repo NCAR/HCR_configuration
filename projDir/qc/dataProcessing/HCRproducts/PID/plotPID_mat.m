@@ -15,7 +15,7 @@ endTime=datetime(2018,1,29,01,59,0); %Wang_Rauber
 ylimits=[0 1.5];
 
 %indir=HCRdir(project,quality,freqData);
-indir=['/run/media/romatsch/RSF0006/rsf/pid/',project,'Mat2/'];
+indir=['/run/media/romatsch/RSF0006/rsf/pid_hcr/',project,'Mat/'];
 
 infilePID=[indir,'era5.pid.20180128_224515_to_20180129_060956.Flight6.mat'];
 infileTime=[indir,'era5.time.20180128_224515_to_20180129_060956.Flight6.mat'];

@@ -15,14 +15,16 @@ infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_
 
 caseList = table2array(readtable(infile));
 
-indir=HCRdir(project,quality,freqData);
+%indir=HCRdir(project,quality,freqData);
+indir='/run/media/romatsch/RSF0006/rsf/pid_hcr/socrates/';
 
-[~,modeldir]=modelDir(project,whichModel,freqData);
+%[~,modeldir]=modelDir(project,whichModel,freqData);
+modeldir='/run/media/romatsch/RSF0006/rsf/pid_hcr/socratesMat/';
 
 %% Run processing
 
 % Go through flights
-for ii=1:size(caseList,1)
+for ii=6:size(caseList,1)
     
     disp(['Flight ',num2str(ii)]);
     

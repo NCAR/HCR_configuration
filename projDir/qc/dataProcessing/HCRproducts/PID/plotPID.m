@@ -15,7 +15,7 @@ endTime=datetime(2018,1,29,01,59,0); %Wang_Rauber
 ylimits=[0 1.5];
 
 %indir=HCRdir(project,quality,freqData);
-indir=['/run/media/romatsch/RSF0006/rsf/pid/',project,'/'];
+indir=['/run/media/romatsch/RSF0006/rsf/pid_hcr/',project,'/'];
 
 fileList=makeFileList(indir,startTime,endTime,'xxxxxx20YYMMDDxhhmmss',1);
 

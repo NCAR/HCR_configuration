@@ -14,7 +14,7 @@ endTime=datetime(2018,1,19,4,40,0); %Wang_Rauber
 
 ylimits=[-0.2 3];
 
-figdir='/home/romatsch/plots/HCR/pid/';
+figdir='/home/romatsch/plots/HCR/pid/drizzle/';
 
 %indir='/Volumes/RSF-Vivek/SOCRATES/HCR_HSRL_qc2_RF04_20180123_230524_to_20180124_060037/';
 
