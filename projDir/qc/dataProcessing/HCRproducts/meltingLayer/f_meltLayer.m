@@ -19,6 +19,8 @@ tempTemp(1:16,:)=nan;
 signTemp=sign(tempTemp);
 zeroDeg=diff(signTemp,1);
 
+clear tempTemp signTemp
+
 zeroDeg(isnan(zeroDeg))=0;
 zeroDeg=cat(1,zeroDeg,zeros(size(data.time)));
 zeroDeg(zeroDeg~=0)=1;
@@ -53,6 +55,8 @@ zeroTemp=zeroDeg;
 % end
 
 numZero=sum(zeroTemp,1,'omitnan');
+
+clear zeroTemp
 
 % Connect layers
 layerInds=nan(1,length(tempDataY));
@@ -103,6 +107,8 @@ for ii=1:length(tempDataY)
     end
 end
 
+clear zeroAlt zeroDeg
+
 %% Add adjusted layers
 
 disp('Adjusting zero degree layers ...');
@@ -124,22 +130,30 @@ end
 %% Remove data that is not suitable
 LDRdata=data.LDR(:,tempDataY);
 tempFlag=data.FLAG(:,tempDataY);
+%data=rmfield(data,'FLAG');
 LDRdata(tempFlag>1)=nan;
 LDRdata(LDRdata<-16 | LDRdata>-7)=nan;
 tempRange=data.range(tempDataY);
 LDRdata(tempRange<150)=nan;
+LDRdata(1:20,:)=nan;
 
 VELdata=data.VEL_CORR(:,tempDataY);
 VELdata(tempFlag>1)=nan;
 VELdata(tempRange<150)=nan;
+VELdata(1:20,:)=nan;
+
+clear tempFlag
 
 %% Tightened backlobe
 % Initiate mask
-blMask=zeros(size(zeroDeg));
+blMask=zeros(size(aslTemp));
 
 tempDBZ=data.DBZ(:,tempDataY);
 tempWIDTH=data.WIDTH(:,tempDataY);
+%data=rmfield(data,'WIDTH');
 blMask(tempDBZ<-18 & tempWIDTH>1)=1;
+
+clear tempWIDTH tempDBZ
 
 % Only within right altitude
 rightAlt=data.altitude(tempDataY)-data.TOPO(tempDataY);
@@ -155,6 +169,8 @@ blMask(:,find(elevTemp<0))=0;
 
 LDRdata(blMask==1)=nan;
 VELdata(blMask==1)=nan;
+
+clear blMask
 
 %% Find altitude of bright band
 
@@ -212,7 +228,7 @@ for kk=1:size(layerAltsAdj,1)
         % Distance between raw and mean altitude
         LDRloc=abs(LDRaltRaw-LDRalt);
         
-        % Remove data where distance is more than 200 m
+        % Remove data where distance is more than 50 m
         LDRaltRaw(LDRloc>50)=nan;
         
         % Adjust zero degree layer
@@ -329,7 +345,7 @@ for kk=1:size(layerAltsAdj,1)
         
         % Distance between raw and mean altitude
         VELloc=abs(VELaltRaw-VELalt);
-        % Remove data where distance is more than 200 m
+        % Remove data where distance is more than 100 m
         VELaltRaw(VELloc>100)=nan;
         
         % Standard deviation
@@ -358,6 +374,13 @@ for kk=1:size(layerAltsAdj,1)
         end
         
         clear LDRaltRaw
+        
+        % Remove outliers
+        BBaltRawTest=movmedian(BBaltRaw,20,'includenan');
+        BBaltRawTest=fillmissing(BBaltRawTest,'nearest');
+        
+        BBrawMinusTest=abs(BBaltRawTest-BBaltRaw);
+        BBaltRaw(BBrawMinusTest>50)=nan;
         
         % Remove data that is too short
         BBmask=zeros(size(BBaltRaw));
@@ -388,7 +411,7 @@ for kk=1:size(layerAltsAdj,1)
         
         % Avoid jumps between gates
         BBaltRaw=movmedian(BBaltRaw,20,'omitnan');
-        
+                
         % Interpolate between good values
         BBaltInterp=nan(size(BBaltRaw));
         BBaltZero=nan(size(BBaltRaw));
@@ -463,8 +486,10 @@ for kk=1:size(layerAltsAdj,1)
     timeIZeroAll{end+1}=timeInds;
 end
 
+clear LDRdata VELdata
+
 %% Put things back together
-BBfinished=nan(size(zeroDeg));
+BBfinished=nan(size(aslTemp));
 
 disp('Creating melting layer output ...');
 

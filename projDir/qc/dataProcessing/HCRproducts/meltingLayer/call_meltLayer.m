@@ -3,7 +3,7 @@
 clear all;
 close all;
 
-project='otrec'; %socrates, aristo, cset
+project='socrates'; %socrates, aristo, cset
 quality='qc2'; %field, qc1, or qc2
 freqData='10hz'; % 10hz, 100hz, or 2hz
 
@@ -15,10 +15,11 @@ elseif strcmp(project,'socrates')
 elseif strcmp(project,'cset')
     ylimits=[-0.2 9];
 end
-
+ylimits=[-0.2 2];
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-figdir=['/h/eol/romatsch/hcrCalib/clouds/brightBand/',project,'/'];
+%figdir=['/h/eol/romatsch/hcrCalib/clouds/brightBand/',project,'/'];
+figdir=['/home/romatsch/plots/HCR/meltingLayer/selected/',project,'/'];
 
 if ~exist(figdir, 'dir')
     mkdir(figdir)
@@ -26,7 +27,8 @@ end
 
 casefile=['~/git/HCR_configuration/projDir/qc/dataProcessing/HCRproducts/caseFiles/meltLayer_',project,'.txt'];
 
-indir=HCRdir(project,quality,freqData);
+%indir=HCRdir(project,quality,freqData);
+indir='/run/media/romatsch/RSF0006/rsf/meltingLayer/socrates/10hz/';
 
 % Loop through cases
 
@@ -36,7 +38,7 @@ caseStart=datetime(caseList.Var1,caseList.Var2,caseList.Var3, ...
 caseEnd=datetime(caseList.Var6,caseList.Var7,caseList.Var8, ...
     caseList.Var9,caseList.Var10,0);
 
-for aa=5:length(caseStart)
+for aa=7:length(caseStart)
     
     disp(['Case ',num2str(aa),' of ',num2str(length(caseStart))]);
     
@@ -115,6 +117,7 @@ for aa=5:length(caseStart)
         sub1=surf(data.time,data.asl./1000,data.dbzMasked,'edgecolor','none');
         view(2);
         sub1=colMapDBZ(sub1);
+        scatter(timeMat(zeroInds),data.asl(zeroInds)./1000,10,'k','filled');
         scatter(timeMat(oneInds),data.asl(oneInds)./1000,10,'b','filled');
         scatter(timeMat(twoInds),data.asl(twoInds)./1000,10,'c','filled');
         scatter(timeMat(threeInds),data.asl(threeInds)./1000,10,'g','filled');
@@ -151,6 +154,8 @@ for aa=5:length(caseStart)
         xlim([data.time(1),data.time(end)]);
         title('VEL')
         grid on
+        
+        linkaxes([ax1 ax2 ax3],'xy');
         
         formatOut = 'yyyymmdd_HHMM';
         set(gcf,'PaperPositionMode','auto')

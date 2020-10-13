@@ -3,14 +3,15 @@
 clear all;
 close all;
 
-project='otrec'; %socrates, aristo, cset
+project='socrates'; %socrates, aristo, cset
 quality='qc2'; %field, qc1, or qc2
 freqData='10hz'; % 10hz, 100hz, or 2hz
 whichModel='era5';
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-figdir=['/scr/snow1/rsfdata/projects/otrec/hcr/qc2/cfradial/final2/10hz/plots/'];
+%figdir=['/scr/snow1/rsfdata/projects/otrec/hcr/qc2/cfradial/final2/10hz/plots/'];
+figdir='/home/romatsch/plots/HCR/meltingLayer/flights/socrates/';
 
 if ~exist(figdir, 'dir')
     mkdir(figdir)
@@ -19,20 +20,25 @@ end
 ylimits=[-0.2 8];
 
 %indir=HCRdir(project,quality,freqData);
-indir='/scr/snow1/rsfdata/projects/otrec/hcr/qc2/cfradial/final2/10hz/';
+indir='/run/media/romatsch/RSF0006/rsf/meltingLayer/socrates/10hz/';
 
 [~,directories.modeldir]=modelDir(project,whichModel,freqData);
-outdir=directories.modeldir;
+%outdir=directories.modeldir;
+outdir='/run/media/romatsch/RSF0006/rsf/meltingLayer/socratesMat/';
 
 infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_',project,'_data.txt'];
 
 caseList = table2array(readtable(infile));
 
-zeroAdjust=400;
+zeroAdjustIn=300;
+zeroAdjust=zeroAdjustIn;
 
-for aa=7:size(caseList,1)
+for aa=1:size(caseList,1)
     disp(['Flight ',num2str(aa)]);
     disp('Loading HCR data.')
+    
+    clearvars -except project quality freqData whichModel figdir ...
+        ylimits indir outdir caseList zeroAdjust zeroAdjustIn aa
     
     startTime=datetime(caseList(aa,1:6));
     endTime=datetime(caseList(aa,7:12));
@@ -40,7 +46,6 @@ for aa=7:size(caseList,1)
     fileList=makeFileList(indir,startTime,endTime,'xxxxxx20YYMMDDxhhmmss',1);
     
     disp([datestr(startTime,'yyyy-mm-dd HH:MM'),' to ',datestr(endTime,'yyyy-mm-dd HH:MM')]);
-    data=[];
     
     %% Load data
     
@@ -53,8 +58,8 @@ for aa=7:size(caseList,1)
     data.WIDTH=[];
     data.FLAG=[];
     data.TOPO=[];
-    data.pitch=[];
-    data.roll=[];
+    %data.pitch=[];
+    %data.roll=[];
     
     dataVars=fieldnames(data);
     
@@ -69,13 +74,13 @@ for aa=7:size(caseList,1)
     % Load data
     data=read_HCR(fileList,data,startTime,endTime);
     
-    % Check if all variables were found
+    % Check if all variables were found and convert to single
     for ii=1:length(dataVars)
         if ~isfield(data,dataVars{ii})
             dataVars{ii}=[];
         end
     end
-    
+        
     dataVars=dataVars(~cellfun('isempty',dataVars));
     
     if isempty(data.DBZ)
@@ -110,7 +115,7 @@ for aa=7:size(caseList,1)
         zeroAdjust=meanDiff*(data.range(2)-data.range(1));
         
         if isnan(zeroAdjust)
-            zeroAdjust=400;
+            zeroAdjust=zeroAdjustIn;
         end
         
         disp(['Melting layer is on average ',num2str(meanDiff),' gates or ',num2str(zeroAdjust),' m below the zero degree level.'])
@@ -137,7 +142,7 @@ for aa=7:size(caseList,1)
     newLDR=data.LDR(:,newInds);
     newVEL=data.VEL_CORR(:,newInds);
     newASL=data.asl(:,newInds);
-    newTEMP=data.TEMP(:,newInds);
+    %newTEMP=data.TEMP(:,newInds);
     newTime=data.time(newInds);
     
     fig3=figure('DefaultAxesFontSize',11,'position',[100,100,1500,1000]);
@@ -195,4 +200,8 @@ for aa=7:size(caseList,1)
     meltLayer=findMelt;
     save([outdir,whichModel,'.meltLayer.',datestr(data.time(1),'YYYYmmDD_HHMMSS'),'_to_',...
         datestr(data.time(end),'YYYYmmDD_HHMMSS'),'.Flight',num2str(aa),'.mat'],'meltLayer');
+    
+    timeHCR=data.time;
+    save([outdir,whichModel,'.time.',datestr(data.time(1),'YYYYmmDD_HHMMSS'),'_to_',...
+        datestr(data.time(end),'YYYYmmDD_HHMMSS'),'.Flight',num2str(aa),'.mat'],'timeHCR');
 end
