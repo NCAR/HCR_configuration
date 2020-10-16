@@ -38,7 +38,7 @@ caseStart=datetime(caseList.Var1,caseList.Var2,caseList.Var3, ...
 caseEnd=datetime(caseList.Var6,caseList.Var7,caseList.Var8, ...
     caseList.Var9,caseList.Var10,0);
 
-for aa=7:length(caseStart)
+for aa=4:length(caseStart)
     
     disp(['Case ',num2str(aa),' of ',num2str(length(caseStart))]);
     
@@ -93,7 +93,7 @@ for aa=7:length(caseStart)
     data.dbzMasked=data.DBZ;
     data.dbzMasked(data.FLAG>1)=nan;
     
-    findMelt=f_meltLayer(data,200);
+    findMelt=f_meltLayer(data,300);
     zeroInds=find(findMelt==0);
     oneInds=find(findMelt==1);
     twoInds=find(findMelt==2);
@@ -181,6 +181,7 @@ for aa=7:length(caseStart)
         view(2);
         sub1=colMapDBZ(sub1);
         colIndsAll=1:length(data.time);
+        scatter(timeMat(zeroInds),data.asl(zeroInds)./1000,10,'k','filled');
         scatter(timeMat(oneInds),data.asl(oneInds)./1000,10,'b','filled');
         scatter(timeMat(twoInds),data.asl(twoInds)./1000,10,'c','filled');
         scatter(timeMat(threeInds),data.asl(threeInds)./1000,10,'g','filled');

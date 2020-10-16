@@ -150,7 +150,6 @@ blMask=zeros(size(aslTemp));
 
 tempDBZ=data.DBZ(:,tempDataY);
 tempWIDTH=data.WIDTH(:,tempDataY);
-%data=rmfield(data,'WIDTH');
 blMask(tempDBZ<-18 & tempWIDTH>1)=1;
 
 clear tempWIDTH tempDBZ
@@ -247,8 +246,7 @@ for kk=1:size(layerAltsAdj,1)
         noNanDist=fillmissing(zeroDistSmooth,'linear','EndValues','nearest');
         if sum(~isnan(noNanDist))>0
             layerAltsTemp=layerAltsTemp+noNanDist;
-            layerAltsAdj(kk,timeInds)=layerAltsTemp;
-            
+                        
             distInds=round(noNanDist./oneGate);
             rowInds(elevTemp(timeInds)>0)=rowInds(elevTemp(timeInds)>0)-distInds(elevTemp(timeInds)>0);
             rowInds(elevTemp(timeInds)<=0)=rowInds(elevTemp(timeInds)<=0)+distInds(elevTemp(timeInds)<=0);
@@ -376,7 +374,7 @@ for kk=1:size(layerAltsAdj,1)
         clear LDRaltRaw
         
         % Remove outliers
-        BBaltRawTest=movmedian(BBaltRaw,20,'includenan');
+        BBaltRawTest=movmedian(BBaltRaw,30,'includenan');
         BBaltRawTest=fillmissing(BBaltRawTest,'nearest');
         
         BBrawMinusTest=abs(BBaltRawTest-BBaltRaw);
@@ -417,6 +415,26 @@ for kk=1:size(layerAltsAdj,1)
         BBaltZero=nan(size(BBaltRaw));
         
         if min(isnan(BBaltRaw))==0
+            
+            % Adjust zero degree layer
+            zeroDistF=BBaltRaw-layerAltsAdj(kk,timeInds);
+            
+            % Remove small data stretches
+            zeroMaskF=zeros(size(zeroDistF));
+            zeroMaskF(~isnan(zeroDistF))=1;
+            
+            zeroMaskF=bwareaopen(zeroMaskF,5);
+            zeroDistF(zeroMaskF==0)=nan;
+            
+            zeroDistSmoothF=movmean(zeroDistF,3000,'omitnan');
+            zeroDistSmoothF(isnan(zeroDistF))=nan;
+            
+            noNanDistF=fillmissing(zeroDistSmoothF,'linear','EndValues','nearest');
+            if sum(~isnan(noNanDistF))>0
+                layerAltsTempF=layerAltsTemp+noNanDistF;
+            end
+            
+            layerAltsAdj(kk,timeInds)=layerAltsTempF;
             % Mask
             maskBBalt=zeros(size(BBaltRaw));
             maskBBalt(isnan(BBaltRaw))=1;
@@ -448,8 +466,8 @@ for kk=1:size(layerAltsAdj,1)
                     if startInds(ll~=1)
                         startTail=startInds(ll);
                         endTail=min([startInds(ll)+transLength,length(maskBBalt)]);
-                        modT=layerAltsTemp(startTail:endTail);
-                        modTtail=layerAltsTemp(endTail)-(layerAltsTemp(endTail)-layerAltsTemp(startTail));
+                        modT=layerAltsTempF(startTail:endTail);
+                        modTtail=layerAltsTempF(endTail)-(layerAltsTempF(endTail)-layerAltsTempF(startTail));
                         int1=interp1([startTail-1,endTail+1],...
                             [BBaltRaw(startTail-1),modTtail],startTail:endTail);
                         addInt=int1-int1(end);
@@ -459,8 +477,8 @@ for kk=1:size(layerAltsAdj,1)
                     if endInds(ll)~=length(maskBBalt)
                         startHead=max([endInds(ll)-transLength,1]);
                         endHead=endInds(ll);
-                        modT=layerAltsTemp(startHead:endHead);
-                        modThead=layerAltsTemp(startHead)-(layerAltsTemp(startHead)-layerAltsTemp(endHead));
+                        modT=layerAltsTempF(startHead:endHead);
+                        modThead=layerAltsTempF(startHead)-(layerAltsTempF(startHead)-layerAltsTempF(endHead));
                         int1=interp1([startHead-1,endHead+1],...
                             [modThead,BBaltRaw(endHead+1)],startHead:endHead);
                         addInt=int1-int1(1);
@@ -469,7 +487,7 @@ for kk=1:size(layerAltsAdj,1)
                 end
             end
             
-            BBaltZero(isnan(BBaltZero))=layerAltsTemp(isnan(BBaltZero));
+            BBaltZero(isnan(BBaltZero))=layerAltsTempF(isnan(BBaltZero));
             BBaltZero(~isnan(BBaltRaw))=nan;
             BBaltZero(~isnan(BBaltInterp))=nan;
         else
