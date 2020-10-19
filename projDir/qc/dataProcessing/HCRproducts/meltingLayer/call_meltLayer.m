@@ -15,7 +15,7 @@ elseif strcmp(project,'socrates')
 elseif strcmp(project,'cset')
     ylimits=[-0.2 9];
 end
-ylimits=[-0.2 2];
+ylimits=[-0.2 4];
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
 %figdir=['/h/eol/romatsch/hcrCalib/clouds/brightBand/',project,'/'];
@@ -38,7 +38,7 @@ caseStart=datetime(caseList.Var1,caseList.Var2,caseList.Var3, ...
 caseEnd=datetime(caseList.Var6,caseList.Var7,caseList.Var8, ...
     caseList.Var9,caseList.Var10,0);
 
-for aa=4:length(caseStart)
+for aa=1:length(caseStart)
     
     disp(['Case ',num2str(aa),' of ',num2str(length(caseStart))]);
     

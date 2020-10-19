@@ -431,7 +431,7 @@ for kk=1:size(layerAltsAdj,1)
             
             noNanDistF=fillmissing(zeroDistSmoothF,'linear','EndValues','nearest');
             if sum(~isnan(noNanDistF))>0
-                layerAltsTempF=layerAltsTemp+noNanDistF;
+                layerAltsTempF=layerAltsAdj(kk,timeInds)+noNanDistF;
             end
             
             layerAltsAdj(kk,timeInds)=layerAltsTempF;
