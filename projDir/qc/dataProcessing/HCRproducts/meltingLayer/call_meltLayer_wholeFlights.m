@@ -11,7 +11,7 @@ whichModel='era5';
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
 %figdir=['/scr/snow1/rsfdata/projects/otrec/hcr/qc2/cfradial/final2/10hz/plots/'];
-figdir='/home/romatsch/plots/HCR/meltingLayer/flights/socrates/combined/';
+figdir='/home/romatsch/plots/HCR/meltingLayer/flights/socrates/';
 
 if ~exist(figdir, 'dir')
     mkdir(figdir)
@@ -20,11 +20,11 @@ end
 ylimits=[-0.2 8];
 
 %indir=HCRdir(project,quality,freqData);
-indir='/run/media/romatsch/RSF0006/rsf/meltingLayer/socrates/combined/';
+indir='/run/media/romatsch/RSF0006/rsf/meltingLayer/socrates/10hz/';
 
 [~,directories.modeldir]=modelDir(project,whichModel,freqData);
 %outdir=directories.modeldir;
-outdir='/run/media/romatsch/RSF0006/rsf/meltingLayer/socratesMat/combined/';
+outdir='/run/media/romatsch/RSF0006/rsf/meltingLayer/socratesMat/';
 
 infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_',project,'_data.txt'];
 
