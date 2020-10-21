@@ -181,7 +181,9 @@ BBaltInterpAll={};
 BBaltZeroAll={};
 timeIZeroAll={};
 
-transLength=6000;
+% Transition length should be 600 seconds
+resol=seconds(median(diff(data.time)));
+transLength=1/resol*600;
 
 for kk=1:size(layerAltsAdj,1)
     timeInds=find(~isnan(layerAltsAdj(kk,:)));
@@ -409,7 +411,12 @@ for kk=1:size(layerAltsAdj,1)
         
         % Avoid jumps between gates
         BBaltRaw=movmedian(BBaltRaw,20,'omitnan');
-                
+        
+        % Remove data that is more than 100 m above model zero degree
+        zeroAltTest=layerAlts(kk,timeInds);        
+        BBaltCompare=zeroAltTest-BBaltRaw;
+        BBaltRaw(BBaltCompare<-100)=nan;        
+        
         % Interpolate between good values
         BBaltInterp=nan(size(BBaltRaw));
         BBaltZero=nan(size(BBaltRaw));
@@ -567,4 +574,6 @@ end
 
 BBfinishedOut=nan(size(data.DBZ));
 BBfinishedOut(:,tempDataY)=BBfinished;
+
+BBfinishedOut(data.asl<0)=nan;
 end

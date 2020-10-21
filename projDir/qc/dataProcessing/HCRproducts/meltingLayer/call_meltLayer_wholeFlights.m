@@ -5,13 +5,13 @@ close all;
 
 project='socrates'; %socrates, aristo, cset
 quality='qc2'; %field, qc1, or qc2
-freqData='10hz'; % 10hz, 100hz, or 2hz
+freqData='10hz'; % 10hz, 100hz
 whichModel='era5';
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
 %figdir=['/scr/snow1/rsfdata/projects/otrec/hcr/qc2/cfradial/final2/10hz/plots/'];
-figdir='/home/romatsch/plots/HCR/meltingLayer/flights/socrates/';
+figdir='/home/romatsch/plots/HCR/meltingLayer/flights/socrates/combined/';
 
 if ~exist(figdir, 'dir')
     mkdir(figdir)
@@ -20,11 +20,11 @@ end
 ylimits=[-0.2 8];
 
 %indir=HCRdir(project,quality,freqData);
-indir='/run/media/romatsch/RSF0006/rsf/meltingLayer/socrates/10hz/';
+indir='/run/media/romatsch/RSF0006/rsf/meltingLayer/socrates/combined/';
 
 [~,directories.modeldir]=modelDir(project,whichModel,freqData);
 %outdir=directories.modeldir;
-outdir='/run/media/romatsch/RSF0006/rsf/meltingLayer/socratesMat/';
+outdir='/run/media/romatsch/RSF0006/rsf/meltingLayer/socratesMat/combined/';
 
 infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_',project,'_data.txt'];
 
@@ -58,8 +58,6 @@ for aa=1:size(caseList,1)
     data.WIDTH=[];
     data.FLAG=[];
     data.TOPO=[];
-    %data.pitch=[];
-    %data.roll=[];
     
     dataVars=fieldnames(data);
     
@@ -142,7 +140,6 @@ for aa=1:size(caseList,1)
     newLDR=data.LDR(:,newInds);
     newVEL=data.VEL_CORR(:,newInds);
     newASL=data.asl(:,newInds);
-    %newTEMP=data.TEMP(:,newInds);
     newTime=data.time(newInds);
     
     fig3=figure('DefaultAxesFontSize',11,'position',[100,100,1500,1000]);
