@@ -21,12 +21,17 @@ indir='/run/media/romatsch/RSF0006/rsf/meltingLayer/socrates/combined/';
 %[~,modeldir]=modelDir(project,whichModel,freqData);
 modeldir='/run/media/romatsch/RSF0006/rsf/meltingLayer/socratesMat/';
 
+figdir='/home/romatsch/plots/HCR/meltingLayer/flights/socrates/combined/';
+
 %% Run processing
 
 % Go through flights
-for ii=2:size(caseList,1)
+for ii=1:size(caseList,1)
     
     disp(['Flight ',num2str(ii)]);
+    
+    clearvars -except caseList figdir formatOut freqData ii indir infile ...
+        modeldir project quality whichModel
     
     startTime=datetime(caseList(ii,1:6));
     endTime=datetime(caseList(ii,7:12));
@@ -39,8 +44,7 @@ for ii=2:size(caseList,1)
     model.meltLayer=[];
     
     model=read_model(model,modeldir,startTime,endTime);
-    timeModelNum=datenum(model.time);
-    
+        
     %% Resample model data
     disp('Resampling model data ...');
     
@@ -52,11 +56,17 @@ for ii=2:size(caseList,1)
     timeLong=cat(2,extraTime,model.time,extraTime);
     
     % Read first 2hz file to get time right
-    timeLowResIn=ncread(fileList{1},'time');
-    startTimeIn=ncread(fileList{1},'time_coverage_start')';
-    startTimeFile=datetime(str2num(startTimeIn(1:4)),str2num(startTimeIn(6:7)),str2num(startTimeIn(9:10)),...
-        str2num(startTimeIn(12:13)),str2num(startTimeIn(15:16)),str2num(startTimeIn(18:19)));
-    timeLowRes=startTimeFile+seconds(timeLowResIn);
+    timeLowRes=datetime(1899,1,1);
+    aa=1;
+    
+    while timeLowRes(1)<startTime
+        timeLowResIn=ncread(fileList{aa},'time');
+        startTimeIn=ncread(fileList{aa},'time_coverage_start')';
+        startTimeFile=datetime(str2num(startTimeIn(1:4)),str2num(startTimeIn(6:7)),str2num(startTimeIn(9:10)),...
+            str2num(startTimeIn(12:13)),str2num(startTimeIn(15:16)),str2num(startTimeIn(18:19)));
+        timeLowRes=startTimeFile+seconds(timeLowResIn);
+        aa=aa+1;
+    end
     
     resolSecs=median(diff(timeLowRes));
     newTime=timeLowRes(1):resolSecs:model.time(end);
@@ -126,7 +136,32 @@ for ii=2:size(caseList,1)
             end
         end
     end
+    
+    %% Remove data next to gaps
+    sumMelt=sum(~isnan(newMelt),1);
         
+    sumMask=zeros(size(sumMelt));
+    sumMask(sumMelt==0)=1;
+    
+    diffMask=diff(sumMask);
+    
+    checkMask=zeros(size(sumMelt));
+    checkMask(diffMask==1)=1;
+    checkMask(find(diffMask==-1)+1)=1;
+    checkInds=find(checkMask==1);
+    
+    goThrough=-3:3;
+    
+    for bb=1:length(checkInds)
+        for cc=1:length(goThrough)
+            if checkInds(bb)+goThrough(cc)>0 & checkInds(bb)+goThrough(cc)<=length(sumMelt)
+                newMelt(:,checkInds(bb)+goThrough(cc))=nan;
+            end
+        end
+    end
+    
+    newMelt(:,find(sumMelt>10))=nan;
+    
     %% Prepare for plot
     
     disp('Plotting ...');
@@ -186,9 +221,11 @@ for ii=2:size(caseList,1)
         
     formatOut = 'yyyymmdd_HHMM';
     set(gcf,'PaperPositionMode','auto')
-    print([figdir,'meltRefl_Flight',num2str(aa)],'-dpng','-r0');
+    print([figdir,'melt_Flight',num2str(ii)],'-dpng','-r0');
     
     %% Loop through HCR data files
+    timeModelNum=datenum(newTime);
+    
     for jj=1:length(fileList)
         infile=fileList{jj};
         
@@ -213,15 +250,15 @@ for ii=2:size(caseList,1)
         % Write output
         fillVal=-9999;
         
-        modVars=fields(model);
+%         modVars=fields(model);
         
-        for kk=1:length(modVars)
-            if ~strcmp((modVars{kk}),'time')
-                modOut.(modVars{kk})=model.(modVars{kk})(:,ib);
-                modOut.(modVars{kk})(isnan(modOut.(modVars{kk})))=fillVal;
-                modOut.(modVars{kk})=modOut.(modVars{kk});
-            end
-        end
+%         for kk=1:length(modVars)
+%             if ~strcmp((modVars{kk}),'time')
+                modOut.meltLayer=newMelt(:,ib);
+                modOut.meltLayer(isnan(modOut.meltLayer))=fillVal;
+%                 modOut.(modVars{kk})=modOut.(modVars{kk});
+%             end
+%         end
         
         % Open file
         ncid = netcdf.open(infile,'WRITE');

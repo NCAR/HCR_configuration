@@ -11,7 +11,7 @@ freqData='2hzMerged'; % 10hz, 100hz, or 2hz
 whichModel='era5';
 
 %indir=HCRdir(project,quality,freqData);
-indir=['/run/media/romatsch/RSF0006/rsf/combined_hcr_hsrl/',project,'/'];
+indir=['/run/media/romatsch/RSF0006/rsf/meltingLayer/',project,'/combined/'];
 
 %[~,directories.modeldir]=modelDir(project,whichModel,freqData);
 %outdir=directories.modeldir;
@@ -21,7 +21,7 @@ infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_
 
 caseList = table2array(readtable(infile));
 
-for aa=6:size(caseList,1)
+for aa=1:size(caseList,1)
     disp(['Flight ',num2str(aa)]);
     disp('Loading data ...')
     

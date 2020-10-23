@@ -24,7 +24,7 @@ modeldir='/run/media/romatsch/RSF0006/rsf/pid_hcr/socratesMat/';
 %% Run processing
 
 % Go through flights
-for ii=6:size(caseList,1)
+for ii=1:size(caseList,1)
     
     disp(['Flight ',num2str(ii)]);
     

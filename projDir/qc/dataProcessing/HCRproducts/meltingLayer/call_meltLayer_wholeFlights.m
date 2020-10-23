@@ -11,7 +11,7 @@ whichModel='era5';
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
 %figdir=['/scr/snow1/rsfdata/projects/otrec/hcr/qc2/cfradial/final2/10hz/plots/'];
-figdir='/home/romatsch/plots/HCR/meltingLayer/flights/socrates/';
+figdir='/home/romatsch/plots/HCR/meltingLayer/flights/socrates/10hz/';
 
 if ~exist(figdir, 'dir')
     mkdir(figdir)
@@ -30,7 +30,7 @@ infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_
 
 caseList = table2array(readtable(infile));
 
-zeroAdjustIn=300;
+zeroAdjustIn=100;
 zeroAdjust=zeroAdjustIn;
 
 for aa=1:size(caseList,1)

@@ -5,12 +5,12 @@ close all;
 
 project='socrates'; %socrates, aristo, cset
 quality='qc2'; %field, qc1, or qc2
-freqData='10hz'; % 10hz, 100hz, or 2hz
+freqData='combined'; % 10hz, 100hz, 2hz, or combined
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
 % figdir=['/scr/snow1/rsfdata/projects/otrec/hcr/qc2/cfradial/final2/10hz/plots/testHourly/'];
-figdir='/home/romatsch/plots/HCR/meltingLayer/hourly/socrates/';
+figdir='/home/romatsch/plots/HCR/meltingLayer/hourly/socrates/combined/';
 
 if ~exist(figdir, 'dir')
     mkdir(figdir)
@@ -19,7 +19,7 @@ end
 ylimits=[-0.2 5];
 
 %indir=HCRdir(project,quality,freqData);
-indir='/run/media/romatsch/RSF0006/rsf/meltingLayer/socrates/10hz/';
+indir='/run/media/romatsch/RSF0006/rsf/meltingLayer/socrates/combined/';
 
 infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_',project,'_data.txt'];
 
@@ -43,9 +43,15 @@ for aa=1:size(caseList,1)
         
         disp('Loading data ...');
         
-        data.DBZ=[];
-        data.LDR=[];
-        data.VEL_CORR=[];
+        if strcmp(freqData,'combined')
+            data.HCR_DBZ=[];
+            data.HCR_LDR=[];
+            data.HCR_VEL=[];
+        else
+            data.DBZ=[];
+            data.LDR=[];
+            data.VEL_CORR=[];
+        end
         data.FREEZING_LEVEL=[];
         
         dataVars=fieldnames(data);
@@ -70,6 +76,15 @@ for aa=1:size(caseList,1)
         
         dataVars=dataVars(~cellfun('isempty',dataVars));
         
+        if strcmp(freqData,'combined')
+            data.DBZ=data.HCR_DBZ;
+            data=rmfield(data,'HCR_DBZ');
+            data.LDR=data.HCR_LDR;
+            data=rmfield(data,'HCR_LDR');
+            data.VEL_CORR=data.HCR_VEL;
+            data=rmfield(data,'HCR_VEL');
+        end
+        
         if isempty(data.DBZ)
             continue
         end
@@ -89,7 +104,12 @@ for aa=1:size(caseList,1)
         disp('Plotting ...');
         
         % Resample for plotting
-        newInds=1:20:length(data.time);
+        resolSecs=seconds(median(diff(data.time)));
+        if resolSecs<0.2
+            newInds=1:20:length(data.time);
+        else
+            newInds=1:4:length(data.time);
+        end
         newDBZ=data.DBZ(:,newInds);
         newLDR=data.LDR(:,newInds);
         newVEL=data.VEL_CORR(:,newInds);
