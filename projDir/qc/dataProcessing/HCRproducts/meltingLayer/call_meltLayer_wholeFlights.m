@@ -20,7 +20,7 @@ end
 ylimits=[-0.2 8];
 
 %indir=HCRdir(project,quality,freqData);
-indir='/run/media/romatsch/RSF0006/rsf/meltingLayer/socrates/10hz/';
+indir=HCRdirWFH(project,quality,freqData);
 
 [~,directories.modeldir]=modelDir(project,whichModel,freqData);
 %outdir=directories.modeldir;
