@@ -7,17 +7,16 @@ addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
 project='socrates'; %socrates, aristo, cset
 quality='qc2'; %field, qc1, or qc2
-freqData='2hzMerged'; % 10hz, 100hz, or 2hz
+freqData='combined'; % 10hz, 100hz, 2hz, or combined
 
 figdir='/home/romatsch/plots/HCR/pid/noDrizzle/';
 
 ylimits=[0 3];
 
-plotlidars=0; % 1 to plot lidar data, 0 to not plot lidar
-plotradars=0; % 1 to plot radar data, 0 to not plot radar
+plotComp=1; % 1 to plot comparison plot of HCR vs HSRL
 
 %indir=HCRdir(project,quality,freqData);
-indir=['/run/media/romatsch/RSF0006/rsf/combined_hcr_hsrl/',project,'/'];
+indir=HCRdirWFH(project,quality,freqData);
 
 % Loop through cases
 casefile=['~/git/HCR_configuration/projDir/qc/dataProcessing/HCRproducts/caseFiles/pid_',project,'.txt'];
@@ -92,9 +91,9 @@ for aa=1:length(caseStart)
         % Combined from merging hcr and hsrl pid
         pid_comb=combine_pid_hcr_hsrl_clean(pid_hcr,pid_hsrl);
         
-        % Combined by using both data sets in one process
-        pid_comb2=calc_pid_direct_clean_eff(data.HSRL_Aerosol_Backscatter_Coefficient,lin_depol,...
-            data.HCR_DBZ,data.HCR_LDR,data.HCR_VEL,data.HCR_WIDTH,data.temp);
+%         % Combined by using both data sets in one process
+%         pid_comb2=calc_pid_direct_clean_eff(data.HSRL_Aerosol_Backscatter_Coefficient,lin_depol,...
+%             data.HCR_DBZ,data.HCR_LDR,data.HCR_VEL,data.HCR_WIDTH,data.temp);
         
         %% Calculate attenuation correction
         
@@ -134,44 +133,25 @@ for aa=1:length(caseStart)
         pid_hcr_cor(isnan(pid_hcr_cor))=1;
         
         % Combined from merging hcr and hsrl pid
-        pid_comb_cor=combine_pid_hcr_hsrl_clean(pid_hcr_cor,pid_hsrl);
+        [pid_comb_cor which_pid]=combine_pid_hcr_hsrl_clean(pid_hcr_cor,pid_hsrl);
+        
+        pid_comb_cor(pid_comb_cor==1)=nan;
+        which_pid(isnan(pid_comb_cor))=nan;
+        disagree_pid=zeros(size(pid_comb_cor));
+        disagree_pid(find(pid_hcr_cor~=pid_hsrl))=1;
+        disagree_pid(find(pid_hcr_cor>1 & pid_hsrl==1))=2;
+        disagree_pid(find(pid_hcr_cor==1 & pid_hsrl>1))=3;
+        disagree_pid(isnan(pid_comb_cor))=nan;
         
         % Combined by using both data sets in one process
-        pid_comb2_cor=calc_pid_direct_clean_eff(data.HSRL_Aerosol_Backscatter_Coefficient,lin_depol,...
-            dBZ_cor,data.HCR_LDR,data.HCR_VEL,data.HCR_WIDTH,data.temp);
+%         pid_comb2_cor=calc_pid_direct_clean_eff(data.HSRL_Aerosol_Backscatter_Coefficient,lin_depol,...
+%             dBZ_cor,data.HCR_LDR,data.HCR_VEL,data.HCR_WIDTH,data.temp);
         
         %% Scales and units
-%         cscale_hsrl=[1,1,1;0,0,1.0;0,1,0;1,0.67,0;1,0,1;0,1,1;1,0.67,0];
-%         cscale_hcr=[1,1,1; 0,0,1.0; 0,1,0.; 1,0,0; 1,0,1; 0,1,1; 1,1,0; 0.5,0,0];
         cscale_comb=[1,1,1; 0,0,1; 0,1,0.; 1,0,0; 1,0,1; 0,1,1; 1,1,0; 0.5,0,0; 1,0.67,0];
         
-%         units_str_hsrl={'No signal','Cloud liquid','Drizzle',...
-%             'Aerosol1','SLW','Ice crystals','Aerosol2'};
-%         units_str_hcr={'No signal','Cloud liquid','Drizzle',...
-%             'Rain','SLW','Ice crystals','Snow','Wet snow/rimed ice'};
         units_str_comb={'No signal','Cloud liquid','Drizzle','Rain',...
             'SLW','Ice crystals','Snow','Wet snow/rimed ice','Aerosols'};
-        
-        %     %% Plot lidar
-        %     close all
-        %     if plotlidars==1
-        %         plot_hsrl_clean(data,pid_hsrl,backscatLog,cscale_hsrl,units_str_hsrl,ylimits);
-        %     end
-        %
-        %     % Plot radar
-        %     if plotradars==1
-        %         plot_hcr_clean(data,pid_hcr,cscale_hcr,units_str_hcr,ylimits);
-        %     end
-        %
-        %     % Plot radar and lidar
-        %     if plotradars==1 & plotlidars==1
-        %         plot_hsrl_hcr_clean(data,pid_comb,backscatLog,cscale_comb,units_str_comb,ylimits);
-        %     end
-        
-        %% PIDs
-        %plot_pids_clean(data,pid_comb,pid_comb2,cscale_comb,units_str_comb,ylimits);
-        
-        %plot_pids_clean(data,pid_comb_cor,pid_comb2_cor,cscale_comb,units_str_comb,ylimits);
         
         %% Plot
         
@@ -220,5 +200,53 @@ for aa=1:length(caseStart)
         print(f1,[figdir,project,'_pid_',...
             datestr(data.time(1),'yyyymmdd_HHMMSS'),'_to_',datestr(data.time(end),'yyyymmdd_HHMMSS')],'-dpng','-r0')
         
+        %% Plot comparison plot
+        if plotComp
+            f2=figure('DefaultAxesFontSize',12,'Position',[400 300 1200 1000]);
+            
+            s1=subplot(3,1,1);
+            fig1=surf(data.time,data.asl,pid_comb_cor,'edgecolor','none');
+            view(2);
+            ylim(ylimits);
+            xlim([data.time(1),data.time(end)]);
+            caxis([.5 9.5]);
+            colormap(s1,cscale_comb);
+            cb=colorbar;
+            cb.Ticks=1:9;
+            cb.TickLabels=units_str_comb;
+            ylabel('Altitude (km)');
+            title(['Particle ID']);
+                        
+            s2=subplot(3,1,2);
+            fig2=surf(data.time,data.asl,which_pid,'edgecolor','none');
+            view(2);
+            ylim(ylimits);
+            xlim([data.time(1),data.time(end)]);
+            caxis([0 1]);
+            colormap(s2,[0 0 1; 1 0 0]);
+            cb2=colorbar;
+            cb2.Ticks=[0.25,0.75];
+            cb2.TickLabels={'HCR','HSRL'};
+            ylabel('Altitude (km)');
+            title(['PID source']);
+            
+            s3=subplot(3,1,3);
+            fig3=surf(data.time,data.asl,disagree_pid,'edgecolor','none');
+            view(2);
+            ylim(ylimits);
+            xlim([data.time(1),data.time(end)]);
+            caxis([0 4]);
+            colormap(s3,[0 1 1; 1 1 0;0 0 1; 1 0 0]);
+            cb3=colorbar;
+            cb3.Ticks=[0.5,1.5,2.5,3.5];
+            cb3.TickLabels={'Same','Different','HCR only','HSRL only'};
+            ylabel('Altitude (km)');
+            title(['PID agreement']);
+            
+            set(gcf,'PaperPositionMode','auto')
+            print(f2,[figdir,project,'_pid_debug_',...
+                datestr(data.time(1),'yyyymmdd_HHMMSS'),'_to_',datestr(data.time(end),'yyyymmdd_HHMMSS')],'-dpng','-r0')
+            
+        end
     end
 end
