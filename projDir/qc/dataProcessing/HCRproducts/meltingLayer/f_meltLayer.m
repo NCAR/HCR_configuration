@@ -3,7 +3,7 @@
 % 1=melting layer detected
 % 2=melting layer interpolated
 % 3=melting layer defined as zero degree altitude
-function [BBfinishedOut]= f_meltLayer(data,zeroAdjustMeters)
+function [BBfinishedOut iceLevAsl]= f_meltLayer(data,zeroAdjustMeters)
 
 debugFig=0;
 
@@ -572,8 +572,115 @@ for ii=1:size(BBaltZeroAll,2)
     end
 end
 
-BBfinishedOut=nan(size(data.DBZ));
-BBfinishedOut(:,tempDataY)=BBfinished;
+BBfinishedOrigInds=nan(size(data.DBZ));
+BBfinishedOrigInds(:,tempDataY)=BBfinished;
 
-BBfinishedOut(data.asl<0)=nan;
+clear BBfinished;
+BBfinishedOrigInds(data.asl<0)=nan;
+
+%% Change assignments
+% Below icing level=10
+% Above icing level=20
+% Melting or 0 deg layer at or below icing level=11 (0 deg), 12 (detected),
+% 13 (interpolated), or 14 (estimated)
+% Melting or 0 deg layer above icing level=21, 22, 23, or 24
+
+BBfinishedOut=nan(size(BBfinishedOrigInds));
+iceLev=nan(1,size(BBfinishedOut,2));
+
+for ii=1:size(BBfinishedOrigInds,2)
+    BBcol=BBfinishedOrigInds(:,ii);
+    altCol=data.asl(:,ii);
+    oneAlts=altCol(find(BBcol>0));
+    if ~isempty(oneAlts)
+        iceLevInd=find(altCol==min(oneAlts));
+        iceLev(ii)=data.asl(iceLevInd,ii);
+        if data.elevation(ii)<0 % Pointing down
+            BBfinishedOut(1:iceLevInd-1,ii)=20;
+            BBfinishedOut(iceLevInd:end,ii)=10;
+        else % Pointing up
+            BBfinishedOut(1:iceLevInd,ii)=10;
+            BBfinishedOut(iceLevInd+1:end,ii)=20;
+        end
+    end
+end
+
+% Remove data with odd angles
+oddAngles=find(data.elevation>-70 & data.elevation<70);
+iceLev(oddAngles)=nan;
+
+% Take care of areas with big jumps
+[change1 S1]=ischange(iceLev,'linear','Threshold',10000000);
+changeInds=find(change1==1);
+changeStart=[1 changeInds];
+changeEnd=[changeInds+1 length(iceLev)];
+
+iceLevTest=iceLev;
+
+currentLev=mean(iceLev(changeStart(1):changeEnd(1)),'omitnan');
+
+for ii=1:length(changeStart)
+    changeLength=length(find(~isnan(iceLev(changeStart(ii):changeEnd(ii)))));
+    newLev=mean(iceLev(changeStart(ii):changeEnd(ii)),'omitnan');
+    if changeLength<2000 & abs(newLev-currentLev)>100
+        iceLevTest(changeStart(ii):changeEnd(ii))=nan;
+    else
+        currentLev=newLev;
+    end
+end
+
+iceLevTest=fillmissing(iceLevTest,'linear','endValues','nearest');
+iceLevDiff=abs(iceLev-iceLevTest);
+iceLev(iceLevDiff>100)=nan;
+
+missInds=find(isnan(iceLev));
+
+smoothIce=movmean(iceLev,20);
+smoothIce=fillmissing(smoothIce,'linear','endValues','nearest');
+
+% Fill in missing
+for ii=1:length(missInds)
+    BBfinishedOut(find(data.asl(:,missInds(ii))<smoothIce(missInds(ii))),missInds(ii))=10;
+    BBfinishedOut(find(data.asl(:,missInds(ii))>=smoothIce(missInds(ii))),missInds(ii))=20;
+end
+
+BBfinishedOut(:,oddAngles)=nan;
+BBfinishedOut(data.asl<=0)=nan;
+
+iceLevAslAll=data.asl;
+iceLevAslAll(BBfinishedOut~=20)=nan;
+[minIce minInd]=min(iceLevAslAll,[],1);
+linInd=sub2ind(size(data.asl),minInd,1:size(data.asl,2));
+iceLevAsl=data.asl(linInd);
+
+% Remove nan
+iceLevAsl(find(all(isnan(iceLevAslAll),1)))=nan;
+
+% Remove data with no 10s
+iceLevAslAll=data.asl;
+iceLevAslAll(BBfinishedOut~=10)=nan;
+iceLevAsl(find(all(isnan(iceLevAslAll),1)))=nan;
+
+% Remove data close to the ground
+groundInds=find(iceLevAsl<30 & isnan(iceLev));
+iceLevAsl(groundInds)=nan;
+for ii=1:length(groundInds)
+    BBfinishedOut(find(BBfinishedOut(:,groundInds(ii))==10),groundInds(ii))=20;
+end
+
+% Zero deg
+BBfinishedOut(BBfinishedOrigInds==0 & BBfinishedOut==10)=11;
+BBfinishedOut(BBfinishedOrigInds==0 & BBfinishedOut==20)=21;
+
+% detected
+BBfinishedOut(BBfinishedOrigInds==1 & BBfinishedOut==10)=12;
+BBfinishedOut(BBfinishedOrigInds==1 & BBfinishedOut==20)=22;
+
+% interpolated
+BBfinishedOut(BBfinishedOrigInds==2 & BBfinishedOut==10)=13;
+BBfinishedOut(BBfinishedOrigInds==2 & BBfinishedOut==20)=23;
+
+% estimated
+BBfinishedOut(BBfinishedOrigInds==3 & BBfinishedOut==10)=14;
+BBfinishedOut(BBfinishedOrigInds==3 & BBfinishedOut==20)=24;
 end

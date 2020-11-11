@@ -90,8 +90,8 @@ for aa=1:size(caseList,1)
     for kk=1:2
         disp(['Round ',num2str(kk)]);
         
-        data.dbzMasked=data.DBZ;
-        data.dbzMasked(data.FLAG>1)=nan;
+%         data.dbzMasked=data.DBZ;
+%         data.dbzMasked(data.FLAG>1)=nan;
         
         findMelt=f_meltLayer(data,zeroAdjust);
         
