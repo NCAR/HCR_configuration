@@ -16,6 +16,8 @@ zeroAdjustGates=round(zeroAdjustMeters/oneGate);
 
 tempTemp=data.TEMP;
 tempTemp(1:16,:)=nan;
+oddAngles=find(data.elevation>-70 & data.elevation<70);
+tempTemp(:,oddAngles)=nan;
 signTemp=sign(tempTemp);
 zeroDeg=diff(signTemp,1);
 
@@ -133,13 +135,13 @@ tempFlag=data.FLAG(:,tempDataY);
 %data=rmfield(data,'FLAG');
 LDRdata(tempFlag>1)=nan;
 LDRdata(LDRdata<-16 | LDRdata>-7)=nan;
-tempRange=data.range(tempDataY);
-LDRdata(tempRange<150)=nan;
+%tempRange=data.range(:,tempDataY);
+%LDRdata(tempRange<150)=nan;
 LDRdata(1:20,:)=nan;
 
 VELdata=data.VEL_CORR(:,tempDataY);
 VELdata(tempFlag>1)=nan;
-VELdata(tempRange<150)=nan;
+%VELdata(tempRange<150)=nan;
 VELdata(1:20,:)=nan;
 
 clear tempFlag
@@ -155,19 +157,21 @@ blMask(tempDBZ<-18 & tempWIDTH>1)=1;
 clear tempWIDTH tempDBZ
 
 % Only within right altitude
-rightAlt=data.altitude(tempDataY)-data.TOPO(tempDataY);
+rightAlt=(data.altitude(tempDataY)-data.TOPO(tempDataY))*2;
 
-altMat=repmat(rightAlt,size(tempRange,1),1);
+altMat=repmat(rightAlt,size(data.asl(:,tempDataY),1),1);
 % Lower limit
-blMask(tempRange<(altMat-100))=0;
+blMask(data.asl(:,tempDataY)<(altMat-600))=0;
 % Upper limit
-blMask(tempRange>(altMat+2500))=0;
+blMask(data.asl(:,tempDataY)>(altMat+600))=0;
 
 % Only when scanning up
 blMask(:,find(elevTemp<0))=0;
 
 LDRdata(blMask==1)=nan;
 VELdata(blMask==1)=nan;
+
+% Remove data that is in beween backlobe data
 
 clear blMask
 
@@ -301,8 +305,12 @@ for kk=1:size(layerAltsAdj,1)
         udS1=nan(2,size(velSteps,2));
         
         for ii=1:size(velSteps,2)
-            uS1=unique(S1(:,ii));
+            uS1=unique(S1(:,ii),'stable');
             uS1(isnan(uS1))=[];
+            
+            if elevTemp(ii)>0
+                uS1=flipud(uS1);
+            end
             
             if length(uS1)==2
                 diffS1(ii)=uS1(2)-uS1(1);
@@ -327,13 +335,13 @@ for kk=1:size(layerAltsAdj,1)
             hold on
             plot(diffS1)
             plot(movmean(diffS1,50,'omitnan'),'linewidth',2)
-            ylim([0 3]);
+            %ylim([0 3]);
             grid on
         end
         
         VELaltRaw(movmean(udS1(1,:),50,'omitnan')>0)=nan;
         VELaltRaw(movmean(udS1(2,:),50,'omitnan')>0)=nan;
-        VELaltRaw(movmean(diffS1,50,'omitnan')<0.7)=nan;
+        VELaltRaw(movmean(diffS1,50,'omitnan')>-0.7)=nan;
         
         % Compare with zero degree layer
         VELzeroDiff=VELaltRaw-layerAltsTemp;
@@ -606,26 +614,25 @@ for ii=1:size(BBfinishedOrigInds,2)
 end
 
 % Remove data with odd angles
-oddAngles=find(data.elevation>-70 & data.elevation<70);
 iceLev(oddAngles)=nan;
 
 % Take care of areas with big jumps
-[change1 S1]=ischange(iceLev,'linear','Threshold',10000000);
+[change1 S1]=ischange(iceLev,'linear','Threshold',1000000);
 changeInds=find(change1==1);
 changeStart=[1 changeInds];
 changeEnd=[changeInds+1 length(iceLev)];
 
 iceLevTest=iceLev;
 
-currentLev=mean(iceLev(changeStart(1):changeEnd(1)),'omitnan');
+currentLev=median(iceLev(max([changeStart(1), changeEnd(1)-200]):changeEnd(1)),'omitnan');
 
 for ii=1:length(changeStart)
     changeLength=length(find(~isnan(iceLev(changeStart(ii):changeEnd(ii)))));
-    newLev=mean(iceLev(changeStart(ii):changeEnd(ii)),'omitnan');
+    newLev=median(iceLev(changeStart(ii):changeEnd(ii)),'omitnan');
     if changeLength<2000 & abs(newLev-currentLev)>100
         iceLevTest(changeStart(ii):changeEnd(ii))=nan;
     else
-        currentLev=newLev;
+        currentLev=median(iceLev(max([changeStart(ii),changeEnd(ii)-200]):changeEnd(ii)),'omitnan');;
     end
 end
 
@@ -635,7 +642,7 @@ iceLev(iceLevDiff>100)=nan;
 
 missInds=find(isnan(iceLev));
 
-smoothIce=movmean(iceLev,20);
+smoothIce=iceLev;
 smoothIce=fillmissing(smoothIce,'linear','endValues','nearest');
 
 % Fill in missing
