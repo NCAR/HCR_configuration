@@ -195,8 +195,6 @@ timeIZeroAll={};
 resol=seconds(median(diff(data.time)));
 transLength=1/resol*600;
 
-BBaltRawAll=cell(1,size(layerAltsAdj,1));
-
 for kk=1:size(layerAltsAdj,1)
     timeInds=find(~isnan(layerAltsAdj(kk,:)));
     layerAltsTemp=layerAltsAdj(kk,timeInds);
@@ -431,60 +429,33 @@ for kk=1:size(layerAltsAdj,1)
         % Remove data that is more than 100 m above model zero degree
         zeroAltTest=layerAlts(kk,timeInds);        
         BBaltCompare=zeroAltTest-BBaltRaw;
-        BBaltRaw(BBaltCompare<-100)=nan;
+        BBaltRaw(BBaltCompare<-100)=nan;        
         
-        BBaltRawAll{kk}=BBaltRaw;
-    end
-end
-
-% Calculate mean offset for whole flight 
-zeroDistCollect=[];
-medDist=[];
-for kk=1:size(layerAltsAdj,1)
-    BBaltRaw=BBaltRawAll{kk};
-    zeroDistAll=BBaltRaw-layerAltsAdj(kk,timeInds);
-    zeroDistAll(isnan(zeroDistAll))=[];
-    zeroDistCollect=[zeroDistCollect zeroDistAll];
-end
-
-if ~isnan(zeroDistCollect)
-    medDist=median(zeroDistCollect);
-end
-
-% Adjust zero degree layer
-for kk=1:size(layerAltsAdj,1)
-    BBaltRaw=BBaltRawAll{kk};
-    zeroDistF=BBaltRaw-layerAltsAdj(kk,timeInds);
-    
-    % Remove small data stretches
-    zeroMaskF=zeros(size(zeroDistF));
-    zeroMaskF(~isnan(zeroDistF))=1;
-    
-    zeroMaskF=bwareaopen(zeroMaskF,5);
-    zeroDistF(zeroMaskF==0)=nan;
-    
-    % Adjust end points so that they have the median distance
-    adjPixNum=round(min([100 length(zeroDistF)/10]));
-    zeroDistF(1:adjPixNum)=medDist;
-    zeroDistF(end-adjPixNum:end)=medDist;
-    
-    zeroDistSmoothF=movmean(zeroDistF,3000,'omitnan');
-    zeroDistSmoothF(isnan(zeroDistF))=nan;
-    
-    noNanDistF=fillmissing(zeroDistSmoothF,'linear','EndValues','nearest');    
-    layerAltsAdj(kk,timeInds)=layerAltsAdj(kk,timeInds)+noNanDistF;
-end
-%%%%%%%%%%% Start here
-for kk=1:size(layerAltsAdj,1)
-    BBaltRaw=BBaltRawAll{kk};
-    timeInds=find(~isnan(layerAltsAdj(kk,:)));
-    if min(isnan(maxLevelLDR))==0 | min(isnan(maxLevelVEL))==0
         % Interpolate between good values
         BBaltInterp=nan(size(BBaltRaw));
         BBaltZero=nan(size(BBaltRaw));
         
         if min(isnan(BBaltRaw))==0
             
+            % Adjust zero degree layer
+            zeroDistF=BBaltRaw-layerAltsAdj(kk,timeInds);
+            
+            % Remove small data stretches
+            zeroMaskF=zeros(size(zeroDistF));
+            zeroMaskF(~isnan(zeroDistF))=1;
+            
+            zeroMaskF=bwareaopen(zeroMaskF,5);
+            zeroDistF(zeroMaskF==0)=nan;
+            
+            zeroDistSmoothF=movmean(zeroDistF,3000,'omitnan');
+            zeroDistSmoothF(isnan(zeroDistF))=nan;
+            
+            noNanDistF=fillmissing(zeroDistSmoothF,'linear','EndValues','nearest');
+            if sum(~isnan(noNanDistF))>0
+                layerAltsTempF=layerAltsAdj(kk,timeInds)+noNanDistF;
+            end
+            
+            layerAltsAdj(kk,timeInds)=layerAltsTempF;
             % Mask
             maskBBalt=zeros(size(BBaltRaw));
             maskBBalt(isnan(BBaltRaw))=1;
