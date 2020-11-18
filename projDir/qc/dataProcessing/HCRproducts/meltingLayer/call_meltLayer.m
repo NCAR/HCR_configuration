@@ -38,7 +38,7 @@ caseStart=datetime(caseList.Var1,caseList.Var2,caseList.Var3, ...
 caseEnd=datetime(caseList.Var6,caseList.Var7,caseList.Var8, ...
     caseList.Var9,caseList.Var10,0);
 
-for aa=12:length(caseStart)
+for aa=1:length(caseStart)
     
     disp(['Case ',num2str(aa),' of ',num2str(length(caseStart))]);
     
@@ -87,7 +87,7 @@ for aa=12:length(caseStart)
     data.dbzMasked=data.DBZ;
     data.dbzMasked(data.FLAG>1)=nan;
     
-    [meltLayer iceLayer]=f_meltLayer(data,170);
+    [meltLayer iceLayer offset]=f_meltLayer(data,-170);
     elevenInds=find(meltLayer==11);
     twelveInds=find(meltLayer==12);
     thirteenInds=find(meltLayer==13);
@@ -211,24 +211,6 @@ for aa=12:length(caseStart)
     formatOut = 'yyyymmdd_HHMM';
     set(gcf,'PaperPositionMode','auto')
     print([figdir,'meltLayer',datestr(startTime,formatOut),'_to_',datestr(endTime,formatOut)],'-dpng','-r0');
-    
-    
-    %% Calculate difference between zero degree and detected melting layer
-    diffInd=[];
-    
-    for ii=1:size(meltLayer,2)
-        if data.elevation(ii)<-85
-            bbRay=meltLayer(:,ii);
-            foundInd=min(find(bbRay==1));
-            if ~isempty(foundInd)
-                zeroInd=min(find(bbRay==0));
-                diffInd=[diffInd foundInd-zeroInd];
-            end
-        end
-    end
-    
-    meanDiff=mean(diffInd);
-    meanMeters=meanDiff*(data.range(2)-data.range(1));
-    
-    disp(['Melting layer is on average ',num2str(meanDiff),' gates or ',num2str(meanMeters),' m below the zero degree level.'])
+        
+    disp(['Melting layer is on average ',num2str(offset),' m from the zero degree isotherm.'])
 end
