@@ -15,7 +15,7 @@ oneGate=data.range(2)-data.range(1);
 zeroAdjustGates=round(zeroAdjustMeters/oneGate);
 
 tempTemp=data.TEMP;
-tempTemp(1:16,:)=nan;
+%tempTemp(1:16,:)=nan;
 oddAngles=find(data.elevation>-70 & data.elevation<70);
 tempTemp(:,oddAngles)=nan;
 signTemp=sign(tempTemp);
@@ -521,7 +521,8 @@ for kk=1:size(layerAltsAdj,1)
         for ll=1:length(startInds)
             nanLength=endInds(ll)-startInds(ll);
             % Short stretches
-            if nanLength<transLength*2 & startInds(ll)~=1 & endInds(ll)~=length(maskBBalt)
+            if nanLength<transLength*2 & startInds(ll)~=1 & endInds(ll)~=length(maskBBalt) ...
+                    & abs(BBaltRaw(startInds(ll)-1)-BBaltRaw(endInds(ll)+1))<500
                 BBaltInterp(startInds(ll):endInds(ll))=interp1([startInds(ll)-1,endInds(ll)+1],...
                     [BBaltRaw(startInds(ll)-1),BBaltRaw(endInds(ll)+1)],startInds(ll):endInds(ll));
             else
@@ -630,6 +631,7 @@ BBfinishedOrigInds(:,tempDataY)=BBfinished;
 
 clear BBfinished;
 BBfinishedOrigInds(data.asl<0)=nan;
+BBfinishedOrigInds(1,:)=nan;
 
 %% Change assignments and create icing level
 % Below icing level=10
@@ -663,22 +665,32 @@ end
 iceLev(oddAngles)=nan;
 
 % Take care of areas with big jumps
-[change1 S1]=ischange(iceLev,'linear','Threshold',1000000);
+%[change1 S1]=ischange(iceLev,'linear','Threshold',1000000);
+iceLevDiff=iceLev;
+iceLevDiff=fillmissing(iceLevDiff,'next');
+diff1=diff(iceLevDiff);
+change1=zeros(size(iceLev));
+change1(abs(diff1)>70)=1;
+
 changeInds=find(change1==1);
 changeStart=[1 changeInds];
 changeEnd=[changeInds+1 length(iceLev)];
 
 iceLevTest=iceLev;
 
-currentLev=median(iceLev(max([changeStart(1), changeEnd(1)-200]):changeEnd(1)),'omitnan');
+iceShort1=iceLev(changeStart(1):changeEnd(1));
+iceShort1(isnan(iceShort1))=[];
+currentLev=median(iceShort1(max([1, length(iceShort1)-200]):end),'omitnan');
 
 for ii=1:length(changeStart)
-    changeLength=length(find(~isnan(iceLev(changeStart(ii):changeEnd(ii)))));
-    newLev=median(iceLev(changeStart(ii):changeEnd(ii)),'omitnan');
-    if changeLength<2000 & abs(newLev-currentLev)>100
+    iceShort=iceLev(changeStart(ii):changeEnd(ii));
+    iceShort(isnan(iceShort))=[];
+    changeLength=length(iceShort);
+    newLev=median(iceShort(1:min([200,length(iceShort)])),'omitnan');
+    if changeLength<1000 & abs(newLev-currentLev)>100
         iceLevTest(changeStart(ii):changeEnd(ii))=nan;
     else
-        currentLev=median(iceLev(max([changeStart(ii),changeEnd(ii)-200]):changeEnd(ii)),'omitnan');;
+        currentLev=median(iceShort(max([1, length(iceShort)-200]):end),'omitnan');
     end
 end
 

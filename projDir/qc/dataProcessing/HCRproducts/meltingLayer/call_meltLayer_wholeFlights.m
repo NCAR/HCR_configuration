@@ -32,10 +32,10 @@ infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_
 
 caseList = table2array(readtable(infile));
 
-zeroAdjustIn=-100;
+zeroAdjustIn=-157;
 zeroAdjust=zeroAdjustIn;
 
-for aa=13:size(caseList,1)
+for aa=12:size(caseList,1)
     disp(['Flight ',num2str(aa)]);
     disp('Loading HCR data.')
     disp(['Starting at ',datestr(datetime('now'),'yyyy-mm-dd HH:MM')]);
@@ -44,7 +44,7 @@ for aa=13:size(caseList,1)
         ylimits indir outdir caseList zeroAdjust zeroAdjustIn aa saveOffset
     
     if aa==1
-        OffsetM=nan(size(caseList,1),1)
+        OffsetM=nan(size(caseList,1),1);
         FlightNames=table('Size',[size(caseList,1) 1],'VariableTypes',"string");
         for ii=1:size(caseList,1)
             FlightNames.Var1(ii)=['Flight ',num2str(ii)];
@@ -156,21 +156,27 @@ for aa=13:size(caseList,1)
     sub1=surf(newTime,newASL./1000,newDBZ,'edgecolor','none');
     view(2);
     sub1=colMapDBZ(sub1);
+    scatter(timeMat(twentyoneInds),data.asl(twentyoneInds)./1000,10,...
+        'MarkerEdgeColor',[0.7 0.7 0.7],'MarkerFaceColor',[0.7 0.7 0.7]);    
     scatter(timeMat(elevenInds),data.asl(elevenInds)./1000,10,'k','filled');
-    scatter(timeMat(twelveInds),data.asl(twelveInds)./1000,10,'b','filled');
-    scatter(timeMat(thirteenInds),data.asl(thirteenInds)./1000,10,'c','filled');
+           
+    scatter(timeMat(twentyfourInds),data.asl(twentyfourInds)./1000,10,...
+        'MarkerEdgeColor',[0.45 0.76 0.42],'MarkerFaceColor',[0.45 0.76 0.42]);
+    scatter(timeMat(twentythreeInds),data.asl(twentythreeInds)./1000,10,...
+        'MarkerEdgeColor',[0.7 0.8 0.87],'MarkerFaceColor',[0.7 0.8 0.87]);
+    scatter(timeMat(twentytwoInds),data.asl(twentytwoInds)./1000,10,...
+        'MarkerEdgeColor',[0.17 0.45 0.7],'MarkerFaceColor',[0.17 0.45 0.7]);
+        
     scatter(timeMat(fourteenInds),data.asl(fourteenInds)./1000,10,'g','filled');
+    scatter(timeMat(thirteenInds),data.asl(thirteenInds)./1000,10,'c','filled');
+    scatter(timeMat(twelveInds),data.asl(twelveInds)./1000,10,'b','filled');
     
-    scatter(timeMat(twentyoneInds),data.asl(twentyoneInds)./1000,10,'k','filled');
-    scatter(timeMat(twentytwoInds),data.asl(twentytwoInds)./1000,10,'b','filled');
-    scatter(timeMat(twentythreeInds),data.asl(twentythreeInds)./1000,10,'c','filled');
-    scatter(timeMat(twentyfourInds),data.asl(twentyfourInds)./1000,10,'g','filled');
     ax = gca;
     ax.SortMethod = 'childorder';
     ylim(ylimits);
     ylabel('Altitude (km)');
     xlim([data.time(1),data.time(end)]);
-    title('Reflectivity and melting layer')
+    title(['Flight ',num2str(aa),': Reflectivity and melting layer'])
     grid on
     set(gca,'xticklabel',[])
     ax1.Position=[0.06 0.765 0.87 0.21];
@@ -180,15 +186,20 @@ for aa=13:size(caseList,1)
     sub1=surf(newTime,newASL./1000,newFindMelt,'edgecolor','none');
     ax2.Colormap=([1 0 1;1 1 0]);
     view(2);
+    scatter(timeMat(twentyoneInds),data.asl(twentyoneInds)./1000,10,...
+        'MarkerEdgeColor',[0.7 0.7 0.7],'MarkerFaceColor',[0.7 0.7 0.7]);    
     scatter(timeMat(elevenInds),data.asl(elevenInds)./1000,10,'k','filled');
-    scatter(timeMat(twelveInds),data.asl(twelveInds)./1000,10,'b','filled');
-    scatter(timeMat(thirteenInds),data.asl(thirteenInds)./1000,10,'c','filled');
+           
+    scatter(timeMat(twentyfourInds),data.asl(twentyfourInds)./1000,10,...
+        'MarkerEdgeColor',[0.45 0.76 0.42],'MarkerFaceColor',[0.45 0.76 0.42]);
+    scatter(timeMat(twentythreeInds),data.asl(twentythreeInds)./1000,10,...
+        'MarkerEdgeColor',[0.7 0.8 0.87],'MarkerFaceColor',[0.7 0.8 0.87]);
+    scatter(timeMat(twentytwoInds),data.asl(twentytwoInds)./1000,10,...
+        'MarkerEdgeColor',[0.17 0.45 0.7],'MarkerFaceColor',[0.17 0.45 0.7]);
+        
     scatter(timeMat(fourteenInds),data.asl(fourteenInds)./1000,10,'g','filled');
-    
-    scatter(timeMat(twentyoneInds),data.asl(twentyoneInds)./1000,10,'k','filled');
-    scatter(timeMat(twentytwoInds),data.asl(twentytwoInds)./1000,10,'b','filled');
-    scatter(timeMat(twentythreeInds),data.asl(twentythreeInds)./1000,10,'c','filled');
-    scatter(timeMat(twentyfourInds),data.asl(twentyfourInds)./1000,10,'g','filled');
+    scatter(timeMat(thirteenInds),data.asl(thirteenInds)./1000,10,'c','filled');
+    scatter(timeMat(twelveInds),data.asl(twelveInds)./1000,10,'b','filled');
     
     plot(data.time,iceLayer./1000,'linewidth',1,'color',[0.6 0.6 0.6]);
     ax = gca;
@@ -253,4 +264,22 @@ for aa=13:size(caseList,1)
     if saveOffset
         writetable(offset,[outdir,whichModel,'.offset.',project,'.txt'],'delimiter',' ');
     end
+end
+
+%% Calculate and save mean offset
+
+meanOffset=mean(offset.OffsetM,'omitnan');
+stdOffset=std(offset.OffsetM,'omitnan');
+disp(['Offset over all flights: ',num2str(meanOffset),' +/- ',num2str(stdOffset),' m']);
+
+offset=cat(1,offset,offset(1,:));
+offset(end,1)={'Mean'};
+offset.OffsetM(end)=meanOffset;
+
+offset=cat(1,offset,offset(1,:));
+offset(end,1)={'StDev'};
+offset.OffsetM(end)=stdOffset;
+
+if saveOffset
+    writetable(offset,[outdir,whichModel,'.offset.',project,'.txt'],'delimiter',' ');
 end

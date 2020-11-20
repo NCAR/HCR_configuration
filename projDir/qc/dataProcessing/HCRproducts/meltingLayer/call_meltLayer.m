@@ -172,7 +172,7 @@ for aa=1:length(caseStart)
     ylim(ylimits);
     ylabel('Altitude (km)');
     xlim([data.time(1),data.time(end)]);
-    title('Reflectivity and melting layer')
+    title('Melting layer')
     grid on
     set(gca,'xticklabel',[])
     ax2.Position=[0.06 0.525 0.87 0.21];

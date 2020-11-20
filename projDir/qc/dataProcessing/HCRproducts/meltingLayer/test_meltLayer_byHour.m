@@ -5,12 +5,12 @@ close all;
 
 project='socrates'; %socrates, aristo, cset
 quality='qc2'; %field, qc1, or qc2
-freqData='combined'; % 10hz, 100hz, 2hz, or combined
+freqData='10hz'; % 10hz, 100hz, 2hz, or combined
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
 % figdir=['/scr/snow1/rsfdata/projects/otrec/hcr/qc2/cfradial/final2/10hz/plots/testHourly/'];
-figdir='/home/romatsch/plots/HCR/meltingLayer/hourly/socrates/combined/';
+figdir='/home/romatsch/plots/HCR/meltingLayer/hourly/socrates/10hz/';
 
 if ~exist(figdir, 'dir')
     mkdir(figdir)
@@ -19,13 +19,13 @@ end
 ylimits=[-0.2 5];
 
 %indir=HCRdir(project,quality,freqData);
-indir='/run/media/romatsch/RSF0006/rsf/meltingLayer/socrates/combined/';
+indir='/run/media/romatsch/RSF0006/rsf/meltingLayer/socrates/10hz/';
 
 infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_',project,'_data.txt'];
 
 caseList = table2array(readtable(infile));
 
-for aa=1:size(caseList,1)
+for aa=2:size(caseList,1)
     disp(['Flight ',num2str(aa)]);
     
     startTime=datetime(caseList(aa,1:6));
@@ -52,7 +52,9 @@ for aa=1:size(caseList,1)
             data.LDR=[];
             data.VEL_CORR=[];
         end
-        data.FREEZING_LEVEL=[];
+        data.MELTING_LAYER=[];
+        data.ICING_LEVEL=[];
+        data.FLAG=[];
         
         dataVars=fieldnames(data);
         
@@ -91,75 +93,138 @@ for aa=1:size(caseList,1)
         
         %% Get indices
         
-        zeroInds=find(data.FREEZING_LEVEL==0);
-        oneInds=find(data.FREEZING_LEVEL==1);
-        twoInds=find(data.FREEZING_LEVEL==2);
-        threeInds=find(data.FREEZING_LEVEL==3);
+        elevenInds=find(data.MELTING_LAYER==11);
+        twelveInds=find(data.MELTING_LAYER==12);
+        thirteenInds=find(data.MELTING_LAYER==13);
+        fourteenInds=find(data.MELTING_LAYER==14);
         
-        timeMat=repmat(data.time,size(data.DBZ,1),1);
+        twentyoneInds=find(data.MELTING_LAYER==21);
+        twentytwoInds=find(data.MELTING_LAYER==22);
+        twentythreeInds=find(data.MELTING_LAYER==23);
+        twentyfourInds=find(data.MELTING_LAYER==24);
         
         %% Plot
+        
+        timeMat=repmat(data.time,size(data.LDR,1),1);
+        dbzMasked=data.DBZ;
+        dbzMasked(data.FLAG>1)=nan;
+        ldrMasked=data.LDR;
+        ldrMasked(data.FLAG>1)=nan;
+        velMasked=data.VEL_CORR;
+        velMasked(data.FLAG>1)=nan;
+        
         close all
         
-        disp('Plotting ...');
+        if etime(datevec(endTime),datevec(startTime))<=900
+            newInds=1:1:length(data.time);
+        elseif etime(datevec(endTime),datevec(startTime))<=3600
+            newInds=1:10:length(data.time);
+        else
+            newInds=1:100:length(data.time);
+        end
         
         % Resample for plotting
-        resolSecs=seconds(median(diff(data.time)));
-        if resolSecs<0.2
-            newInds=1:20:length(data.time);
-        else
-            newInds=1:4:length(data.time);
-        end
-        newDBZ=data.DBZ(:,newInds);
-        newLDR=data.LDR(:,newInds);
-        newVEL=data.VEL_CORR(:,newInds);
+        newDBZ=dbzMasked(:,newInds);
+        newLDR=ldrMasked(:,newInds);
+        newVEL=velMasked(:,newInds);
         newASL=data.asl(:,newInds);
+        newFindMelt=data.MELTING_LAYER(:,newInds);
         newTime=data.time(newInds);
         
-        fig3=figure('DefaultAxesFontSize',11,'position',[100,100,1500,1000]);
+        fig1=figure('DefaultAxesFontSize',11,'position',[100,1300,1200,920]);
         
-        s1=subplot(3,1,1);
+        ax1=subplot(4,1,1);
         hold on;
         sub1=surf(newTime,newASL./1000,newDBZ,'edgecolor','none');
         view(2);
         sub1=colMapDBZ(sub1);
-        colIndsAll=1:length(data.time);
-        scatter(timeMat(zeroInds),data.asl(zeroInds)./1000,10,'k','filled');
-        scatter(timeMat(oneInds),data.asl(oneInds)./1000,10,'b','filled');
-        scatter(timeMat(twoInds),data.asl(twoInds)./1000,10,'c','filled');
-        scatter(timeMat(threeInds),data.asl(threeInds)./1000,10,'g','filled');
+        scatter(timeMat(twentyoneInds),data.asl(twentyoneInds)./1000,10,'k','filled');
+        scatter(timeMat(elevenInds),data.asl(elevenInds)./1000,10,...
+            'MarkerEdgeColor',[0.7 0.7 0.7],'MarkerFaceColor',[0.7 0.7 0.7]);
+        
+        scatter(timeMat(twentyfourInds),data.asl(twentyfourInds)./1000,10,...
+            'MarkerEdgeColor',[0.45 0.76 0.42],'MarkerFaceColor',[0.45 0.76 0.42]);
+        scatter(timeMat(twentythreeInds),data.asl(twentythreeInds)./1000,10,...
+            'MarkerEdgeColor',[0.7 0.8 0.87],'MarkerFaceColor',[0.7 0.8 0.87]);
+        scatter(timeMat(twentytwoInds),data.asl(twentytwoInds)./1000,10,...
+            'MarkerEdgeColor',[0.17 0.45 0.7],'MarkerFaceColor',[0.17 0.45 0.7]);
+        
+        scatter(timeMat(fourteenInds),data.asl(fourteenInds)./1000,10,'g','filled');
+        scatter(timeMat(thirteenInds),data.asl(thirteenInds)./1000,10,'c','filled');
+        scatter(timeMat(twelveInds),data.asl(twelveInds)./1000,10,'b','filled');
+        
         ax = gca;
         ax.SortMethod = 'childorder';
         ylim(ylimits);
         ylabel('Altitude (km)');
         xlim([data.time(1),data.time(end)]);
-        title({['Flight ',num2str(aa),', ',project,', ',...
-            datestr(data.time(1),'HH:MM'),' to ',datestr(data.time(end),'HH:MM')];['DBZ and freezing level']});
+        title(['Flight ',num2str(aa),': Reflectivity and melting layer'])
         grid on
+        set(gca,'xticklabel',[])
+        ax1.Position=[0.06 0.765 0.87 0.21];
         
-        s2=subplot(3,1,2);
+        ax2=subplot(4,1,2);
         hold on;
-        sub2=surf(newTime,newASL./1000,newLDR,'edgecolor','none');
+        sub1=surf(newTime,newASL./1000,newFindMelt,'edgecolor','none');
+        ax2.Colormap=([1 0 1;1 1 0]);
         view(2);
+        scatter(timeMat(twentyoneInds),data.asl(twentyoneInds)./1000,10,'k','filled');
+        scatter(timeMat(elevenInds),data.asl(elevenInds)./1000,10,...
+            'MarkerEdgeColor',[0.7 0.7 0.7],'MarkerFaceColor',[0.7 0.7 0.7]);
+        
+        scatter(timeMat(twentyfourInds),data.asl(twentyfourInds)./1000,10,...
+            'MarkerEdgeColor',[0.45 0.76 0.42],'MarkerFaceColor',[0.45 0.76 0.42]);
+        scatter(timeMat(twentythreeInds),data.asl(twentythreeInds)./1000,10,...
+            'MarkerEdgeColor',[0.7 0.8 0.87],'MarkerFaceColor',[0.7 0.8 0.87]);
+        scatter(timeMat(twentytwoInds),data.asl(twentytwoInds)./1000,10,...
+            'MarkerEdgeColor',[0.17 0.45 0.7],'MarkerFaceColor',[0.17 0.45 0.7]);
+        
+        scatter(timeMat(fourteenInds),data.asl(fourteenInds)./1000,10,'g','filled');
+        scatter(timeMat(thirteenInds),data.asl(thirteenInds)./1000,10,'c','filled');
+        scatter(timeMat(twelveInds),data.asl(twelveInds)./1000,10,'b','filled');
+        
+        plot(data.time,data.ICING_LEVEL./1000,'linewidth',1,'color',[0.6 0.6 0.6]);
+        ax = gca;
+        ax.SortMethod = 'childorder';
+        ylim(ylimits);
+        ylabel('Altitude (km)');
+        xlim([data.time(1),data.time(end)]);
+        title('Reflectivity and melting layer')
+        grid on
+        set(gca,'xticklabel',[])
+        ax2.Position=[0.06 0.525 0.87 0.21];
+        
+        
+        %%%%%%%%%%%%%%%%%%%%%%%% LDR%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        ax3=subplot(4,1,3);
+        hold on;
+        sub3=surf(newTime,newASL./1000,newLDR,'edgecolor','none');
+        view(2);
+        caxis([-25 5]);
         colorbar
         ylim(ylimits);
         ylabel('Altitude (km)');
         xlim([data.time(1),data.time(end)]);
         title('LDR')
         grid on
+        set(gca,'xticklabel',[])
+        ax3.Position=[0.06 0.287 0.87 0.21];
         
-        s3=subplot(3,1,3);
+        ax4=subplot(4,1,4);
+        ax4.Colormap=jet;
         hold on;
-        sub2=surf(newTime,newASL./1000,newVEL,'edgecolor','none');
+        sub3=surf(newTime,newASL./1000,newVEL,'edgecolor','none');
         view(2);
-        s3.Colormap=jet;
-        colorbar
         caxis([-5 5]);
+        colorbar
         ylim(ylimits);
         ylabel('Altitude (km)');
         xlim([data.time(1),data.time(end)]);
         title('VEL')
         grid on
+        ax4.Position=[0.06 0.05 0.87 0.21];
+        
+        linkaxes([ax1 ax2 ax3 ax4],'xy');
         
         formatOut = 'yyyymmdd_HHMM';
         set(gcf,'PaperPositionMode','auto')
