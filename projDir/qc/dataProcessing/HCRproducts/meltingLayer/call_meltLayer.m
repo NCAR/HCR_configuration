@@ -58,8 +58,6 @@ for aa=1:length(caseStart)
     data.WIDTH=[];
     data.FLAG=[];
     data.TOPO=[];
-    data.pitch=[];
-    data.roll=[];
     
     dataVars=fieldnames(data);
     
@@ -211,6 +209,8 @@ for aa=1:length(caseStart)
     formatOut = 'yyyymmdd_HHMM';
     set(gcf,'PaperPositionMode','auto')
     print([figdir,'meltLayer',datestr(startTime,formatOut),'_to_',datestr(endTime,formatOut)],'-dpng','-r0');
-        
-    disp(['Melting layer is on average ',num2str(offset),' m from the zero degree isotherm.'])
+    
+    if ~isempty(offset)
+        disp(['Melting layer is on average ',num2str(offset),' m from the zero degree isotherm.'])
+    end
 end

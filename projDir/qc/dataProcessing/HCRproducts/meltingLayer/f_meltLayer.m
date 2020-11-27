@@ -135,13 +135,10 @@ tempFlag=data.FLAG(:,tempDataY);
 %data=rmfield(data,'FLAG');
 LDRdata(tempFlag>1)=nan;
 LDRdata(LDRdata<-16 | LDRdata>-7)=nan;
-%tempRange=data.range(:,tempDataY);
-%LDRdata(tempRange<150)=nan;
 LDRdata(1:20,:)=nan;
 
 VELdata=data.VEL_CORR(:,tempDataY);
 VELdata(tempFlag>1)=nan;
-%VELdata(tempRange<150)=nan;
 VELdata(1:20,:)=nan;
 
 clear tempFlag
@@ -156,6 +153,16 @@ blMask(tempDBZ<-18 & tempWIDTH>1)=1;
 
 clear tempWIDTH tempDBZ
 
+% Remove small areas
+%blMask(:,find(elevTemp<0))=1;
+blMask=bwareaopen(blMask,10);
+
+% Fill holes
+blMask=imfill(blMask,'holes');
+
+% Only when scanning up
+blMask(:,find(elevTemp<0))=0;
+
 % Only within right altitude
 rightAlt=(data.altitude(tempDataY)-data.TOPO(tempDataY))*2;
 
@@ -165,19 +172,8 @@ blMask(data.asl(:,tempDataY)<(altMat-600))=0;
 % Upper limit
 blMask(data.asl(:,tempDataY)>(altMat+600))=0;
 
-% Remove small areas
-blMask=bwareaopen(blMask,10);
-
-% Fill holes
-blMask=imfill(blMask,'holes');
-
-% Only when scanning up
-blMask(:,find(elevTemp<0))=0;
-
 LDRdata(blMask==1)=nan;
 VELdata(blMask==1)=nan;
-
-% Remove data that is in beween backlobe data
 
 clear blMask
 
@@ -661,12 +657,26 @@ for ii=1:size(BBfinishedOrigInds,2)
     end
 end
 
+% Count number of zero deg and melt layers
+
+numZeroDeg=sum(BBfinishedOrigInds==0,1);
+numOther=sum(BBfinishedOrigInds>0,1);
+
+diffNum=numZeroDeg-numOther;
+
 % Remove data with odd angles
 iceLev(oddAngles)=nan;
 
 % Take care of areas with big jumps
 %[change1 S1]=ischange(iceLev,'linear','Threshold',1000000);
+
+% Remove outliers
+iceLevMed=movmedian(iceLev,10,'includenan');
+iceLevMed(isnan(iceLev))=nan;
+iceLev(abs(iceLevMed-iceLev)>100)=nan;
+
 iceLevDiff=iceLev;
+
 iceLevDiff=fillmissing(iceLevDiff,'next');
 diff1=diff(iceLevDiff);
 change1=zeros(size(iceLev));
@@ -687,7 +697,11 @@ for ii=1:length(changeStart)
     iceShort(isnan(iceShort))=[];
     changeLength=length(iceShort);
     newLev=median(iceShort(1:min([200,length(iceShort)])),'omitnan');
-    if changeLength<1000 & abs(newLev-currentLev)>100
+    
+    moreNum=diffNum(changeStart(ii):changeEnd(ii));
+    sumMoreNum=length(find(moreNum>0));
+    
+    if (changeLength<1000 & abs(newLev-currentLev)>100) | (changeLength<5000 & sumMoreNum>50 & abs(newLev-currentLev)>100)
         iceLevTest(changeStart(ii):changeEnd(ii))=nan;
     else
         currentLev=median(iceShort(max([1, length(iceShort)-200]):end),'omitnan');
