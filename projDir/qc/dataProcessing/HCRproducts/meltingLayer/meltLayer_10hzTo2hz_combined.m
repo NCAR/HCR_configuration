@@ -42,6 +42,7 @@ for ii=1:size(caseList,1)
     disp('Loading 10hz data ...');
     
     model.meltLayer=[];
+    model.iceLevel=[];
     
     model=read_model(model,modeldir,startTime,endTime);
         
@@ -74,10 +75,13 @@ for ii=1:size(caseList,1)
     newMelt=nan(size(model.meltLayer,1),length(newTime));
     
     % Create matrices with only zero flags and all others
-    only0=meltLong;
-    only0(only0~=0)=nan;
-    no0=meltLong;
-    no0(no0==0)=nan;
+    onlyLines=meltLong;
+    onlyLines(onlyLines==10 | onlyLines==20)=nan;
+    
+    only0=onlyLines;
+    only0(only0~=11 & only0~=21)=nan;
+    no0=onlyLines;
+    no0(no0==11 | no0==21)=nan;
     no0(1:3,:)=nan;
     no0(end-3:end,:)=nan;
     
@@ -105,7 +109,8 @@ for ii=1:size(caseList,1)
             
             for ll=1:connPixOnly0.NumObjects
                 rangePix=round(mean(connPixOnly0.PixelIdxList{ll}));
-                newMelt(rangePix,kk)=0;
+                %newMelt(rangePix,kk)=0;
+                newMelt(rangePix,kk)=min(only0hor(connPixOnly0.PixelIdxList{ll},timeIndCol));
             end
             
             oneColNo0=no0hor(:,timeIndCol);
@@ -137,8 +142,11 @@ for ii=1:size(caseList,1)
         end
     end
     
-    %% Remove data next to gaps
+    clear only0 no0 only0hor onlyLines no0hor
+    
     sumMelt=sum(~isnan(newMelt),1);
+    
+    %% Remove data next to gaps
         
     sumMask=zeros(size(sumMelt));
     sumMask(sumMelt==0)=1;
@@ -162,19 +170,45 @@ for ii=1:size(caseList,1)
     
     newMelt(:,find(sumMelt>10))=nan;
     
+    %% Add in above and below data and icing level
+    [C,ia1,ib1] = intersect(newTime,model.time);
+    
+    aBelow=model.meltLayer;
+    aBelow(aBelow~=10 & aBelow~=20)=nan;
+    
+    newIce=nan(size(newTime));
+    
+    for jj=1:length(ib1)        
+        newMeltCol=newMelt(:,ia1(jj));
+        newMeltCol(isnan(newMeltCol))=aBelow(isnan(newMeltCol),ib1(jj));
+        newMelt(:,ia1(jj))=newMeltCol;
+        
+        newIce(ia1(jj))=model.iceLevel(ib1(jj));
+    end
+
     %% Prepare for plot
     
     disp('Plotting ...');
     
-    zeroIndsH=find(model.meltLayer==0);
-    oneIndsH=find(model.meltLayer==1);
-    twoIndsH=find(model.meltLayer==2);
-    threeIndsH=find(model.meltLayer==3);
+    elevenIndsH=find(model.meltLayer==11);
+    twelveIndsH=find(model.meltLayer==12);
+    thirteenIndsH=find(model.meltLayer==13);
+    fourteenIndsH=find(model.meltLayer==14);
     
-    zeroIndsL=find(newMelt==0);
-    oneIndsL=find(newMelt==1);
-    twoIndsL=find(newMelt==2);
-    threeIndsL=find(newMelt==3);
+    twentyoneIndsH=find(model.meltLayer==21);
+    twentytwoIndsH=find(model.meltLayer==22);
+    twentythreeIndsH=find(model.meltLayer==23);
+    twentyfourIndsH=find(model.meltLayer==24);
+    
+    elevenIndsL=find(newMelt==11);
+    twelveIndsL=find(newMelt==12);
+    thirteenIndsL=find(newMelt==13);
+    fourteenIndsL=find(newMelt==14);
+    
+    twentyoneIndsL=find(newMelt==21);
+    twentytwoIndsL=find(newMelt==22);
+    twentythreeIndsL=find(newMelt==23);
+    twentyfourIndsL=find(newMelt==24);
     
     timeMatHigh=repmat(model.time,size(model.meltLayer,1),1);
     timeMatLow=repmat(newTime,size(newMelt,1),1);
@@ -183,42 +217,91 @@ for ii=1:size(caseList,1)
     pixMatHigh=repmat(pixVec',1,size(model.meltLayer,2));
     pixMatLow=repmat(pixVec',1,size(newMelt,2));
     
+    newIndsH=1:100:length(model.time);
+    newMeltLayerH=model.meltLayer(:,newIndsH);
+    newPixMatHigh=pixMatHigh(:,newIndsH);
+    newTimeMatHigh=timeMatHigh(:,newIndsH);
+    
+    newIndsL=1:10:length(newTime);
+    newMeltLayerL=newMelt(:,newIndsL);
+    newPixMatLow=pixMatLow(:,newIndsL);
+    newTimeMatLow=timeMatLow(:,newIndsL);
+    
     %% Plot
     
     close all
     
-    fig1=figure('DefaultAxesFontSize',11,'position',[100,100,1500,1000]);
+    fig1=figure('DefaultAxesFontSize',11,'position',[100,100,1500,900]);
     
-    s1=subplot(2,1,1);
+    s1=subplot(3,1,1);
     hold on;
-    scatter(timeMatHigh(zeroIndsH),pixMatHigh(zeroIndsH),10,'k','filled');
-    scatter(timeMatHigh(oneIndsH),pixMatHigh(oneIndsH),10,'b','filled');
-    scatter(timeMatHigh(twoIndsH),pixMatHigh(twoIndsH),10,'c','filled');
-    scatter(timeMatHigh(threeIndsH),pixMatHigh(threeIndsH),10,'g','filled');
+    sub1=surf(newTimeMatHigh,newPixMatHigh,newMeltLayerH,'edgecolor','none');
+    s1.Colormap=([1 0 1;1 1 0]);
+    view(2);
+    scatter(timeMatHigh(twentyoneIndsH),pixMatHigh(twentyoneIndsH),10,'k','filled');
+    scatter(timeMatHigh(elevenIndsH),pixMatHigh(elevenIndsH),10,...
+        'MarkerEdgeColor',[0.7 0.7 0.7],'MarkerFaceColor',[0.7 0.7 0.7]);
+    
+    scatter(timeMatHigh(twentyfourIndsH),pixMatHigh(twentyfourIndsH),10,...
+        'MarkerEdgeColor',[0.45 0.76 0.42],'MarkerFaceColor',[0.45 0.76 0.42]);
+    scatter(timeMatHigh(twentythreeIndsH),pixMatHigh(twentythreeIndsH),10,...
+        'MarkerEdgeColor',[0.7 0.8 0.87],'MarkerFaceColor',[0.7 0.8 0.87]);
+    scatter(timeMatHigh(twentytwoIndsH),pixMatHigh(twentytwoIndsH),10,...
+        'MarkerEdgeColor',[0.17 0.45 0.7],'MarkerFaceColor',[0.17 0.45 0.7]);
+    
+    scatter(timeMatHigh(fourteenIndsH),pixMatHigh(fourteenIndsH),10,'g','filled');
+    scatter(timeMatHigh(thirteenIndsH),pixMatHigh(thirteenIndsH),10,'c','filled');
+    scatter(timeMatHigh(twelveIndsH),pixMatHigh(twelveIndsH),10,'b','filled');
+    
     ax = gca;
     ax.SortMethod = 'childorder';
+    ylim([0 size(timeMatHigh,1)]);
     ylabel('Altitude (km)');
-    xlim([newTime(1),newTime(end)]);
-    ylim([0 770]);
+    xlim([model.time(1),model.time(end)]);
     title({['Flight ',num2str(ii),', ',project,', ',...
         datestr(newTime(1),'HH:MM'),' to ',datestr(newTime(end),'HH:MM')];['10hz freezing level']});
     grid on
     
-    s1=subplot(2,1,2);
+    
+    s2=subplot(3,1,2);
     hold on;
-    scatter(timeMatLow(zeroIndsL),pixMatLow(zeroIndsL),10,'k','filled');
-    scatter(timeMatLow(oneIndsL),pixMatLow(oneIndsL),10,'b','filled');
-    scatter(timeMatLow(twoIndsL),pixMatLow(twoIndsL),10,'c','filled');
-    scatter(timeMatLow(threeIndsL),pixMatLow(threeIndsL),10,'g','filled');
+    sub2=surf(newTimeMatLow,newPixMatLow,newMeltLayerL,'edgecolor','none');
+    s2.Colormap=([1 0 1;1 1 0]);
+    view(2);
+    scatter(timeMatLow(twentyoneIndsL),pixMatLow(twentyoneIndsL),10,'k','filled');
+    scatter(timeMatLow(elevenIndsL),pixMatLow(elevenIndsL),10,...
+        'MarkerEdgeColor',[0.7 0.7 0.7],'MarkerFaceColor',[0.7 0.7 0.7]);
+    
+    scatter(timeMatLow(twentyfourIndsL),pixMatLow(twentyfourIndsL),10,...
+        'MarkerEdgeColor',[0.45 0.76 0.42],'MarkerFaceColor',[0.45 0.76 0.42]);
+    scatter(timeMatLow(twentythreeIndsL),pixMatLow(twentythreeIndsL),10,...
+        'MarkerEdgeColor',[0.7 0.8 0.87],'MarkerFaceColor',[0.7 0.8 0.87]);
+    scatter(timeMatLow(twentytwoIndsL),pixMatLow(twentytwoIndsL),10,...
+        'MarkerEdgeColor',[0.17 0.45 0.7],'MarkerFaceColor',[0.17 0.45 0.7]);
+    
+    scatter(timeMatLow(fourteenIndsL),pixMatLow(fourteenIndsL),10,'g','filled');
+    scatter(timeMatLow(thirteenIndsL),pixMatLow(thirteenIndsL),10,'c','filled');
+    scatter(timeMatLow(twelveIndsL),pixMatLow(twelveIndsL),10,'b','filled');
+    
     ax = gca;
     ax.SortMethod = 'childorder';
+    ylim([0 size(timeMatHigh,1)]);
     ylabel('Altitude (km)');
-    xlim([newTime(1),newTime(end)]);
-    ylim([0 770]);
+    xlim([model.time(1),model.time(end)]);
     title({['Flight ',num2str(ii),', ',project,', ',...
-        datestr(newTime(1),'HH:MM'),' to ',datestr(newTime(end),'HH:MM')];['2hz freezing level']});
+        datestr(newTime(1),'HH:MM'),' to ',datestr(newTime(end),'HH:MM')];['10hz freezing level']});
     grid on
-        
+    title('2hz freezing level');
+    grid on
+    
+    s3=subplot(3,1,3);
+    hold on;
+    plot(model.time,model.iceLevel,'-b','linewidth',3);
+    plot(newTime,newIce,'-r','linewidth',1.5);
+    xlim([model.time(1),model.time(end)]);
+    legend('10hz','2hz');
+    title('Icing level')
+    
     formatOut = 'yyyymmdd_HHMM';
     set(gcf,'PaperPositionMode','auto')
     print([figdir,'melt_Flight',num2str(ii)],'-dpng','-r0');
@@ -250,15 +333,10 @@ for ii=1:size(caseList,1)
         % Write output
         fillVal=-9999;
         
-%         modVars=fields(model);
-        
-%         for kk=1:length(modVars)
-%             if ~strcmp((modVars{kk}),'time')
-                modOut.meltLayer=newMelt(:,ib);
-                modOut.meltLayer(isnan(modOut.meltLayer))=fillVal;
-%                 modOut.(modVars{kk})=modOut.(modVars{kk});
-%             end
-%         end
+        modOut.meltLayer=newMelt(:,ib);
+        modOut.meltLayer(isnan(modOut.meltLayer))=fillVal;
+        modOut.iceLevel=newIce(ib);
+        modOut.iceLevel(isnan(modOut.iceLevel))=fillVal;
         
         % Open file
         ncid = netcdf.open(infile,'WRITE');
@@ -270,23 +348,32 @@ for ii=1:size(caseList,1)
         
         % Define variables
         netcdf.reDef(ncid);
-        varidML = netcdf.defVar(ncid,'FREEZING_LEVEL','NC_SHORT',[dimrange dimtime]);
+        varidML = netcdf.defVar(ncid,'MELTING_LAYER','NC_SHORT',[dimrange dimtime]);
         netcdf.defVarFill(ncid,varidML,false,fillVal);
+        varidIL = netcdf.defVar(ncid,'ICING_LEVEL','NC_FLOAT',[dimtime]);
+        netcdf.defVarFill(ncid,varidIL,false,fillVal);
         netcdf.endDef(ncid);
         
         % Write variables
         netcdf.putVar(ncid,varidML,modOut.meltLayer);
+        netcdf.putVar(ncid,varidIL,modOut.iceLevel);
         
         netcdf.close(ncid);
         
         % Write attributes
-        ncwriteatt(infile,'FREEZING_LEVEL','long_name','freezing_level_and_zero_degree_level');
-        ncwriteatt(infile,'FREEZING_LEVEL','standard_name','freezing_level_and_zero_degree_level');
-        ncwriteatt(infile,'FREEZING_LEVEL','units','');
-        ncwriteatt(infile,'FREEZING_LEVEL','flag_values',[0, 1, 2, 3]);
-        ncwriteatt(infile,'FREEZING_LEVEL','flag_meanings','ERA5_zero_degree_level freezing_level_detected freezing_level_interpolated freezing_level_estimated');
-        ncwriteatt(infile,'FREEZING_LEVEL','grid_mapping','grid_mapping');
-        ncwriteatt(infile,'FREEZING_LEVEL','coordinates','time range');
+        ncwriteatt(infile,'MELTING_LAYER','long_name','melting_layer_and_zero_degree_level');
+        ncwriteatt(infile,'MELTING_LAYER','standard_name','melting_layer_and_zero_degree_level');
+        ncwriteatt(infile,'MELTING_LAYER','units','');
+        ncwriteatt(infile,'MELTING_LAYER','flag_values',[10, 11, 12, 13, 14, 20, 21, 22, 23, 24]);
+        ncwriteatt(infile,'MELTING_LAYER','flag_meanings',...
+            'below_iceLev ERA5_zeroDeg_below_iceLev meltLayer_detected_below/at_iceLev meltLayer_interpolated_below/at_iceLev meltLayer_estimated_below/at_iceLev above_iceLev ERA5_zeroDeg_above_iceLev meltLayer_detected_above_iceLev meltLayer_interpolated_above_iceLev meltLayer_estimated_above_iceLev');
+        ncwriteatt(infile,'MELTING_LAYER','grid_mapping','grid_mapping');
+        ncwriteatt(infile,'MELTING_LAYER','coordinates','time range');
+        
+        ncwriteatt(infile,'ICING_LEVEL','long_name','icing_level');
+        ncwriteatt(infile,'ICING_LEVEL','standard_name','icing_level');
+        ncwriteatt(infile,'ICING_LEVEL','units','m');
+        ncwriteatt(infile,'ICING_LEVEL','coordinates','time');
         
     end
 end

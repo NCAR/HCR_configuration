@@ -762,4 +762,8 @@ BBfinishedOut(BBfinishedOrigInds==2 & BBfinishedOut==20)=23;
 % estimated
 BBfinishedOut(BBfinishedOrigInds==3 & BBfinishedOut==10)=14;
 BBfinishedOut(BBfinishedOrigInds==3 & BBfinishedOut==20)=24;
+
+if isempty(offset)
+    offset=nan;
+end
 end

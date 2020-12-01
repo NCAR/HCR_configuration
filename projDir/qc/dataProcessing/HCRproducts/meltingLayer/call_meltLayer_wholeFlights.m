@@ -3,7 +3,7 @@
 clear all;
 close all;
 
-project='socrates'; %socrates, aristo, cset
+project='cset'; %socrates, otrec, cset
 quality='qc2'; %field, qc1, or qc2
 freqData='10hz'; % 10hz, 100hz
 whichModel='era5';
@@ -11,9 +11,13 @@ whichModel='era5';
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
 %figdir=['/scr/snow1/rsfdata/projects/otrec/hcr/qc2/cfradial/final2/10hz/plots/'];
-figdir='/home/romatsch/plots/HCR/meltingLayer/flights/socrates/10hz/';
+figdir='/home/romatsch/plots/HCR/meltingLayer/flights/cset/10hz/';
 
 saveOffset=1;
+offsetIn=-168;
+% If no data is found within one flight, take mean of previous flight (0)
+% or mean over all flights (1) which is given as offsetIn above.
+prevOrTotOffset=1;
 
 if ~exist(figdir, 'dir')
     mkdir(figdir)
@@ -26,14 +30,13 @@ indir=HCRdirWFH(project,quality,freqData);
 
 [~,directories.modeldir]=modelDir(project,whichModel,freqData);
 %outdir=directories.modeldir;
-outdir='/run/media/romatsch/RSF0006/rsf/meltingLayer/socratesMat/';
+outdir='/run/media/romatsch/RSF0006/rsf/meltingLayer/csetMat/';
 
 infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_',project,'_data.txt'];
 
 caseList = table2array(readtable(infile));
 
-zeroAdjustIn=-157;
-zeroAdjust=zeroAdjustIn;
+zeroAdjust=offsetIn;
 
 for aa=1:size(caseList,1)
     disp(['Flight ',num2str(aa)]);
@@ -41,7 +44,7 @@ for aa=1:size(caseList,1)
     disp(['Starting at ',datestr(datetime('now'),'yyyy-mm-dd HH:MM')]);
     
     clearvars -except project quality freqData whichModel figdir ...
-        ylimits indir outdir caseList zeroAdjust zeroAdjustIn aa saveOffset
+        ylimits indir outdir caseList zeroAdjust zeroAdjustIn aa saveOffset prevOrTotOffset
     
     if aa==1
         OffsetM=nan(size(caseList,1),1);
@@ -54,7 +57,7 @@ for aa=1:size(caseList,1)
         offset.Properties.VariableNames{'Var1'}='Flight';
     else
         offset=readtable([outdir,whichModel,'.offset.',project,'.txt']);
-        if ~isnan(offset.OffsetM(aa-1))
+        if ~isnan(offset.OffsetM(aa-1)) & prevOrTotOffset==0
             zeroAdjust=offset.OffsetM(aa-1);
         end
     end
@@ -106,9 +109,7 @@ for aa=1:size(caseList,1)
     
     [meltLayer iceLayer offset.OffsetM(aa)]=f_meltLayer(data,zeroAdjust);
     
-    if isempty(offset.OffsetM(aa))
-        offset.OffsetM(aa)=nan;
-    else
+    if ~isnan(offset.OffsetM(aa)) & prevOrTotOffset==0
         zeroAdjust=offset.OffsetM(aa);
     end        
     
