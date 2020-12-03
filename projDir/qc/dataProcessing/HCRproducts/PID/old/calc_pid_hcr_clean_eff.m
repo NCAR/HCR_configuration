@@ -3,7 +3,7 @@ vel=abs(vel);
 %   Membership functions for particle detection
 % 1:Beta  2:Delta
 
-w=[40 15 10 10 25];%w=[30 15 15 20 20];
+w=[40 15 15 10 20];
 
 % pid_hcr
 %  1 no signal
@@ -32,8 +32,8 @@ result(1,:,:)=m(1,:,:)*w(1)+m(2,:,:)*w(2)+m(3,:,:)*w(3)...
 m=nan(5,size(dBZ,1),size(dBZ,2));
 m(1,:,:)= trapmf(dBZ,[-32,-30,-17,-15]); % cloud liquid
 m(2,:,:)=zmf(LDR,[-25, -27]);
-m(3,:,:)=trapmf(vel,[-1,0,0.2,0.5]);%m(3,:,:)=trapmf(vel,[-1,0,0.5,1]);
-m(4,:,:)=zmf(sigmav,[0.2, 0.1]);%m(4,:,:)=zmf(sigmav,[0.4, 0.3]);
+m(3,:,:)=trapmf(vel,[-1,0,0.5,1]);
+m(4,:,:)=zmf(sigmav,[0.4, 0.3]);
 m(5,:,:)=smf(temp,[272., 275.]);
 
 result(2,:,:)=m(1,:,:)*w(1)+m(2,:,:)*w(2)+m(3,:,:)*w(3)...
@@ -44,7 +44,7 @@ m=nan(5,size(dBZ,1),size(dBZ,2));
 m(1,:,:)=trapmf(dBZ,[-17,-14,5,8]);  % Drizzle
 m(2,:,:)=zmf(LDR,[-25, -27]);
 m(3,:,:)=trapmf(vel,[0,0.5,1,2]);
-m(4,:,:)=zmf(sigmav,[0.2, 0.1]);%m(4,:,:)=zmf(sigmav,[0.4, 0.3]);
+m(4,:,:)=zmf(sigmav,[0.4, 0.3]);
 m(5,:,:)=smf(temp,[246., 248.]);
 
 result(3,:,:)=m(1,:,:)*w(1)+m(2,:,:)*w(2)+m(3,:,:)*w(3)...
@@ -55,7 +55,7 @@ m=nan(5,size(dBZ,1),size(dBZ,2));
 m(1,:,:)=smf(dBZ,[3,5]);  % Rain
 m(2,:,:)= zmf(LDR,[-22, -27]);
 m(3,:,:)=trapmf(vel,[2,3,6,8]);
-m(4,:,:)= smf(sigmav,[0.2, 0.3]);%m(4,:,:)= smf(sigmav,[0.4, 0.5]);
+m(4,:,:)= smf(sigmav,[0.4, 0.5]);
 m(5,:,:)=smf(temp,[272., 275.]);
 
 result(4,:,:)=m(1,:,:)*w(1)+m(2,:,:)*w(2)+m(3,:,:)*w(3)...
@@ -65,8 +65,8 @@ result(4,:,:)=m(1,:,:)*w(1)+m(2,:,:)*w(2)+m(3,:,:)*w(3)...
 m=nan(5,size(dBZ,1),size(dBZ,2));
 m(1,:,:)=zmf(dBZ,[-14,-17]);   % SLW
 m(2,:,:)= zmf(LDR,[-25, -27]);
-m(3,:,:)=trapmf(vel,[-1,0,0.2,0.5]);%m(3,:,:)=trapmf(vel,[-1,0,1,2]);
-m(4,:,:)=zmf(sigmav,[0.2, 0.1]);%m(4,:,:)= zmf(sigmav,[0.4, 0.3]);
+m(3,:,:)=trapmf(vel,[-1,0,1,2]);
+m(4,:,:)= zmf(sigmav,[0.4, 0.3]);
 m(5,:,:)=zmf(temp,[273,271]);
 
 result(5,:,:)=m(1,:,:)*w(1)+m(2,:,:)*w(2)+m(3,:,:)*w(3)...
@@ -74,10 +74,10 @@ result(5,:,:)=m(1,:,:)*w(1)+m(2,:,:)*w(2)+m(3,:,:)*w(3)...
 
 %  Membership functions for ice
 m=nan(5,size(dBZ,1),size(dBZ,2));
-m(1,:,:)=trapmf(dBZ,[-32,-30,5,10]);%m(1,:,:)=trapmf(dBZ,[-25,-23,5,10]);  % Ice
-m(2,:,:)=trapmf(LDR,[-25, -22,-15,-12]);%m(2,:,:)=trapmf(LDR,[-25, -22,-20,-18]);
-m(3,:,:)=trapmf(vel,[-1,0,1,4]);%m(3,:,:)=trapmf(vel,[-1,0,1,2]);
-m(4,:,:)=zmf(sigmav,[0.7, 0.9]);%m(4,:,:)=zmf(sigmav,[0.2, 0.3]);
+m(1,:,:)=trapmf(dBZ,[-25,-20,5,10]);  % Ice
+m(2,:,:)=trapmf(LDR,[-25, -22,-20,-18]);
+m(3,:,:)=trapmf(vel,[-1,0,1,2]);
+m(4,:,:)=zmf(sigmav,[0.4, 0.3]);
 m(5,:,:)=zmf(temp,[273,271]);
 
 result(6,:,:)=m(1,:,:)*w(1)+m(2,:,:)*w(2)+m(3,:,:)*w(3)...
@@ -88,7 +88,7 @@ m=nan(5,size(dBZ,1),size(dBZ,2));
 m(1,:,:)=trapmf(dBZ,[10,12,18,20]); % Snow
 m(2,:,:)=trapmf(LDR,[-22,-18,-16, -14]);
 m(3,:,:)=trapmf(vel,[0.8,1.0,1.2,1.4]);
-m(4,:,:)= smf(sigmav,[0.2, 0.3]);%m(4,:,:)=smf(sigmav,[0.4, 0.5]);
+m(4,:,:)=smf(sigmav,[0.4, 0.5]);
 m(5,:,:)=zmf(temp,[273,271]);
 
 result(7,:,:)=m(1,:,:)*w(1)+m(2,:,:)*w(2)+m(3,:,:)*w(3)...
@@ -99,7 +99,7 @@ m=nan(5,size(dBZ,1),size(dBZ,2));
 m(1,:,:)=trapmf(dBZ,[-3,-1,10,15]); % wet snow/rimed ice
 m(2,:,:)=trapmf(LDR,[-20, -17,-8,-6]); % wet snow/rimed ice
 m(3,:,:)=trapmf(vel,[0.5,1.0,3,4]); % wet snow/rimed ice
-m(4,:,:)= smf(sigmav,[0.2, 0.3]); %m(4,:,:)=trapmf(sigmav,[0.3,0.4,0.6,0.7]); % wet snow/rimed ice% wet snow/rimed ice
+m(4,:,:)=trapmf(sigmav,[0.3,0.4,0.6,0.7]); % wet snow/rimed ice
 m(5,:,:)=trapmf(temp,[268,270,275,277]); % wet snow/rimed ice
 
 result(8,:,:)=m(1,:,:)*w(1)+m(2,:,:)*w(2)+m(3,:,:)*w(3)...
