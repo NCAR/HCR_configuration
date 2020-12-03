@@ -1,4 +1,4 @@
-function[classOut]=calc_pid_hsrl_clean_eff(Beta,Delta,temp)
+function[classOut]=calc_pid_hsrl_postProcess(Beta,Delta,temp)
 
 %   Membership functions for particle detection
 % 1:Beta  2:Delta
@@ -6,13 +6,13 @@ function[classOut]=calc_pid_hsrl_clean_eff(Beta,Delta,temp)
 w=[40 30 30];%w=[30 30 40];
 
 % pid_hsrl
-%  1   no signal
-%  2   cloud liquid
-%  3   Drizzle
-%  4   Aerosol1
-%  5   SLW
-%  6   Ice crystals
-%  7   Aerosol2
+%  1   no signal -> nan after final reclass
+%  2   cloud liquid -> 1 after final reclass
+%  3   Drizzle -> 2 after final reclass
+%  4   Aerosol1 -> 3 after final reclass
+%  5   SLW -> 4 after final reclass
+%  6   Ice crystals -> 5 after final reclass
+%  7   Aerosol2 -> 6 after final reclass
 
 result=nan(7,size(Beta,1),size(Beta,2));
 
@@ -88,4 +88,6 @@ for ii=1:7
     classOut(isnan(classOut) & testMat==1)=ii;
 end
 
+classOut(classOut==1)=nan;
+classOut=classOut-1;
 end

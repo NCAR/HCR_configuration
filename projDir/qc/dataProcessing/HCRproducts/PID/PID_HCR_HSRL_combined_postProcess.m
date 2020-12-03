@@ -81,18 +81,18 @@ for aa=1:length(caseStart)
         vol_depol=data.HSRL_Volume_Depolarization./(2-data.HSRL_Volume_Depolarization);
         lin_depol=vol_depol./(2-vol_depol);
         
-        pid_hsrl=calc_pid_hsrl_clean_eff(data.HSRL_Aerosol_Backscatter_Coefficient,lin_depol,data.temp);
+        pid_hsrl=calc_pid_hsrl_postProcess(data.HSRL_Aerosol_Backscatter_Coefficient,lin_depol,data.temp);
         pid_hsrl(isnan(data.HSRL_Aerosol_Backscatter_Coefficient))=nan;
-        pid_hsrl(isnan(pid_hsrl))=1;
         
+        pid_hsrl=coherenceFilter(pid_hsrl,7,0.7);
+          
         %% Calculate HCR without attenuation correction
         
         [pid_hcr]=calc_pid_hcr_postProcess(data.HCR_DBZ,data);
         pid_hcr(isnan(data.HCR_DBZ))=nan;
-        pid_hcr(isnan(pid_hcr))=1;
-        
+             
         % Combined from merging hcr and hsrl pid
-        pid_comb=combine_pid_hcr_hsrl_clean(pid_hcr,pid_hsrl);
+        pid_comb=combine_pid_hcr_hsrl_postProcess(pid_hcr,pid_hsrl);
         
 %         % Combined by using both data sets in one process
 %         pid_comb2=calc_pid_direct_clean_eff(data.HSRL_Aerosol_Backscatter_Coefficient,lin_depol,...
@@ -104,10 +104,9 @@ for aa=1:length(caseStart)
         Z_95_lin(data.HCR_DBZ < -200)=0.;
         
         % Mask out non liquid data
-        liqMeltInds=find(pid_comb==2 | pid_comb==3 | pid_comb==4 | pid_comb==5);
+        liqMeltInds=find(pid_comb==1 | pid_comb==2 | pid_comb==3 | pid_comb==4);
         Z_95_lin(liqMeltInds)=nan;
         
-        %DBZ_temp=data.HCR_DBZ;
         wt_coef=nan(size(data.HCR_DBZ));
         wt_exp=nan(size(data.HCR_DBZ));
         
@@ -134,19 +133,16 @@ for aa=1:length(caseStart)
         [pid_hcr_cor]=calc_pid_hcr_postProcess(dBZ_cor,data);
         pid_hcr_cor(isnan(dBZ_cor))=nan;
         
-        pid_hcr_corFilt=coherenceFilter(pid_hcr_cor,7,0.7);
-        
-        pid_hcr_cor(isnan(pid_hcr_cor))=1;
+        pid_hcr_cor=coherenceFilter(pid_hcr_cor,7,0.7);
         
         % Combined from merging hcr and hsrl pid
-        [pid_comb_cor which_pid]=combine_pid_hcr_hsrl_clean(pid_hcr_cor,pid_hsrl);
+        [pid_comb_cor which_pid]=combine_pid_hcr_hsrl_postProcess(pid_hcr_cor,pid_hsrl);
         
-        pid_comb_cor(pid_comb_cor==1)=nan;
         which_pid(isnan(pid_comb_cor))=nan;
         disagree_pid=zeros(size(pid_comb_cor));
         disagree_pid(find(pid_hcr_cor~=pid_hsrl))=1;
-        disagree_pid(find(pid_hcr_cor>1 & pid_hsrl==1))=2;
-        disagree_pid(find(pid_hcr_cor==1 & pid_hsrl>1))=3;
+        disagree_pid(find(~isnan(pid_hcr_cor) & isnan(pid_hsrl)))=2;
+        disagree_pid(find(isnan(pid_hcr_cor) & ~isnan(pid_hsrl)))=3;
         disagree_pid(isnan(pid_comb_cor))=nan;
         
         % Combined by using both data sets in one process
@@ -154,15 +150,15 @@ for aa=1:length(caseStart)
         %             dBZ_cor,data.HCR_LDR,data.HCR_VEL,data.HCR_WIDTH,data.temp);
         
         %% Scales and units
-        cscale_hsrl=[1,1,1;0,0,1.0;0,1,0;1,0.67,0;1,0,1;0,1,1;1,0.67,0];
-        cscale_hcr=[1,1,1; 0,0,1.0; 0,1,0.; 1,0,0; 1,0,1; 0,1,1; 1,1,0; 0.5,0,0];
-        cscale_comb=[1,1,1; 0,0,1; 0,1,0.; 1,0,0; 1,0,1; 0,1,1; 1,1,0; 0.5,0,0; 1,0.67,0];
+        cscale_hsrl=[0,0,1.0;0,1,0;1,0.67,0;1,0,1;0,1,1;1,0.67,0];
+        cscale_hcr=[0,0,1.0; 0,1,0.; 1,0,0; 1,0,1; 0,1,1; 1,1,0; 0.5,0,0];
+        cscale_comb=[0,0,1; 0,1,0.; 1,0,0; 1,0,1; 0,1,1; 1,1,0; 0.5,0,0; 1,0.67,0];
         
-        units_str_hsrl={'No signal','Cloud liquid','Drizzle',...
+        units_str_hsrl={'Cloud liquid','Drizzle',...
             'Aerosol1','SLW','Ice crystals','Aerosol2'};
-        units_str_hcr={'No signal','Cloud liquid','Drizzle',...
+        units_str_hcr={'Cloud liquid','Drizzle',...
             'Rain','SLW','Ice crystals','Snow','Wet snow/rimed ice'};
-        units_str_comb={'No signal','Cloud liquid','Drizzle','Rain',...
+        units_str_comb={'Cloud liquid','Drizzle','Rain',...
             'SLW','Ice crystals','Snow','Wet snow/rimed ice','Aerosols'};
         
         %% Plot PIDs
@@ -177,10 +173,10 @@ for aa=1:length(caseStart)
         view(2);
         ylim(ylimits);
         xlim([data.time(1),data.time(end)]);
-        caxis([.5 7.5]);
+        caxis([.5 6.5]);
         colormap(s1,cscale_hsrl);
         cb=colorbar;
-        cb.Ticks=1:7;
+        cb.Ticks=1:6;
         cb.TickLabels=units_str_hsrl;
         ylabel('Altitude (km)');
         title(['HSRL particle ID']);
@@ -190,10 +186,10 @@ for aa=1:length(caseStart)
         view(2);
         ylim(ylimits);
         xlim([data.time(1),data.time(end)]);
-        caxis([.5 8.5]);
+        caxis([.5 7.5]);
         colormap(s2,cscale_hcr);
         cb=colorbar;
-        cb.Ticks=1:8;
+        cb.Ticks=1:7;
         cb.TickLabels=units_str_hcr;
         ylabel('Altitude (km)');
         title(['HCR particle ID']);
@@ -203,10 +199,10 @@ for aa=1:length(caseStart)
         view(2);
         ylim(ylimits);
         xlim([data.time(1),data.time(end)]);
-        caxis([.5 9.5]);
+        caxis([.5 8.5]);
         colormap(s3,cscale_comb);
         cb=colorbar;
-        cb.Ticks=1:9;
+        cb.Ticks=1:8;
         cb.TickLabels=units_str_comb;
         ylabel('Altitude (km)');
         title(['Combined particle ID']);
@@ -224,10 +220,10 @@ for aa=1:length(caseStart)
             view(2);
             ylim(ylimits);
             xlim([data.time(1),data.time(end)]);
-            caxis([.5 9.5]);
+            caxis([.5 8.5]);
             colormap(s1,cscale_comb);
             cb=colorbar;
-            cb.Ticks=1:9;
+            cb.Ticks=1:8;
             cb.TickLabels=units_str_comb;
             ylabel('Altitude (km)');
             title(['Combined particle ID']);

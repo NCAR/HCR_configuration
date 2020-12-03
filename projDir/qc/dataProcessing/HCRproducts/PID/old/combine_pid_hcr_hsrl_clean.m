@@ -40,6 +40,11 @@ pid_comb(pid_hsrl==5)=5;
 which_pid(pid_hsrl==2)=1;
 which_pid(pid_hsrl==5)=1;
 
+% This is something Vivek put in in the latest version but it is strange so
+% I am not using it for now
+%pid_comb(pid_hsrl==3 & pid_hcr==1)=9;
+%pid_comb(pid_hsrl==2 & pid_hcr==1)=9;
+
 % Put HSRL ice in everywhere except HCR identified aggregates
 pid_comb(pid_hsrl==6)=6; % HSRL ice overrides HCR
 which_pid(pid_hsrl==6)=1;
