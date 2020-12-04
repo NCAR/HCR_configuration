@@ -40,10 +40,13 @@ pid_comb(pid_hsrl==4)=4;
 which_pid(pid_hsrl==1)=1;
 which_pid(pid_hsrl==4)=1;
 
-% This is something Vivek put in in the latest version but it is strange so
-% I am not using it for now
-%pid_comb(pid_hsrl==2 & isnan(pid_hcr)=8;
-%pid_comb(pid_hsrl==1 & isnan(pid_hcr))=8;
+% Vivek explained to me that HSRL PID misclassifies salt aerosol as a 
+% drizzle or liquid cloud and that HCR should detect all drizzle or liquid
+% clouds if there are any
+pid_comb(pid_hsrl==2 & isnan(pid_hcr))=8;
+pid_comb(pid_hsrl==1 & isnan(pid_hcr))=8;
+which_pid(pid_hsrl==2 & isnan(pid_hcr))=1;
+which_pid(pid_hsrl==1 & isnan(pid_hcr))=1;
 
 % Put HSRL ice in everywhere except HCR identified aggregates
 pid_comb(pid_hsrl==5)=5; % HSRL ice overrides HCR
