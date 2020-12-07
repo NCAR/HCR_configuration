@@ -33,6 +33,18 @@ end
 
 caseList = table2array(readtable(infile));
 
+% Make N by 2 matrix of fieldname + value type
+variable_names_types = [["time", "datetime"]; ...
+			["sondeAlt", "double"]; ...
+			["meltAltMeas", "double"]; ...
+			["meltAltInt", "double"]; ...
+			["meltAltEst", "double"]; ...
+			["zeroDegAlt", "double"]];
+% Make table using fieldnames & value types from above
+compAlts = table('Size',[0,size(variable_names_types,1)],... 
+	'VariableNames', variable_names_types(:,1),...
+	'VariableTypes', variable_names_types(:,2));
+
 for aa=1:size(caseList,1)
     disp(['Flight ',num2str(aa)]);
     
@@ -120,6 +132,46 @@ for aa=1:size(caseList,1)
         twentythreeInds=find(data.MELTING_LAYER==23);
         twentyfourInds=find(data.MELTING_LAYER==24);
         
+        %% Get melting layer alt and type
+        compAltsHourIn=array2table(nan(length(dropAlt),size(variable_names_types,1)-1),...
+            'VariableNames', variable_names_types(2:end,1));
+        compAltsHour=cat(2,array2table(dropTimes,'VariableNames',{'time'}),compAltsHourIn);
+        
+        for jj=1:length(dropAlt)
+            % Dropsonde altitude
+            absTemp=abs(dropT{jj});
+            alt1=dropAlt{jj};
+            zeroInd=find(absTemp==min(absTemp));
+            if absTemp(zeroInd(1))<1
+                compAltsHour.sondeAlt(jj)=alt1(zeroInd(1));
+            end
+            
+            % Melting layer altitudes
+            [minval sondeTimeInd]=min(abs(etime(datevec(data.time),datevec(dropTimes(jj)))));
+            altCol=data.asl(:,sondeTimeInd);
+            meltCol=data.MELTING_LAYER(:,sondeTimeInd);
+            iceAlt=data.ICING_LEVEL(sondeTimeInd);
+            % Melting layer alt and type
+            meltIndSonde=find(meltCol==12 | meltCol==13 | meltCol==14);
+            meltType=meltCol(meltIndSonde);
+            if ~isempty(meltType)
+                if meltCol(meltType==12)
+                    compAltsHour.meltAltMeas(jj)=min(altCol(meltIndSonde));
+                elseif meltCol(meltType==13)
+                    compAltsHour.meltAltInt(jj)=min(altCol(meltIndSonde));
+                else
+                    compAltsHour.meltAltEst(jj)=min(altCol(meltIndSonde));
+                end
+            end
+            % Zero degree alt
+            zeroIndSonde=find(meltCol==11 | meltCol==21);
+            if ~isempty(zeroIndSonde)
+                compAltsHour.zeroDegAlt(jj)=min(altCol(zeroIndSonde));
+            end
+        end
+        
+        compAlts=cat(1,compAlts,compAltsHour);
+        
         %% Plot
         
         timeMat=repmat(data.time,size(data.LDR,1),1);
@@ -200,3 +252,27 @@ for aa=1:size(caseList,1)
         startTime=endTime;
     end
 end
+
+writetable(compAlts,[figdir,project,'_meltLayer_dropsonde.txt'],'Delimiter',' ');
+
+%% Plot comparison scatter plot
+close all
+
+fig2=figure('DefaultAxesFontSize',11,'position',[100,1300,700,700]);
+
+hold on;
+scatter(compAlts.zeroDegAlt./1000,compAlts.sondeAlt./1000,30,'k','filled');
+scatter(compAlts.meltAltEst./1000,compAlts.sondeAlt./1000,30,'g','filled');
+scatter(compAlts.meltAltInt./1000,compAlts.sondeAlt./1000,30,'c','filled');
+scatter(compAlts.meltAltMeas./1000,compAlts.sondeAlt./1000,30,'b','filled');
+xlabel('HCR altitude (km)');
+ylabel('Dropsonde altitude (km)');
+% xlim([0 7]);
+% ylim([0 7]);
+title(['Melting layer altitude'])
+grid on
+axis equal
+
+formatOut = 'yyyymmdd_HHMM';
+set(gcf,'PaperPositionMode','auto')
+print([figdir,project,'_meltLayer_dropsonde.png'],'-dpng','-r0');
