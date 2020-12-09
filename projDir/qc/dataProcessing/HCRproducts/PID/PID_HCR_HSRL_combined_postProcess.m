@@ -9,12 +9,13 @@ project='socrates'; %socrates, aristo, cset
 quality='qc2'; %field, qc1, or qc2
 freqData='combined'; % 10hz, 100hz, 2hz, or combined
 
-figdir='/home/romatsch/plots/HCR/pid/postProcess/';
-
 ylimits=[0 3];
 
 plotComp=1; % 1 to plot comparison plot of HCR vs HSRL
 plotFields=1; % 1 to plot input fields
+whichFilter=0; % 0: no filter, 1: mode filter, 2: coherence filter
+
+figdir='/home/romatsch/plots/HCR/pid/noFilt/';
 
 %indir=HCRdir(project,quality,freqData);
 %indir=HCRdirWFH(project,quality,freqData);
@@ -84,7 +85,11 @@ for aa=1:length(caseStart)
         pid_hsrl=calc_pid_hsrl_postProcess(data.HSRL_Aerosol_Backscatter_Coefficient,lin_depol,data.temp);
         pid_hsrl(isnan(data.HSRL_Aerosol_Backscatter_Coefficient))=nan;
         
-        pid_hsrl=coherenceFilter(pid_hsrl,7,0.7);
+        if whichFilter==1
+            pid_hsrl=modeFilter(pid_hsrl,7,0.7);
+        elseif whichFilter==2
+            pid_hsrl=coherenceFilter(pid_hsrl,7,0.7);
+        end        
           
         %% Calculate HCR without attenuation correction
         
@@ -133,7 +138,11 @@ for aa=1:length(caseStart)
         [pid_hcr_cor]=calc_pid_hcr_postProcess(dBZ_cor,data);
         pid_hcr_cor(isnan(dBZ_cor))=nan;
         
-        pid_hcr_cor=coherenceFilter(pid_hcr_cor,7,0.7);
+        if whichFilter==1
+            pid_hcr_cor=modeFilter(pid_hcr_cor,7,0.7);
+        elseif whichFilter==2
+            pid_hcr_cor=coherenceFilter(pid_hcr_cor,7,0.7);
+        end
         
         % Combined from merging hcr and hsrl pid
         [pid_comb_cor which_pid]=combine_pid_hcr_hsrl_postProcess(pid_hcr_cor,pid_hsrl);

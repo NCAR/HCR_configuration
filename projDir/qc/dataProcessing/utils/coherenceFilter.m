@@ -1,17 +1,17 @@
-function pidFilt=coherenceFilter(pidIn,winSize,pixPerc);
+function fieldFilt=coherenceFilter(fieldIn,winSize,pixPerc);
 % (a) If more than 35 of 49 pixels are classified as clear, then the central pixel is set to clear. 
  %(b) If the central pixel is not set to clear and there are more than 7 of 49 pixels 
  % with the same type as the central pixel, it is left unchanged; 
  % otherwise, the central pixel is set to the classification type 
  % that is most plentiful in the 7 X 7 box.
  
- pidIn=single(pidIn);
- pidInVec=reshape(pidIn,[],1);
+ fieldIn=single(fieldIn);
+ pidInVec=reshape(fieldIn,[],1);
  
  %finalVec=nan(size(pidInVec));
  
  % Pad with nans
- pidPadded=padarray(pidIn,[floor(winSize/2) floor(winSize/2)],nan);
+ pidPadded=padarray(fieldIn,[floor(winSize/2) floor(winSize/2)],nan);
  % Each sliding window becomes a column
  pidCol=im2col(pidPadded,[winSize winSize],'sliding');
  
@@ -40,5 +40,5 @@ function pidFilt=coherenceFilter(pidIn,winSize,pixPerc);
  pidInVec(goodInds)=pidVecShrink;
  
  % Reshape
- pidFilt=reshape(pidInVec,size(pidIn));
+ fieldFilt=reshape(pidInVec,size(fieldIn));
 end
