@@ -1,15 +1,13 @@
 % Analyze HCR clouds
 
 clear all;
-%close all;
+close all;
 
-plotTest=1;
+plotTest=0;
 
 project='otrec'; %socrates, aristo, cset
 quality='qc2'; %field, qc1, or qc2
 freqData='10hz'; % 10hz, 100hz, or 2hz
-
-startThresh=-10; % starting threshold for cloud segmentation
 
 if strcmp(project,'otrec')
     ylimits=[-0.2 15];
@@ -38,7 +36,7 @@ caseStart=datetime(caseList.Var1,caseList.Var2,caseList.Var3, ...
 caseEnd=datetime(caseList.Var6,caseList.Var7,caseList.Var8, ...
     caseList.Var9,caseList.Var10,0);
 
-for aa=1:length(caseStart)
+for aa=8:length(caseStart)
     
     disp(['Case ',num2str(aa),' of ',num2str(length(caseStart))]);
     
@@ -114,31 +112,13 @@ for aa=1:length(caseStart)
     
     disp('Filling extinct echo ...');
     
-    [cloudNum reflExt]=fillExtinct(data,cloudNumOrig,refl);
-    
-    %% Smooth with convolution
-    
-    % Create mask for convolution
-    radius=5;
-    numPix=radius*2+1;
-    [rr cc] = meshgrid(1:numPix);
-    cirMask = sqrt((rr-(radius+1)).^2+(cc-(radius+1)).^2)<=radius;
-    cirMask=double(cirMask);
-    
-    % Normalize
-    cirMask=cirMask./(sum(reshape(cirMask,1,[])));
-    
-    % Convolution
-    reflConv=nanconv(reflExt,cirMask);
-    reflConv(isnan(reflExt))=nan;
-    
+    [cloudNum,reflExt]=fillExtinct(data,cloudNumOrig,refl);
+        
     %% Split up individual clouds
     
     disp('Splitting clouds ...');
     
     numMax=max(reshape(cloudNum,1,[]),[],'omitnan');
-    
-    thresh12=[-25 0];
     
     cloudCount=1;
     
@@ -149,48 +129,38 @@ for aa=1:length(caseStart)
         if length(cloudInds)>100000
             
             reflMapBig=nan(size(cloudNum));
-            reflMapBig(cloudInds)=reflConv(cloudInds);
+            reflMapBig(cloudInds)=reflExt(cloudInds);
             
-            [clR clC]=ind2sub(size(cloudNum),cloudInds);
+            [clR,clC]=ind2sub(size(cloudNum),cloudInds);
             
             reflMap=reflMapBig(min(clR):max(clR),min(clC):max(clC));
             
             % Zero padding
             reflPadded=cat(1,nan(10,size(reflMap,2)),reflMap,nan(10,size(reflMap,2)));
             reflPadded=cat(2,nan(size(reflPadded,1),10),reflPadded,nan(size(reflPadded,1),10));
-                                   
-            % Find a good reflectivity threshold that represents the major
-            % parts of the cloud
-            %maskBig = thresholdMaskOrig(reflPadded,startThresh,500);
-            maskBig = thresholdMask(reflPadded);
+                         
+            BW=zeros(size(reflPadded));
+            BW(~isnan(reflPadded))=1;
+            
+            BW2=imerode(BW, strel('disk', 5));
+            BW3 = bwareaopen(BW2,1000);
             
             % Distance of each cloud pixel from reflectivity threshold mask
-            D = bwdist(maskBig);
+            D = bwdist(BW3);
             
             % Watershed is an image segmentation method that looks for
             % ridges and valleys in an image
             waterShed = watershed(D);
             
             % Watershed usually over-segments so we join areas back together
-            % that share a large border
+            % that share a large border or where one area is too small
             
-            % BW mask
-            BW=zeros(size(reflPadded));
-            BW(~isnan(reflPadded))=1;
+            waterCensored=double(waterShed);
+            waterCensored(~BW)=nan;
             
-            if plotTest
-                close all
-                
-                w2=waterShed;
-                w2(~BW)=nan;
-                rgb = label2rgb(w2,'jet',[.5 .5 .5]);
-                figure
-                imshow(rgb);
-            end
+            waterMasked=joinCloudParts(waterCensored);
             
-            waterMasked=joinCloudParts(waterShed,BW);
-            
-            maskJoined=zeros(size(BW));
+            maskJoined=zeros(size(BW2));
             maskJoined(waterMasked>0)=1;
             
             % Reverser zero padding
@@ -254,6 +224,49 @@ for aa=1:length(caseStart)
     end
     
     cloudPuzzleOut(isnan(reflExt))=nan;
+    
+    %% Fill in pixels that are not in small areas (i.e. not zero) that have
+    % reflectivities but are nan in cloudPuzzle
+    
+    disp('Filling in final pixels ...');
+    allReflMask=zeros(size(reflExt));
+    allReflMask(~isnan(reflExt))=1;
+    allReflMask(cloudPuzzleOut==0)=0;
+    
+    puzzleMask=zeros(size(reflExt));
+    puzzleMask(cloudPuzzleOut>0)=1;
+    
+    [oldR oldC]=find(puzzleMask==1);
+    [addR addC]=find(puzzleMask==0 & allReflMask==1);
+    idx = knnsearch([oldR oldC], [addR addC]);
+    nearest_OldValue = cloudPuzzleOut(sub2ind(size(cloudPuzzleOut), oldR(idx), oldC(idx)));
+    cloudPuzzleAttached=cloudPuzzleOut;
+    cloudPuzzleAttached(sub2ind(size(cloudPuzzleOut), addR, addC))=nearest_OldValue;
+    
+    % Sometimes areas get attached to wrong area
+    cloudPuzzleFinal=cloudPuzzleAttached;
+    for jj=1:cloudCount-1
+        maskNumber=zeros(size(cloudPuzzleAttached));
+        maskNumber(cloudPuzzleAttached==jj)=1;
+        individs=bwconncomp(maskNumber);
+        if individs.NumObjects>1
+            indivClouds=individs.PixelIdxList;
+            for ll=1:individs.NumObjects
+                if length(indivClouds{ll})<1001
+                    maskIndiv=zeros(size(cloudPuzzleAttached));
+                    maskIndiv(indivClouds{ll})=1;
+                    maskExp=imdilate(maskIndiv, strel('disk', 2));
+                    pixExp=cloudPuzzleAttached(find(maskExp==1));
+                    pixExp(find(pixExp==0 | pixExp==jj | isnan(pixExp)))=[];
+                    if ~isempty(pixExp)
+                        pixU=unique(pixExp);
+                        cloudPuzzleFinal(indivClouds{ll})=pixU;
+                    end
+                end
+            end
+        end
+    end
+
     %% Plot
     
     disp('Plotting ...');
@@ -277,11 +290,15 @@ for aa=1:length(caseStart)
     
     ax2=subplot(2,1,2);
     
-    colMap=jet(cloudCount-1);
-    colMap=cat(1,[0 0 0],colMap);
+    colMapIn=jet(cloudCount-1);
+    % Make order random
+    indsCol=randperm(size(colMapIn,1));
+    colMapInds=cat(2,indsCol',colMapIn);
+    colMapInds=sortrows(colMapInds);
+    colMap=cat(1,[0 0 0],colMapInds(:,2:end));
     
     hold on;
-    sub2=surf(data.time,data.asl./1000,cloudPuzzleOut,'edgecolor','none');
+    sub2=surf(data.time,data.asl./1000,cloudPuzzleFinal,'edgecolor','none');
     view(2);
     ax2.Colormap=colMap;
     caxis([-0.5 cloudCount-1+0.5])

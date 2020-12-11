@@ -1,4 +1,4 @@
-function[classOut, m]=calc_pid_hcr_clean(dBZ,LDR, vel,sigmav,temp)
+function[classOut]=calc_pid_hcr_clean(dBZ,LDR, vel,sigmav,temp)
 vel=abs(vel);
 %   Membership functions for particle detection
 % 1:Beta  2:Delta
@@ -66,14 +66,18 @@ m(6,5,:,:)=zmf(temp,[273,271]); % Ice
 m(7,5,:,:)=zmf(temp,[273,271]); % Snow
 m(8,5,:,:)=trapmf(temp,[268,270,275,277]); % wet snow/rimed ice
 
+clear temp sigmav vel dBZ
+
 %  Sum the weights
-result=nan(8,size(dBZ,1),size(dBZ,2));
+result=nan(8,size(LDR,1),size(LDR,2));
 
 for ii=1:8
     mii=squeeze(m(ii,:,:,:));
     result(ii,:,:)=mii(1,:,:)*w(1)+mii(2,:,:)*w(2)+mii(3,:,:)*w(3)...
         +mii(4,:,:)*w(4)+mii(5,:,:)*w(5);
 end
+
+clear m
 
 inoldr=find(isnan(LDR)==1);
 result(8,inoldr)=0;
@@ -85,7 +89,7 @@ resMinusMax=result-maxMat;
 zerosMat=zeros(size(result));
 zerosMat(resMinusMax==0)=1;
 
-classOut=nan(size(dBZ));
+classOut=nan(size(LDR));
 
 for ii=1:8
     testMat=squeeze(zerosMat(ii,:,:));

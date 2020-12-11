@@ -13,7 +13,7 @@
 %Output:
 %alphaTot is the attenuation according to Liebe
 %gammaTot is the attenuation according to ITU
-function [ituTot,ituCloud]= get_atten(f,data)
+function [ituTot,ituCloud,layer_itu,layer_ituC]= get_atten(f,data)
 
 % Layer depth
 layer_depth=abs(diff(data.asl,1,1));

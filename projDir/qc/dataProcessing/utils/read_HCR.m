@@ -100,8 +100,13 @@ end
 
 timeInds=find(indata.time>=startTime & indata.time<=endTime);
 for ii=1:size(allVars,1)
-    data.(allVars{ii})=indata.(allVars{ii})(:,timeInds);
+    if min(size(indata.(allVars{ii})))~=1
+        data.(allVars{ii})=single(indata.(allVars{ii})(:,timeInds));
+    else
+        data.(allVars{ii})=indata.(allVars{ii})(:,timeInds);
+    end
 end
 data.asl=HCRrange2asl(data.range,data.elevation,data.altitude);
+data.asl=single(data.asl);
 end
 

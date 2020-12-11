@@ -4,7 +4,7 @@ close all;
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-project='otrec'; % socrates, cset, aristo, otrec
+project='cset'; % socrates, cset, aristo, otrec
 quality='qc2'; % field, qc1, qc2
 freqData='10hz';
 whichModel='era5';
@@ -15,9 +15,11 @@ infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_
 
 caseList = table2array(readtable(infile));
 
-indir=HCRdir(project,quality,freqData);
+%indir=HCRdir(project,quality,freqData);
+indir='/run/media/romatsch/RSF0006/rsf/meltingLayer/cset/10hz/';
 
-[~,modeldir]=modelDir(project,whichModel,freqData);
+%[~,modeldir]=modelDir(project,whichModel,freqData);
+modeldir='/run/media/romatsch/RSF0006/rsf/meltingLayer/csetMat/';
 
 %% Run processing
 
@@ -35,6 +37,7 @@ for ii=1:size(caseList,1)
         
         % Get model data
         model.meltLayer=[];
+        model.iceLevel=[];
         
         model=read_model(model,modeldir,startTime,endTime);
         timeModelNum=datenum(model.time);
@@ -84,24 +87,32 @@ for ii=1:size(caseList,1)
             
             % Define variables
             netcdf.reDef(ncid);
-            varidML = netcdf.defVar(ncid,'FREEZING_LEVEL','NC_SHORT',[dimrange dimtime]);
+            varidML = netcdf.defVar(ncid,'MELTING_LAYER','NC_SHORT',[dimrange dimtime]);
             netcdf.defVarFill(ncid,varidML,false,fillVal);
+            varidIL = netcdf.defVar(ncid,'ICING_LEVEL','NC_FLOAT',[dimtime]);
+            netcdf.defVarFill(ncid,varidIL,false,fillVal);
             netcdf.endDef(ncid);
             
             % Write variables
             netcdf.putVar(ncid,varidML,modOut.meltLayer);
+            netcdf.putVar(ncid,varidIL,modOut.iceLevel);
                        
             netcdf.close(ncid);
             
             % Write attributes
-            ncwriteatt(infile,'FREEZING_LEVEL','long_name','freezing_level_and_zero_degree_level');
-            ncwriteatt(infile,'FREEZING_LEVEL','standard_name','freezing_level_and_zero_degree_level');
-            ncwriteatt(infile,'FREEZING_LEVEL','units','');
-            ncwriteatt(infile,'FREEZING_LEVEL','flag_values',[0, 1, 2, 3]);
-            ncwriteatt(infile,'FREEZING_LEVEL','flag_meanings','ERA5_zero_degree_level freezing_level_detected freezing_level_interpolated freezing_level_estimated');
-            ncwriteatt(infile,'FREEZING_LEVEL','grid_mapping','grid_mapping');
-            ncwriteatt(infile,'FREEZING_LEVEL','coordinates','time range');
+            ncwriteatt(infile,'MELTING_LAYER','long_name','melting_layer_and_zero_degree_level');
+            ncwriteatt(infile,'MELTING_LAYER','standard_name','melting_layer_and_zero_degree_level');
+            ncwriteatt(infile,'MELTING_LAYER','units','');
+            ncwriteatt(infile,'MELTING_LAYER','flag_values',[10, 11, 12, 13, 14, 20, 21, 22, 23, 24]);
+            ncwriteatt(infile,'MELTING_LAYER','flag_meanings',...
+                'below_iceLev ERA5_zeroDeg_below_iceLev meltLayer_detected_below/at_iceLev meltLayer_interpolated_below/at_iceLev meltLayer_estimated_below/at_iceLev above_iceLev ERA5_zeroDeg_above_iceLev meltLayer_detected_above_iceLev meltLayer_interpolated_above_iceLev meltLayer_estimated_above_iceLev');
+            ncwriteatt(infile,'MELTING_LAYER','grid_mapping','grid_mapping');
+            ncwriteatt(infile,'MELTING_LAYER','coordinates','time range');
                         
+            ncwriteatt(infile,'ICING_LEVEL','long_name','icing_level');
+            ncwriteatt(infile,'ICING_LEVEL','standard_name','icing_level');
+            ncwriteatt(infile,'ICING_LEVEL','units','m');
+            ncwriteatt(infile,'ICING_LEVEL','coordinates','time');
         end
     end
 end

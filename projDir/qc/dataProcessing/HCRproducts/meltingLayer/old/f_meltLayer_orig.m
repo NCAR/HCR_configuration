@@ -3,7 +3,7 @@
 % 1=melting layer detected
 % 2=melting layer interpolated
 % 3=melting layer defined as zero degree altitude
-function [BBfinishedOut iceLevAsl offset]= f_meltLayer(data,zeroAdjustMeters)
+function [BBfinishedOut iceLevAsl]= f_meltLayer(data,zeroAdjustMeters)
 
 debugFig=0;
 
@@ -15,7 +15,7 @@ oneGate=data.range(2)-data.range(1);
 zeroAdjustGates=round(zeroAdjustMeters/oneGate);
 
 tempTemp=data.TEMP;
-%tempTemp(1:16,:)=nan;
+tempTemp(1:16,:)=nan;
 oddAngles=find(data.elevation>-70 & data.elevation<70);
 tempTemp(:,oddAngles)=nan;
 signTemp=sign(tempTemp);
@@ -122,11 +122,11 @@ elevTemp=data.elevation(tempDataY);
 
 for kk=1:length(tempDataY)
     if elevTemp(kk)<0
-        layerIndsAdj(:,kk)=layerInds(:,kk)-zeroAdjustGates;
-    else
         layerIndsAdj(:,kk)=layerInds(:,kk)+zeroAdjustGates;
+    else
+        layerIndsAdj(:,kk)=layerInds(:,kk)-zeroAdjustGates;
     end
-    layerAltsAdj(:,kk)=layerAlts(:,kk)+adjustMeters;
+    layerAltsAdj(:,kk)=layerAlts(:,kk)-adjustMeters;
 end
 
 %% Remove data that is not suitable
@@ -135,10 +135,13 @@ tempFlag=data.FLAG(:,tempDataY);
 %data=rmfield(data,'FLAG');
 LDRdata(tempFlag>1)=nan;
 LDRdata(LDRdata<-16 | LDRdata>-7)=nan;
+%tempRange=data.range(:,tempDataY);
+%LDRdata(tempRange<150)=nan;
 LDRdata(1:20,:)=nan;
 
 VELdata=data.VEL_CORR(:,tempDataY);
 VELdata(tempFlag>1)=nan;
+%VELdata(tempRange<150)=nan;
 VELdata(1:20,:)=nan;
 
 clear tempFlag
@@ -153,16 +156,6 @@ blMask(tempDBZ<-18 & tempWIDTH>1)=1;
 
 clear tempWIDTH tempDBZ
 
-% Remove small areas
-%blMask(:,find(elevTemp<0))=1;
-blMask=bwareaopen(blMask,10);
-
-% Fill holes
-blMask=imfill(blMask,'holes');
-
-% Only when scanning up
-blMask(:,find(elevTemp<0))=0;
-
 % Only within right altitude
 rightAlt=(data.altitude(tempDataY)-data.TOPO(tempDataY))*2;
 
@@ -172,8 +165,19 @@ blMask(data.asl(:,tempDataY)<(altMat-600))=0;
 % Upper limit
 blMask(data.asl(:,tempDataY)>(altMat+600))=0;
 
+% Remove small areas
+blMask=bwareaopen(blMask,10);
+
+% Fill holes
+blMask=imfill(blMask,'holes');
+
+% Only when scanning up
+blMask(:,find(elevTemp<0))=0;
+
 LDRdata(blMask==1)=nan;
 VELdata(blMask==1)=nan;
+
+% Remove data that is in beween backlobe data
 
 clear blMask
 
@@ -190,8 +194,6 @@ timeIZeroAll={};
 % Transition length should be 600 seconds
 resol=seconds(median(diff(data.time)));
 transLength=1/resol*600;
-
-BBaltRawAll=cell(1,size(layerAltsAdj,1));
 
 for kk=1:size(layerAltsAdj,1)
     timeInds=find(~isnan(layerAltsAdj(kk,:)));
@@ -216,7 +218,7 @@ for kk=1:size(layerAltsAdj,1)
     ASLlayer=aslTemp(:,timeInds);
     
     if min(isnan(maxLevelLDR))==0
-        
+        disp('Searching LDR ...');
         % LDR       
         colIndsLDR=1:1:size(ASLlayer,2);
         linearIndLDR = sub2ind(size(ASLlayer), maxLevelLDR, colIndsLDR);
@@ -264,7 +266,7 @@ for kk=1:size(layerAltsAdj,1)
     end
     
     % VEL
-    
+    disp('Searching VEL ...');
     % Find vel melting layer level
     maxLevelVEL=nan(size(rowInds));
     velMasked=VELdata;
@@ -292,7 +294,8 @@ for kk=1:size(layerAltsAdj,1)
     
     % Remove data that doesn't cut it
     if min(isnan(maxLevelLDR))==0 | min(isnan(maxLevelVEL))==0
-                
+        disp('Removing bad data ...');
+        
         % VEL
         colIndsVEL=1:1:size(ASLlayer,2);
         linearIndVEL = sub2ind(size(ASLlayer), maxLevelVEL, colIndsVEL);
@@ -426,137 +429,98 @@ for kk=1:size(layerAltsAdj,1)
         % Remove data that is more than 100 m above model zero degree
         zeroAltTest=layerAlts(kk,timeInds);        
         BBaltCompare=zeroAltTest-BBaltRaw;
-        BBaltRaw(BBaltCompare<-100)=nan;
+        BBaltRaw(BBaltCompare<-100)=nan;        
         
-        BBaltRawAll{kk}=BBaltRaw;
-    end
-end
-
-% Calculate mean offset for whole flight
-disp('Calculating offset ...');
-zeroDistCollect=[];
-offset=[];
-for kk=1:size(layerAlts,1)
-    timeInds=find(~isnan(layerAlts(kk,:)));
-    BBaltRaw=BBaltRawAll{kk};
-    if ~isempty(BBaltRaw)
-        zeroDistAll=BBaltRaw-layerAlts(kk,timeInds);
-        zeroDistAll(isnan(zeroDistAll))=[];
-        zeroDistCollect=[zeroDistCollect zeroDistAll];
-    end
-end
-
-if ~isnan(zeroDistCollect)
-    offset=median(zeroDistCollect);
-end
-
-% Adjust zero degree layer
-for kk=1:size(layerAltsAdj,1)
-    if ~isempty(offset) & ~isempty(BBaltRawAll{kk})
-        BBaltRaw=BBaltRawAll{kk};
-        timeInds=find(~isnan(layerAlts(kk,:)));
-        zeroDistF=BBaltRaw-layerAlts(kk,timeInds);
+        % Interpolate between good values
+        BBaltInterp=nan(size(BBaltRaw));
+        BBaltZero=nan(size(BBaltRaw));
         
-        % Remove small data stretches
-        zeroMaskF=zeros(size(zeroDistF));
-        zeroMaskF(~isnan(zeroDistF))=1;
-        
-        zeroMaskF=bwareaopen(zeroMaskF,5);
-        zeroDistF(zeroMaskF==0)=nan;
-        
-        % Adjust end points so that they have the median distance
-        firstInd=min(find(~isnan(zeroDistF)));
-        adjPixNumStart=round(max([1 firstInd-1000]));
-        zeroDistF(1:adjPixNumStart)=offset;
-        lastInd=max(find(~isnan(zeroDistF)));
-        adjPixNumEnd=round(min([length(zeroDistF) lastInd+1000]));
-        zeroDistF(adjPixNumEnd:end)=offset;
-        
-        zeroDistSmoothF=movmean(zeroDistF,3000,'omitnan');
-        zeroDistSmoothF(isnan(zeroDistF))=nan;
-        
-        noNanDistF=fillmissing(zeroDistSmoothF,'linear','EndValues','nearest');
-        layerAltsAdj(kk,timeInds)=layerAlts(kk,timeInds)+noNanDistF;
-    end
-end
-
-%% Interpolation
-disp('Interpolating ...');
-
-for kk=1:size(layerAltsAdj,1)
-    BBaltRaw=BBaltRawAll{kk};
-    timeInds=find(~isnan(layerAltsAdj(kk,:)));
-    layerAltsTempF=layerAltsAdj(kk,timeInds);
-        
-    % Interpolate between good values
-    BBaltInterp=nan(size(BBaltRaw));
-    BBaltZero=nan(size(BBaltRaw));
-    
-    if min(isnan(BBaltRaw))==0
-        
-        % Mask
-        maskBBalt=zeros(size(BBaltRaw));
-        maskBBalt(isnan(BBaltRaw))=1;
-        diffBBalt=diff(maskBBalt);
-        
-        newIndsMask=1:length(BBaltRaw);
-        
-        endInds=find(diffBBalt==-1);
-        startInds=find(diffBBalt==1);
-        
-        startInds=startInds+1;
-        
-        if isempty(startInds) | endInds(1)<startInds(1)
-            startInds=[1 startInds];
-        end
-        if length(endInds)~=length(startInds)
-            endInds=[endInds length(maskBBalt)];
-        end
-        
-        % Go through each nan stretch
-        for ll=1:length(startInds)
-            nanLength=endInds(ll)-startInds(ll);
-            % Short stretches
-            if nanLength<transLength*2 & startInds(ll)~=1 & endInds(ll)~=length(maskBBalt) ...
-                    & abs(BBaltRaw(startInds(ll)-1)-BBaltRaw(endInds(ll)+1))<500
-                BBaltInterp(startInds(ll):endInds(ll))=interp1([startInds(ll)-1,endInds(ll)+1],...
-                    [BBaltRaw(startInds(ll)-1),BBaltRaw(endInds(ll)+1)],startInds(ll):endInds(ll));
-            else
-                % Tail
-                if startInds(ll~=1)
-                    startTail=startInds(ll);
-                    endTail=min([startInds(ll)+transLength,length(maskBBalt)]);
-                    modT=layerAltsTempF(startTail:endTail);
-                    modTtail=layerAltsTempF(endTail)-(layerAltsTempF(endTail)-layerAltsTempF(startTail));
-                    int1=interp1([startTail-1,endTail+1],...
-                        [BBaltRaw(startTail-1),modTtail],startTail:endTail);
-                    addInt=int1-int1(end);
-                    BBaltZero(startTail:endTail)=modT+addInt;
-                end
-                % Head
-                if endInds(ll)~=length(maskBBalt)
-                    startHead=max([endInds(ll)-transLength,1]);
-                    endHead=endInds(ll);
-                    modT=layerAltsTempF(startHead:endHead);
-                    modThead=layerAltsTempF(startHead)-(layerAltsTempF(startHead)-layerAltsTempF(endHead));
-                    int1=interp1([startHead-1,endHead+1],...
-                        [modThead,BBaltRaw(endHead+1)],startHead:endHead);
-                    addInt=int1-int1(1);
-                    BBaltZero(startHead:endHead)=modT+addInt;
+        if min(isnan(BBaltRaw))==0
+            
+            % Adjust zero degree layer
+            zeroDistF=BBaltRaw-layerAltsAdj(kk,timeInds);
+            
+            % Remove small data stretches
+            zeroMaskF=zeros(size(zeroDistF));
+            zeroMaskF(~isnan(zeroDistF))=1;
+            
+            zeroMaskF=bwareaopen(zeroMaskF,5);
+            zeroDistF(zeroMaskF==0)=nan;
+            
+            zeroDistSmoothF=movmean(zeroDistF,3000,'omitnan');
+            zeroDistSmoothF(isnan(zeroDistF))=nan;
+            
+            noNanDistF=fillmissing(zeroDistSmoothF,'linear','EndValues','nearest');
+            if sum(~isnan(noNanDistF))>0
+                layerAltsTempF=layerAltsAdj(kk,timeInds)+noNanDistF;
+            end
+            
+            layerAltsAdj(kk,timeInds)=layerAltsTempF;
+            % Mask
+            maskBBalt=zeros(size(BBaltRaw));
+            maskBBalt(isnan(BBaltRaw))=1;
+            diffBBalt=diff(maskBBalt);
+            
+            newIndsMask=1:length(BBaltRaw);
+            
+            endInds=find(diffBBalt==-1);
+            startInds=find(diffBBalt==1);
+            
+            startInds=startInds+1;
+            
+            if isempty(startInds) | endInds(1)<startInds(1)
+                startInds=[1 startInds];
+            end
+            if length(endInds)~=length(startInds)
+                endInds=[endInds length(maskBBalt)];
+            end
+            
+            % Go through each nan stretch
+            for ll=1:length(startInds)
+                nanLength=endInds(ll)-startInds(ll);
+                % Short stretches
+                if nanLength<transLength*2 & startInds(ll)~=1 & endInds(ll)~=length(maskBBalt)
+                    BBaltInterp(startInds(ll):endInds(ll))=interp1([startInds(ll)-1,endInds(ll)+1],...
+                        [BBaltRaw(startInds(ll)-1),BBaltRaw(endInds(ll)+1)],startInds(ll):endInds(ll));
+                else
+                    % Tail
+                    if startInds(ll~=1)
+                        startTail=startInds(ll);
+                        endTail=min([startInds(ll)+transLength,length(maskBBalt)]);
+                        modT=layerAltsTempF(startTail:endTail);
+                        modTtail=layerAltsTempF(endTail)-(layerAltsTempF(endTail)-layerAltsTempF(startTail));
+                        int1=interp1([startTail-1,endTail+1],...
+                            [BBaltRaw(startTail-1),modTtail],startTail:endTail);
+                        addInt=int1-int1(end);
+                        BBaltZero(startTail:endTail)=modT+addInt;
+                    end
+                    % Head
+                    if endInds(ll)~=length(maskBBalt)
+                        startHead=max([endInds(ll)-transLength,1]);
+                        endHead=endInds(ll);
+                        modT=layerAltsTempF(startHead:endHead);
+                        modThead=layerAltsTempF(startHead)-(layerAltsTempF(startHead)-layerAltsTempF(endHead));
+                        int1=interp1([startHead-1,endHead+1],...
+                            [modThead,BBaltRaw(endHead+1)],startHead:endHead);
+                        addInt=int1-int1(1);
+                        BBaltZero(startHead:endHead)=modT+addInt;
+                    end
                 end
             end
+            
+            BBaltZero(isnan(BBaltZero))=layerAltsTempF(isnan(BBaltZero));
+            BBaltZero(~isnan(BBaltRaw))=nan;
+            BBaltZero(~isnan(BBaltInterp))=nan;
+        else
+            BBaltZero=layerAltsAdj(kk,timeInds);
         end
         
-        BBaltZero(isnan(BBaltZero))=layerAltsTempF(isnan(BBaltZero));
-        BBaltZero(~isnan(BBaltRaw))=nan;
-        BBaltZero(~isnan(BBaltInterp))=nan;
+        BBaltAll{end+1}=BBaltRaw;
+        timeIall{end+1}=timeInds;
+        BBaltInterpAll{end+1}=BBaltInterp;
     else
         BBaltZero=layerAltsAdj(kk,timeInds);
     end
-    
-    BBaltAll{end+1}=BBaltRaw;
-    timeIall{end+1}=timeInds;
-    BBaltInterpAll{end+1}=BBaltInterp;
     BBaltZeroAll{end+1}=BBaltZero;
     timeIZeroAll{end+1}=timeInds;
 end
@@ -627,16 +591,14 @@ BBfinishedOrigInds(:,tempDataY)=BBfinished;
 
 clear BBfinished;
 BBfinishedOrigInds(data.asl<0)=nan;
-BBfinishedOrigInds(1,:)=nan;
 
-%% Change assignments and create icing level
+%% Change assignments
 % Below icing level=10
 % Above icing level=20
 % Melting or 0 deg layer at or below icing level=11 (0 deg), 12 (detected),
 % 13 (interpolated), or 14 (estimated)
 % Melting or 0 deg layer above icing level=21, 22, 23, or 24
 
-disp('Finding icing level ...');
 BBfinishedOut=nan(size(BBfinishedOrigInds));
 iceLev=nan(1,size(BBfinishedOut,2));
 
@@ -657,54 +619,26 @@ for ii=1:size(BBfinishedOrigInds,2)
     end
 end
 
-% Count number of zero deg and melt layers
-
-numZeroDeg=sum(BBfinishedOrigInds==0,1);
-numOther=sum(BBfinishedOrigInds>0,1);
-
-diffNum=numZeroDeg-numOther;
-
 % Remove data with odd angles
 iceLev(oddAngles)=nan;
 
 % Take care of areas with big jumps
-%[change1 S1]=ischange(iceLev,'linear','Threshold',1000000);
-
-% Remove outliers
-iceLevMed=movmedian(iceLev,10,'includenan');
-iceLevMed(isnan(iceLev))=nan;
-iceLev(abs(iceLevMed-iceLev)>100)=nan;
-
-iceLevDiff=iceLev;
-
-iceLevDiff=fillmissing(iceLevDiff,'next');
-diff1=diff(iceLevDiff);
-change1=zeros(size(iceLev));
-change1(abs(diff1)>70)=1;
-
+[change1 S1]=ischange(iceLev,'linear','Threshold',1000000);
 changeInds=find(change1==1);
 changeStart=[1 changeInds];
 changeEnd=[changeInds+1 length(iceLev)];
 
 iceLevTest=iceLev;
 
-iceShort1=iceLev(changeStart(1):changeEnd(1));
-iceShort1(isnan(iceShort1))=[];
-currentLev=median(iceShort1(max([1, length(iceShort1)-200]):end),'omitnan');
+currentLev=median(iceLev(max([changeStart(1), changeEnd(1)-200]):changeEnd(1)),'omitnan');
 
 for ii=1:length(changeStart)
-    iceShort=iceLev(changeStart(ii):changeEnd(ii));
-    iceShort(isnan(iceShort))=[];
-    changeLength=length(iceShort);
-    newLev=median(iceShort(1:min([200,length(iceShort)])),'omitnan');
-    
-    moreNum=diffNum(changeStart(ii):changeEnd(ii));
-    sumMoreNum=length(find(moreNum>0));
-    
-    if (changeLength<1000 & abs(newLev-currentLev)>100) | (changeLength<5000 & sumMoreNum>50 & abs(newLev-currentLev)>100)
+    changeLength=length(find(~isnan(iceLev(changeStart(ii):changeEnd(ii)))));
+    newLev=median(iceLev(changeStart(ii):changeEnd(ii)),'omitnan');
+    if changeLength<2000 & abs(newLev-currentLev)>100
         iceLevTest(changeStart(ii):changeEnd(ii))=nan;
     else
-        currentLev=median(iceShort(max([1, length(iceShort)-200]):end),'omitnan');
+        currentLev=median(iceLev(max([changeStart(ii),changeEnd(ii)-200]):changeEnd(ii)),'omitnan');;
     end
 end
 
@@ -762,8 +696,4 @@ BBfinishedOut(BBfinishedOrigInds==2 & BBfinishedOut==20)=23;
 % estimated
 BBfinishedOut(BBfinishedOrigInds==3 & BBfinishedOut==10)=14;
 BBfinishedOut(BBfinishedOrigInds==3 & BBfinishedOut==20)=24;
-
-if isempty(offset)
-    offset=nan;
-end
 end

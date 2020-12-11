@@ -5,12 +5,12 @@ close all;
 
 project='socrates'; %socrates, aristo, cset
 quality='qc2'; %field, qc1, or qc2
-freqData='combined'; % 10hz, 100hz, 2hz, or combined
+freqData='10hz'; % 10hz, 100hz, 2hz, or combined
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
 % figdir=['/scr/snow1/rsfdata/projects/otrec/hcr/qc2/cfradial/final2/10hz/plots/testHourly/'];
-figdir=['/home/romatsch/plots/HCR/meltingLayer/hourly/',project,'/combined/'];
+figdir=['/home/romatsch/plots/HCR/meltingLayer/hourly/',project,'/',freqData,'/dropSondeComp/'];
 
 if ~exist(figdir, 'dir')
     mkdir(figdir)
@@ -19,11 +19,31 @@ end
 ylimits=[-0.2 7];
 
 %indir=HCRdir(project,quality,freqData);
-indir=['/run/media/romatsch/RSF0006/rsf/meltingLayer/',project,'/combined/'];
+indir=['/run/media/romatsch/RSF0006/rsf/meltingLayer/',project,'/',freqData,'/'];
+dropsondedir=['/run/media/romatsch/RSF0006/rsf/dropsondes/',project,'/'];
 
 infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_',project,'_data.txt'];
 
+% Dropsonde files
+if strcmp(project,'otrec')
+    dropFormat='nc';
+else
+    dropFormat='eol';
+end
+
 caseList = table2array(readtable(infile));
+
+% Make N by 2 matrix of fieldname + value type
+variable_names_types = [["time", "datetime"]; ...
+			["sondeAlt", "double"]; ...
+			["meltAltMeas", "double"]; ...
+			["meltAltInt", "double"]; ...
+			["meltAltEst", "double"]; ...
+			["zeroDegAlt", "double"]];
+% Make table using fieldnames & value types from above
+compAlts = table('Size',[0,size(variable_names_types,1)],... 
+	'VariableNames', variable_names_types(:,1),...
+	'VariableTypes', variable_names_types(:,2));
 
 for aa=1:size(caseList,1)
     disp(['Flight ',num2str(aa)]);
@@ -37,11 +57,20 @@ for aa=1:size(caseList,1)
         endTime=endTime+hours(1);
         
         disp([datestr(startTime,'yyyy-mm-dd HH:MM'),' to ',datestr(endTime,'yyyy-mm-dd HH:MM')]);
+        
+        %% Loading dropsonde data
+        [dropList,dropTimes]=dropSondeList(startTime,endTime,dropsondedir,dropFormat);
+        
+        if length(dropList)==0
+            continue
+        end
+        
+        [dropAlt,dropT]=getDropData(dropList,dropFormat);
+        
+        %% Load HCR data
+        
+        disp('Loading HCR data ...');
         data=[];
-        
-        %% Load data
-        
-        disp('Loading data ...');
         
         if strcmp(freqData,'combined')
             data.HCR_DBZ=[];
@@ -103,6 +132,46 @@ for aa=1:size(caseList,1)
         twentythreeInds=find(data.MELTING_LAYER==23);
         twentyfourInds=find(data.MELTING_LAYER==24);
         
+        %% Get melting layer alt and type
+        compAltsHourIn=array2table(nan(length(dropAlt),size(variable_names_types,1)-1),...
+            'VariableNames', variable_names_types(2:end,1));
+        compAltsHour=cat(2,array2table(dropTimes,'VariableNames',{'time'}),compAltsHourIn);
+        
+        for jj=1:length(dropAlt)
+            % Dropsonde altitude
+            absTemp=abs(dropT{jj});
+            alt1=dropAlt{jj};
+            zeroInd=find(absTemp==min(absTemp));
+            if absTemp(zeroInd(1))<1
+                compAltsHour.sondeAlt(jj)=alt1(zeroInd(1));
+            end
+            
+            % Melting layer altitudes
+            [minval sondeTimeInd]=min(abs(etime(datevec(data.time),datevec(dropTimes(jj)))));
+            altCol=data.asl(:,sondeTimeInd);
+            meltCol=data.MELTING_LAYER(:,sondeTimeInd);
+            iceAlt=data.ICING_LEVEL(sondeTimeInd);
+            % Melting layer alt and type
+            meltIndSonde=find(meltCol==12 | meltCol==13 | meltCol==14);
+            meltType=meltCol(meltIndSonde);
+            if ~isempty(meltType)
+                if meltCol(meltType==12)
+                    compAltsHour.meltAltMeas(jj)=min(altCol(meltIndSonde));
+                elseif meltCol(meltType==13)
+                    compAltsHour.meltAltInt(jj)=min(altCol(meltIndSonde));
+                else
+                    compAltsHour.meltAltEst(jj)=min(altCol(meltIndSonde));
+                end
+            end
+            % Zero degree alt
+            zeroIndSonde=find(meltCol==11 | meltCol==21);
+            if ~isempty(zeroIndSonde)
+                compAltsHour.zeroDegAlt(jj)=min(altCol(zeroIndSonde));
+            end
+        end
+        
+        compAlts=cat(1,compAlts,compAltsHour);
+        
         %% Plot
         
         timeMat=repmat(data.time,size(data.LDR,1),1);
@@ -131,9 +200,8 @@ for aa=1:size(caseList,1)
         newFindMelt=data.MELTING_LAYER(:,newInds);
         newTime=data.time(newInds);
         
-        fig1=figure('DefaultAxesFontSize',11,'position',[100,1300,1200,920]);
+        fig1=figure('DefaultAxesFontSize',11,'position',[100,1300,1200,700]);
         
-        ax1=subplot(4,1,1);
         hold on;
         sub1=surf(newTime,newASL./1000,newDBZ,'edgecolor','none');
         view(2);
@@ -153,83 +221,58 @@ for aa=1:size(caseList,1)
         scatter(timeMat(thirteenInds),data.asl(thirteenInds)./1000,10,'c','filled');
         scatter(timeMat(twelveInds),data.asl(twelveInds)./1000,10,'b','filled');
         
+        % Dropsondes
+        for jj=1:length(dropAlt)
+            timeVec=repmat(dropTimes(jj),length(dropAlt{jj}),1);
+            scatter(timeVec,dropAlt{jj}./1000,20,dropT{jj},'filled');
+            set(gca,'clim',[-10 10])
+            set(gca,'colormap',jet)
+            absTemp=abs(dropT{jj});
+            alt1=dropAlt{jj};
+            zeroInd=find(absTemp==min(absTemp));
+            if absTemp(zeroInd(1))<1
+                scatter(dropTimes(jj),alt1(zeroInd(1))/1000,20,'k','filled');
+            end
+        end
+        
         ax = gca;
         ax.SortMethod = 'childorder';
         ylim(ylimits);
         ylabel('Altitude (km)');
         xlim([data.time(1),data.time(end)]);
-        title(['Flight ',num2str(aa),': Reflectivity and melting layer'])
+        title(['Flight ',num2str(aa),': Reflectivity, melting layer, and dropsonde temperature'])
         grid on
-        set(gca,'xticklabel',[])
-        ax1.Position=[0.06 0.765 0.87 0.21];
-        
-        ax2=subplot(4,1,2);
-        hold on;
-        sub1=surf(newTime,newASL./1000,newFindMelt,'edgecolor','none');
-        ax2.Colormap=([1 0 1;1 1 0]);
-        view(2);
-        scatter(timeMat(twentyoneInds),data.asl(twentyoneInds)./1000,10,'k','filled');
-        scatter(timeMat(elevenInds),data.asl(elevenInds)./1000,10,...
-            'MarkerEdgeColor',[0.7 0.7 0.7],'MarkerFaceColor',[0.7 0.7 0.7]);
-        
-        scatter(timeMat(twentyfourInds),data.asl(twentyfourInds)./1000,10,...
-            'MarkerEdgeColor',[0.45 0.76 0.42],'MarkerFaceColor',[0.45 0.76 0.42]);
-        scatter(timeMat(twentythreeInds),data.asl(twentythreeInds)./1000,10,...
-            'MarkerEdgeColor',[0.7 0.8 0.87],'MarkerFaceColor',[0.7 0.8 0.87]);
-        scatter(timeMat(twentytwoInds),data.asl(twentytwoInds)./1000,10,...
-            'MarkerEdgeColor',[0.17 0.45 0.7],'MarkerFaceColor',[0.17 0.45 0.7]);
-        
-        scatter(timeMat(fourteenInds),data.asl(fourteenInds)./1000,10,'g','filled');
-        scatter(timeMat(thirteenInds),data.asl(thirteenInds)./1000,10,'c','filled');
-        scatter(timeMat(twelveInds),data.asl(twelveInds)./1000,10,'b','filled');
-        
-        plot(data.time,data.ICING_LEVEL./1000,'linewidth',1,'color',[0.6 0.6 0.6]);
-        ax = gca;
-        ax.SortMethod = 'childorder';
-        ylim(ylimits);
-        ylabel('Altitude (km)');
-        xlim([data.time(1),data.time(end)]);
-        title('Reflectivity and melting layer')
-        grid on
-        set(gca,'xticklabel',[])
-        ax2.Position=[0.06 0.525 0.87 0.21];
-        
-        
-        %%%%%%%%%%%%%%%%%%%%%%%% LDR%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        ax3=subplot(4,1,3);
-        hold on;
-        sub3=surf(newTime,newASL./1000,newLDR,'edgecolor','none');
-        view(2);
-        caxis([-25 5]);
-        colorbar
-        ylim(ylimits);
-        ylabel('Altitude (km)');
-        xlim([data.time(1),data.time(end)]);
-        title('LDR')
-        grid on
-        set(gca,'xticklabel',[])
-        ax3.Position=[0.06 0.287 0.87 0.21];
-        
-        ax4=subplot(4,1,4);
-        ax4.Colormap=jet;
-        hold on;
-        sub3=surf(newTime,newASL./1000,newVEL,'edgecolor','none');
-        view(2);
-        caxis([-5 5]);
-        colorbar
-        ylim(ylimits);
-        ylabel('Altitude (km)');
-        xlim([data.time(1),data.time(end)]);
-        title('VEL')
-        grid on
-        ax4.Position=[0.06 0.05 0.87 0.21];
-        
-        linkaxes([ax1 ax2 ax3 ax4],'xy');
+                
+        set(colorbar,'visible','off')
         
         formatOut = 'yyyymmdd_HHMM';
         set(gcf,'PaperPositionMode','auto')
-        print([figdir,'meltRefl_',datestr(data.time(1),formatOut),'_to_',datestr(data.time(end),formatOut)],'-dpng','-r0');
+        print([figdir,'meltRefl_dropsondes_',datestr(data.time(1),formatOut),'_to_',datestr(data.time(end),formatOut)],'-dpng','-r0');
         
         startTime=endTime;
     end
 end
+
+writetable(compAlts,[figdir,project,'_meltLayer_dropsonde.txt'],'Delimiter',' ');
+
+%% Plot comparison scatter plot
+close all
+
+fig2=figure('DefaultAxesFontSize',11,'position',[100,1300,700,700]);
+
+hold on;
+scatter(compAlts.zeroDegAlt./1000,compAlts.sondeAlt./1000,30,'k','filled');
+scatter(compAlts.meltAltEst./1000,compAlts.sondeAlt./1000,30,'g','filled');
+scatter(compAlts.meltAltInt./1000,compAlts.sondeAlt./1000,30,'c','filled');
+scatter(compAlts.meltAltMeas./1000,compAlts.sondeAlt./1000,30,'b','filled');
+xlabel('HCR altitude (km)');
+ylabel('Dropsonde altitude (km)');
+% xlim([0 7]);
+% ylim([0 7]);
+title(['Melting layer altitude'])
+grid on
+axis equal
+
+formatOut = 'yyyymmdd_HHMM';
+set(gcf,'PaperPositionMode','auto')
+print([figdir,project,'_meltLayer_dropsonde.png'],'-dpng','-r0');

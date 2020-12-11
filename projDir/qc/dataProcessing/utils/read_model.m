@@ -63,6 +63,7 @@ end
 
 % Get right times
 timeInds=find(modelTemp.time.timeHCR>=startTime & modelTemp.time.timeHCR<=endTime);
+
 for ii=1:length(varNames)
     nameIn=fields(modelTemp.(varNames{ii}));
     dataIn=modelTemp.(varNames{ii}).(nameIn{:});

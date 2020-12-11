@@ -20,8 +20,8 @@ freqData='2hzMerged'; % 10hz, 100hz, or 2hz
 %  endTime=datetime(2018,1,24,4,05,0); %BAMS Jeff Stith
 
 
-startTime=datetime(2018,1,24,01,09,30); %Wang_Rauber
-endTime=datetime(2018,1,24,01,12,30); %Wang_Rauber
+startTime=datetime(2018,1,29,1,30,0); %Wang_Rauber
+endTime=datetime(2018,1,29,02,0,0); %Wang_Rauber
 %
 %
 % startTime=datetime(2015,7,24,19,15,0);
@@ -30,14 +30,15 @@ endTime=datetime(2018,1,24,01,12,30); %Wang_Rauber
 %  startTime=datetime(2018,2,20,3,19,0);% JGR
 %  endTime=datetime(2018,2,20,3,24,0); %  JGR
 
-ylimits=[0 6.0];
+ylimits=[0 1.5];
 
-plotlidars=1; % 1 to plot lidar data, 0 to not plot lidar
-plotradars=1; % 1 to plot radar data, 0 to not plot radar
+plotlidars=0; % 1 to plot lidar data, 0 to not plot lidar
+plotradars=0; % 1 to plot radar data, 0 to not plot radar
 
 %indir='/Volumes/RSF-Vivek/SOCRATES/HCR_HSRL_qc2_RF04_20180123_230524_to_20180124_060037/';
 
-indir=HCRdir(project,quality,freqData);
+%indir=HCRdir(project,quality,freqData);
+indir=['/run/media/romatsch/RSF0006/rsf/combined_hcr_hsrl/',project,'/'];
 
 fileList=makeFileList(indir,startTime,endTime,'xxxxxx20YYMMDDxhhmmss',1);
 
@@ -86,10 +87,10 @@ if ~isempty(fileList)
     wt_coef(data.HCR_DBZ > -15)=0.22;
     wt_exp(data.HCR_DBZ > -15)=0.68;
     
-    att_cumul=2.*0.0192*cumsum((wt_coef.*Z_95_lin.^wt_exp),2,'omitnan');
+    att_cumul=2.*0.0192*cumsum((wt_coef.*Z_95_lin.^wt_exp),1,'omitnan');
     att_cumul(data.HCR_DBZ < -200)=NaN;
     dBZ_cor=data.HCR_DBZ+att_cumul;
-    Z_95_lin_cor=10.^(dBZ_cor*0.1);
+    %Z_95_lin_cor=10.^(dBZ_cor*0.1);
     
     %% Calculate PID
     
@@ -103,12 +104,12 @@ if ~isempty(fileList)
     vol_depol=data.HSRL_Volume_Depolarization./(2-data.HSRL_Volume_Depolarization);
     lin_depol=vol_depol./(2-vol_depol);
     
-    pid_hsrl=calc_pid_hsrl_clean(data.HSRL_Aerosol_Backscatter_Coefficient,lin_depol,data.temp);
+    pid_hsrl=calc_pid_hsrl_clean_eff(data.HSRL_Aerosol_Backscatter_Coefficient,lin_depol,data.temp);
     pid_hsrl(isnan(data.HSRL_Aerosol_Backscatter_Coefficient))=nan;
     pid_hsrl(isnan(pid_hsrl))=1;
     
     % HCR
-    [pid_hcr,m]=calc_pid_hcr_clean(dBZ_cor,data.HCR_LDR,data.HCR_VEL,data.HCR_WIDTH,data.temp);
+    [pid_hcr]=calc_pid_hcr_clean_eff(dBZ_cor,data.HCR_LDR,data.HCR_VEL,data.HCR_WIDTH,data.temp);
     pid_hcr(isnan(dBZ_cor))=nan;
     pid_hcr(isnan(pid_hcr))=1;
     
@@ -116,7 +117,7 @@ if ~isempty(fileList)
     pid_comb=combine_pid_hcr_hsrl_clean(pid_hcr,pid_hsrl);
     
     % Combined by using both data sets in one process
-    pid_comb2=calc_pid_direct_clean(data.HSRL_Aerosol_Backscatter_Coefficient,lin_depol,...
+    pid_comb2=calc_pid_direct_clean_eff(data.HSRL_Aerosol_Backscatter_Coefficient,lin_depol,...
         dBZ_cor,data.HCR_LDR,data.HCR_VEL,data.HCR_WIDTH,data.temp);
     
     %% Scales and units
@@ -148,5 +149,6 @@ if ~isempty(fileList)
     end
     
     %% PIDs
-    plot_pids_clean(data,pid_comb,pid_comb2,cscale_comb,units_str_comb,ylimits);
+    plot_pids_clean(data,pid_comb,pid_comb,cscale_comb,units_str_comb,ylimits);
+    xlim([datetime(2018,1,29,1,50,0),datetime(2018,1,29,2,0,0)]);
 end
