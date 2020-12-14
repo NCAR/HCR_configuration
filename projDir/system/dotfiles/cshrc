@@ -36,22 +36,7 @@ setenv LROSE_INSTALL_DIR $HOME/lrose
 setenv RAP_MAKE_INC_DIR $LROSE_CORE_DIR/codebase/make_include
 setenv RAP_MAKE_BIN_DIR $LROSE_CORE_DIR/codebase/make_bin
 
-setenv RAP_INC_DIR $LROSE_INSTALL_DIR/include
-setenv RAP_LIB_DIR $LROSE_INSTALL_DIR/lib
-setenv RAP_BIN_DIR $LROSE_INSTALL_DIR/bin
-setenv RAP_MAN_DIR $LROSE_INSTALL_DIR/man
-setenv RAP_DOC_DIR $LROSE_INSTALL_DIR/doc
-
-setenv RAP_SHARED_INC_DIR $RAP_INC_DIR
-setenv RAP_SHARED_LIB_DIR $RAP_LIB_DIR
-setenv RAP_SHARED_BIN_DIR $RAP_BIN_DIR
-
 setenv HCRDIR "/opt/hcr"
-
-# CVS
-
-setenv CVSUSER dixon
-setenv CVSROOT :pserver:${CVSUSER}@localhost:/cvs
 
 # --- OTHER BUILD SETTINGS
 
