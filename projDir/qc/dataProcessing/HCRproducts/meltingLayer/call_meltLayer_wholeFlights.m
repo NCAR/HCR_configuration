@@ -3,7 +3,7 @@
 clear all;
 close all;
 
-project='cset'; %socrates, otrec, cset
+project='otrec'; %socrates, otrec, cset
 quality='qc2'; %field, qc1, or qc2
 freqData='10hz'; % 10hz, 100hz
 whichModel='era5';
@@ -11,10 +11,10 @@ whichModel='era5';
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
 %figdir=['/scr/snow1/rsfdata/projects/otrec/hcr/qc2/cfradial/final2/10hz/plots/'];
-figdir='/home/romatsch/plots/HCR/meltingLayer/flights/cset/10hz/';
+figdir=['/home/romatsch/plots/HCR/meltingLayer/flights/',project,'/10hz/'];
 
 saveOffset=1;
-offsetIn=-168;
+offsetIn=-200;
 % If no data is found within one flight, take mean of previous flight (0)
 % or mean over all flights (1) which is given as offsetIn above.
 prevOrTotOffset=1;
@@ -30,7 +30,7 @@ indir=HCRdirWFH(project,quality,freqData);
 
 [~,directories.modeldir]=modelDir(project,whichModel,freqData);
 %outdir=directories.modeldir;
-outdir='/run/media/romatsch/RSF0006/rsf/meltingLayer/csetMat/';
+outdir=['/run/media/romatsch/RSF0006/rsf/meltingLayer/',project,'Mat/'];
 
 infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_',project,'_data.txt'];
 

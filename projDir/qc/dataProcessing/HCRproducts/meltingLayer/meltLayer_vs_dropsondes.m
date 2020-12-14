@@ -137,15 +137,10 @@ for aa=1:size(caseList,1)
             'VariableNames', variable_names_types(2:end,1));
         compAltsHour=cat(2,array2table(dropTimes,'VariableNames',{'time'}),compAltsHourIn);
         
+        thisMeltAlt=nan;
+        allSondeAlts={};
         for jj=1:length(dropAlt)
-            % Dropsonde altitude
-            absTemp=abs(dropT{jj});
-            alt1=dropAlt{jj};
-            zeroInd=find(absTemp==min(absTemp));
-            if absTemp(zeroInd(1))<1
-                compAltsHour.sondeAlt(jj)=alt1(zeroInd(1));
-            end
-            
+                        
             % Melting layer altitudes
             [minval sondeTimeInd]=min(abs(etime(datevec(data.time),datevec(dropTimes(jj)))));
             altCol=data.asl(:,sondeTimeInd);
@@ -157,10 +152,13 @@ for aa=1:size(caseList,1)
             if ~isempty(meltType)
                 if meltCol(meltType==12)
                     compAltsHour.meltAltMeas(jj)=min(altCol(meltIndSonde));
+                    thisMeltAlt=min(altCol(meltIndSonde));
                 elseif meltCol(meltType==13)
                     compAltsHour.meltAltInt(jj)=min(altCol(meltIndSonde));
+                    thisMeltAlt=min(altCol(meltIndSonde));
                 else
                     compAltsHour.meltAltEst(jj)=min(altCol(meltIndSonde));
+                    thisMeltAlt=min(altCol(meltIndSonde));
                 end
             end
             % Zero degree alt
@@ -168,6 +166,17 @@ for aa=1:size(caseList,1)
             if ~isempty(zeroIndSonde)
                 compAltsHour.zeroDegAlt(jj)=min(altCol(zeroIndSonde));
             end
+            
+            % Dropsonde altitude
+            tempAlt=cat(2,dropT{jj},dropAlt{jj});
+            tempAlt(any(isnan(tempAlt),2),:) = [];
+            signChT=diff(sign(tempAlt(:,1)));
+            sondeAlts=tempAlt(signChT~=0,2);
+            if ~isempty(sondeAlts)
+                minDiffAlts=abs(sondeAlts-thisMeltAlt);
+                compAltsHour.sondeAlt(jj)=sondeAlts(minDiffAlts==min(minDiffAlts));
+            end
+            allSondeAlts{end+1}=sondeAlts;
         end
         
         compAlts=cat(1,compAlts,compAltsHour);
@@ -227,11 +236,8 @@ for aa=1:size(caseList,1)
             scatter(timeVec,dropAlt{jj}./1000,20,dropT{jj},'filled');
             set(gca,'clim',[-10 10])
             set(gca,'colormap',jet)
-            absTemp=abs(dropT{jj});
-            alt1=dropAlt{jj};
-            zeroInd=find(absTemp==min(absTemp));
-            if absTemp(zeroInd(1))<1
-                scatter(dropTimes(jj),alt1(zeroInd(1))/1000,20,'k','filled');
+            if ~isempty(allSondeAlts{jj})
+                scatter(repmat(dropTimes(jj),1,length(allSondeAlts{jj})),allSondeAlts{jj}/1000,20,'k','filled');
             end
         end
         
@@ -259,19 +265,42 @@ writetable(compAlts,[figdir,project,'_meltLayer_dropsonde.txt'],'Delimiter',' ')
 close all
 
 fig2=figure('DefaultAxesFontSize',11,'position',[100,1300,700,700]);
+hold on
 
-hold on;
+maxLim=ceil(max(max(table2array(compAlts(:,2:end)))))/1000;
+plot([0 maxLim],[0 maxLim],'-r');
+
+% Regression lines
+fitOrth1=gmregress(compAlts.zeroDegAlt./1000,compAlts.sondeAlt./1000,1);
+fitAll1=[fitOrth1(2) fitOrth1(1)];
+xFitD =0:0.1:maxLim;
+yFitD1 = polyval(fitAll1, xFitD);
+plot(xFitD, yFitD1,'-k','linewidth',1.5);
+fitOrth2=gmregress(compAlts.meltAltEst./1000,compAlts.sondeAlt./1000,1);
+fitAll2=[fitOrth2(2) fitOrth2(1)];
+yFitD2 = polyval(fitAll2, xFitD);
+plot(xFitD, yFitD2,'-g','linewidth',1.5);
+fitOrth3=gmregress(compAlts.meltAltInt./1000,compAlts.sondeAlt./1000,1);
+fitAll3=[fitOrth3(2) fitOrth3(1)];
+yFitD3 = polyval(fitAll3, xFitD);
+plot(xFitD, yFitD3,'-c','linewidth',1.5);
+fitOrth4=gmregress(compAlts.meltAltMeas./1000,compAlts.sondeAlt./1000,1);
+fitAll4=[fitOrth4(2) fitOrth4(1)];
+yFitD4 = polyval(fitAll4, xFitD);
+plot(xFitD, yFitD4,'-b','linewidth',1.5);
+
 scatter(compAlts.zeroDegAlt./1000,compAlts.sondeAlt./1000,30,'k','filled');
 scatter(compAlts.meltAltEst./1000,compAlts.sondeAlt./1000,30,'g','filled');
 scatter(compAlts.meltAltInt./1000,compAlts.sondeAlt./1000,30,'c','filled');
 scatter(compAlts.meltAltMeas./1000,compAlts.sondeAlt./1000,30,'b','filled');
 xlabel('HCR altitude (km)');
 ylabel('Dropsonde altitude (km)');
-% xlim([0 7]);
-% ylim([0 7]);
+
 title(['Melting layer altitude'])
 grid on
 axis equal
+xlim([0 maxLim]);
+ylim([0 maxLim]);
 
 formatOut = 'yyyymmdd_HHMM';
 set(gcf,'PaperPositionMode','auto')
