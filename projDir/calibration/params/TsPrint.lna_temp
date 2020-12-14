@@ -52,7 +52,7 @@ reg_with_procmap = FALSE;
 // Type: string
 //
 
-instance = "test";
+instance = "lna_temp";
 
 //======================================================================
 //
@@ -386,7 +386,7 @@ tcp_server_port = 12000;
 // Type: boolean
 //
 
-dual_channel = FALSE;
+dual_channel = TRUE;
 
 ///////////// fast_alternating ////////////////////////
 //
@@ -493,7 +493,7 @@ use_secondary_georeference = FALSE;
 // Type: int
 //
 
-n_samples = 128;
+n_samples = 10000;
 
 ///////////// start_gate //////////////////////////////
 //
@@ -503,7 +503,7 @@ n_samples = 128;
 // Type: int
 //
 
-start_gate = 0;
+start_gate = 100;
 
 ///////////// n_gates /////////////////////////////////
 //
@@ -513,7 +513,7 @@ start_gate = 0;
 // Type: int
 //
 
-n_gates = 2048;
+n_gates = 300;
 
 ///////////// distance_units //////////////////////////
 //
