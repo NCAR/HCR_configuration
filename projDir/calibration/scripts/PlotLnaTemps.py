@@ -26,6 +26,8 @@ def main():
 
     global options
     global debug
+    global startTime
+    global endTime
 
 # parse the command line
 
@@ -55,15 +57,40 @@ def main():
                       dest='figHeightMm',
                       default=320,
                       help='Height of figure in mm')
+    parser.add_option('--start',
+                      dest='startTime',
+                      default='2000 01 01 00 00 00',
+                      help='Start time for plots')
+    parser.add_option('--end',
+                      dest='endTime',
+                      default='2100 01 01 00 00 00',
+                      help='End time for plots')
+    parser.add_option('--pwrMin',
+                      dest='pwrMinDbm',
+                      default='-9999.0',
+                      help='Minimum power on plots (dBm)')
+    parser.add_option('--pwrMax',
+                      dest='pwrMaxDbm',
+                      default='-9999.0',
+                      help='Minimum power on plots (dBm)')
     
     (options, args) = parser.parse_args()
     
     if (options.verbose):
         options.debug = True
 
+    year, month, day, hour, minute, sec = options.startTime.split()
+    startTime = datetime.datetime(int(year), int(month), int(day),
+                                  int(hour), int(minute), int(sec))
+
+    year, month, day, hour, minute, sec = options.endTime.split()
+    endTime = datetime.datetime(int(year), int(month), int(day),
+                                int(hour), int(minute), int(sec))
     if (options.debug):
         print("Running %prog", file=sys.stderr)
         print("  filePath: ", options.filePath, file=sys.stderr)
+        print("  startTime: ", startTime, file=sys.stderr)
+        print("  endTime: ", endTime, file=sys.stderr)
 
     # read in column headers for TsPrint output
 
@@ -154,6 +181,8 @@ def readInputData(filePath, colHeaders, colData):
                 # comes in as yyyy/mm/dd_hh:mm:ss.fraction
                 dateTimeStr = data[index]
                 thisTime = decodeDateTime(dateTimeStr)
+                if (thisTime < startTime or thisTime > endTime):
+                    break
                 obsTimes.append(thisTime)
             else:
                 if (isNumber(data[index])):
@@ -214,7 +243,7 @@ def movingAverage(values, window):
 
 def doPlot(colHdrs, obsTimes, colData):
 
-    fileName = options.filePath
+    fileName = os.path.basename(options.filePath)
     titleStr = "File: " + fileName
     hfmt = dates.DateFormatter('%y/%m/%d')
 
@@ -268,11 +297,15 @@ def doPlot(colHdrs, obsTimes, colData):
 
     ax1.set_title("Received power (dBm)", fontsize=12)
     ax2.set_title("LNA Temp (C)", fontsize=12)
-    
-    configureAxis(ax1, -9999.0, -9999.0, "Power", 'upper left')
-    configureAxis(ax2, -9999.0, -9999.0, "Temps", 'upper left')
 
-    fig1.suptitle("HCR LNA Temperature Dependency", fontsize=16)
+    configureAxis(ax1,
+                  float(options.pwrMinDbm), float(options.pwrMaxDbm),
+                  "Power", 'upper left')
+    configureAxis(ax2,
+                  -9999.0, -9999.0,
+                  "Temps", 'upper left')
+
+    fig1.suptitle("HCR LNA Temp Dependency - " + titleStr, fontsize=16)
     fig1.autofmt_xdate()
 
     plt.tight_layout()
@@ -287,13 +320,13 @@ def configureAxis(ax, miny, maxy, ylabel, legendLoc):
     legend = ax.legend(loc=legendLoc, ncol=6)
     for label in legend.get_texts():
         label.set_fontsize('x-small')
-    ax.set_xlabel("Date")
+    ax.set_xlabel("Time")
     ax.set_ylabel(ylabel)
     ax.grid(True)
     if (miny > -9990 and maxy > -9990):
         ax.set_ylim([miny, maxy])
-    hfmt = dates.DateFormatter('%y/%m/%d')
-    ax.xaxis.set_major_locator(dates.HourLocator())
+    hfmt = dates.DateFormatter('%H:%M:%S')
+    #ax.xaxis.set_major_locator(dates.HourLocator())
     ax.xaxis.set_major_formatter(hfmt)
     for tick in ax.xaxis.get_major_ticks():
         tick.label.set_fontsize(8) 
