@@ -15,6 +15,7 @@ from optparse import OptionParser
 import numpy as np
 import numpy.ma as ma
 from numpy import convolve
+from numpy import linalg, array, ones
 import matplotlib.pyplot as plt
 from matplotlib import dates
 import math
@@ -73,6 +74,10 @@ def main():
                       dest='pwrMaxDbm',
                       default='-9999.0',
                       help='Minimum power on plots (dBm)')
+    parser.add_option('--lenMean',
+                      dest='lenMean',
+                      default=1,
+                      help='Len of moving mean filter')
     
     (options, args) = parser.parse_args()
     
@@ -91,6 +96,7 @@ def main():
         print("  filePath: ", options.filePath, file=sys.stderr)
         print("  startTime: ", startTime, file=sys.stderr)
         print("  endTime: ", endTime, file=sys.stderr)
+        print("  lenMean: ", options.lenMean, file=sys.stderr)
 
     # read in column headers for TsPrint output
 
@@ -236,12 +242,19 @@ def movingAverage(values, window):
 
     weights = np.repeat(1.0, window)/window
     sma = np.convolve(values, weights, 'same')
+
+    for ii in range(0, int(window / 2) + 1):
+        sma[ii] = values[ii]
+        sma[len(sma)-ii-1] = values[len(sma)-ii-1]
+
     return sma
 
 ########################################################################
 # Plot
 
 def doPlot(colHdrs, obsTimes, colData):
+
+    lenMeanFilter = int(options.lenMean)
 
     fileName = os.path.basename(options.filePath)
     titleStr = "File: " + fileName
@@ -256,10 +269,16 @@ def doPlot(colHdrs, obsTimes, colData):
     powerHc = np.array(colData["Hc"]).astype(np.double)
     powerVc = np.array(colData["Vc"]).astype(np.double)
 
-    # temps
+    #powerHc = movingAverage(powerHc, lenMeanFilter)
+    #powerVc = movingAverage(powerVc, lenMeanFilter)
+
+    # temps with moving average
 
     tempH = np.array(colData["HLnaTemp"]).astype(np.double)
     tempV = np.array(colData["VLnaTemp"]).astype(np.double)
+
+    tempH = movingAverage(tempH, lenMeanFilter)
+    tempV = movingAverage(tempV, lenMeanFilter)
 
     # set up plot structure
 
@@ -269,13 +288,11 @@ def doPlot(colHdrs, obsTimes, colData):
     fig1 = plt.figure(1, (widthIn, htIn))
     ax1 = fig1.add_subplot(2,1,1,xmargin=0.0)
     ax2 = fig1.add_subplot(2,1,2,xmargin=0.0)
-    #ax3 = fig1.add_subplot(4,1,3,xmargin=0.0)
-    #ax4 = fig1.add_subplot(4,1,4,xmargin=0.0)
-
     ax1.set_xlim([obstimes[0], obstimes[-1]])
     ax2.set_xlim([obstimes[0], obstimes[-1]])
-    #ax3.set_xlim([obstimes[0], obstimes[-1]])
-    #ax4.set_xlim([obstimes[0], obstimes[-1]])
+
+    fig2 = plt.figure(2, (widthIn/2, htIn/2))
+    ax3 = fig2.add_subplot(1,1,1,xmargin=1.0, ymargin=1.0)
 
     # axis 1 - power
     
@@ -293,7 +310,7 @@ def doPlot(colHdrs, obsTimes, colData):
     ax2.plot(obstimes, tempV, \
              label = 'tempV', linewidth=1, color='red')
 
-    # legends labels etc
+    # labels
 
     ax1.set_title("Received power (dBm)", fontsize=12)
     ax2.set_title("LNA Temp (C)", fontsize=12)
@@ -307,6 +324,63 @@ def doPlot(colHdrs, obsTimes, colData):
 
     fig1.suptitle("HCR LNA Temp Dependency - " + titleStr, fontsize=16)
     fig1.autofmt_xdate()
+
+    # Plot of temp vs gain, with linear fits
+
+    # Horiz
+
+    ax3.plot(tempH, powerHc, ".", color = 'blue')
+    AH = array([tempH, ones(len(tempH))])
+    # obtaining the fit, ww[0] is slope, ww[1] is intercept
+    wwH = linalg.lstsq(AH.T, powerHc)[0]
+    regrXH = []
+    regrYH = []
+    minTempH = min(tempH) - 5.0
+    maxTempH = max(tempH) + 5.0
+    minPwrH = wwH[0] * minTempH + wwH[1]
+    maxPwrH = wwH[0] * maxTempH + wwH[1]
+    regrXH.append(minTempH)
+    regrXH.append(maxTempH)
+    regrYH.append(minPwrH)
+    regrYH.append(maxPwrH)
+    labelH = "Gain slope H = " + ("%.3f" % wwH[0])
+    ax3.plot(regrXH, regrYH, linewidth=1, color = 'blue', label=labelH)
+
+    # Vert
+
+    ax3.plot(tempV, powerVc, ".", color = 'red')
+    AV = array([tempV, ones(len(tempV))])
+    # obtaining the fit, ww[0] is slope, ww[1] is intercept
+    wwV = linalg.lstsq(AV.T, powerVc)[0]
+    regrXV = []
+    regrYV = []
+    minTempV = min(tempV) - 5.0
+    maxTempV = max(tempV) + 5.0
+    minPwrV = wwV[0] * minTempV + wwV[1]
+    maxPwrV = wwV[0] * maxTempV + wwV[1]
+    regrXV.append(minTempV)
+    regrXV.append(maxTempV)
+    regrYV.append(minPwrV)
+    regrYV.append(maxPwrV)
+    labelV = "Gain slope V = " + ("%.3f" % wwV[0])
+    ax3.plot(regrXV, regrYV, linewidth=1, color = 'red', label=labelV)
+
+    minTemp = min(min(tempH), min(tempV))
+    maxTemp = max(max(tempH), max(tempV))
+
+    minPwr = min(min(powerHc), min(powerVc))
+    maxPwr = max(max(powerHc), max(powerVc))
+
+    ax3.set_xlim(minTemp - 2, maxTemp + 2)
+    ax3.set_ylim(minPwr - 2, maxPwr + 2)
+
+    ax3.set_title("Received power vs. LNA Temperature")
+    ax3.set_xlabel("Temp(C)")
+    ax3.set_ylabel("Measured power(dBm)")
+    
+    legend3 = ax3.legend(loc="upper left", ncol=2)
+
+    # show
 
     plt.tight_layout()
     fig1.subplots_adjust(bottom=0.10, left=0.06, right=0.97, top=0.90)
