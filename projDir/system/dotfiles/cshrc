@@ -33,9 +33,6 @@ setenv HOST_OS LINUX_LROSE
 setenv LROSE_CORE_DIR $HOME/git/lrose-core
 setenv LROSE_INSTALL_DIR $HOME/lrose
 
-setenv RAP_MAKE_INC_DIR $LROSE_CORE_DIR/codebase/make_include
-setenv RAP_MAKE_BIN_DIR $LROSE_CORE_DIR/codebase/make_bin
-
 setenv HCRDIR "/opt/hcr"
 
 # --- OTHER BUILD SETTINGS
@@ -47,7 +44,7 @@ setenv GCC_WARNINGS -Wall
 
 ## --- LD library path --
 #
-#setenv LD_LIBRARY_PATH ${QTDIR}/lib:${RAP_LIB_DIR}:/home/hcr/ReadyFlow/7142_428/linux/1.0/x86_64/lib
+#setenv LD_LIBRARY_PATH ${QTDIR}/lib:${LROSE_INSTALL_DIR}/lib:/home/hcr/ReadyFlow/7142_428/linux/1.0/x86_64/lib
 
 # --- NCAR GRAPHICS ---
 
