@@ -386,7 +386,7 @@ def doPlot(colHdrs, obsTimes, colData):
     # show
 
     plt.tight_layout()
-    fig1.subplots_adjust(bottom=0.10, left=0.06, right=0.97, top=0.90)
+    fig1.subplots_adjust(bottom=0.10, left=0.10, right=0.97, top=0.90)
     plt.show()
 
 ########################################################################
