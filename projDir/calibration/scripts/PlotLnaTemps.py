@@ -52,11 +52,11 @@ def main():
                       help='Title for plot')
     parser.add_option('--width',
                       dest='figWidthMm',
-                      default=400,
+                      default=280,
                       help='Width of figure in mm')
     parser.add_option('--height',
                       dest='figHeightMm',
-                      default=320,
+                      default=200,
                       help='Height of figure in mm')
     parser.add_option('--start',
                       dest='startTime',
@@ -269,9 +269,6 @@ def doPlot(colHdrs, obsTimes, colData):
     powerHc = np.array(colData["Hc"]).astype(np.double)
     powerVc = np.array(colData["Vc"]).astype(np.double)
 
-    #powerHc = movingAverage(powerHc, lenMeanFilter)
-    #powerVc = movingAverage(powerVc, lenMeanFilter)
-
     # temps with moving average
 
     tempH = np.array(colData["HLnaTemp"]).astype(np.double)
@@ -291,7 +288,7 @@ def doPlot(colHdrs, obsTimes, colData):
     ax1.set_xlim([obstimes[0], obstimes[-1]])
     ax2.set_xlim([obstimes[0], obstimes[-1]])
 
-    fig2 = plt.figure(2, (widthIn/2, htIn/2))
+    fig2 = plt.figure(2, (int(widthIn/1.5), int(htIn/1.5)))
     ax3 = fig2.add_subplot(1,1,1,xmargin=1.0, ymargin=1.0)
 
     # axis 1 - power
@@ -312,8 +309,8 @@ def doPlot(colHdrs, obsTimes, colData):
 
     # labels
 
-    ax1.set_title("Received power (dBm)", fontsize=12)
-    ax2.set_title("LNA Temp (C)", fontsize=12)
+    ax1.set_title("Received power (dBm)", fontsize=10)
+    ax2.set_title("LNA Temp (C)", fontsize=10)
 
     configureAxis(ax1,
                   float(options.pwrMinDbm), float(options.pwrMaxDbm),
@@ -322,7 +319,10 @@ def doPlot(colHdrs, obsTimes, colData):
                   -9999.0, -9999.0,
                   "Temps", 'upper left')
 
-    fig1.suptitle("HCR LNA Temp Dependency - " + titleStr, fontsize=16)
+    title1 = "HCR LNA Power/Temp Time Series " + \
+             startTime.isoformat(sep=" ") + \
+             " to " + endTime.isoformat(sep=" ")
+    fig1.suptitle(title1, fontsize=12)
     fig1.autofmt_xdate()
 
     # Plot of temp vs gain, with linear fits
@@ -374,7 +374,10 @@ def doPlot(colHdrs, obsTimes, colData):
     ax3.set_xlim(minTemp - 2, maxTemp + 2)
     ax3.set_ylim(minPwr - 2, maxPwr + 2)
 
-    ax3.set_title("Received power vs. LNA Temperature")
+    title3 = "Power vs Temp " + \
+             startTime.isoformat(sep=" ") + \
+             " to " + endTime.isoformat(sep=" ")
+    ax3.set_title(title3, fontsize=12)
     ax3.set_xlabel("Temp(C)")
     ax3.set_ylabel("Measured power(dBm)")
     
