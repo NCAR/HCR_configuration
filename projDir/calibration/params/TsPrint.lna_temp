@@ -326,7 +326,7 @@ max_angle_change = 0.1;
 //     TS_TCP_INPUT
 //
 
-input_mode = TS_FILE_INPUT;
+input_mode = TS_FMQ_INPUT;
 
 ///////////// input_fmq_name //////////////////////////
 //
@@ -340,7 +340,7 @@ input_mode = TS_FILE_INPUT;
 // Type: string
 //
 
-input_fmq_name = "/tmp/fmq/ts";
+input_fmq_name = "/tmp/fmq/ts/wband/shmem_10000";
 
 ///////////// seek_to_end_of_input ////////////////////
 //
@@ -806,13 +806,13 @@ add_cols_from_status_xml = TRUE;
 
 xml_entries_for_extra_cols = {
   {
-    xml_tag_list = "<HcrStatus><HcrReceiverStatus><VLnaTemp>",
-    col_label = "VLnaTemp"
+    xml_tag_list = "<HcrStatus><HcrReceiverStatus><HLnaTemp>",
+    col_label = "HLnaTemp"
   }
   ,
   {
-    xml_tag_list = "<HcrStatus><HcrReceiverStatus><HLnaTemp>",
-    col_label = "HLnaTemp"
+    xml_tag_list = "<HcrStatus><HcrReceiverStatus><VLnaTemp>",
+    col_label = "VLnaTemp"
   }
 };
 

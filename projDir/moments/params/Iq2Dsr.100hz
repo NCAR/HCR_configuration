@@ -3806,8 +3806,18 @@ output_fields = {
   }
   ,
   {
-    id = VEL_CORRECTED,
+    id = VEL_CORR_MOTION,
     name = "VEL",
+    units = "m/s",
+    scale = 0.01,
+    bias = -320,
+    write_unfiltered = TRUE,
+    write_filtered = FALSE
+  }
+  ,
+  {
+    id = VEL_CORR_VERT,
+    name = "VEL_VERT",
     units = "m/s",
     scale = 0.01,
     bias = -320,
