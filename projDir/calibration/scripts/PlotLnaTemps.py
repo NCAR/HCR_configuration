@@ -288,9 +288,6 @@ def doPlot(colHdrs, obsTimes, colData):
     ax1.set_xlim([obstimes[0], obstimes[-1]])
     ax2.set_xlim([obstimes[0], obstimes[-1]])
 
-    fig2 = plt.figure(2, (int(widthIn/1.5), int(htIn/1.5)))
-    ax3 = fig2.add_subplot(1,1,1,xmargin=1.0, ymargin=1.0)
-
     # axis 1 - power
     
     ax1.plot(obstimes, powerHc, \
@@ -312,22 +309,36 @@ def doPlot(colHdrs, obsTimes, colData):
     ax1.set_title("Received power (dBm)", fontsize=10)
     ax2.set_title("LNA Temp (C)", fontsize=10)
 
-    configureAxis(ax1,
-                  float(options.pwrMinDbm), float(options.pwrMaxDbm),
-                  "Power", 'upper left')
-    configureAxis(ax2,
-                  -9999.0, -9999.0,
-                  "Temps", 'upper left')
+    configureTimeAxis(ax1, float(options.pwrMinDbm), float(options.pwrMaxDbm),
+                      "Power", 'upper left')
+    configureTimeAxis(ax2, -9999.0, -9999.0,
+                      "Temps", 'upper left')
 
     title1 = "HCR LNA Power/Temp Time Series " + \
              startTime.isoformat(sep=" ") + \
              " to " + endTime.isoformat(sep=" ")
     fig1.suptitle(title1, fontsize=12)
     fig1.autofmt_xdate()
+    fig1.subplots_adjust(bottom=0.10, left=0.10, right=0.97, top=0.90)
+
+    # save ax1/2 plot to file
+
+    homeDir = os.environ['HOME']
+    saveDir = os.path.join(homeDir, 'Downloads')
+    saveDir = os.path.join(saveDir, 'images')
+    saveName1 = 'power_vs_temp_timeseries.' + \
+               startTime.isoformat() + "-" + endTime.isoformat() + \
+               '.png'
+    savePath1 = os.path.join(saveDir, saveName1)
+    print("  saving ax1/2 figure to path: ", savePath1, file=sys.stderr)
+    plt.savefig(savePath1, pad_inches=0.0)
 
     # Plot of temp vs gain, with linear fits
 
     # Horiz
+
+    fig3 = plt.figure(2, (int(widthIn/1.5), int(htIn/1.5)))
+    ax3 = fig3.add_subplot(1,1,1,xmargin=1.0, ymargin=1.0)
 
     ax3.plot(tempH, powerHc, ".", color = 'blue')
     AH = array([tempH, ones(len(tempH))])
@@ -382,17 +393,27 @@ def doPlot(colHdrs, obsTimes, colData):
     ax3.set_ylabel("Measured power(dBm)")
     
     legend3 = ax3.legend(loc="upper left", ncol=2)
+    fig3.subplots_adjust(bottom=0.10, left=0.10, right=0.97, top=0.90)
+
+    # save ax3 plot to file
+
+    saveName3 = 'power_vs_temp_xyplot.' + \
+               startTime.isoformat() + "-" + endTime.isoformat() + \
+               '.png'
+    savePath3 = os.path.join(saveDir, saveName3)
+    print("  saving ax3 figure to path: ", savePath3, file=sys.stderr)
+    plt.savefig(savePath3, pad_inches=0.0)
 
     # show
 
     plt.tight_layout()
-    fig1.subplots_adjust(bottom=0.10, left=0.10, right=0.97, top=0.90)
     plt.show()
+
 
 ########################################################################
 # initialize legends etc
 
-def configureAxis(ax, miny, maxy, ylabel, legendLoc):
+def configureTimeAxis(ax, miny, maxy, ylabel, legendLoc):
     
     legend = ax.legend(loc=legendLoc, ncol=6)
     for label in legend.get_texts():
