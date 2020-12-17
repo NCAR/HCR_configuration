@@ -52,11 +52,11 @@ def main():
                       help='Title for plot')
     parser.add_option('--width',
                       dest='figWidthMm',
-                      default=280,
+                      default=250,
                       help='Width of figure in mm')
     parser.add_option('--height',
                       dest='figHeightMm',
-                      default=200,
+                      default=140,
                       help='Height of figure in mm')
     parser.add_option('--start',
                       dest='startTime',
@@ -269,6 +269,10 @@ def doPlot(colHdrs, obsTimes, colData):
     powerHc = np.array(colData["Hc"]).astype(np.double)
     powerVc = np.array(colData["Vc"]).astype(np.double)
 
+    minPwr = min(min(powerHc), min(powerVc))
+    maxPwr = max(max(powerHc), max(powerVc))
+    rangePwr = maxPwr - minPwr
+
     # temps with moving average
 
     tempH = np.array(colData["HLnaTemp"]).astype(np.double)
@@ -276,6 +280,10 @@ def doPlot(colHdrs, obsTimes, colData):
 
     tempH = movingAverage(tempH, lenMeanFilter)
     tempV = movingAverage(tempV, lenMeanFilter)
+
+    minTemp = min(min(tempH), min(tempV))
+    maxTemp = max(max(tempH), max(tempV))
+    rangeTemp = maxTemp - minTemp
 
     # set up plot structure
 
@@ -308,6 +316,8 @@ def doPlot(colHdrs, obsTimes, colData):
 
     ax1.set_title("Received power (dBm)", fontsize=10)
     ax2.set_title("LNA Temp (C)", fontsize=10)
+    ax1.set_ylim(minPwr - rangePwr * 0.1, maxPwr + rangePwr * 0.3)
+    ax2.set_ylim(minTemp - rangeTemp * 0.1, maxTemp + rangeTemp * 0.2)
 
     configureTimeAxis(ax1, float(options.pwrMinDbm), float(options.pwrMaxDbm),
                       "Power", 'upper left')
@@ -319,7 +329,7 @@ def doPlot(colHdrs, obsTimes, colData):
              " to " + endTime.isoformat(sep=" ")
     fig1.suptitle(title1, fontsize=12)
     fig1.autofmt_xdate()
-    fig1.subplots_adjust(bottom=0.10, left=0.10, right=0.97, top=0.90)
+    fig1.subplots_adjust(bottom=0.12, left=0.10, right=0.95, top=0.90)
 
     # save ax1/2 plot to file
 
@@ -337,7 +347,7 @@ def doPlot(colHdrs, obsTimes, colData):
 
     # Horiz
 
-    fig3 = plt.figure(2, (int(widthIn/1.5), int(htIn/1.5)))
+    fig3 = plt.figure(2, (int(widthIn/1.5), int(htIn/1.25)))
     ax3 = fig3.add_subplot(1,1,1,xmargin=1.0, ymargin=1.0)
 
     ax3.plot(tempH, powerHc, ".", color = 'blue')
@@ -382,8 +392,8 @@ def doPlot(colHdrs, obsTimes, colData):
     minPwr = min(min(powerHc), min(powerVc))
     maxPwr = max(max(powerHc), max(powerVc))
 
-    ax3.set_xlim(minTemp - 2, maxTemp + 2)
-    ax3.set_ylim(minPwr - 2, maxPwr + 2)
+    ax3.set_xlim(minTemp - rangeTemp * 0.2, maxTemp + rangeTemp * 0.2)
+    ax3.set_ylim(minPwr - rangeTemp * 0.2, maxPwr + rangeTemp * 0.2)
 
     title3 = "Power vs Temp " + \
              startTime.isoformat(sep=" ") + \
@@ -393,7 +403,7 @@ def doPlot(colHdrs, obsTimes, colData):
     ax3.set_ylabel("Measured power(dBm)")
     
     legend3 = ax3.legend(loc="upper left", ncol=2)
-    fig3.subplots_adjust(bottom=0.10, left=0.10, right=0.97, top=0.90)
+    fig3.subplots_adjust(bottom=0.15, left=0.13, right=0.95, top=0.90)
 
     # save ax3 plot to file
 
