@@ -12,7 +12,7 @@ for ii=1:length(dropList)
         dropT{end+1}=ncread(fileName,'tdry');
     else
         allVars=readtable(fileName,'FileType','text');
-        tempIn=allVars.Var7;
+        tempIn=allVars.Var6;
         tempIn(tempIn==-999)=nan;
         dropT{end+1}=tempIn;
         altIn=allVars.Var17;

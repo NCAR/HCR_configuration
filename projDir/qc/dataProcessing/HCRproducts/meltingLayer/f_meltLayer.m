@@ -194,7 +194,7 @@ transLength=1/resol*600;
 BBaltRawAll=cell(1,size(layerAltsAdj,1));
 
 for kk=1:size(layerAltsAdj,1)
-    timeInds=find(~isnan(layerAltsAdj(kk,:)));
+    timeInds=find(~isnan(layerAltsAdj(kk,:)) & layerIndsAdj(kk,:)>0);
     layerAltsTemp=layerAltsAdj(kk,timeInds);
     rowInds=layerIndsAdj(kk,timeInds);
     
@@ -437,7 +437,7 @@ disp('Calculating offset ...');
 zeroDistCollect=[];
 offset=[];
 for kk=1:size(layerAlts,1)
-    timeInds=find(~isnan(layerAlts(kk,:)));
+    timeInds=find(~isnan(layerAltsAdj(kk,:)) & layerIndsAdj(kk,:)>0);
     BBaltRaw=BBaltRawAll{kk};
     if ~isempty(BBaltRaw)
         zeroDistAll=BBaltRaw-layerAlts(kk,timeInds);
@@ -454,7 +454,7 @@ end
 for kk=1:size(layerAltsAdj,1)
     if ~isempty(offset) & ~isempty(BBaltRawAll{kk})
         BBaltRaw=BBaltRawAll{kk};
-        timeInds=find(~isnan(layerAlts(kk,:)));
+        timeInds=find(~isnan(layerAltsAdj(kk,:)) & layerIndsAdj(kk,:)>0);
         zeroDistF=BBaltRaw-layerAlts(kk,timeInds);
         
         % Remove small data stretches
@@ -485,7 +485,7 @@ disp('Interpolating ...');
 
 for kk=1:size(layerAltsAdj,1)
     BBaltRaw=BBaltRawAll{kk};
-    timeInds=find(~isnan(layerAltsAdj(kk,:)));
+    timeInds=find(~isnan(layerAltsAdj(kk,:)) & layerIndsAdj(kk,:)>0);
     layerAltsTempF=layerAltsAdj(kk,timeInds);
         
     % Interpolate between good values

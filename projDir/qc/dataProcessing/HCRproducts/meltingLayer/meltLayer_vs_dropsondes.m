@@ -3,7 +3,7 @@
 clear all;
 close all;
 
-project='socrates'; %socrates, aristo, cset
+project='otrec'; %socrates, aristo, cset
 quality='qc2'; %field, qc1, or qc2
 freqData='10hz'; % 10hz, 100hz, 2hz, or combined
 
@@ -74,16 +74,13 @@ for aa=1:size(caseList,1)
         
         if strcmp(freqData,'combined')
             data.HCR_DBZ=[];
-            data.HCR_LDR=[];
-            data.HCR_VEL=[];
         else
             data.DBZ=[];
-            data.LDR=[];
-            data.VEL_CORR=[];
         end
         data.MELTING_LAYER=[];
         data.ICING_LEVEL=[];
-        data.FLAG=[];
+        %data.FLAG=[];
+        data.TEMP=[];
         
         dataVars=fieldnames(data);
         
@@ -172,7 +169,7 @@ for aa=1:size(caseList,1)
             tempAlt(any(isnan(tempAlt),2),:) = [];
             signChT=diff(sign(tempAlt(:,1)));
             sondeAlts=tempAlt(signChT~=0,2);
-            if ~isempty(sondeAlts)
+            if ~isempty(sondeAlts) & ~isnan(thisMeltAlt)
                 minDiffAlts=abs(sondeAlts-thisMeltAlt);
                 compAltsHour.sondeAlt(jj)=sondeAlts(minDiffAlts==min(minDiffAlts));
             end
@@ -183,13 +180,9 @@ for aa=1:size(caseList,1)
         
         %% Plot
         
-        timeMat=repmat(data.time,size(data.LDR,1),1);
+        timeMat=repmat(data.time,size(data.DBZ,1),1);
         dbzMasked=data.DBZ;
-        dbzMasked(data.FLAG>1)=nan;
-        ldrMasked=data.LDR;
-        ldrMasked(data.FLAG>1)=nan;
-        velMasked=data.VEL_CORR;
-        velMasked(data.FLAG>1)=nan;
+%        dbzMasked(data.FLAG>1)=nan;
         
         close all
         
@@ -203,14 +196,14 @@ for aa=1:size(caseList,1)
         
         % Resample for plotting
         newDBZ=dbzMasked(:,newInds);
-        newLDR=ldrMasked(:,newInds);
-        newVEL=velMasked(:,newInds);
         newASL=data.asl(:,newInds);
+        newTEMP=data.TEMP(:,newInds);
         newFindMelt=data.MELTING_LAYER(:,newInds);
         newTime=data.time(newInds);
         
         fig1=figure('DefaultAxesFontSize',11,'position',[100,1300,1200,700]);
         
+        subplot(2,1,1)
         hold on;
         sub1=surf(newTime,newASL./1000,newDBZ,'edgecolor','none');
         view(2);
@@ -251,6 +244,46 @@ for aa=1:size(caseList,1)
                 
         set(colorbar,'visible','off')
         
+        subplot(2,1,2)
+        hold on;
+        sub1=surf(newTime,newASL./1000,newTEMP,'edgecolor','none');
+        view(2);
+        scatter(timeMat(twentyoneInds),data.asl(twentyoneInds)./1000,10,'k','filled');
+        scatter(timeMat(elevenInds),data.asl(elevenInds)./1000,10,...
+            'MarkerEdgeColor',[0.7 0.7 0.7],'MarkerFaceColor',[0.7 0.7 0.7]);
+        
+        scatter(timeMat(twentyfourInds),data.asl(twentyfourInds)./1000,10,...
+            'MarkerEdgeColor',[0.45 0.76 0.42],'MarkerFaceColor',[0.45 0.76 0.42]);
+        scatter(timeMat(twentythreeInds),data.asl(twentythreeInds)./1000,10,...
+            'MarkerEdgeColor',[0.7 0.8 0.87],'MarkerFaceColor',[0.7 0.8 0.87]);
+        scatter(timeMat(twentytwoInds),data.asl(twentytwoInds)./1000,10,...
+            'MarkerEdgeColor',[0.17 0.45 0.7],'MarkerFaceColor',[0.17 0.45 0.7]);
+        
+        scatter(timeMat(fourteenInds),data.asl(fourteenInds)./1000,10,'g','filled');
+        scatter(timeMat(thirteenInds),data.asl(thirteenInds)./1000,10,'c','filled');
+        scatter(timeMat(twelveInds),data.asl(twelveInds)./1000,10,'b','filled');
+        
+        % Dropsondes
+        for jj=1:length(dropAlt)
+            timeVec=repmat(dropTimes(jj),length(dropAlt{jj}),1);
+            scatter(timeVec,dropAlt{jj}./1000,20,dropT{jj},'filled');
+            set(gca,'clim',[-10 10])
+            set(gca,'colormap',jet)
+            if ~isempty(allSondeAlts{jj})
+                scatter(repmat(dropTimes(jj),1,length(allSondeAlts{jj})),allSondeAlts{jj}/1000,20,'k','filled');
+            end
+        end
+        
+        ax = gca;
+        ax.SortMethod = 'childorder';
+        ylim(ylimits);
+        ylabel('Altitude (km)');
+        xlim([data.time(1),data.time(end)]);
+        title(['Melting layer, ERA5 and dropsonde temperature (C)'])
+        grid on
+                
+        colorbar
+        
         formatOut = 'yyyymmdd_HHMM';
         set(gcf,'PaperPositionMode','auto')
         print([figdir,'meltRefl_dropsondes_',datestr(data.time(1),formatOut),'_to_',datestr(data.time(end),formatOut)],'-dpng','-r0');
@@ -261,47 +294,3 @@ end
 
 writetable(compAlts,[figdir,project,'_meltLayer_dropsonde.txt'],'Delimiter',' ');
 
-%% Plot comparison scatter plot
-close all
-
-fig2=figure('DefaultAxesFontSize',11,'position',[100,1300,700,700]);
-hold on
-
-maxLim=ceil(max(max(table2array(compAlts(:,2:end)))))/1000;
-plot([0 maxLim],[0 maxLim],'-r');
-
-% Regression lines
-fitOrth1=gmregress(compAlts.zeroDegAlt./1000,compAlts.sondeAlt./1000,1);
-fitAll1=[fitOrth1(2) fitOrth1(1)];
-xFitD =0:0.1:maxLim;
-yFitD1 = polyval(fitAll1, xFitD);
-plot(xFitD, yFitD1,'-k','linewidth',1.5);
-fitOrth2=gmregress(compAlts.meltAltEst./1000,compAlts.sondeAlt./1000,1);
-fitAll2=[fitOrth2(2) fitOrth2(1)];
-yFitD2 = polyval(fitAll2, xFitD);
-plot(xFitD, yFitD2,'-g','linewidth',1.5);
-fitOrth3=gmregress(compAlts.meltAltInt./1000,compAlts.sondeAlt./1000,1);
-fitAll3=[fitOrth3(2) fitOrth3(1)];
-yFitD3 = polyval(fitAll3, xFitD);
-plot(xFitD, yFitD3,'-c','linewidth',1.5);
-fitOrth4=gmregress(compAlts.meltAltMeas./1000,compAlts.sondeAlt./1000,1);
-fitAll4=[fitOrth4(2) fitOrth4(1)];
-yFitD4 = polyval(fitAll4, xFitD);
-plot(xFitD, yFitD4,'-b','linewidth',1.5);
-
-scatter(compAlts.zeroDegAlt./1000,compAlts.sondeAlt./1000,30,'k','filled');
-scatter(compAlts.meltAltEst./1000,compAlts.sondeAlt./1000,30,'g','filled');
-scatter(compAlts.meltAltInt./1000,compAlts.sondeAlt./1000,30,'c','filled');
-scatter(compAlts.meltAltMeas./1000,compAlts.sondeAlt./1000,30,'b','filled');
-xlabel('HCR altitude (km)');
-ylabel('Dropsonde altitude (km)');
-
-title(['Melting layer altitude'])
-grid on
-axis equal
-xlim([0 maxLim]);
-ylim([0 maxLim]);
-
-formatOut = 'yyyymmdd_HHMM';
-set(gcf,'PaperPositionMode','auto')
-print([figdir,project,'_meltLayer_dropsonde.png'],'-dpng','-r0');

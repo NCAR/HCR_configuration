@@ -17,7 +17,7 @@ saveOffset=1;
 offsetIn=-200;
 % If no data is found within one flight, take mean of previous flight (0)
 % or mean over all flights (1) which is given as offsetIn above.
-prevOrTotOffset=1;
+prevOrTotOffset=0;
 
 if ~exist(figdir, 'dir')
     mkdir(figdir)
@@ -38,7 +38,7 @@ caseList = table2array(readtable(infile));
 
 zeroAdjust=offsetIn;
 
-for aa=1:size(caseList,1)
+for aa=4:size(caseList,1)
     disp(['Flight ',num2str(aa)]);
     disp('Loading HCR data.')
     disp(['Starting at ',datestr(datetime('now'),'yyyy-mm-dd HH:MM')]);

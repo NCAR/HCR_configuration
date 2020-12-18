@@ -3,14 +3,14 @@
 clear all;
 close all;
 
-project='socrates'; %socrates, aristo, cset
+project='otrec'; %socrates, aristo, cset
 quality='qc2'; %field, qc1, or qc2
-freqData='combined'; % 10hz, 100hz, 2hz, or combined
+freqData='10hz'; % 10hz, 100hz, 2hz, or combined
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
 % figdir=['/scr/snow1/rsfdata/projects/otrec/hcr/qc2/cfradial/final2/10hz/plots/testHourly/'];
-figdir=['/home/romatsch/plots/HCR/meltingLayer/hourly/',project,'/combined/'];
+figdir=['/home/romatsch/plots/HCR/meltingLayer/hourly/',project,'/10hz/'];
 
 if ~exist(figdir, 'dir')
     mkdir(figdir)
@@ -19,7 +19,7 @@ end
 ylimits=[-0.2 7];
 
 %indir=HCRdir(project,quality,freqData);
-indir=['/run/media/romatsch/RSF0006/rsf/meltingLayer/',project,'/combined/'];
+indir=['/run/media/romatsch/RSF0006/rsf/meltingLayer/',project,'/10hz/'];
 
 infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_',project,'_data.txt'];
 
