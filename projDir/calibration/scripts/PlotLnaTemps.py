@@ -78,6 +78,10 @@ def main():
                       dest='lenMean',
                       default=1,
                       help='Len of moving mean filter')
+    parser.add_option('--lagSecs',
+                      dest='lagSecs',
+                      default=0,
+                      help='Correct for lag between temp and power measurements')
     
     (options, args) = parser.parse_args()
     
@@ -97,6 +101,7 @@ def main():
         print("  startTime: ", startTime, file=sys.stderr)
         print("  endTime: ", endTime, file=sys.stderr)
         print("  lenMean: ", options.lenMean, file=sys.stderr)
+        print("  lagSecs: ", options.lagSecs, file=sys.stderr)
 
     # read in column headers for TsPrint output
 
@@ -277,6 +282,12 @@ def doPlot(colHdrs, obsTimes, colData):
 
     tempH = np.array(colData["HLnaTemp"]).astype(np.double)
     tempV = np.array(colData["VLnaTemp"]).astype(np.double)
+
+    lagSecs = int(options.lagSecs)
+    if (lagSecs > 0):
+        for ii in range(0, len(tempH) - lagSecs):
+            tempH[ii] = tempH[ii + lagSecs]
+            tempV[ii] = tempV[ii + lagSecs]
 
     tempH = movingAverage(tempH, lenMeanFilter)
     tempV = movingAverage(tempV, lenMeanFilter)
