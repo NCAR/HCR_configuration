@@ -16,6 +16,8 @@ import numpy as np
 import numpy.ma as ma
 from numpy import convolve
 from numpy import linalg, array, ones
+import scipy
+from scipy import odr
 import matplotlib.pyplot as plt
 from matplotlib import dates
 import math
@@ -255,6 +257,18 @@ def movingAverage(values, window):
     return sma
 
 ########################################################################
+# define funtion for linear fit
+
+def flinear(B, x):
+    '''Linear function y = m*x + b'''
+    # B is a vector of the parameters.
+    # x is an array of the current x values.
+    # x is in the same format as the x passed to Data or RealData.
+    #
+    # Return an array in the same format as y passed to Data or RealData.
+    return B[0]*x + B[1]
+
+########################################################################
 # Plot
 
 def doPlot(colHdrs, obsTimes, colData):
@@ -354,7 +368,7 @@ def doPlot(colHdrs, obsTimes, colData):
     print("  saving ax1/2 figure to path: ", savePath1, file=sys.stderr)
     plt.savefig(savePath1, pad_inches=0.0)
 
-    # Plot of temp vs gain, with linear fits
+    # Plot of temp vs gain, with orthogonal linear fits
 
     # Horiz
 
@@ -362,39 +376,58 @@ def doPlot(colHdrs, obsTimes, colData):
     ax3 = fig3.add_subplot(1,1,1,xmargin=1.0, ymargin=1.0)
 
     ax3.plot(tempH, powerHc, ".", color = 'blue')
-    AH = array([tempH, ones(len(tempH))])
+
+    linear = odr.Model(flinear)
+    dataH = odr.Data(tempH, powerHc)
+    odrH = odr.ODR(dataH, linear, beta0=[1.0, 2.0])
+    outputH = odrH.run()
+    #outputH.pprint()
+    slopeH = outputH.beta[0]
+    interceptH = outputH.beta[1]
+
+    #AH = array([tempH, ones(len(tempH))])
     # obtaining the fit, ww[0] is slope, ww[1] is intercept
-    wwH = linalg.lstsq(AH.T, powerHc)[0]
+    #wwH = linalg.lstsq(AH.T, powerHc)[0]
+
     regrXH = []
     regrYH = []
     minTempH = min(tempH) - 5.0
     maxTempH = max(tempH) + 5.0
-    minPwrH = wwH[0] * minTempH + wwH[1]
-    maxPwrH = wwH[0] * maxTempH + wwH[1]
+    minPwrH = slopeH * minTempH + interceptH
+    maxPwrH = slopeH * maxTempH + interceptH
     regrXH.append(minTempH)
     regrXH.append(maxTempH)
     regrYH.append(minPwrH)
     regrYH.append(maxPwrH)
-    labelH = "Gain slope H = " + ("%.3f" % wwH[0])
+    labelH = "Gain slope H = " + ("%.3f" % slopeH)
     ax3.plot(regrXH, regrYH, linewidth=1, color = 'blue', label=labelH)
 
     # Vert
 
     ax3.plot(tempV, powerVc, ".", color = 'red')
-    AV = array([tempV, ones(len(tempV))])
+
+    dataV = odr.Data(tempV, powerVc)
+    odrV = odr.ODR(dataV, linear, beta0=[1.0, 2.0])
+    outputV = odrV.run()
+    #outputV.pprint()
+    slopeV = outputV.beta[0]
+    interceptV = outputV.beta[1]
+
+    #AV = array([tempV, ones(len(tempV))])
     # obtaining the fit, ww[0] is slope, ww[1] is intercept
-    wwV = linalg.lstsq(AV.T, powerVc)[0]
+    #wwV = linalg.lstsq(AV.T, powerVc)[0]
+
     regrXV = []
     regrYV = []
     minTempV = min(tempV) - 5.0
     maxTempV = max(tempV) + 5.0
-    minPwrV = wwV[0] * minTempV + wwV[1]
-    maxPwrV = wwV[0] * maxTempV + wwV[1]
+    minPwrV = slopeV * minTempV + interceptV
+    maxPwrV = slopeV * maxTempV + interceptV
     regrXV.append(minTempV)
     regrXV.append(maxTempV)
     regrYV.append(minPwrV)
     regrYV.append(maxPwrV)
-    labelV = "Gain slope V = " + ("%.3f" % wwV[0])
+    labelV = "Gain slope V = " + ("%.3f" % slopeV)
     ax3.plot(regrXV, regrYV, linewidth=1, color = 'red', label=labelV)
 
     minTemp = min(min(tempH), min(tempV))
