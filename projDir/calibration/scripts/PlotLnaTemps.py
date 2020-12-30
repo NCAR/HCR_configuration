@@ -84,6 +84,18 @@ def main():
                       dest='lagSecs',
                       default=0,
                       help='Correct for lag between temp and power measurements')
+    parser.add_option('--hOnly',
+                      dest='hOnly', default=False,
+                      action="store_true",
+                      help='Only plot H channel data sets')
+    parser.add_option('--vOnly',
+                      dest='vOnly', default=False,
+                      action="store_true",
+                      help='Only plot V channel data sets')
+    parser.add_option('--lag1',
+                      dest='lag1', default=False,
+                      action="store_true",
+                      help='Plot lag1 coherent power instead of lag0 power')
     
     (options, args) = parser.parse_args()
     
@@ -104,6 +116,13 @@ def main():
         print("  endTime: ", endTime, file=sys.stderr)
         print("  lenMean: ", options.lenMean, file=sys.stderr)
         print("  lagSecs: ", options.lagSecs, file=sys.stderr)
+        print("  hOnly: ", options.hOnly, file=sys.stderr)
+        print("  vOnly: ", options.vOnly, file=sys.stderr)
+        print("  lag1: ", options.lag1, file=sys.stderr)
+
+    if (options.hOnly and options.vOnly):
+        print("ERROR - cannot set both --hOnly and --vOnly", file=sys.stderr)
+        sys.exit(1)
 
     # read in column headers for TsPrint output
 
@@ -285,11 +304,29 @@ def doPlot(colHdrs, obsTimes, colData):
 
     # power
     
+
     powerHc = np.array(colData["Hc"]).astype(np.double)
     powerVc = np.array(colData["Vc"]).astype(np.double)
+    lag1Hc = np.array(colData["Lag1Hc"]).astype(np.double)
+    lag1Vc = np.array(colData["Lag1Vc"]).astype(np.double)
 
-    minPwr = min(min(powerHc), min(powerVc))
-    maxPwr = max(max(powerHc), max(powerVc))
+    if (options.hOnly):
+        minPwr = min(powerHc)
+        maxPwr = max(powerHc)
+        if (options.lag1):
+            minPwr = min(minPwr, min(lag1Hc))
+    elif (options.vOnly):
+        minPwr = min(powerVc)
+        maxPwr = max(powerVc)
+        if (options.lag1):
+            minPwr = min(minPwr, min(lag1Vc))
+    else:
+        minPwr = min(min(powerHc), min(powerVc))
+        maxPwr = max(max(powerHc), max(powerVc))
+        if (options.lag1):
+            minPwr = min(minPwr, min(lag1Hc))
+            minPwr = min(minPwr, min(lag1Vc))
+
     rangePwr = maxPwr - minPwr
 
     # temps with moving average
@@ -306,8 +343,16 @@ def doPlot(colHdrs, obsTimes, colData):
     tempH = movingAverage(tempH, lenMeanFilter)
     tempV = movingAverage(tempV, lenMeanFilter)
 
-    minTemp = min(min(tempH), min(tempV))
-    maxTemp = max(max(tempH), max(tempV))
+    if (options.hOnly):
+        minTemp = min(tempH)
+        maxTemp = max(tempH)
+    elif (options.vOnly):
+        minTemp = min(tempV)
+        maxTemp = max(tempV)
+    else:
+        minTemp = min(min(tempH), min(tempV))
+        maxTemp = max(max(tempH), max(tempV))
+
     rangeTemp = maxTemp - minTemp
 
     # set up plot structure
@@ -323,19 +368,29 @@ def doPlot(colHdrs, obsTimes, colData):
 
     # axis 1 - power
     
-    ax1.plot(obstimes, powerHc, \
-             label = 'powerHc', linewidth=1, color='blue')
-
-    ax1.plot(obstimes, powerVc, \
-             label = 'powerVc', linewidth=1, color='red')
+    if (not options.vOnly):
+        ax1.plot(obstimes, powerHc, \
+                 label = 'powerHc', linewidth=1, color='blue')
+        if (options.lag1):
+            ax1.plot(obstimes, lag1Hc, \
+                     label = 'lag1Hc', linewidth=2, linestyle=':', color='orange')
+        
+    if (not options.hOnly):
+        ax1.plot(obstimes, powerVc, \
+                 label = 'powerVc', linewidth=1, color='red')
+        if (options.lag1):
+            ax1.plot(obstimes, lag1Vc, \
+                     label = 'lag1Vc', linewidth=2, linestyle=':', color='green')
 
     # axis 2 - temps
     
-    ax2.plot(obstimes, tempH, \
-             label = 'tempH', linewidth=1, color='blue')
+    if (not options.vOnly):
+        ax2.plot(obstimes, tempH, \
+                 label = 'tempH', linewidth=1, color='blue')
 
-    ax2.plot(obstimes, tempV, \
-             label = 'tempV', linewidth=1, color='red')
+    if (not options.hOnly):
+        ax2.plot(obstimes, tempV, \
+                 label = 'tempV', linewidth=1, color='red')
 
     # labels
 
@@ -358,12 +413,19 @@ def doPlot(colHdrs, obsTimes, colData):
 
     # save ax1/2 plot to file
 
+    if (options.hOnly):
+        saveLabel = '.hOnly'
+    elif (options.vOnly):
+        saveLabel = '.vOnly'
+    else:
+        saveLabel = ''
+
     homeDir = os.environ['HOME']
     saveDir = os.path.join(homeDir, 'Downloads')
     saveDir = os.path.join(saveDir, 'images')
     saveName1 = 'power_vs_temp_timeseries.' + \
                startTime.isoformat() + "-" + endTime.isoformat() + \
-               '.png'
+               saveLabel + '.png'
     savePath1 = os.path.join(saveDir, saveName1)
     print("  saving ax1/2 figure to path: ", savePath1, file=sys.stderr)
     plt.savefig(savePath1, pad_inches=0.0)
@@ -375,7 +437,10 @@ def doPlot(colHdrs, obsTimes, colData):
     fig3 = plt.figure(2, (int(widthIn/1.5), int(htIn/1.5)))
     ax3 = fig3.add_subplot(1,1,1,xmargin=1.0, ymargin=1.0)
 
-    ax3.plot(tempH, powerHc, ".", color = 'blue')
+    if (not options.vOnly):
+        ax3.plot(tempH, powerHc, ".", color = 'blue')
+        if (options.lag1):
+            ax3.plot(tempH, lag1Hc, "x", color = 'orange')
 
     linear = odr.Model(flinear)
     dataH = odr.Data(tempH, powerHc)
@@ -400,11 +465,15 @@ def doPlot(colHdrs, obsTimes, colData):
     regrYH.append(minPwrH)
     regrYH.append(maxPwrH)
     labelH = "Gain slope H = " + ("%.3f" % slopeH)
-    ax3.plot(regrXH, regrYH, linewidth=1, color = 'blue', label=labelH)
+    if (not options.vOnly):
+        ax3.plot(regrXH, regrYH, linewidth=1, color = 'blue', label=labelH)
 
     # Vert
 
-    ax3.plot(tempV, powerVc, ".", color = 'red')
+    if (not options.hOnly):
+        ax3.plot(tempV, powerVc, ".", color = 'red')
+        if (options.lag1):
+            ax3.plot(tempV, lag1Vc, "x", color = 'green')
 
     dataV = odr.Data(tempV, powerVc)
     odrV = odr.ODR(dataV, linear, beta0=[1.0, 2.0])
@@ -428,16 +497,15 @@ def doPlot(colHdrs, obsTimes, colData):
     regrYV.append(minPwrV)
     regrYV.append(maxPwrV)
     labelV = "Gain slope V = " + ("%.3f" % slopeV)
-    ax3.plot(regrXV, regrYV, linewidth=1, color = 'red', label=labelV)
+    if (not options.hOnly):
+        ax3.plot(regrXV, regrYV, linewidth=1, color = 'red', label=labelV)
 
-    minTemp = min(min(tempH), min(tempV))
-    maxTemp = max(max(tempH), max(tempV))
+    minTemp2 = min(min(tempH), min(tempV))
+    maxTemp2 = max(max(tempH), max(tempV))
+    rangeTemp2 = maxTemp2 - minTemp2
 
-    minPwr = min(min(powerHc), min(powerVc))
-    maxPwr = max(max(powerHc), max(powerVc))
-
-    ax3.set_xlim(minTemp - rangeTemp * 0.2, maxTemp + rangeTemp * 0.2)
-    ax3.set_ylim(minPwr - rangeTemp * 0.2, maxPwr + rangeTemp * 0.25)
+    ax3.set_xlim(minTemp2 - rangeTemp2 * 0.2, maxTemp2 + rangeTemp2 * 0.2)
+    ax3.set_ylim(minPwr - rangeTemp2 * 0.2, maxPwr + rangeTemp2 * 0.25)
 
     title3 = "Power vs Temp " + \
              startTime.isoformat(sep=" ") + \
@@ -454,7 +522,7 @@ def doPlot(colHdrs, obsTimes, colData):
 
     saveName3 = 'power_vs_temp_xyplot.' + \
                startTime.isoformat() + "-" + endTime.isoformat() + \
-               '.png'
+               saveLabel + '.png'
     savePath3 = os.path.join(saveDir, saveName3)
     print("  saving ax3 figure to path: ", savePath3, file=sys.stderr)
     plt.savefig(savePath3, pad_inches=0.0)
