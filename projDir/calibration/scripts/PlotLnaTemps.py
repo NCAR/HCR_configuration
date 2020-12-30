@@ -358,7 +358,7 @@ def doPlot(colHdrs, obsTimes, colData):
 
     # Horiz
 
-    fig3 = plt.figure(2, (int(widthIn/1.5), int(htIn/1.25)))
+    fig3 = plt.figure(2, (int(widthIn/1.5), int(htIn/1.5)))
     ax3 = fig3.add_subplot(1,1,1,xmargin=1.0, ymargin=1.0)
 
     ax3.plot(tempH, powerHc, ".", color = 'blue')
@@ -404,13 +404,14 @@ def doPlot(colHdrs, obsTimes, colData):
     maxPwr = max(max(powerHc), max(powerVc))
 
     ax3.set_xlim(minTemp - rangeTemp * 0.2, maxTemp + rangeTemp * 0.2)
-    ax3.set_ylim(minPwr - rangeTemp * 0.2, maxPwr + rangeTemp * 0.2)
+    ax3.set_ylim(minPwr - rangeTemp * 0.2, maxPwr + rangeTemp * 0.25)
 
     title3 = "Power vs Temp " + \
              startTime.isoformat(sep=" ") + \
              " to " + endTime.isoformat(sep=" ")
-    ax3.set_title(title3, fontsize=12)
-    ax3.set_xlabel("Temp(C)")
+    ax3.set_title(title3, fontsize=10)
+    labelX = "Temp(C) lagged " + ("%d" % lagSecs) + " secs"
+    ax3.set_xlabel(labelX)
     ax3.set_ylabel("Measured power(dBm)")
     
     legend3 = ax3.legend(loc="upper left", ncol=2)

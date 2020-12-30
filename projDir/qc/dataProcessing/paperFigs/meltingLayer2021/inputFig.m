@@ -1,5 +1,4 @@
 % Analyze HCR clouds
-
 clear all;
 close all;
 
@@ -13,8 +12,8 @@ figdir=['/home/romatsch/plots/HCR/meltingLayer/paper/'];
 
 indir=['/run/media/romatsch/RSF0006/rsf/meltingLayer/',project,'/10hz/'];
 
-startTime=datetime(2018,1,19,5,30,0);
-endTime=datetime(2018,1,19,6,45,0);
+startTime=datetime(2018,2,5,0,5,0);
+endTime=datetime(2018,2,5,0,37,0);
 
 %% Load data
 
@@ -22,8 +21,11 @@ disp('Loading data ...');
 
 data=[];
 
+data.TEMP=[];
+data.VEL_CORR=[];
+data.LDR=[];
+data.FLAG=[];
 data.MELTING_LAYER=[];
-data.ICING_LEVEL=[];
 
 dataVars=fieldnames(data);
 
@@ -48,18 +50,15 @@ end
 dataVars=dataVars(~cellfun('isempty',dataVars));
 
 elevenInds=find(data.MELTING_LAYER==11);
-twelveInds=find(data.MELTING_LAYER==12);
-thirteenInds=find(data.MELTING_LAYER==13);
-fourteenInds=find(data.MELTING_LAYER==14);
-
 twentyoneInds=find(data.MELTING_LAYER==21);
-twentytwoInds=find(data.MELTING_LAYER==22);
-twentythreeInds=find(data.MELTING_LAYER==23);
-twentyfourInds=find(data.MELTING_LAYER==24);
+
 %% Plot
 
-timeMat=repmat(data.time,size(data.MELTING_LAYER,1),1);
-
+timeMat=repmat(data.time,size(data.LDR,1),1);
+ldrMasked=data.LDR;
+ldrMasked(data.FLAG>1)=nan;
+velMasked=data.VEL_CORR;
+velMasked(data.FLAG>1)=nan;
 
 close all
 
@@ -72,16 +71,17 @@ else
 end
 
 % Resample for plotting
-newFindMelt=data.MELTING_LAYER(:,newInds);
+newTEMP=data.TEMP(:,newInds);
+newLDR=ldrMasked(:,newInds);
+newVEL=velMasked(:,newInds);
 newASL=data.asl(:,newInds);
 newTime=data.time(newInds);
 
 %% Plot
 close all
 
-%fig1=figure('DefaultAxesFontSize',11,'position',[100,100,1400,800]);
 wi=5;
-hi=3;
+hi=8;
 
 fig1=figure('DefaultAxesFontSize',11,'DefaultFigurePaperType','<custom>','units','inch','position',[3,100,wi,hi]);
 fig1.PaperPositionMode = 'manual';
@@ -93,33 +93,62 @@ fig1.Resize = 'off';
 fig1.InvertHardcopy = 'off';
 
 set(fig1,'color','w');
-colmap=jet;
-colormap(flipud(colmap));
 
-ax2=subplot(1,1,1);
+ylimits=[0 4];
+
+ax1=subplot(3,1,1);
+
 hold on;
-sub1=surf(newTime,newASL./1000,newFindMelt,'edgecolor','none');
-ax2.Colormap=([1 0 1;1 1 0]);
+sub1=surf(newTime,newASL./1000,newTEMP,'edgecolor','none');
 view(2);
-scatter(timeMat(elevenInds),data.asl(elevenInds)./1000,10,'k','filled');
-scatter(timeMat(fourteenInds),data.asl(fourteenInds)./1000,10,'g','filled');
-scatter(timeMat(thirteenInds),data.asl(thirteenInds)./1000,10,'c','filled');
-scatter(timeMat(twelveInds),data.asl(twelveInds)./1000,10,'b','filled');
+colormap(jet)
+caxis([-10 10]);
+hcb1=colorbar;
+l1=scatter(timeMat(elevenInds),data.asl(elevenInds)./1000,10,'k','filled');
 
 scatter(timeMat(twentyoneInds),data.asl(twentyoneInds)./1000,10,'k','filled');
-scatter(timeMat(twentyfourInds),data.asl(twentyfourInds)./1000,10,'g','filled');
-scatter(timeMat(twentythreeInds),data.asl(twentythreeInds)./1000,10,'c','filled');
-scatter(timeMat(twentytwoInds),data.asl(twentytwoInds)./1000,10,'b','filled');
 
-plot(data.time,data.ICING_LEVEL./1000,'linewidth',1,'color',[0.6 0.6 0.6]);
 ax = gca;
 ax.SortMethod = 'childorder';
-ylim([0 4]);
+ylim(ylimits);
 ylabel('Altitude (km)');
 xlim([data.time(1),data.time(end)]);
-title('Melting layer data product')
+title('(a) TEMP (deg C)')
 grid on
-ax2.Position=[0.085 0.157 0.87 0.76];
+ax1.Position=[0.08 0.71 0.8 0.26];
+hcb1.Position=[0.895 0.71 0.04 0.26];
+legend(l1,{'Zero deg'},'Location','northwest');
 
-print([figdir,'icinglevel'],'-dpng','-r0');
+%%%%%%%%%%%%%%%%%%%%%%%% LDR%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ax2=subplot(3,1,2);
+hold on;
+sub3=surf(newTime,newASL./1000,newLDR,'edgecolor','none');
+view(2);
+caxis([-25 -5]);
+hcb2=colorbar;
+ylim(ylimits);
+ylabel('Altitude (km)');
+xlim([data.time(1),data.time(end)]);
+title('(b) LDR (dB)')
+grid on
+ax2.Position=[0.08 0.385 0.8 0.26];
+hcb2.Position=[0.895 0.385 0.04 0.26];
 
+ax3=subplot(3,1,3);
+ax3.Colormap=jet;
+hold on;
+sub3=surf(newTime,newASL./1000,newVEL,'edgecolor','none');
+view(2);
+caxis([-4 4]);
+hcb3=colorbar('XTick',-4:2:4);
+ylim(ylimits);
+ylabel('Altitude (km)');
+xlim([data.time(1),data.time(end)]);
+title('(c) VEL (m s^{-1})')
+grid on
+ax3.Position=[0.08 0.06 0.8 0.26];
+hcb3.Position=[0.895 0.06 0.04 0.26];
+
+formatOut = 'yyyymmdd_HHMM';
+set(gcf,'PaperPositionMode','auto')
+print([figdir,'inputFig'],'-dpng','-r0');
