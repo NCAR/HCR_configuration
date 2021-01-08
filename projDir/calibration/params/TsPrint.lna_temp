@@ -69,9 +69,6 @@ instance = "lna_temp";
 //
 // ASCOPE_MODE: print data for a range of gates to the screen.
 //
-// CAL_MODE: average the powers for a number of gates, and write out in 
-//   a file suitable for calibration.
-//
 // SERVER_MODE: listen on a port, and when a connection is established 
 //   read an incoming set of commands in XML, average power over gates, 
 //   and respond to the client in XML.
@@ -90,7 +87,6 @@ instance = "lna_temp";
 // Options:
 //     PRINT_MODE
 //     ASCOPE_MODE
-//     CAL_MODE
 //     SERVER_MODE
 //     MAX_POWER_MODE
 //     MAX_POWER_SERVER_MODE
@@ -143,6 +139,19 @@ print_meta_headers = FALSE;
 //
 
 print_all_headers = FALSE;
+
+///////////// print_lag1_coherent_power ///////////////
+//
+// Print the lag1 (coherent) power in addition to lag0 power.
+//
+// lag1 powers can help to distinguish between noise and coherent 
+//   signal.
+//
+//
+// Type: boolean
+//
+
+print_lag1_coherent_power = TRUE;
 
 ///////////// print_all_pulses ////////////////////////
 //
@@ -375,28 +384,6 @@ tcp_server_host = "localhost";
 //
 
 tcp_server_port = 12000;
-
-///////////// dual_channel ////////////////////////////
-//
-// Handle dual channels.
-//
-// Normally, only a single channel is used.
-//
-//
-// Type: boolean
-//
-
-dual_channel = TRUE;
-
-///////////// fast_alternating ////////////////////////
-//
-// Radar is in fast-alternating mode.
-//
-//
-// Type: boolean
-//
-
-fast_alternating = FALSE;
 
 ///////////// invert_hv_flag //////////////////////////
 //
