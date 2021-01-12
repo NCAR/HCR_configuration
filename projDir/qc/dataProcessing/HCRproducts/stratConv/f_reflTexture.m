@@ -1,9 +1,9 @@
-function dbzText=f_reflTexture(data,pixRad,goodDataFrac)
+function dbzText=f_reflTexture(DBZ,pixRad,goodDataFrac)
 % Calculate reflectivity texture
-dbzText=nan(size(data.dbzMasked));
+dbzText=nan(size(DBZ));
 
 % Pad data at start and end
-dbzPadded=padarray(data.dbzMasked,[0 pixRad],nan);
+dbzPadded=padarray(DBZ,[0 pixRad],nan);
 
 % figure
 % surf(dbzPadded,'edgecolor','none');
@@ -71,6 +71,6 @@ for ii=1:size(dbzPadded,2)-pixRad*2-1
     
     dbzText(:,ii)=tdbz;
 end
-dbzText(isnan(data.dbzMasked))=nan;
+dbzText(isnan(DBZ))=nan;
 end
 
