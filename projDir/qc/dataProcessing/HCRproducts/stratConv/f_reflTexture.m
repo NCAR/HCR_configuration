@@ -1,37 +1,11 @@
-function dbzText=f_reflTexture(DBZ,pixRad,goodDataFrac)
+function dbzText=f_reflTexture(DBZ,pixRad,dbzThresh)
 % Calculate reflectivity texture
 dbzText=nan(size(DBZ));
 
+DBZ(DBZ<dbzThresh)=nan;
+
 % Pad data at start and end
 dbzPadded=padarray(DBZ,[0 pixRad],nan);
-
-% figure
-% surf(dbzPadded,'edgecolor','none');
-% view(2)
-% colormap(jet)
-% caxis([-35 25])
-% 
-% % Analyze edges
-% dbzBW=zeros(size(dbzPadded));
-% dbzBW(~isnan(dbzPadded))=1;
-% 
-% % Fill small holes so they don't get bigger
-% dbzBW=~bwareaopen(~dbzBW, 20);
-% 
-% % Shrink
-% dbzErode=imerode(dbzBW, strel('disk', 50));
-% 
-% edgeArea=dbzBW+dbzErode;
-% edgeArea(edgeArea>1)=0;
-% 
-% edges=dbzPadded;
-% edges(edgeArea==0)=nan;
-% 
-% figure
-% surf(edges,'edgecolor','none');
-% view(2)
-% colormap(jet)
-% caxis([-35 25])
 
 % Fill in areas with no data
 dbzPadded=fillmissing(dbzPadded,'linear',2,'EndValues','nearest');

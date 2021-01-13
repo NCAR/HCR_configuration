@@ -31,7 +31,10 @@ caseStart=datetime(caseList.Var1,caseList.Var2,caseList.Var3, ...
 caseEnd=datetime(caseList.Var6,caseList.Var7,caseList.Var8, ...
     caseList.Var9,caseList.Var10,0);
 
-for aa=2:length(caseStart)
+for aa=7:length(caseStart)
+    
+    disp(['Case ',num2str(aa),' of ',num2str(length(caseStart))]);
+    
     startTime=caseStart(aa);
     endTime=caseEnd(aa);
     %% Get data
@@ -71,19 +74,20 @@ for aa=2:length(caseStart)
 %     threeInds=find(findMelt==3);
 %     
     %% Cloud puzzle
+    disp('Making cloud puzzle');
     
     cloudPuzzle=f_cloudPuzzle_radial(data);
     uClouds=unique(cloudPuzzle(~isnan(cloudPuzzle)));
     cloudCount=length(uClouds);
     
-    %% Stratiform convective partitioning
+    %% Calculate reflectivity texture
     dbzText=nan(size(data.DBZ));
     
-    pixRad=350;
-    goodDataFrac=0.75;
+    pixRad=350; % Radius over which texture is calculated in pixels
+    dbzThresh=-10; % Reflectivity data below this threshold will not be used in the texture calculation
     
     for jj=1:max(uClouds)
-        disp(['Cloud ',num2str(jj),' of ',num2str(max(uClouds))]);
+        disp(['Calculating texture for cloud ',num2str(jj),' of ',num2str(max(uClouds))]);
         dbzIn=data.DBZ;
         dbzIn(data.FLAG>1)=nan;
         dbzIn(cloudPuzzle~=jj)=nan;
@@ -92,10 +96,39 @@ for aa=2:length(caseStart)
         nonNanCols=find(any(~isnan(dbzIn),1));
         dbzIn=dbzIn(:,nonNanCols);
         
-        dbzTextOne=f_reflTexture(dbzIn,pixRad,goodDataFrac);
+        dbzTextOne=f_reflTexture(dbzIn,pixRad,dbzThresh);
         dbzTextLarge=nan(size(dbzText));
         dbzTextLarge(:,nonNanCols)=dbzTextOne;
         dbzText(~isnan(dbzTextLarge))=dbzTextLarge(~isnan(dbzTextLarge));
+    end
+    
+    %% Stratiform convective partitioning
+    stratConvThresh=4; % Texture above (below) is convective (stratiform)
+    
+    stratConv=nan(size(dbzText));
+    for jj=1:max(uClouds)
+        disp(['Stratiform/convective partitioning for cloud ',num2str(jj),' of ',num2str(max(uClouds))]);
+                    
+        % Reflectivity for one cloud
+        dbzPart=data.DBZ;
+        dbzPart(data.FLAG>1)=nan;
+        dbzPart(cloudPuzzle~=jj)=nan;
+        % Shrink to good data area
+        nonNanColsD=find(any(~isnan(dbzPart),1));
+        dbzPart=dbzPart(:,nonNanColsD);
+        
+        % Texture for one cloud
+        textPart=dbzText;
+        textPart(cloudPuzzle~=jj)=nan;
+        % Shrink to good data area
+        textPart=textPart(:,nonNanColsD);
+        
+        stratConvFun=f_stratConvTexture(textPart,dbzPart,stratConvThresh,dbzThresh);
+        
+        % Back into large matrix
+        scLarge=nan(size(stratConv));
+        scLarge(:,nonNanColsD)=stratConvFun;
+        stratConv(~isnan(scLarge))=scLarge(~isnan(scLarge));
     end
     %% Plot strat conv
     
@@ -105,7 +138,7 @@ for aa=2:length(caseStart)
     
     f1 = figure('Position',[200 500 1500 900],'DefaultAxesFontSize',12);
     
-    s1=subplot(3,1,1);
+    s1=subplot(4,1,1);
     
     colormap jet
     
@@ -121,7 +154,29 @@ for aa=2:length(caseStart)
     title('Reflectivity (dBZ)')
     s1pos=s1.Position;
     
-    s2=subplot(3,1,2);
+    s2=subplot(4,1,2);
+    colMapIn=jet(cloudCount-1);
+    % Make order random
+    indsCol=randperm(size(colMapIn,1));
+    colMapInds=cat(2,indsCol',colMapIn);
+    colMapInds=sortrows(colMapInds);
+    colMap=cat(1,[0 0 0],colMapInds(:,2:end));
+    
+    hold on;
+    surf(data.time,data.asl./1000,cloudPuzzle,'edgecolor','none');
+    view(2);
+    s2.Colormap=colMap;
+    ylabel('Altitude (km)');
+    ylim([0 ylimUpper]);
+    xlim([data.time(1),data.time(end)]);
+    grid on
+    title('Cloud Puzzle')
+    caxis([-0.5 cloudCount-1+0.5])
+    colorbar
+    s2pos=s2.Position;
+    s2.Position=[s2pos(1),s2pos(2),s1pos(3),s2pos(4)];
+    
+    s3=subplot(4,1,3);
         
     hold on
     surf(data.time,data.asl./1000,dbzText,'edgecolor','none');
@@ -133,30 +188,25 @@ for aa=2:length(caseStart)
     colorbar
     grid on
     title('Reflectivity texture')
-    s2pos=s2.Position;
-    s2.Position=[s2pos(1),s2pos(2),s1pos(3),s2pos(4)];
-    
-    s3=subplot(3,1,3);
-    colMapIn=jet(cloudCount-1);
-    % Make order random
-    indsCol=randperm(size(colMapIn,1));
-    colMapInds=cat(2,indsCol',colMapIn);
-    colMapInds=sortrows(colMapInds);
-    colMap=cat(1,[0 0 0],colMapInds(:,2:end));
-    
-    hold on;
-    surf(data.time,data.asl./1000,cloudPuzzle,'edgecolor','none');
-    view(2);
-    s3.Colormap=colMap;
-    ylabel('Altitude (km)');
-    ylim([0 ylimUpper]);
-    xlim([data.time(1),data.time(end)]);
-    grid on
-    title('Cloud Puzzle')
-    caxis([-0.5 cloudCount-1+0.5])
-    colorbar
     s3pos=s3.Position;
     s3.Position=[s3pos(1),s3pos(2),s1pos(3),s3pos(4)];
+    
+    s4=subplot(4,1,4);
+        
+    hold on
+    surf(data.time,data.asl./1000,stratConv,'edgecolor','none');
+    view(2);
+    ylabel('Altitude (km)');
+    caxis([0 10]);
+    ylim([0 ylimUpper]);
+    xlim([data.time(1),data.time(end)]);
+    s4.Colormap=[1 0 0;0 0 1];
+    caxis([0.5 2.5]);
+    colorbar
+    grid on
+    title('Reflectivity texture')
+    s4pos=s4.Position;
+    s4.Position=[s4pos(1),s4pos(2),s1pos(3),s4pos(4)];
     
     set(gcf,'PaperPositionMode','auto')
     print(f1,[figdir,project,'_stratConv_',datestr(data.time(1),'yyyymmdd_HHMMSS'),'_to_',datestr(data.time(end),'yyyymmdd_HHMMSS')],'-dpng','-r0')

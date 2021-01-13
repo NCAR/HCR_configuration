@@ -8,13 +8,13 @@ refl(data.FLAG>1)=nan;
 
 %% Handle missing and NS cal
 
-disp('Filling missing and NS cal ...');
+%disp('Filling missing and NS cal ...');
 
 refl = fillMissingNScal(refl,data);
 
 %% Identify contiguous clouds that are too small
 
-disp('Identifying small clouds ...');
+%disp('Identifying small clouds ...');
 
 reflMask=zeros(size(refl));
 reflMask(~isnan(refl))=1;
@@ -37,13 +37,13 @@ end
 
 %% Add extinct back in
 
-disp('Filling extinct echo ...');
+%disp('Filling extinct echo ...');
 
 [cloudNum,reflExt]=fillExtinct(data,cloudNumOrig,refl);
 
 %% Split up individual clouds
 
-disp('Splitting clouds ...');
+%disp('Splitting clouds ...');
 
 numMax=max(reshape(cloudNum,1,[]),[],'omitnan');
 
@@ -115,7 +115,7 @@ cloudPuzzleOut(isnan(reflExt))=nan;
 %% Fill in pixels that are not in small areas (i.e. not zero) that have
 % reflectivities but are nan in cloudPuzzle
 
-disp('Filling in final pixels ...');
+%disp('Filling in final pixels ...');
 allReflMask=zeros(size(reflExt));
 allReflMask(~isnan(reflExt))=1;
 allReflMask(cloudPuzzleOut==0)=0;
