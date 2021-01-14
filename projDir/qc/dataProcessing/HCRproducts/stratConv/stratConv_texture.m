@@ -31,7 +31,7 @@ caseStart=datetime(caseList.Var1,caseList.Var2,caseList.Var3, ...
 caseEnd=datetime(caseList.Var6,caseList.Var7,caseList.Var8, ...
     caseList.Var9,caseList.Var10,0);
 
-for aa=7:length(caseStart)
+for aa=1:length(caseStart)
     
     disp(['Case ',num2str(aa),' of ',num2str(length(caseStart))]);
     
@@ -45,6 +45,7 @@ for aa=7:length(caseStart)
     
     data.DBZ = [];
     data.FLAG=[];
+    data.ICING_LEVEL=[];
     %data.MELTING_LAYER=[];
     
     dataVars=fieldnames(data);
@@ -63,16 +64,6 @@ for aa=7:length(caseStart)
     
     dataVars=dataVars(~cellfun('isempty',dataVars));
     
-%     %% Find melting layer
-%     
-%     data.dbzMasked=data.DBZ;
-%     data.dbzMasked(data.FLAG>1)=nan;
-%     
-%     findMelt=f_meltLayer(data,400);
-%     oneInds=find(findMelt==1);
-%     twoInds=find(findMelt==2);
-%     threeInds=find(findMelt==3);
-%     
     %% Cloud puzzle
     disp('Making cloud puzzle');
     
@@ -103,6 +94,8 @@ for aa=7:length(caseStart)
     end
     
     %% Stratiform convective partitioning
+    
+    % Big clouds
     stratConvThresh=4; % Texture above (below) is convective (stratiform)
     
     stratConv=nan(size(dbzText));
@@ -130,6 +123,16 @@ for aa=7:length(caseStart)
         scLarge(:,nonNanColsD)=stratConvFun;
         stratConv(~isnan(scLarge))=scLarge(~isnan(scLarge));
     end
+    
+    %% 1D stratiform convective partitioning
+   
+    stratConv1D=f_stratConv1D(stratConv,data.asl,data.ICING_LEVEL);
+   
+    %% Small clouds that are 0 in cloud puzzle
+    dbzSmallClouds=data.DBZ;
+    dbzSmallClouds(data.FLAG>1)=nan;
+    
+    [stratConv,stratConv1D]=f_stratConvSmallClouds(stratConv,stratConv1D,cloudPuzzle,dbzSmallClouds,data.asl,data.ICING_LEVEL);
     %% Plot strat conv
     
     disp('Plotting ...');
@@ -191,6 +194,21 @@ for aa=7:length(caseStart)
     s3pos=s3.Position;
     s3.Position=[s3pos(1),s3pos(2),s1pos(3),s3pos(4)];
     
+    s5=subplot(30,1,30);
+    timeConv=data.time(stratConv1D==1);
+    conv1D=ones(1,length(timeConv));
+    timeStrat=data.time(stratConv1D==2);
+    strat1D=ones(1,length(timeStrat));
+    
+    hold on
+    scatter(timeStrat,strat1D,10,'b','filled');
+    scatter(timeConv,conv1D,10,'r','filled');
+    set(gca,'YTickLabel',[]);
+    
+    xlim([data.time(1),data.time(end)]);
+    s5pos=s5.Position;
+    s5.Position=[s5pos(1),s5pos(2)-0.023,s1pos(3),s5pos(4)];
+    
     s4=subplot(4,1,4);
         
     hold on
@@ -202,12 +220,15 @@ for aa=7:length(caseStart)
     xlim([data.time(1),data.time(end)]);
     s4.Colormap=[1 0 0;0 0 1];
     caxis([0.5 2.5]);
-    colorbar
+    cb=colorbar;
+    cb.Ticks=[1 2];
+    cb.TickLabels={'Convective','Stratiform'};
+    set(gca,'XTickLabel',[]);
     grid on
-    title('Reflectivity texture')
+    title('Stratiform/convective partitioning')
     s4pos=s4.Position;
     s4.Position=[s4pos(1),s4pos(2),s1pos(3),s4pos(4)];
-    
+        
     set(gcf,'PaperPositionMode','auto')
     print(f1,[figdir,project,'_stratConv_',datestr(data.time(1),'yyyymmdd_HHMMSS'),'_to_',datestr(data.time(end),'yyyymmdd_HHMMSS')],'-dpng','-r0')
     
