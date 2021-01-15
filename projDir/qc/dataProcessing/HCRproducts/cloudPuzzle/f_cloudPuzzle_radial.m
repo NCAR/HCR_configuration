@@ -19,7 +19,7 @@ refl = fillMissingNScal(refl,data);
 reflMask=zeros(size(refl));
 reflMask(~isnan(refl))=1;
 
-pixCut=5000;
+pixCut=3000;
 CC = bwconncomp(reflMask);
 
 cloudNumOrig=nan(size(data.DBZ));
