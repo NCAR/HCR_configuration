@@ -31,7 +31,7 @@ caseStart=datetime(caseList.Var1,caseList.Var2,caseList.Var3, ...
 caseEnd=datetime(caseList.Var6,caseList.Var7,caseList.Var8, ...
     caseList.Var9,caseList.Var10,0);
 
-for aa=1:length(caseStart)
+for aa=13:length(caseStart)
     
     disp(['Case ',num2str(aa),' of ',num2str(length(caseStart))]);
     
@@ -45,8 +45,7 @@ for aa=1:length(caseStart)
     
     data.DBZ = [];
     data.FLAG=[];
-    data.ICING_LEVEL=[];
-    %data.MELTING_LAYER=[];
+    data.MELTING_LAYER=[];
     
     dataVars=fieldnames(data);
     
@@ -97,6 +96,8 @@ for aa=1:length(caseStart)
     
     % Big clouds
     stratConvThresh=4; % Texture above (below) is convective (stratiform)
+    data.MELTING_LAYER(data.MELTING_LAYER<20)=10;
+    data.MELTING_LAYER(data.MELTING_LAYER>19)=20;
     
     stratConv=nan(size(dbzText));
     for jj=1:max(uClouds)
@@ -118,26 +119,45 @@ for aa=1:length(caseStart)
         
         stratConvFun=f_stratConvTexture(textPart,dbzPart,stratConvThresh,dbzThresh);
         
+        % Divide into sub categories
+        stratConvSub=f_stratConvSub(stratConvFun,data.MELTING_LAYER(:,nonNanColsD));
+        
         % Back into large matrix
         scLarge=nan(size(stratConv));
-        scLarge(:,nonNanColsD)=stratConvFun;
+        scLarge(:,nonNanColsD)=stratConvSub;
         stratConv(~isnan(scLarge))=scLarge(~isnan(scLarge));
     end
     
     %% 1D stratiform convective partitioning
-   
-    stratConv1D=f_stratConv1D(stratConv,data.asl,data.ICING_LEVEL);
+    stratConv1D=f_stratConv1D(stratConv,data.MELTING_LAYER);
    
     %% Small clouds that are 0 in cloud puzzle
     dbzSmallClouds=data.DBZ;
     dbzSmallClouds(data.FLAG>1)=nan;
     
-    [stratConv,stratConv1D]=f_stratConvSmallClouds(stratConv,stratConv1D,cloudPuzzle,dbzSmallClouds,data.asl,data.ICING_LEVEL);
+    [stratConv,stratConv1D]=f_stratConvSmallClouds(stratConv,stratConv1D,cloudPuzzle,dbzSmallClouds,data.MELTING_LAYER);
+    
     %% Plot strat conv
     
     disp('Plotting ...');
     
     close all
+    
+    stratConvPlot=stratConv;
+    stratConvPlot(stratConv==20)=15;
+    stratConvPlot(stratConv==21)=16;
+    stratConvPlot(stratConv==22)=17;
+    stratConvPlot(stratConv==23)=18;
+    
+    colMapSC=[1,0,0;
+        1,0,1;
+        0.5,0,1;
+        1,0.5,0;
+        1,1,0;
+        0,0,0.5;
+        0,0,1;
+        0,0.7,1;
+        0,1,1];
     
     f1 = figure('Position',[200 500 1500 900],'DefaultAxesFontSize',12);
     
@@ -212,17 +232,20 @@ for aa=1:length(caseStart)
     s4=subplot(4,1,4);
         
     hold on
-    surf(data.time,data.asl./1000,stratConv,'edgecolor','none');
+    surf(data.time,data.asl./1000,stratConvPlot,'edgecolor','none');
     view(2);
     ylabel('Altitude (km)');
     caxis([0 10]);
     ylim([0 ylimUpper]);
     xlim([data.time(1),data.time(end)]);
-    s4.Colormap=[1 0 0;0 0 1];
-    caxis([0.5 2.5]);
+    s4.Colormap=colMapSC;
+    caxis([9.5 18.5]);
     cb=colorbar;
-    cb.Ticks=[1 2];
-    cb.TickLabels={'Convective','Stratiform'};
+    cb.Ticks=10:18;
+    cb.TickLabels={'Isolated conv.','Warm embedded conv.','Cold embedded conv.',...
+        'Warm small conv.','Cold small conv.',...
+        'Isolated strat.','Strat. with embedded conv.',...
+        'Cold small strat.','Warm small strat.'};
     set(gca,'XTickLabel',[]);
     grid on
     title('Stratiform/convective partitioning')

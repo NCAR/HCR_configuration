@@ -1,4 +1,4 @@
-function [stratConv,stratConv1D]=f_stratConvSmallClouds(stratConv,stratConv1D,cloudPuzzle,dbzSmallClouds,asl,icingLevel)
+function [stratConv,stratConv1D]=f_stratConvSmallClouds(stratConv,stratConv1D,cloudPuzzle,dbzSmallClouds,meltingLayer)
 % Stratiform/convective partitioning for small clouds that are marked as 0
 % in cloud puzzle
 zeroClouds=zeros(size(stratConv));
@@ -13,40 +13,48 @@ reallySmall=1000;
 % Loop through clouds
 for ii=1:indivClouds.NumObjects
     cloudPix=indivClouds.PixelIdxList{ii};
+    
+    % Count number of pixels above and below icing level
+    meltCloud=meltingLayer(cloudPix);
+    aboveI=sum(meltCloud==20);
+    belowI=sum(meltCloud==10);
+    
     % If cloud is really small classify as convective (stratiform) below
     % (above) the icing level
-    [cloudR,cloudC]=ind2sub(size(stratConv),cloudPix);
     if length(cloudPix)<reallySmall
-        % Count number of pixels above and below icing level
-        uniqueCols=unique(cloudC);
-        aboveI=0;
-        belowI=0;
-        for jj=1:length(uniqueCols)
-            altCol=asl(:,uniqueCols(jj));
-            altCol(isnan(altCol))=[];
-            aboveI=aboveI+sum(altCol>icingLevel(uniqueCols(jj)));
-            belowI=belowI+sum(altCol<icingLevel(uniqueCols(jj)));
-        end
         if aboveI>=belowI
-            stratConv(cloudPix)=2;
+            stratConv(cloudPix)=22;
         else
-            stratConv(cloudPix)=1;
+            stratConv(cloudPix)=13;
         end
     else
         % If height>width -> convective
+        [cloudR,cloudC]=ind2sub(size(stratConv),cloudPix);
         heightI=abs(max(cloudR)-min(cloudR));
         widthI=max(cloudC)-min(cloudC);
         if heightI>widthI/2
-            stratConv(cloudPix)=1;
+            if aboveI>=belowI
+                stratConv(cloudPix)=14;
+            else
+                stratConv(cloudPix)=13;
+            end
         else
-            stratConv(cloudPix)=2;
+            if aboveI>=belowI
+                stratConv(cloudPix)=22;
+            else
+                stratConv(cloudPix)=23;
+            end
         end
     end
     % If more than x% of dbz data is >x dBZ -> convective
     reflCut=5;
     reflPerc=0.03;
     if length(find(dbzSmallClouds(cloudPix)>reflCut))/length(cloudPix)>reflPerc
-        stratConv(cloudPix)=1;
+        if aboveI>=belowI
+            stratConv(cloudPix)=14;
+        else
+            stratConv(cloudPix)=13;
+        end
     end
 end
 
@@ -60,15 +68,10 @@ stratConv2=stratConv;
 stratConv2(zeroClouds==1 & zeroClouds2==0)=nan;
 
 stratConvBelow=stratConv2;
-stratCount=zeros(size(stratConv1Dnew));
-for ii=1:length(stratConv1Dnew)
-    aslCol=asl(:,ii);
-    stratConvBelow(aslCol>icingLevel(ii),ii)=nan;
-    
-    stratCount(ii)=sum(stratConv2(:,ii)==2);
-end
+stratConvBelow(meltingLayer~=10)=nan;
+stratCount=sum(stratConv2>21,1);
 
-stratConv1Dnew(any(stratConvBelow==1,1))=1;
+stratConv1Dnew(any(stratConvBelow==13,1))=1;
 stratConv1Dnew(stratConv1Dnew==2 & stratCount==0)=1;
 
 stratConv1Dnew(sum(zeroClouds2,1)==0)=nan;
