@@ -35,20 +35,5 @@ stratConvSub(stratConv==2)=21;
 % Divide convective into warm and cold embedded
 stratConvSub(stratConv==1 & meltingLayer==20)=12;
 stratConvSub(stratConv==1 & meltingLayer==10)=11;
-% convMask=zeros(size(stratConv));
-% convMask(stratConv==1)=1;
-% 
-% convAreas=bwconncomp(convMask);
-% 
-% for ii=1:convAreas.NumObjects
-%     meltCloud=meltingLayer(convAreas.PixelIdxList{ii});
-%     aboveI=sum(meltCloud==20);
-%     belowI=sum(meltCloud==10);
-%     
-%     if aboveI>belowI
-%         stratConvSub(convAreas.PixelIdxList{ii})=12;
-%     else
-%         stratConvSub(convAreas.PixelIdxList{ii})=11;
-%     end
-% end
+
 end

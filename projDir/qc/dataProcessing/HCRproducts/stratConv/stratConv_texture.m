@@ -31,7 +31,7 @@ caseStart=datetime(caseList.Var1,caseList.Var2,caseList.Var3, ...
 caseEnd=datetime(caseList.Var6,caseList.Var7,caseList.Var8, ...
     caseList.Var9,caseList.Var10,0);
 
-for aa=13:length(caseStart)
+for aa=1:length(caseStart)
     
     disp(['Case ',num2str(aa),' of ',num2str(length(caseStart))]);
     
@@ -46,6 +46,8 @@ for aa=13:length(caseStart)
     data.DBZ = [];
     data.FLAG=[];
     data.MELTING_LAYER=[];
+    data.TOPO=[];
+    data.ICING_LEVEL=[];
     
     dataVars=fieldnames(data);
     
@@ -129,7 +131,7 @@ for aa=13:length(caseStart)
     end
     
     %% 1D stratiform convective partitioning
-    stratConv1D=f_stratConv1D(stratConv,data.MELTING_LAYER);
+    stratConv1D=f_stratConv1D(stratConv,data.MELTING_LAYER,data.ICING_LEVEL,data.asl,data.TOPO);
    
     %% Small clouds that are 0 in cloud puzzle
     dbzSmallClouds=data.DBZ;
