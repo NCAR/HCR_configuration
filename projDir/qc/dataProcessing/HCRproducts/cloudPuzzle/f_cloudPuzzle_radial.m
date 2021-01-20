@@ -69,7 +69,7 @@ for ii=1:numMax
         BW=zeros(size(reflPadded));
         BW(~isnan(reflPadded))=1;
         
-        BW2=imerode(BW, strel('disk', 5));
+        BW2=imerode(BW, strel('disk', 15)); % Originally 5
         BW3 = bwareaopen(BW2,1000);
         
         % Distance of each cloud pixel from reflectivity threshold mask

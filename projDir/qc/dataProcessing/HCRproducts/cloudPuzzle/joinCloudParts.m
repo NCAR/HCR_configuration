@@ -12,15 +12,44 @@ waterRidges(waterShed==0)=1;
 % Clean it up
 largerRidges=imclose(waterRidges, strel('disk', 7));
 largerRidges=imdilate(largerRidges,strel('disk',5));
-%largerRidges=imdilate(waterRidges,strel('disk',3));
 
-%% In the first round, we only take care of areas with large boundaries
+%% Loop through areas and if they are small, join at the smallest ridge
+%%%%%%%%%%%%%% start here $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
 ridgesAll=bwconncomp(largerRidges);
-ridges=ridgesAll.PixelIdxList;
+
+% Label Ridges
+labelRidges=labelmatrix(ridgesAll);
 
 % Label areas with individual numbers
 forLabel=bwconncomp(waterMasked);
-maskLabel=labelmatrix(forLabel);            
+maskLabel=labelmatrix(forLabel);    
+
+for ii=1:forLabel.NumObjects
+    thisAreaPix=forLabel.PixelIdxList{ii};
+    % If area is small
+    if length(thisAreaPix)<100000
+        % Find borders
+        bordersA=labelRidges(thisAreaPix);
+        uBorders=unique(bordersA);
+        uBorders(uBorders==0)=[];
+        
+        % Loop through ridges
+        ridgeBL=[];
+        for jj=1:length(uBorders)
+            borderLength=length(find(labelRidges==uBorders(jj)));
+            ridgeBL=cat(1,ridgeBL,[uBorders(jj),borderLength]);
+        end
+        sortBL=sortrows(ridgeBL,2,'descend');
+        
+        largerRidges(labelRidges==sortBL(1,1))=1;
+        waterMasked(labelRidges==sortBL(1,1))=1;        
+    end
+end
+
+%% Large ridges
+ridgesAll=bwconncomp(largerRidges);
+ridges=ridgesAll.PixelIdxList;
 
 for kk=1:ridgesAll.NumObjects
     thisRidge=ridges{kk};
@@ -73,60 +102,60 @@ for kk=1:ridgesAll.NumObjects
         largerRidges(ridges{kk})=1;
     end
 end
-
-%% In the second round, we only take care of areas that are too small
-ridgesAll=bwconncomp(largerRidges);
-ridges=ridgesAll.PixelIdxList;
-
-% Label areas with individual numbers
-forLabel=bwconncomp(waterMasked);
-maskLabel=labelmatrix(forLabel);            
-
-for kk=1:ridgesAll.NumObjects
-    thisRidge=ridges{kk};
-            
-    % Find bordering regions
-    maskThis=zeros(size(largerRidges));
-    maskThis(thisRidge)=1;
-    
-    % Skeleton
-    thisRidgeSkel=bwskel(logical(maskThis));    
-    ridgePixSum=sum(sum(thisRidgeSkel));
-    
-    if ridgePixSum>100
-        waterMasked(ridges{kk})=1;
-        continue
-    end
-        
-    surrPix=maskLabel(thisRidge);
-    surrPix(surrPix==0)=[];
-    unPix=unique(surrPix);    
-       
-    if length(unPix)==1
-        waterMasked(ridges{kk})=1;
-        continue
-    end
-    
-    % Check siae of adjacent regions
-    areaSize=[];
-    
-    for ll=1:length(unPix)
-        % Mask surrounding areas
-        maskUn=zeros(size(waterShed));
-        maskUn(maskLabel==unPix(ll))=1;
-        areaSize=[areaSize length(find(maskUn==1))];
-    end
-    
-    if length(unPix)>2
-        error('Ridge divides more than one area.');
-        disp(num2str(length(unPix)));
-    end
-    
-    minSize=min(areaSize);
-    if minSize<=10000
-        waterMasked(ridges{kk})=1;
-    end
-end
+% 
+% %% In the second round, we only take care of areas that are too small
+% ridgesAll=bwconncomp(largerRidges);
+% ridges=ridgesAll.PixelIdxList;
+% 
+% % Label areas with individual numbers
+% forLabel=bwconncomp(waterMasked);
+% maskLabel=labelmatrix(forLabel);            
+% 
+% for kk=1:ridgesAll.NumObjects
+%     thisRidge=ridges{kk};
+%             
+%     % Find bordering regions
+%     maskThis=zeros(size(largerRidges));
+%     maskThis(thisRidge)=1;
+%     
+%     % Skeleton
+%     thisRidgeSkel=bwskel(logical(maskThis));    
+%     ridgePixSum=sum(sum(thisRidgeSkel));
+%     
+%     if ridgePixSum>100
+%         waterMasked(ridges{kk})=1;
+%         continue
+%     end
+%         
+%     surrPix=maskLabel(thisRidge);
+%     surrPix(surrPix==0)=[];
+%     unPix=unique(surrPix);    
+%        
+%     if length(unPix)==1
+%         waterMasked(ridges{kk})=1;
+%         continue
+%     end
+%     
+%     % Check size of adjacent regions
+%     areaSize=[];
+%     
+%     for ll=1:length(unPix)
+%         % Mask surrounding areas
+%         maskUn=zeros(size(waterShed));
+%         maskUn(maskLabel==unPix(ll))=1;
+%         areaSize=[areaSize length(find(maskUn==1))];
+%     end
+%     
+%     if length(unPix)>2
+%         error('Ridge divides more than one area.');
+%         disp(num2str(length(unPix)));
+%     end
+%     
+%     minSize=min(areaSize);
+%     if minSize<=10000 % 10000 in original
+%         waterMasked(ridges{kk})=1;
+%     end
+% end
 
 end
 
