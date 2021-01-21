@@ -71,7 +71,7 @@ while someSmall
         if sum(sum(testBorders))==0 % If no border has been used
             sortBL=sortrows(ridgeBL,2,'descend');
             
-            largerRidges(labelRidges==sortBL(1,1))=1;
+            largerRidges(labelRidges==sortBL(1,1))=0;
             waterMasked(labelRidges==sortBL(1,1))=1;
             usedBorders(labelRidges==sortBL(1,1))=1;
         end
@@ -120,11 +120,9 @@ for kk=1:ridgesAll.NumObjects
         maskUn(maskLabel==unPix(ll))=1;
                 
         % Circumference
-        %cirAll=bwconncomp(maskUn);
-        %[r,c]=ind2sub(size(largerRidges),find(maskUn==1));
-        %cirThis=boundary([c,r]);
-        %cirThis=convhull(c,r);
-        cirThis=regionprops(maskUn,'Perimeter');
+        % Close to smooth boundary
+        maskUnSm=imclose(maskUn,strel('disk',10));
+        cirThis=regionprops(maskUnSm,'Perimeter');
         cir=[cir cirThis.Perimeter];
     end
     
