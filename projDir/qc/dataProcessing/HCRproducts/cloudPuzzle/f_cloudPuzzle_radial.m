@@ -53,7 +53,7 @@ for ii=1:numMax
     
     cloudInds=find(cloudNum==ii);
     
-    if length(cloudInds)>100000
+    if length(cloudInds)>30000
         
         reflMapBig=nan(size(cloudNum));
         reflMapBig(cloudInds)=reflExt(cloudInds);
