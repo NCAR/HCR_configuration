@@ -69,6 +69,7 @@ for ii=1:numMax
         BW=zeros(size(reflPadded));
         BW(~isnan(reflPadded))=1;
         
+        %% Shrink, watershed
         BW2=imerode(BW, strel('disk', 15)); % Originally 5
         BW3 = bwareaopen(BW2,1000);
         
@@ -85,7 +86,28 @@ for ii=1:numMax
         waterCensored=double(waterShed);
         waterCensored(~BW)=nan;
         
-        waterMasked=joinCloudParts(waterCensored);
+        %% Repeat previous steps
+        BWrepeat=zeros(size(BW));
+        BWrepeat(waterCensored>0)=1;
+        
+        BW4=imerode(BWrepeat, strel('disk', 5)); % Originally 5
+        BW5 = bwareaopen(BW4,1000);
+        
+        % Distance of each cloud pixel from reflectivity threshold mask
+        D2 = bwdist(BW5);
+        
+        % Watershed is an image segmentation method that looks for
+        % ridges and valleys in an image
+        waterShed2 = watershed(D2);
+        
+        % Watershed usually over-segments so we join areas back together
+        % that share a large border or where one area is too small
+        
+        waterCensored2=double(waterShed2);
+        waterCensored2(~BW)=nan;
+        
+        %% Join cloud parts back together
+        waterMasked=joinCloudParts(waterCensored2);
         
         maskJoined=zeros(size(BW2));
         maskJoined(waterMasked>0)=1;
