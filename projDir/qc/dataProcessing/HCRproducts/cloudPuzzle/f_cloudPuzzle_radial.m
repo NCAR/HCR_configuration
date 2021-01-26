@@ -39,7 +39,9 @@ end
 
 %disp('Filling extinct echo ...');
 
-[cloudNum,reflExt]=fillExtinct(data,cloudNumOrig,refl);
+%[cloudNum,reflExt]=fillExtinct(data,cloudNumOrig,refl);
+cloudNum=cloudNumOrig;
+reflExt=refl;
 
 %% Split up individual clouds
 
@@ -168,12 +170,12 @@ for jj=1:cloudCount-1
                 pixExp=cloudPuzzleAttached(find(maskExp==1));
                 pixExp(find(pixExp==0 | pixExp==jj | isnan(pixExp)))=[];
                 if ~isempty(pixExp)
-                    pixU=unique(pixExp);
+                    pixU=mode(pixExp);
                     cloudPuzzle(indivClouds{ll})=pixU;
                 end
             end
         end
     end
 end
-
+cloudPuzzle(isnan(data.DBZ) | data.FLAG>1)=nan;
 end

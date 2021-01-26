@@ -177,8 +177,9 @@ for ii=1:length(pixList)
     % Fraction
     borderFrac=double(ridgeBL(:,2))./cirThis.Perimeter;
     [maxFrac,maxInd]=max(borderFrac);
+    maxLength=ridgeBL(maxInd,2);
     
-    if maxFrac>0.02
+    if maxFrac>0.02 | maxLength>15
         waterMasked(labelRidges==ridgeBL(maxInd,1))=1;
     end
 end

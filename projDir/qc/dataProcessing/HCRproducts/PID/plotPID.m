@@ -9,8 +9,8 @@ project='socrates'; %socrates, aristo, cset
 quality='qc2'; %field, qc1, or qc2
 freqData='2hzMerged'; % 10hz, 100hz, or 2hz
 
-startTime=datetime(2018,1,29,01,40,0); %Wang_Rauber
-endTime=datetime(2018,1,29,01,59,0); %Wang_Rauber
+startTime=datetime(2018,1,19,4,20,0); %Wang_Rauber
+endTime=datetime(2018,1,19,4,40,0); %Wang_Rauber
 
 ylimits=[0 4];
 
