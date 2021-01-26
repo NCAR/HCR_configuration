@@ -129,37 +129,38 @@ for ii=1:8
     classOut(isnan(classOut) & testMat==1)=ii;
 end
 
+clearvars -except data classOut
 %% Post processing
 
-% meltLayer=data.MELTING_LAYER;
-% meltLayer(~isnan(meltLayer) & meltLayer<20)=10;
-% meltLayer(~isnan(meltLayer) & meltLayer>=20)=20;
-% 
-% % No frozen particles in stong downward motion
-% classOut(meltLayer==10 & data.HCR_VEL>2.5 & ...
-%     (classOut==6 | classOut==7 | classOut==8))=4;
-% 
-% % No frozen precipitation in warm region
-% replaceMat=zeros(size(classOut));
-% replaceMat(meltLayer==10 & (classOut==6 | classOut==7))=1;
-% 
-% % Replace with closest warm pixel
-% [oldR oldC]=find(~isnan(classOut) & replaceMat==0 & meltLayer==10);
-% [addR addC]=find(replaceMat==1);
-% idx = knnsearch([oldR oldC], [addR addC]);
-% nearest_OldValue = classOut(sub2ind(size(classOut), oldR(idx), oldC(idx)));
-% classOut(sub2ind(size(classOut), addR, addC))=nearest_OldValue;
-% 
-% % Updrafts have no rain, no drizzle, and no snow.
-% replaceMat=zeros(size(classOut));
-% replaceMat(data.HCR_VEL<0 & (classOut==3 | classOut==4 | classOut==7))=1;
-% 
-% % Replace with closest pixel
-% [oldR oldC]=find(~isnan(classOut) & replaceMat==0);
-% [addR addC]=find(replaceMat==1);
-% idx = knnsearch([oldR oldC], [addR addC]);
-% nearest_OldValue = classOut(sub2ind(size(classOut), oldR(idx), oldC(idx)));
-% classOut(sub2ind(size(classOut), addR, addC))=nearest_OldValue;
+meltLayer=data.MELTING_LAYER;
+meltLayer(~isnan(meltLayer) & meltLayer<20)=10;
+meltLayer(~isnan(meltLayer) & meltLayer>=20)=20;
+
+% No frozen particles in strong downward motion
+classOut(meltLayer==10 & data.HCR_VEL>2.5 & ...
+    (classOut==6 | classOut==7 | classOut==8))=4;
+
+% No frozen precipitation in warm region
+replaceMat=zeros(size(classOut));
+replaceMat(meltLayer==10 & (classOut==6 | classOut==7))=1;
+
+% Replace with closest warm pixel
+[oldR oldC]=find(~isnan(classOut) & replaceMat==0 & meltLayer==10);
+[addR addC]=find(replaceMat==1);
+idx = knnsearch([oldR oldC], [addR addC]);
+nearest_OldValue = classOut(sub2ind(size(classOut), oldR(idx), oldC(idx)));
+classOut(sub2ind(size(classOut), addR, addC))=nearest_OldValue;
+
+% Updrafts have no rain, no drizzle, and no snow.
+replaceMat=zeros(size(classOut));
+replaceMat(data.HCR_VEL<0 & (classOut==3 | classOut==4 | classOut==7))=1;
+
+% Replace with closest pixel
+[oldR oldC]=find(~isnan(classOut) & replaceMat==0);
+[addR addC]=find(replaceMat==1);
+idx = knnsearch([oldR oldC], [addR addC]);
+nearest_OldValue = classOut(sub2ind(size(classOut), oldR(idx), oldC(idx)));
+classOut(sub2ind(size(classOut), addR, addC))=nearest_OldValue;
 
 % Reassign values
 classOut(classOut==1)=nan;

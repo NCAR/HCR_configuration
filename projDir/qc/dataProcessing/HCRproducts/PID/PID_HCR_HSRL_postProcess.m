@@ -13,9 +13,9 @@ ylimits=[0 3];
 
 plotComp=1; % 1 to plot comparison plot of HCR vs HSRL
 plotFields=1; % 1 to plot input fields
-whichFilter=0; % 0: no filter, 1: mode filter, 2: coherence filter
+whichFilter=1; % 0: no filter, 1: mode filter, 2: coherence filter
 
-figdir='/home/romatsch/plots/HCR/pid/noFilt/';
+figdir='/home/romatsch/plots/HCR/pid/postProcess/';
 
 %indir=HCRdir(project,quality,freqData);
 %indir=HCRdirWFH(project,quality,freqData);
@@ -30,7 +30,7 @@ caseStart=datetime(caseList.Var1,caseList.Var2,caseList.Var3, ...
 caseEnd=datetime(caseList.Var6,caseList.Var7,caseList.Var8, ...
     caseList.Var9,caseList.Var10,0);
 
-for aa=1:length(caseStart)
+for aa=3:length(caseStart)
     
     disp(['Case ',num2str(aa),' of ',num2str(length(caseStart))]);
     
