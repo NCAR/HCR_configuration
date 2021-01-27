@@ -67,10 +67,12 @@ for aa=1:length(caseStart)
     dataVars=dataVars(~cellfun('isempty',dataVars));
     
     %% Cloud puzzle
-    disp('Making cloud puzzle');
+    %disp('Making cloud puzzle');
     
-    cloudPuzzle=f_cloudPuzzle_radial(data);
+    %cloudPuzzle=f_cloudPuzzle_radial(data);
+    cloudPuzzle=data.CLOUD_PUZZLE;
     uClouds=unique(cloudPuzzle(~isnan(cloudPuzzle)));
+    uClouds(uClouds==0)=[];
     cloudCount=length(uClouds);
     
     %% Calculate reflectivity texture
@@ -79,11 +81,11 @@ for aa=1:length(caseStart)
     pixRad=350; % Radius over which texture is calculated in pixels
     dbzThresh=-10; % Reflectivity data below this threshold will not be used in the texture calculation
     
-    for jj=1:max(uClouds)
-        disp(['Calculating texture for cloud ',num2str(jj),' of ',num2str(max(uClouds))]);
+    for jj=1:length(uClouds)
+        disp(['Calculating texture for cloud ',num2str(jj),' of ',num2str(length(uClouds))]);
         dbzIn=data.DBZ;
         dbzIn(data.FLAG>1)=nan;
-        dbzIn(cloudPuzzle~=jj)=nan;
+        dbzIn(cloudPuzzle~=uClouds(jj))=nan;
         
         % Shrink to good data area
         nonNanCols=find(any(~isnan(dbzIn),1));
@@ -103,20 +105,20 @@ for aa=1:length(caseStart)
     data.MELTING_LAYER(data.MELTING_LAYER>19)=20;
     
     stratConv=nan(size(dbzText));
-    for jj=1:max(uClouds)
-        disp(['Stratiform/convective partitioning for cloud ',num2str(jj),' of ',num2str(max(uClouds))]);
+    for jj=1:length(uClouds)
+        disp(['Stratiform/convective partitioning for cloud ',num2str(jj),' of ',num2str(length(uClouds))]);
                     
         % Reflectivity for one cloud
         dbzPart=data.DBZ;
         dbzPart(data.FLAG>1)=nan;
-        dbzPart(cloudPuzzle~=jj)=nan;
+        dbzPart(cloudPuzzle~=uClouds(jj))=nan;
         % Shrink to good data area
         nonNanColsD=find(any(~isnan(dbzPart),1));
         dbzPart=dbzPart(:,nonNanColsD);
         
         % Texture for one cloud
         textPart=dbzText;
-        textPart(cloudPuzzle~=jj)=nan;
+        textPart(cloudPuzzle~=uClouds(jj))=nan;
         % Shrink to good data area
         textPart=textPart(:,nonNanColsD);
         
@@ -181,7 +183,13 @@ for aa=1:length(caseStart)
     s1pos=s1.Position;
     
     s2=subplot(4,1,2);
-    colMapIn=jet(cloudCount-1);
+    uClouds=[0;uClouds];
+    minCloud=uClouds(2);
+    maxCloud=uClouds(end);
+    puzzlePlot=cloudPuzzle;
+    puzzlePlot(puzzlePlot==0)=minCloud-1;
+    
+    colMapIn=jet(maxCloud-minCloud+1);
     % Make order random
     indsCol=randperm(size(colMapIn,1));
     colMapInds=cat(2,indsCol',colMapIn);
@@ -189,7 +197,7 @@ for aa=1:length(caseStart)
     colMap=cat(1,[0 0 0],colMapInds(:,2:end));
     
     hold on;
-    surf(data.time,data.asl./1000,cloudPuzzle,'edgecolor','none');
+    surf(data.time,data.asl./1000,puzzlePlot,'edgecolor','none');
     view(2);
     s2.Colormap=colMap;
     ylabel('Altitude (km)');
@@ -197,8 +205,9 @@ for aa=1:length(caseStart)
     xlim([data.time(1),data.time(end)]);
     grid on
     title('Cloud Puzzle')
-    caxis([-0.5 cloudCount-1+0.5])
-    colorbar
+    caxis([minCloud-1.5 maxCloud+0.5])
+    cb=colorbar;
+    cb.TickLabels={''};
     s2pos=s2.Position;
     s2.Position=[s2pos(1),s2pos(2),s1pos(3),s2pos(4)];
     

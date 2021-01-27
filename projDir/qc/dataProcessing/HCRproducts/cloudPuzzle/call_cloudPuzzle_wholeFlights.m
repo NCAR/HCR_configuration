@@ -5,7 +5,7 @@ close all;
 
 plotTest=1;
 
-project='otrec'; %socrates, aristo, cset
+project='socrates'; %socrates, aristo, cset
 quality='qc2'; %field, qc1, or qc2
 freqData='10hz'; % 10hz, 100hz, or 2hz
 whichModel='era5';
@@ -34,7 +34,7 @@ infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_
 
 caseList = table2array(readtable(infile));
 
-for aa=1:size(caseList,1)
+for aa=10:size(caseList,1)
     disp(['Flight ',num2str(aa)]);
     disp('Loading HCR data.')
     disp(['Starting at ',datestr(datetime('now'),'yyyy-mm-dd HH:MM')]);
@@ -98,7 +98,7 @@ for aa=1:size(caseList,1)
         end
         
         if uClouds(1)~=0
-            uClouds=[0 uClouds];
+            uClouds=[0;uClouds];
         end
         cloudCount=length(uClouds);
         

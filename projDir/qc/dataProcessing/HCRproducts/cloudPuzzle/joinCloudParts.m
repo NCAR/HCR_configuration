@@ -53,6 +53,7 @@ largerRidges=imdilate(largerRidges,strel('disk',5));
 
 %% Loop through areas and if they are small, join at the biggest ridge
 someSmall=1;
+lengthList=inf;
 
 while someSmall
     ridgesAll=bwconncomp(largerRidges);
@@ -72,10 +73,12 @@ while someSmall
     sizePix=cellfun(@length,pixList);
     pixList(sizePix>30000)=[];
     
-    if length(pixList)<=1
+    if length(pixList)<=1 | length(pixList)==lengthList
         someSmall=0;
         continue
     end
+    
+    lengthList=length(pixList);
     
     usedBorders=zeros(size(waterMasked));
     

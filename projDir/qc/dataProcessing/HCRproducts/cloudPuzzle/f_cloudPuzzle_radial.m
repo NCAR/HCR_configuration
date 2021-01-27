@@ -154,6 +154,8 @@ nearest_OldValue = cloudPuzzleOut(sub2ind(size(cloudPuzzleOut), oldR(idx), oldC(
 cloudPuzzleAttached=cloudPuzzleOut;
 cloudPuzzleAttached(sub2ind(size(cloudPuzzleOut), addR, addC))=nearest_OldValue;
 
+clear cloudNum cloudNumOrig puzzleMask refl reflExt reflMap reflMapBig reflMask
+
 % Sometimes areas get attached to wrong area
 cloudPuzzle=cloudPuzzleAttached;
 for jj=1:cloudCount-1
