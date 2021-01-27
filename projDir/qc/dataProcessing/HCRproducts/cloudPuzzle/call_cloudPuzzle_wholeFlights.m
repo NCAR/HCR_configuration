@@ -8,6 +8,7 @@ plotTest=1;
 project='otrec'; %socrates, aristo, cset
 quality='qc2'; %field, qc1, or qc2
 freqData='10hz'; % 10hz, 100hz, or 2hz
+whichModel='era5';
 
 if strcmp(project,'otrec')
     ylimits=[-0.2 15];
@@ -26,6 +27,8 @@ end
 
 %indir=HCRdir(project,quality,freqData);
 indir=['/run/media/romatsch/RSF0006/rsf/meltingLayer/',project,'/10hz/'];
+
+outdir=['/run/media/romatsch/RSF0006/rsf/cloudPuzzle/',project,'Mat/'];
 
 infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_',project,'_data.txt'];
 
@@ -89,9 +92,17 @@ for aa=1:size(caseList,1)
         puzzlePlot=cloudPuzzle(:,timeInds);
         
         uClouds=unique(puzzlePlot(~isnan(puzzlePlot)));
+        if isempty(uClouds)
+            startPlot=endPlot;
+            continue
+        end
+        
+        if uClouds(1)~=0
+            uClouds=[0 uClouds];
+        end
         cloudCount=length(uClouds);
         
-        if cloudCount>0
+        if cloudCount>0 & length(uClouds)~=1
             minCloud=uClouds(2);
             maxCloud=uClouds(end);
             
@@ -142,4 +153,14 @@ for aa=1:size(caseList,1)
         end
         startPlot=endPlot;
     end
+    
+    %% Saving data
+    disp('Saving meltLayer field ...')
+    
+    save([outdir,whichModel,'.cloudPuzzle.',datestr(data.time(1),'YYYYmmDD_HHMMSS'),'_to_',...
+        datestr(data.time(end),'YYYYmmDD_HHMMSS'),'.Flight',num2str(aa),'.mat'],'cloudPuzzle');
+    
+    timeHCR=data.time;
+    save([outdir,whichModel,'.time.',datestr(data.time(1),'YYYYmmDD_HHMMSS'),'_to_',...
+        datestr(data.time(end),'YYYYmmDD_HHMMSS'),'.Flight',num2str(aa),'.mat'],'timeHCR');
 end

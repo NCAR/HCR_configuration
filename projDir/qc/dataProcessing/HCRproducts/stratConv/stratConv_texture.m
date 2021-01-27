@@ -21,7 +21,7 @@ figdir=['/home/romatsch/plots/HCR/stratConv/texture/',project,'/'];
 casefile=['~/git/HCR_configuration/projDir/qc/dataProcessing/HCRproducts/caseFiles/stratConv_',project,'.txt'];
 
 %dataDir=HCRdir(project,quality,dataFreq);
-dataDir=['/run/media/romatsch/RSF0006/rsf/meltingLayer/',project,'/10hz/'];
+dataDir=['/run/media/romatsch/RSF0006/rsf/cloudPuzzle/',project,'/10hz/'];
 
 % Loop through cases
 
@@ -48,6 +48,7 @@ for aa=1:length(caseStart)
     data.MELTING_LAYER=[];
     data.TOPO=[];
     data.ICING_LEVEL=[];
+    data.CLOUD_PUZZLE=[];
     
     dataVars=fieldnames(data);
     
