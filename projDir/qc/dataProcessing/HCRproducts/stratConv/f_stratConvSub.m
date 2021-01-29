@@ -24,7 +24,7 @@ if sum(stratConv(cloudInds)==1)>length(cloudInds)*0.95
     return
 end
 % All stratiform
-if sum(stratConv(cloudInds)==2)>length(cloudInds)*0.95
+if sum(stratConv(cloudInds)==2)>length(cloudInds)*0.95 & length(cloudInds)<500000
     stratConvSub(cloudInds)=20;
     return
 end
