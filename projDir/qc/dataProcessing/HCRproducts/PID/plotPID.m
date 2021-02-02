@@ -9,13 +9,13 @@ project='socrates'; %socrates, aristo, cset
 quality='qc2'; %field, qc1, or qc2
 freqData='2hzMerged'; % 10hz, 100hz, or 2hz
 
-startTime=datetime(2018,1,19,4,20,0); %Wang_Rauber
-endTime=datetime(2018,1,19,4,40,0); %Wang_Rauber
+startTime=datetime(2018,1,29,1,50,0); %Wang_Rauber
+endTime=datetime(2018,1,29,2,0,0); %Wang_Rauber
 
 ylimits=[0 4];
 
 %indir=HCRdir(project,quality,freqData);
-indir=['/run/media/romatsch/RSF0006/rsf/pid_hcr/',project,'/'];
+indir=['/run/media/romatsch/RSF0006/rsf/pid_hcr/',project,'/old/'];
 
 fileList=makeFileList(indir,startTime,endTime,'xxxxxx20YYMMDDxhhmmss',1);
 
@@ -26,6 +26,8 @@ if ~isempty(fileList)
     data.PID_COMBINED=[];
     data.PID_HCR=[];
     data.PID_HSRL=[];
+    
+%     data.PID=[];
     
     dataVars=fieldnames(data);
     
@@ -41,6 +43,9 @@ if ~isempty(fileList)
     
     data.asl=data.asl./1000;
     
+%     data.PID_COMBINED=data.PID;
+%     data.PID_HSRL=data.PID;
+%     data.PID_HCR=data.PID;
     %% Scales and units
     cscale_hsrl=[0,0,1.0;0,1,0;1,0.67,0;1,0,1;0,1,1;1,0.67,0];
     cscale_hcr=[0,0,1.0; 0,1,0.; 1,0,0; 1,0,1; 0,1,1; 1,1,0; 0.5,0,0];

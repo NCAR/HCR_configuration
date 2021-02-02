@@ -9,6 +9,7 @@ project='socrates'; %socrates, otrec, cset
 whichModel='era5';
 
 whichFilter=1; % 0: no filter, 1: mode filter, 2: coherence filter
+postProcess=1; % 1 if post processing is desired
 
 %indir=HCRdir(project,quality,freqData);
 indir=['/run/media/romatsch/RSF0006/rsf/meltingLayer/',project,'/combined/'];
@@ -21,7 +22,7 @@ infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_
 
 caseList = table2array(readtable(infile));
 
-for aa=3:size(caseList,1)
+for aa=1:size(caseList,1)
     disp(['Flight ',num2str(aa)]);
     disp('Loading data ...')
     
@@ -91,7 +92,7 @@ for aa=3:size(caseList,1)
     
     disp('Creating HCR uncorrected PID ...');
     
-    [pid_hcr]=calc_pid_hcr_postProcess(data.HCR_DBZ,data);
+    [pid_hcr]=calc_pid_hcr_postProcess(data.HCR_DBZ,data,postProcess);
     pid_hcr(isnan(data.HCR_DBZ))=nan;
     
     % Combined from merging hcr and hsrl pid
@@ -137,7 +138,7 @@ for aa=3:size(caseList,1)
     disp('Creating corrected HCR PID ...');
     
     % HCR
-    [pid_hcr_cor]=calc_pid_hcr_postProcess(dBZ_cor,data);
+    [pid_hcr_cor]=calc_pid_hcr_postProcess(dBZ_cor,data,postProcess);
     pid_hcr_cor(isnan(dBZ_cor))=nan;
     
     if whichFilter==1

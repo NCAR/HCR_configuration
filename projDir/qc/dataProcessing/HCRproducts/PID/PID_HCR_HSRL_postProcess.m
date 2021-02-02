@@ -14,8 +14,9 @@ ylimits=[0 3];
 plotComp=1; % 1 to plot comparison plot of HCR vs HSRL
 plotFields=1; % 1 to plot input fields
 whichFilter=1; % 0: no filter, 1: mode filter, 2: coherence filter
+postProcess=1; % 1 if post processing is desired
 
-figdir='/home/romatsch/plots/HCR/pid/postProcess/';
+figdir='/home/romatsch/plots/HCR/pid/noPostNoFilter/';
 
 %indir=HCRdir(project,quality,freqData);
 %indir=HCRdirWFH(project,quality,freqData);
@@ -30,7 +31,7 @@ caseStart=datetime(caseList.Var1,caseList.Var2,caseList.Var3, ...
 caseEnd=datetime(caseList.Var6,caseList.Var7,caseList.Var8, ...
     caseList.Var9,caseList.Var10,0);
 
-for aa=3:length(caseStart)
+for aa=4:length(caseStart)
     
     disp(['Case ',num2str(aa),' of ',num2str(length(caseStart))]);
     
@@ -93,7 +94,7 @@ for aa=3:length(caseStart)
           
         %% Calculate HCR without attenuation correction
         
-        [pid_hcr]=calc_pid_hcr_postProcess(data.HCR_DBZ,data);
+        [pid_hcr]=calc_pid_hcr_postProcess(data.HCR_DBZ,data,postProcess);
         pid_hcr(isnan(data.HCR_DBZ))=nan;
              
         % Combined from merging hcr and hsrl pid
@@ -135,7 +136,7 @@ for aa=3:length(caseStart)
         %% Calculate PID with attenuation correction
         
         % HCR
-        [pid_hcr_cor]=calc_pid_hcr_postProcess(dBZ_cor,data);
+        [pid_hcr_cor]=calc_pid_hcr_postProcess(dBZ_cor,data,postProcess);
         pid_hcr_cor(isnan(dBZ_cor))=nan;
         
         if whichFilter==1
