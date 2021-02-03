@@ -11,12 +11,12 @@ freqData='combined'; % 10hz, 100hz, 2hz, or combined
 
 ylimits=[0 3];
 
-plotComp=1; % 1 to plot comparison plot of HCR vs HSRL
-plotFields=1; % 1 to plot input fields
-whichFilter=1; % 0: no filter, 1: mode filter, 2: coherence filter
-postProcess=1; % 1 if post processing is desired
+plotComp=0; % 1 to plot comparison plot of HCR vs HSRL
+plotFields=0; % 1 to plot input fields
+whichFilter=0; % 0: no filter, 1: mode filter, 2: coherence filter
+postProcess=0; % 1 if post processing is desired
 
-figdir='/home/romatsch/plots/HCR/pid/noPostNoFilter/';
+figdir='/home/romatsch/plots/HCR/pid/noPostNoFilter/newMF/';
 
 %indir=HCRdir(project,quality,freqData);
 %indir=HCRdirWFH(project,quality,freqData);
