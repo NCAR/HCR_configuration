@@ -85,7 +85,7 @@ for aa=1:length(caseStart)
     stratConvThresh=4; % Texture above (below) is convective (stratiform)
     
     for jj=1:length(uClouds)
-        disp(['Calculating texture for cloud ',num2str(jj),' of ',num2str(length(uClouds))]);
+        disp(['Calculating texture for tethered cloud ',num2str(jj),' of ',num2str(length(uClouds))]);
         dbzIn=data.DBZ;
         dbzIn(data.FLAG>1)=nan;
         dbzIn(cloudPuzzle~=uClouds(jj))=nan;
@@ -111,7 +111,7 @@ for aa=1:length(caseStart)
     end
     
     %% Calculate reflectivity texture for elevated convective echo
-    stratConv=nan(size(data.DBZ));
+    stratConvTot=nan(size(data.DBZ));
     
     dbzText2=nan(size(data.DBZ));
     
@@ -120,7 +120,7 @@ for aa=1:length(caseStart)
     stratConvThresh=2; % Texture above (below) is convective (stratiform)
     
     for jj=1:length(uClouds)
-        disp(['Calculating texture for cloud ',num2str(jj),' of ',num2str(length(uClouds))]);
+        disp(['Calculating texture for elevated cloud ',num2str(jj),' of ',num2str(length(uClouds))]);
         dbzIn=data.DBZ;
         dbzIn(data.FLAG>1)=nan;
         dbzIn(cloudPuzzle~=uClouds(jj))=nan;
@@ -142,55 +142,39 @@ for aa=1:length(caseStart)
         
         scLarge=nan(size(data.DBZ));
         scLarge(:,nonNanCols)=stratConvElevOne;
+        stratConvTot(~isnan(scLarge))=scLarge(~isnan(scLarge));
+    end
+    
+    stratConvTot(stratConvNearSurf==1)=1;
+
+    %% Separate isolated and embedded
+    stratConv=nan(size(data.DBZ));
+    
+    for jj=1:length(uClouds)
+        disp(['Stratiform/convective isolated/embedded separation for cloud ',num2str(jj),' of ',num2str(length(uClouds))]);
+                       
+        % StratConv for one cloud
+        stratConvPart=stratConvTot;
+        stratConvPart(cloudPuzzle~=uClouds(jj))=nan;
+        % Shrink to good data area
+        nonNanColsD=find(any(~isnan(stratConvPart),1));
+        stratConvPart=stratConvPart(:,nonNanColsD);
+                
+        % Divide into sub categories
+        stratConvSub=f_embeddedIsolated(stratConvPart);
+        
+        % Back into large matrix
+        scLarge=nan(size(stratConv));
+        scLarge(:,nonNanColsD)=stratConvSub;
         stratConv(~isnan(scLarge))=scLarge(~isnan(scLarge));
     end
     
-    stratConv(stratConvNearSurf==1)=1;
-%     %% Stratiform convective partitioning
-%     
-%     % Big clouds
-%     stratConvThresh=4; % Texture above (below) is convective (stratiform)
-%     data.MELTING_LAYER(data.MELTING_LAYER<20)=10;
-%     data.MELTING_LAYER(data.MELTING_LAYER>19)=20;
-%     
-%     stratConv=nan(size(dbzText));
-%     for jj=1:length(uClouds)
-%         disp(['Stratiform/convective partitioning for cloud ',num2str(jj),' of ',num2str(length(uClouds))]);
-%                     
-%         % Reflectivity for one cloud
-%         dbzPart=data.DBZ;
-%         dbzPart(data.FLAG>1)=nan;
-%         dbzPart(cloudPuzzle~=uClouds(jj))=nan;
-%         % Shrink to good data area
-%         nonNanColsD=find(any(~isnan(dbzPart),1));
-%         dbzPart=dbzPart(:,nonNanColsD);
-%         
-%         % Texture for one cloud
-%         textPart=dbzText;
-%         textPart(cloudPuzzle~=uClouds(jj))=nan;
-%         % Shrink to good data area
-%         textPart=textPart(:,nonNanColsD);
-%         
-%         stratConvFun=f_stratConvTexture(textPart,dbzPart,stratConvThresh,dbzThresh);
-%         
-%         % Divide into sub categories
-%         stratConvSub=f_stratConvSub(stratConvFun,data.MELTING_LAYER(:,nonNanColsD));
-%         
-%         % Back into large matrix
-%         scLarge=nan(size(stratConv));
-%         scLarge(:,nonNanColsD)=stratConvSub;
-%         stratConv(~isnan(scLarge))=scLarge(~isnan(scLarge));
-%     end
-%     
-%     %% 1D stratiform convective partitioning
-%     stratConv1D=f_stratConv1D(stratConv,data.MELTING_LAYER,data.ICING_LEVEL,data.asl,data.TOPO);
-%    
-%     %% Small clouds that are 0 in cloud puzzle
-%     dbzSmallClouds=data.DBZ;
-%     dbzSmallClouds(data.FLAG>1)=nan;
-%     
-%     [stratConv,stratConv1D]=f_stratConvSmallClouds(stratConv,stratConv1D,cloudPuzzle,dbzSmallClouds,data.MELTING_LAYER);
-%     
+    %% 1D stratiform convective partitioning
+    stratConv1D=f_stratConv1Dperc(stratConv);
+   
+    %% Small clouds that are 0 in cloud puzzle
+    stratConv(isnan(stratConv) & data.FLAG==1)=30;
+   
     %% Plot strat conv
     
     disp('Plotting ...');
@@ -198,23 +182,17 @@ for aa=1:length(caseStart)
     close all
     
     stratConvPlot=stratConv;
-    stratConvPlot(stratConv==1)=10;
-    stratConvPlot(stratConv==0)=11;
-    stratConvPlot(stratConv==2)=15;
-%     stratConvPlot(stratConv==20)=15;
-%     stratConvPlot(stratConv==21)=16;
-%     stratConvPlot(stratConv==22)=17;
-%     stratConvPlot(stratConv==23)=18;
+    stratConvPlot(stratConv==20)=14;
+    stratConvPlot(stratConv==21)=15;
+    stratConvPlot(stratConv==30)=16;
     
     colMapSC=[1,0,0;
         1,0,1;
-        0.5,0,1;
         1,0.5,0;
-        1,1,0;
-        0,0,0.5;
+        0.5,0,1;
         0,0,1;
         0,0.7,1;
-        0,1,1];
+        0,0,0];
     
     f1 = figure('Position',[200 500 1500 900],'DefaultAxesFontSize',12);
     
@@ -262,22 +240,18 @@ for aa=1:length(caseStart)
     title('Reflectivity texture')
     s3pos=s3.Position;
     s3.Position=[s3pos(1),s3pos(2),s1pos(3),s3pos(4)];
-%     
-%     s5=subplot(30,1,30);
-%     timeConv=data.time(stratConv1D==1);
-%     conv1D=ones(1,length(timeConv));
-%     timeStrat=data.time(stratConv1D==2);
-%     strat1D=ones(1,length(timeStrat));
-%     
-%     hold on
-%     scatter(timeStrat,strat1D,10,'b','filled');
-%     scatter(timeConv,conv1D,10,'r','filled');
-%     set(gca,'YTickLabel',[]);
-%     
-%     xlim([data.time(1),data.time(end)]);
-%     s5pos=s5.Position;
-%     s5.Position=[s5pos(1),s5pos(2)-0.023,s1pos(3),s5pos(4)];
-%     
+    
+    s5=subplot(30,1,30);
+    
+    hold on
+    scat1=scatter(data.time,ones(size(data.time)),10,stratConv1D,'filled');
+    set(gca,'clim',[0,1]);
+    set(gca,'YTickLabel',[]);
+    %s5.Colormap=;
+    xlim([data.time(1),data.time(end)]);
+    s5pos=s5.Position;
+    s5.Position=[s5pos(1),s5pos(2)-0.023,s1pos(3),s5pos(4)];
+    
     s4=subplot(4,1,4);
         
     hold on
@@ -288,20 +262,19 @@ for aa=1:length(caseStart)
     ylim([0 ylimUpper]);
     xlim([data.time(1),data.time(end)]);
     s4.Colormap=colMapSC;
-    caxis([9.5 18.5]);
+    caxis([9.5 16.5]);
     cb=colorbar;
-    cb.Ticks=10:18;
-    cb.TickLabels={'Isolated conv.','Warm embedded conv.','Cold embedded conv.',...
-        'Warm small conv.','Cold small conv.',...
-        'Isolated strat.','Strat. with embedded conv.',...
-        'Cold small strat.','Warm small strat.'};
+    cb.Ticks=10:16;
+    cb.TickLabels={'Isolated tethered conv.','Embedded tethered conv.','Isolated elevated conv.',...
+        'Embedded elevated conv.','Stratiform','Strat. with embedded conv.',...
+        'Small'};
     set(gca,'XTickLabel',[]);
     grid on
     title('Stratiform/convective partitioning')
     s4pos=s4.Position;
     s4.Position=[s4pos(1),s4pos(2),s1pos(3),s4pos(4)];
-%         
-%     set(gcf,'PaperPositionMode','auto')
-%     print(f1,[figdir,project,'_stratConv_',datestr(data.time(1),'yyyymmdd_HHMMSS'),'_to_',datestr(data.time(end),'yyyymmdd_HHMMSS')],'-dpng','-r0')
-%     
+        
+    set(gcf,'PaperPositionMode','auto')
+    print(f1,[figdir,project,'_stratConv_',datestr(data.time(1),'yyyymmdd_HHMMSS'),'_to_',datestr(data.time(end),'yyyymmdd_HHMMSS')],'-dpng','-r0')
+    
 end
