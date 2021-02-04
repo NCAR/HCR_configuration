@@ -115,9 +115,9 @@ for aa=1:length(caseStart)
     
     dbzText2=nan(size(data.DBZ));
     
-    pixRad=100; % Radius over which texture is calculated in pixels. Default is 350.
+    pixRad=50; % Radius over which texture is calculated in pixels. Default is 350.
     dbzThresh=-12; % Reflectivity data below this threshold will not be used in the texture calculation
-    stratConvThresh=2; % Texture above (below) is convective (stratiform)
+    stratConvThresh=3.5; % Texture above (below) is convective (stratiform)
     
     for jj=1:length(uClouds)
         disp(['Calculating texture for elevated cloud ',num2str(jj),' of ',num2str(length(uClouds))]);

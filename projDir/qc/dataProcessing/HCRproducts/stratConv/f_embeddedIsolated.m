@@ -26,16 +26,6 @@ if all(stratConv(cloudInds)==0)
     return
 end
 
-% % Embedded tethered convective
-% if any(stratConv(cloudInds)==1 & any(stratConv(cloudInds)==2
-%     stratConvSub(cloudInds)=10;
-% end
-% % Embedded elevated convective
-% if any(stratConv(cloudInds)==0 & any(stratConv(cloudInds)==2
-%     stratConvSub(cloudInds)=10;
-%     return
-% end
-
 % All stratiform
 if all(stratConv(cloudInds)==2)
     stratConvSub(cloudInds)=20;
@@ -53,11 +43,30 @@ stratConvSub(stratConv==0)=13;
 convMask=zeros(size(stratConv));
 convMask(stratConv==0 | stratConv==1)=1;
 
-convLarge=imdilate(convMask, strel('disk', 300));
-convLarge= ~bwareaopen(~convLarge,50000);
+convLarge=imdilate(convMask, strel('disk', 200));
+convLarge=~bwareaopen(~convLarge,50000);
+convLarge=imclose(convLarge,strel('disk', 50));
 
 % Strat with embedded
 stratConvSub(stratConv==2 & convLarge==1)=21;
 % Strat only
 stratConvSub(stratConv==2 & convLarge==0)=20;
+
+% Replace strat only areas that are small with strat embedded
+stratMask=zeros(size(stratConv));
+stratMask(stratConvSub==20)=1;
+stratMask=bwareaopen(stratMask,50000);
+
+stratConvSub(stratConvSub==20 & stratMask==0)=21;
+
+% Merge joining conv tethered and elevated
+tethElev=zeros(size(stratConv));
+tethElev(stratConvSub==11 | stratConvSub==13)=1;
+
+tethElevAreas=bwconncomp(tethElev);
+for ii=1:tethElevAreas.NumObjects;
+    if any(stratConvSub(tethElevAreas.PixelIdxList{ii})==11)
+        stratConvSub(tethElevAreas.PixelIdxList{ii})=11;
+    end
+end
 end
