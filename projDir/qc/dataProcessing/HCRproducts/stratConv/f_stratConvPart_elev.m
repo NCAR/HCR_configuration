@@ -62,7 +62,7 @@ if (sum(sum(stratConv==1))+sum(sum(stratConv==0)))>sum(sum(~isnan(dbzPart)))*0.9
 end
 
 % Remove small convective blobs
-pixMin=10000;
+pixMin=8000;
 convAreaThresh=min([pixMin,round(sum(sum(~isnan(dbzPart)))*percMin)]);
 
 convMask=zeros(size(textPart));

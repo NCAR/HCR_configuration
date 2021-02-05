@@ -5,7 +5,7 @@ close all;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Input variables %%%%%%%%%%%%%%%%%%%%%%%%%%
 
-project='otrec'; %socrates, aristo, cset, otrec
+project='socrates'; %socrates, aristo, cset, otrec
 quality='qc2'; %field, qc1, or qc2
 dataFreq='10hz';
 
@@ -45,9 +45,7 @@ for aa=1:length(caseStart)
     
     data.DBZ = [];
     data.FLAG=[];
-    %data.MELTING_LAYER=[];
     data.TOPO=[];
-    %data.ICING_LEVEL=[];
     data.CLOUD_PUZZLE=[];
     
     dataVars=fieldnames(data);
