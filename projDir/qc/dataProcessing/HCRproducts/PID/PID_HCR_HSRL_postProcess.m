@@ -16,7 +16,7 @@ plotFields=1; % 1 to plot input fields
 whichFilter=1; % 0: no filter, 1: mode filter, 2: coherence filter
 postProcess=1; % 1 if post processing is desired
 
-figdir='/home/romatsch/plots/HCR/pid/v1/';
+figdir='/home/romatsch/plots/HCR/pid/v3/';
 
 %indir=HCRdir(project,quality,freqData);
 %indir=HCRdirWFH(project,quality,freqData);
