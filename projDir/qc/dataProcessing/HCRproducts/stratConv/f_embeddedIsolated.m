@@ -7,8 +7,9 @@ function stratConvSub=f_embeddedIsolated(stratConv)
 % 13: embedded elevated convective-> shares more than 10% border with stratiform
 
 % For stratiform we look at the whole cloud
-% 20: all stratiform or no embedded close by
+% 20: no embedded close by
 % 21: stratiform with embedded convection
+% 22: all stratiform (this is changed to 20 in the main code)
 
 stratConvSub=nan(size(stratConv));
 
@@ -28,7 +29,7 @@ end
 
 % All stratiform
 if all(stratConv(cloudInds)==2)
-    stratConvSub(cloudInds)=20;
+    stratConvSub(cloudInds)=22;
     return
 end
 
@@ -43,21 +44,33 @@ stratConvSub(stratConv==0)=13;
 convMask=zeros(size(stratConv));
 convMask(stratConv==0 | stratConv==1)=1;
 
+horLarge=imdilate(convMask, strel('line', 400,0));
+
 convLarge=imdilate(convMask, strel('disk', 200));
 convLarge=~bwareaopen(~convLarge,50000);
 convLarge=imclose(convLarge,strel('disk', 50));
+
+convLarge(isnan(stratConv))=0;
+convLarge=imfill(convLarge,'holes');
+
+% Make sure we don't enlarge into unconnected areas
+convRays=find(any(convLarge==1,1));
+for ii=1:length(convRays)
+    convCol=convLarge(:,convRays(ii));
+    convHorCol=horLarge(:,convRays(ii));
+    rayPieces=bwconncomp(convCol);
+    for jj=1:rayPieces.NumObjects
+        if ~any(convHorCol(rayPieces.PixelIdxList{jj})==1)
+            convCol(rayPieces.PixelIdxList{jj})=0;
+        end
+    end
+    convLarge(:,convRays(ii))=convCol;
+end
 
 % Strat with embedded
 stratConvSub(stratConv==2 & convLarge==1)=21;
 % Strat only
 stratConvSub(stratConv==2 & convLarge==0)=20;
-
-% Replace strat only areas that are small with strat embedded
-stratMask=zeros(size(stratConv));
-stratMask(stratConvSub==20)=1;
-stratMask=bwareaopen(stratMask,50000);
-
-stratConvSub(stratConvSub==20 & stratMask==0)=21;
 
 % Merge joining conv tethered and elevated
 tethElev=zeros(size(stratConv));

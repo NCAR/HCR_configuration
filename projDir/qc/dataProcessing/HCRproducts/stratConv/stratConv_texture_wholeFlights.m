@@ -169,6 +169,22 @@ for aa=4:size(caseList,1)
         stratConv(~isnan(scLarge))=scLarge(~isnan(scLarge));
     end
     
+    % Replace strat only areas that are small with strat embedded
+    stratMask=zeros(size(stratConv));
+    stratMask(stratConv==20)=1;
+    stratMask=bwareaopen(stratMask,50000);
+    
+    stratConv(stratConv==20 & stratMask==0)=21;
+    
+    % Replace strat embedded areas that are small with strat only
+    stratMask=zeros(size(stratConv));
+    stratMask(stratConv==21)=1;
+    stratMask=bwareaopen(stratMask,5000);
+    
+    stratConv(stratConv==21 & stratMask==0)=20;
+    
+    stratConv(stratConv==22)=20;
+    
     %% 1D stratiform convective partitioning
     stratConv1D=f_stratConv1Dperc(stratConv);
     

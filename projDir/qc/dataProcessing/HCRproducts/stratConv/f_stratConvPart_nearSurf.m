@@ -19,7 +19,29 @@ for ii=1:size(convOnly,2)
     convCleaned(:,ii)=bwareaopen(convCol,5);
 end
 
-convLarge=imdilate(convCleaned, strel('disk', 30));
+horLarge=imdilate(convCleaned, strel('line', 100,0));
+
+convLarge1=imdilate(convCleaned, strel('disk', 30));
+convLarge=imclose(convLarge1,strel('disk', 50));
+convLarge(isnan(dbzPart))=0;
+convLarge=imfill(convLarge,'holes');
+
+% Make sure we don't enlarge into unconnected areas
+convRays=find(any(convLarge==1,1));
+for ii=1:length(convRays)
+    convCol=convLarge(:,convRays(ii));
+    convHorCol=horLarge(:,convRays(ii));
+    rayPieces=bwconncomp(convCol);
+    if rayPieces.NumObjects>1
+        for jj=1:rayPieces.NumObjects
+            if ~any(convHorCol(rayPieces.PixelIdxList{jj})==1)
+                convCol(rayPieces.PixelIdxList{jj})=0;
+            end
+        end
+        convLarge(:,convRays(ii))=convCol;
+    end
+end
+
 stratOnly(convLarge==1)=0;
 stratOnly(convOnly==1 & convLarge==0)=1; % Stratiform
 
@@ -52,8 +74,8 @@ for ii=1:convAreas.NumObjects
     end
 end
     
-% If 95% of total cloud is convective, the whole cloud is convective
-if sum(sum(nearSurf==1))>sum(sum(~isnan(dbzPart)))*0.95
+% If 90% of total cloud is convective, the whole cloud is convective
+if sum(sum(nearSurf==1))>sum(sum(~isnan(dbzPart)))*0.9
     nearSurf(~isnan(dbzPart))=1;
 end
 

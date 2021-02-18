@@ -167,6 +167,22 @@ for aa=1:length(caseStart)
         stratConv(~isnan(scLarge))=scLarge(~isnan(scLarge));
     end
     
+    % Replace strat only areas that are small with strat embedded
+    stratMask=zeros(size(stratConv));
+    stratMask(stratConv==20)=1;
+    stratMask=bwareaopen(stratMask,50000);
+    
+    stratConv(stratConv==20 & stratMask==0)=21;
+    
+    % Replace strat embedded areas that are small with strat only
+    stratMask=zeros(size(stratConv));
+    stratMask(stratConv==21)=1;
+    stratMask=bwareaopen(stratMask,5000);
+    
+    stratConv(stratConv==21 & stratMask==0)=20;
+    
+    stratConv(stratConv==22)=20;
+    
     %% 1D stratiform convective partitioning
     stratConv1D=f_stratConv1Dperc(stratConv);
    
@@ -271,6 +287,8 @@ for aa=1:length(caseStart)
     title('Stratiform/convective partitioning')
     s4pos=s4.Position;
     s4.Position=[s4pos(1),s4pos(2),s1pos(3),s4pos(4)];
+    
+    linkaxes([s1 s2 s3 s4],'xy');
         
     set(gcf,'PaperPositionMode','auto')
     print(f1,[figdir,project,'_stratConv_',datestr(data.time(1),'yyyymmdd_HHMMSS'),'_to_',datestr(data.time(end),'yyyymmdd_HHMMSS')],'-dpng','-r0')
