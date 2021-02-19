@@ -52,6 +52,7 @@ convLarge=imclose(convLarge,strel('disk', 50));
 
 convLarge(isnan(stratConv))=0;
 convLarge=imfill(convLarge,'holes');
+convLarge=imerode(convLarge,strel('disk', 3));
 
 % Make sure we don't enlarge into unconnected areas
 convRays=find(any(convLarge==1,1));
@@ -71,6 +72,26 @@ end
 stratConvSub(stratConv==2 & convLarge==1)=21;
 % Strat only
 stratConvSub(stratConv==2 & convLarge==0)=20;
+
+% Search for strat embedded that have no convective echo
+strEm=zeros(size(stratConvSub));
+strEm(stratConvSub==21)=1;
+strEm(convMask==1)=1;
+strEm=imfill(strEm,'holes');
+
+strEmA=bwconncomp(strEm);
+for ii=1:strEmA.NumObjects
+    if sum(convMask(strEmA.PixelIdxList{ii}))==0
+        stratConvSub(strEmA.PixelIdxList{ii})=20;
+    end
+end
+
+% Enlarge strat embedded
+stratMask=zeros(size(stratConv));
+stratMask(stratConvSub==21)=1;
+stratMask=imdilate(stratMask,strel('disk', 3));
+
+stratConvSub(stratMask==1 & stratConvSub==20)=21;
 
 % Merge joining conv tethered and elevated
 tethElev=zeros(size(stratConv));

@@ -25,6 +25,7 @@ convLarge1=imdilate(convCleaned, strel('disk', 30));
 convLarge=imclose(convLarge1,strel('disk', 50));
 convLarge(isnan(dbzPart))=0;
 convLarge=imfill(convLarge,'holes');
+convLarge=imerode(convLarge,strel('disk', 3));
 
 % Make sure we don't enlarge into unconnected areas
 convRays=find(any(convLarge==1,1));
@@ -41,6 +42,8 @@ for ii=1:length(convRays)
         convLarge(:,convRays(ii))=convCol;
     end
 end
+
+convLarge=imdilate(convLarge,strel('disk', 3));
 
 stratOnly(convLarge==1)=0;
 stratOnly(convOnly==1 & convLarge==0)=1; % Stratiform
