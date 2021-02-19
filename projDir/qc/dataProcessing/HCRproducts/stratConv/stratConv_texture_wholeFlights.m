@@ -5,7 +5,7 @@ close all;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Input variables %%%%%%%%%%%%%%%%%%%%%%%%%%
 
-project='socrates'; %socrates, aristo, cset, otrec
+project='otrec'; %socrates, aristo, cset, otrec
 quality='qc2'; %field, qc1, or qc2
 dataFreq='10hz';
 whichModel='era5';
@@ -32,7 +32,7 @@ infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_
 
 caseList = table2array(readtable(infile));
 
-for aa=4:size(caseList,1)
+for aa=1:size(caseList,1)
     disp(['Flight ',num2str(aa)]);
     disp('Loading HCR data.')
     disp(['Starting at ',datestr(datetime('now'),'yyyy-mm-dd HH:MM')]);
