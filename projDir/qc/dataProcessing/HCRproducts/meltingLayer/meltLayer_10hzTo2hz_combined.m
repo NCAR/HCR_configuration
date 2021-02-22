@@ -4,7 +4,7 @@ close all;
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-project='socrates'; % socrates, cset, aristo, otrec
+project='cset'; % socrates, cset, aristo, otrec
 quality='qc2'; % field, qc1, qc2
 freqData='10hz';
 whichModel='era5';
@@ -16,12 +16,12 @@ infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_
 caseList = table2array(readtable(infile));
 
 %indir=HCRdir(project,quality,freqData);
-indir='/run/media/romatsch/RSF0006/rsf/meltingLayer/socrates/combined/';
+indir=['/run/media/romatsch/RSF0006/rsf/meltingLayer/',project,'/combined/'];
 
 %[~,modeldir]=modelDir(project,whichModel,freqData);
-modeldir='/run/media/romatsch/RSF0006/rsf/meltingLayer/socratesMat/';
+modeldir=['/run/media/romatsch/RSF0006/rsf/meltingLayer/',project,'Mat/'];
 
-figdir='/home/romatsch/plots/HCR/meltingLayer/flights/socrates/combined/';
+figdir=['/home/romatsch/plots/HCR/meltingLayer/flights/',project,'/combined/'];
 
 %% Run processing
 
