@@ -191,23 +191,17 @@ caxis([-10 10]);
 hcb1=colorbar('XTick',-10:2:10);
 view(2);
 colormap(jet)
-scatter(timeMat(twentyoneInds),data.asl(twentyoneInds)./1000,10,'k','filled');
-scatter(timeMat(elevenInds),data.asl(elevenInds)./1000,10,...
-    'MarkerEdgeColor',[0 0 0],'MarkerFaceColor',[0 0 0]);
 
-scatter(timeMat(twentyfourInds),data.asl(twentyfourInds)./1000,10,...
-    'MarkerEdgeColor',[0.45 0.76 0.42],'MarkerFaceColor',[0.45 0.76 0.42]);
-scatter(timeMat(twentythreeInds),data.asl(twentythreeInds)./1000,10,...
-    'MarkerEdgeColor',[0.7 0.8 0.87],'MarkerFaceColor',[0.7 0.8 0.87]);
-scatter(timeMat(twentytwoInds),data.asl(twentytwoInds)./1000,10,...
-    'MarkerEdgeColor',[0 0 1],'MarkerFaceColor',[0 0 1]);
+scatter(timeMat(elevenInds),data.asl(elevenInds)./1000,7,'k','filled','MarkerEdgeColor','k');
+scatter(timeMat(fourteenInds),data.asl(fourteenInds)./1000,7,'MarkerEdgeColor',[0.2 0.6 0.04],'MarkerFaceColor',[0.2 0.6 0.04]);
+scatter(timeMat(thirteenInds),data.asl(thirteenInds)./1000,7,'c','filled','filled','MarkerEdgeColor','c');
+scatter(timeMat(twelveInds),data.asl(twelveInds)./1000,7,'b','filled','filled','MarkerEdgeColor','b');
 
-scatter(timeMat(fourteenInds),data.asl(fourteenInds)./1000,10,...
-    'MarkerEdgeColor',[0.45 0.76 0.42],'MarkerFaceColor',[0.45 0.76 0.42]);
-scatter(timeMat(thirteenInds),data.asl(thirteenInds)./1000,10,...
-    'MarkerEdgeColor',[0.7 0.8 0.87],'MarkerFaceColor',[0.7 0.8 0.87]);
-scatter(timeMat(twelveInds),data.asl(twelveInds)./1000,10,...
-    'MarkerEdgeColor',[0 0 1],'MarkerFaceColor',[0 0 1]);
+l1=scatter(timeMat(twentyoneInds),data.asl(twentyoneInds)./1000,7,'k','filled','MarkerEdgeColor','k');
+l2=scatter(timeMat(twentyfourInds),data.asl(twentyfourInds)./1000,7,'MarkerEdgeColor',[0.2 0.6 0.04],'MarkerFaceColor',[0.2 0.6 0.04]);
+l3=scatter(timeMat(twentythreeInds),data.asl(twentythreeInds)./1000,7,'c','filled','filled','MarkerEdgeColor','c');
+l4=scatter(timeMat(twentytwoInds),data.asl(twentytwoInds)./1000,7,'b','filled','filled','MarkerEdgeColor','b');
+
 
 % Dropsondes
 for jj=1:length(dropAlt)
@@ -237,24 +231,15 @@ sub1=surf(newTime,newASL./1000,newTEMP,'edgecolor','none');
 caxis([-10 10]);
 hcb2=colorbar('XTick',-10:2:10);
 view(2);
+scatter(timeMat(elevenInds),data.asl(elevenInds)./1000,7,'k','filled','MarkerEdgeColor','k');
+scatter(timeMat(fourteenInds),data.asl(fourteenInds)./1000,7,'MarkerEdgeColor',[0.2 0.6 0.04],'MarkerFaceColor',[0.2 0.6 0.04]);
+scatter(timeMat(thirteenInds),data.asl(thirteenInds)./1000,7,'c','filled','filled','MarkerEdgeColor','c');
+scatter(timeMat(twelveInds),data.asl(twelveInds)./1000,7,'b','filled','filled','MarkerEdgeColor','b');
 
-scatter(timeMat(twentyoneInds),data.asl(twentyoneInds)./1000,10,'k','filled');
-scatter(timeMat(elevenInds),data.asl(elevenInds)./1000,10,...
-    'MarkerEdgeColor',[0 0 0],'MarkerFaceColor',[0 0 0]);
-
-scatter(timeMat(twentyfourInds),data.asl(twentyfourInds)./1000,10,...
-    'MarkerEdgeColor',[0.45 0.76 0.42],'MarkerFaceColor',[0.45 0.76 0.42]);
-scatter(timeMat(twentythreeInds),data.asl(twentythreeInds)./1000,10,...
-    'MarkerEdgeColor',[0.7 0.8 0.87],'MarkerFaceColor',[0.7 0.8 0.87]);
-scatter(timeMat(twentytwoInds),data.asl(twentytwoInds)./1000,10,...
-    'MarkerEdgeColor',[0 0 1],'MarkerFaceColor',[0 0 1]);
-
-scatter(timeMat(fourteenInds),data.asl(fourteenInds)./1000,10,...
-    'MarkerEdgeColor',[0.45 0.76 0.42],'MarkerFaceColor',[0.45 0.76 0.42]);
-scatter(timeMat(thirteenInds),data.asl(thirteenInds)./1000,10,...
-    'MarkerEdgeColor',[0.7 0.8 0.87],'MarkerFaceColor',[0.7 0.8 0.87]);
-scatter(timeMat(twelveInds),data.asl(twelveInds)./1000,10,...
-    'MarkerEdgeColor',[0 0 1],'MarkerFaceColor',[0 0 1]);
+l1=scatter(timeMat(twentyoneInds),data.asl(twentyoneInds)./1000,7,'k','filled','MarkerEdgeColor','k');
+l2=scatter(timeMat(twentyfourInds),data.asl(twentyfourInds)./1000,7,'MarkerEdgeColor',[0.2 0.6 0.04],'MarkerFaceColor',[0.2 0.6 0.04]);
+l3=scatter(timeMat(twentythreeInds),data.asl(twentythreeInds)./1000,7,'c','filled','filled','MarkerEdgeColor','c');
+l4=scatter(timeMat(twentytwoInds),data.asl(twentytwoInds)./1000,7,'b','filled','filled','MarkerEdgeColor','b');
 
 % Dropsondes
 for jj=1:length(dropAlt)

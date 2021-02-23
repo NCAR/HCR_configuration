@@ -217,17 +217,18 @@ hold on;
 surf(newTime,newASL./1000,newFindMelt,'edgecolor','none');
 ax1.Colormap=([1 0 1;1 1 0]);
 view(2);
-scatter(timeMat(elevenInds),data.asl(elevenInds)./1000,10,'k','filled');
-scatter(timeMat(fourteenInds),data.asl(fourteenInds)./1000,10,'g','filled');
-scatter(timeMat(thirteenInds),data.asl(thirteenInds)./1000,10,'c','filled');
-scatter(timeMat(twelveInds),data.asl(twelveInds)./1000,10,'b','filled');
+scatter(timeMat(elevenInds),data.asl(elevenInds)./1000,7,'k','filled','MarkerEdgeColor','k');
+scatter(timeMat(fourteenInds),data.asl(fourteenInds)./1000,7,'MarkerEdgeColor',[0.2 0.6 0.04],'MarkerFaceColor',[0.2 0.6 0.04]);
+scatter(timeMat(thirteenInds),data.asl(thirteenInds)./1000,7,'c','filled','filled','MarkerEdgeColor','c');
+scatter(timeMat(twelveInds),data.asl(twelveInds)./1000,7,'b','filled','filled','MarkerEdgeColor','b');
 
-scatter(timeMat(twentyoneInds),data.asl(twentyoneInds)./1000,10,'k','filled');
-scatter(timeMat(twentyfourInds),data.asl(twentyfourInds)./1000,10,'g','filled');
-scatter(timeMat(twentythreeInds),data.asl(twentythreeInds)./1000,10,'c','filled');
-scatter(timeMat(twentytwoInds),data.asl(twentytwoInds)./1000,10,'b','filled');
+l1=scatter(timeMat(twentyoneInds),data.asl(twentyoneInds)./1000,7,'k','filled','MarkerEdgeColor','k');
+l2=scatter(timeMat(twentyfourInds),data.asl(twentyfourInds)./1000,7,'MarkerEdgeColor',[0.2 0.6 0.04],'MarkerFaceColor',[0.2 0.6 0.04]);
+l3=scatter(timeMat(twentythreeInds),data.asl(twentythreeInds)./1000,7,'c','filled','filled','MarkerEdgeColor','c');
+l4=scatter(timeMat(twentytwoInds),data.asl(twentytwoInds)./1000,7,'b','filled','filled','MarkerEdgeColor','b');
 
-plot(data.time,data.ICING_LEVEL./1000,'linewidth',1,'color',[0.6 0.6 0.6]);
+l5=plot(data.time,data.ICING_LEVEL./1000,'linewidth',1.2,'color',[0.8 0.8 0.8]);
+
 ax = gca;
 ax.SortMethod = 'childorder';
 ylim([0 4]);
@@ -242,17 +243,18 @@ hold on;
 surf(newTime2,newASL2./1000,newFindMelt2,'edgecolor','none');
 ax3.Colormap=([1 0 1;1 1 0]);
 view(2);
-l1=scatter(timeMat2(elevenInds2),data2.asl(elevenInds2)./1000,10,'k','filled');
-l2=scatter(timeMat2(fourteenInds2),data2.asl(fourteenInds2)./1000,10,'g','filled');
-l3=scatter(timeMat2(thirteenInds2),data2.asl(thirteenInds2)./1000,10,'c','filled');
-l4=scatter(timeMat2(twelveInds2),data2.asl(twelveInds2)./1000,10,'b','filled');
+scatter(timeMat2(elevenInds2),data2.asl(elevenInds2)./1000,7,'k','filled','MarkerEdgeColor','k');
+scatter(timeMat2(fourteenInds2),data2.asl(fourteenInds2)./1000,7,'MarkerEdgeColor',[0.2 0.6 0.04],'MarkerFaceColor',[0.2 0.6 0.04]);
+scatter(timeMat2(thirteenInds2),data2.asl(thirteenInds2)./1000,7,'c','filled','filled','MarkerEdgeColor','c');
+scatter(timeMat2(twelveInds2),data2.asl(twelveInds2)./1000,7,'b','filled','filled','MarkerEdgeColor','b');
 
-scatter(timeMat2(twentyoneInds2),data2.asl(twentyoneInds2)./1000,10,'k','filled');
-scatter(timeMat2(twentyfourInds2),data2.asl(twentyfourInds2)./1000,10,'g','filled');
-scatter(timeMat2(twentythreeInds2),data2.asl(twentythreeInds2)./1000,10,'c','filled');
-scatter(timeMat2(twentytwoInds2),data2.asl(twentytwoInds2)./1000,10,'b','filled');
+l1=scatter(timeMat2(twentyoneInds2),data2.asl(twentyoneInds2)./1000,7,'k','filled','MarkerEdgeColor','k');
+l2=scatter(timeMat2(twentyfourInds2),data2.asl(twentyfourInds2)./1000,7,'MarkerEdgeColor',[0.2 0.6 0.04],'MarkerFaceColor',[0.2 0.6 0.04]);
+l3=scatter(timeMat2(twentythreeInds2),data2.asl(twentythreeInds2)./1000,7,'c','filled','filled','MarkerEdgeColor','c');
+l4=scatter(timeMat2(twentytwoInds2),data2.asl(twentytwoInds2)./1000,7,'b','filled','filled','MarkerEdgeColor','b');
 
-l5=plot(data2.time,data2.ICING_LEVEL./1000,'linewidth',1,'color',[0.6 0.6 0.6]);
+l5=plot(data2.time,data2.ICING_LEVEL./1000,'linewidth',1.2,'color',[0.8 0.8 0.8]);
+
 ax = gca;
 ax.SortMethod = 'childorder';
 ylim([0 2]);
@@ -261,7 +263,7 @@ xlim([data2.time(1),data2.time(end)]);
 title('(b) Melting layer data product')
 grid on
 yticks(0:1:2)
-legend([l1 l2 l3 l4 l5],{'Zero deg','Estimated','Interpolated','Detected','Icing level'},...
+legend([l1 l2 l3 l4 l5],{'Zero deg','Estimates','Interpolations','Detections','Icing level'},...
     'Location','northwest');
 ax3.Position=[0.048 0.07 0.43 0.38];
 
@@ -286,17 +288,18 @@ hold on;
 sub1=surf(newTime3,newASL3./1000,newFindMelt3,'edgecolor','none');
 ax4.Colormap=([1 0 1;1 1 0]);
 view(2);
-scatter(timeMat3(elevenInds3),data3.asl(elevenInds3)./1000,10,'k','filled');
-scatter(timeMat3(fourteenInds3),data3.asl(fourteenInds3)./1000,10,'g','filled');
-scatter(timeMat3(thirteenInds3),data3.asl(thirteenInds3)./1000,10,'c','filled');
-scatter(timeMat3(twelveInds3),data3.asl(twelveInds3)./1000,10,'b','filled');
+scatter(timeMat3(elevenInds3),data3.asl(elevenInds3)./1000,7,'k','filled','MarkerEdgeColor','k');
+scatter(timeMat3(fourteenInds3),data3.asl(fourteenInds3)./1000,7,'MarkerEdgeColor',[0.2 0.6 0.04],'MarkerFaceColor',[0.2 0.6 0.04]);
+scatter(timeMat3(thirteenInds3),data3.asl(thirteenInds3)./1000,7,'c','filled','filled','MarkerEdgeColor','c');
+scatter(timeMat3(twelveInds3),data3.asl(twelveInds3)./1000,7,'b','filled','filled','MarkerEdgeColor','b');
 
-scatter(timeMat3(twentyoneInds3),data3.asl(twentyoneInds3)./1000,10,'k','filled');
-scatter(timeMat3(twentyfourInds3),data3.asl(twentyfourInds3)./1000,10,'g','filled');
-scatter(timeMat3(twentythreeInds3),data3.asl(twentythreeInds3)./1000,10,'c','filled');
-scatter(timeMat3(twentytwoInds3),data3.asl(twentytwoInds3)./1000,10,'b','filled');
+l1=scatter(timeMat3(twentyoneInds3),data3.asl(twentyoneInds3)./1000,7,'k','filled','MarkerEdgeColor','k');
+l2=scatter(timeMat3(twentyfourInds3),data3.asl(twentyfourInds3)./1000,7,'MarkerEdgeColor',[0.2 0.6 0.04],'MarkerFaceColor',[0.2 0.6 0.04]);
+l3=scatter(timeMat3(twentythreeInds3),data3.asl(twentythreeInds3)./1000,7,'c','filled','filled','MarkerEdgeColor','c');
+l4=scatter(timeMat3(twentytwoInds3),data3.asl(twentytwoInds3)./1000,7,'b','filled','filled','MarkerEdgeColor','b');
 
-plot(data3.time,data3.ICING_LEVEL./1000,'linewidth',1,'color',[0.6 0.6 0.6]);
+l5=plot(data3.time,data3.ICING_LEVEL./1000,'linewidth',1.2,'color',[0.8 0.8 0.8]);
+
 ax = gca;
 ax.SortMethod = 'childorder';
 ylim([0 2]);

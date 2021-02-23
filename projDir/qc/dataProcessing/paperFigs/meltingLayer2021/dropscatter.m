@@ -60,7 +60,7 @@ l1=plot(xFitD, yFitD1,'-k','linewidth',1.5);
 fitOrth2=gmregress(compAltsC.meltAltEst./1000,compAltsC.sondeAlt./1000,1);
 fitAll2=[fitOrth2(2) fitOrth2(1)];
 yFitD2 = polyval(fitAll2, xFitD);
-l2=plot(xFitD, yFitD2,'-g','linewidth',1.5);
+l2=plot(xFitD, yFitD2,'color',[0.2 0.6 0.04],'linewidth',1.5);
 fitOrth3=gmregress(compAltsC.meltAltInt./1000,compAltsC.sondeAlt./1000,1);
 fitAll3=[fitOrth3(2) fitOrth3(1)];
 yFitD3 = polyval(fitAll3, xFitD);
@@ -70,10 +70,10 @@ fitAll4=[fitOrth4(2) fitOrth4(1)];
 yFitD4 = polyval(fitAll4, xFitD);
 l4=plot(xFitD, yFitD4,'-b','linewidth',1.5);
 
-scatter(compAltsC.zeroDegAlt./1000,compAltsC.sondeAlt./1000,30,'k','filled');
-scatter(compAltsC.meltAltEst./1000,compAltsC.sondeAlt./1000,30,'g','filled');
-scatter(compAltsC.meltAltInt./1000,compAltsC.sondeAlt./1000,30,'c','filled');
-scatter(compAltsC.meltAltMeas./1000,compAltsC.sondeAlt./1000,30,'b','filled');
+scatter(compAltsC.zeroDegAlt./1000,compAltsC.sondeAlt./1000,30,'k','filled','MarkerEdgeColor','k');
+scatter(compAltsC.meltAltEst./1000,compAltsC.sondeAlt./1000,30,'MarkerEdgeColor',[0.2 0.6 0.04],'MarkerFaceColor',[0.2 0.6 0.04]);
+scatter(compAltsC.meltAltInt./1000,compAltsC.sondeAlt./1000,30,'c','filled','MarkerEdgeColor','c');
+scatter(compAltsC.meltAltMeas./1000,compAltsC.sondeAlt./1000,30,'b','filled','MarkerEdgeColor','b');
 xlabel('HCR altitude (km)');
 ylabel('Dropsonde altitude (km)');
 
@@ -94,11 +94,11 @@ zeroDiff=mean((compAltsC.zeroDegAlt-compAltsC.sondeAlt)./1000,'omitnan');
 zeroStd=std((compAltsC.zeroDegAlt-compAltsC.sondeAlt)./1000,'omitnan');
 
 text(minLim+offset/4,maxLim-0.5*offset,['Est.-drops.: ',num2str(estDiff,formatSpec), ...
-    '+/-',num2str(estStd,formatSpec),' km'],'fontsize',12);
+    '\pm',num2str(estStd,formatSpec),' km'],'fontsize',12);
 text(minLim+offset/4,maxLim-1.5*offset,['0 deg.-drops.: ',num2str(zeroDiff,formatSpec), ...
-    '+/-',num2str(zeroStd,formatSpec),' km'],'fontsize',12);
+    '\pm',num2str(zeroStd,formatSpec),' km'],'fontsize',12);
 
-leg1=legend([l4,l3,l2,l1],{'Measured','Interpolated','Estimated','Zero deg'},'Location','southeast');
+leg1=legend([l4,l3,l2,l1],{'Detections','Interpolations','Estimates','Zero deg'},'Location','southeast');
 ax1.Position=[0.11 0.71 0.85 0.26];
 
 ax2=subplot(3,1,2);
@@ -119,7 +119,7 @@ l1=plot(xFitD, yFitD1,'-k','linewidth',1.5);
 fitOrth2=gmregress(compAltsS.meltAltEst./1000,compAltsS.sondeAlt./1000,1);
 fitAll2=[fitOrth2(2) fitOrth2(1)];
 yFitD2 = polyval(fitAll2, xFitD);
-l2=plot(xFitD, yFitD2,'-g','linewidth',1.5);
+l2=plot(xFitD, yFitD2,'color',[0.2 0.6 0.04],'linewidth',1.5);
 fitOrth3=gmregress(compAltsS.meltAltInt./1000,compAltsS.sondeAlt./1000,1);
 fitAll3=[fitOrth3(2) fitOrth3(1)];
 yFitD3 = polyval(fitAll3, xFitD);
@@ -129,10 +129,10 @@ fitAll4=[fitOrth4(2) fitOrth4(1)];
 yFitD4 = polyval(fitAll4, xFitD);
 l4=plot(xFitD, yFitD4,'-b','linewidth',1.5);
 
-scatter(compAltsS.zeroDegAlt./1000,compAltsS.sondeAlt./1000,30,'k','filled');
-scatter(compAltsS.meltAltEst./1000,compAltsS.sondeAlt./1000,30,'g','filled');
-scatter(compAltsS.meltAltInt./1000,compAltsS.sondeAlt./1000,30,'c','filled');
-scatter(compAltsS.meltAltMeas./1000,compAltsS.sondeAlt./1000,30,'b','filled');
+scatter(compAltsS.zeroDegAlt./1000,compAltsS.sondeAlt./1000,30,'k','filled','MarkerEdgeColor','k');
+scatter(compAltsS.meltAltEst./1000,compAltsS.sondeAlt./1000,30,'MarkerEdgeColor',[0.2 0.6 0.04],'MarkerFaceColor',[0.2 0.6 0.04]);
+scatter(compAltsS.meltAltInt./1000,compAltsS.sondeAlt./1000,30,'c','filled','MarkerEdgeColor','c');
+scatter(compAltsS.meltAltMeas./1000,compAltsS.sondeAlt./1000,30,'b','filled','MarkerEdgeColor','b');
 xlabel('HCR altitude (km)');
 ylabel('Dropsonde altitude (km)');
 
@@ -152,16 +152,16 @@ estStd=std((compAltsS.meltAltEst-compAltsS.sondeAlt)./1000,'omitnan');
 zeroDiff=mean((compAltsS.zeroDegAlt-compAltsS.sondeAlt)./1000,'omitnan');
 zeroStd=std((compAltsS.zeroDegAlt-compAltsS.sondeAlt)./1000,'omitnan');
 
-text(minLim+offset/4,maxLim-0.5*offset,['Meas.-drops.: ',num2str(measDiff,formatSpec), ...
-    '+/-',num2str(measStd,formatSpec),' km'],'fontsize',12);
+text(minLim+offset/4,maxLim-0.5*offset,['Det.-drops.: ',num2str(measDiff,formatSpec), ...
+    '\pm',num2str(measStd,formatSpec),' km'],'fontsize',12);
 text(minLim+offset/4,maxLim-1.5*offset,['Int.-drops.: ',num2str(intDiff,formatSpec), ...
-    '+/-',num2str(intStd,formatSpec),' km'],'fontsize',12);
+    '\pm',num2str(intStd,formatSpec),' km'],'fontsize',12);
 text(minLim+offset/4,maxLim-2.5*offset,['Est.-drops.: ',num2str(estDiff,formatSpec), ...
-    '+/-',num2str(estStd,formatSpec),' km'],'fontsize',12);
+    '\pm',num2str(estStd,formatSpec),' km'],'fontsize',12);
 text(minLim+offset/4,maxLim-3.5*offset,['0 deg.-drops.: ',num2str(zeroDiff,formatSpec), ...
-    '+/-',num2str(zeroStd,formatSpec),' km'],'fontsize',12);
+    '\pm',num2str(zeroStd,formatSpec),' km'],'fontsize',12);
 
-leg1=legend([l4,l3,l2,l1],{'Measured','Interpolated','Estimated','Zero deg'},'Location','southeast');
+leg1=legend([l4,l3,l2,l1],{'Detections','Interpolations','Estimates','Zero deg'},'Location','southeast');
 ax2.Position=[0.11 0.385 0.85 0.26];
 
 ax3=subplot(3,1,3);
@@ -182,7 +182,7 @@ l1=plot(xFitD, yFitD1,'-k','linewidth',1.5);
 fitOrth2=gmregress(compAltsO.meltAltEst./1000,compAltsO.sondeAlt./1000,1);
 fitAll2=[fitOrth2(2) fitOrth2(1)];
 yFitD2 = polyval(fitAll2, xFitD);
-l2=plot(xFitD, yFitD2,'-g','linewidth',1.5);
+l2=plot(xFitD, yFitD2,'color',[0.2 0.6 0.04],'linewidth',1.5);
 fitOrth3=gmregress(compAltsO.meltAltInt./1000,compAltsO.sondeAlt./1000,1);
 fitAll3=[fitOrth3(2) fitOrth3(1)];
 yFitD3 = polyval(fitAll3, xFitD);
@@ -192,10 +192,10 @@ fitAll4=[fitOrth4(2) fitOrth4(1)];
 yFitD4 = polyval(fitAll4, xFitD);
 l4=plot(xFitD, yFitD4,'-b','linewidth',1.5);
 
-scatter(compAltsO.zeroDegAlt./1000,compAltsO.sondeAlt./1000,30,'k','filled');
-scatter(compAltsO.meltAltEst./1000,compAltsO.sondeAlt./1000,30,'g','filled');
-scatter(compAltsO.meltAltInt./1000,compAltsO.sondeAlt./1000,30,'c','filled');
-scatter(compAltsO.meltAltMeas./1000,compAltsO.sondeAlt./1000,30,'b','filled');
+scatter(compAltsO.zeroDegAlt./1000,compAltsO.sondeAlt./1000,30,'k','filled','MarkerEdgeColor','k');
+scatter(compAltsO.meltAltEst./1000,compAltsO.sondeAlt./1000,30,[0.2 0.6 0.04],'MarkerEdgeColor',[0.2 0.6 0.04],'MarkerFaceColor',[0.2 0.6 0.04]);
+scatter(compAltsO.meltAltInt./1000,compAltsO.sondeAlt./1000,30,'c','filled','MarkerEdgeColor','c');
+scatter(compAltsO.meltAltMeas./1000,compAltsO.sondeAlt./1000,30,'b','filled','MarkerEdgeColor','b');
 xlabel('HCR altitude (km)');
 ylabel('Dropsonde altitude (km)');
 
@@ -215,16 +215,16 @@ estStd=std((compAltsO.meltAltEst-compAltsO.sondeAlt)./1000,'omitnan');
 zeroDiff=mean((compAltsO.zeroDegAlt-compAltsO.sondeAlt)./1000,'omitnan');
 zeroStd=std((compAltsO.zeroDegAlt-compAltsO.sondeAlt)./1000,'omitnan');
 
-text(minLim+offset/4,maxLim-0.5*offset,['Meas.-drops.: ',num2str(measDiff,formatSpec), ...
-    '+/-',num2str(measStd,formatSpec),' km'],'fontsize',12);
+text(minLim+offset/4,maxLim-0.5*offset,['Det.-drops.: ',num2str(measDiff,formatSpec), ...
+    '\pm',num2str(measStd,formatSpec),' km'],'fontsize',12);
 text(minLim+offset/4,maxLim-1.5*offset,['Int.-drops.: ',num2str(intDiff,formatSpec), ...
-    '+/-',num2str(intStd,formatSpec),' km'],'fontsize',12);
+    '\pm',num2str(intStd,formatSpec),' km'],'fontsize',12);
 text(minLim+offset/4,maxLim-2.5*offset,['Est.-drops.: ',num2str(estDiff,formatSpec), ...
-    '+/-',num2str(estStd,formatSpec),' km'],'fontsize',12);
+    '\pm',num2str(estStd,formatSpec),' km'],'fontsize',12);
 text(minLim+offset/4,maxLim-3.5*offset,['0 deg.-drops.: ',num2str(zeroDiff,formatSpec), ...
-    '+/-',num2str(zeroStd,formatSpec),' km'],'fontsize',12);
+    '\pm',num2str(zeroStd,formatSpec),' km'],'fontsize',12);
 
-leg3=legend([l4,l3,l2,l1],{'Measured','Interpolated','Estimated','Zero deg'},'Location','southeast');
+leg3=legend([l4,l3,l2,l1],{'Detections','Interpolations','Estimates','Zero deg'},'Location','southeast');
 ax3.Position=[0.11 0.06 0.85 0.26];
 
 formatOut = 'yyyymmdd_HHMM';

@@ -99,7 +99,7 @@ fig1.InvertHardcopy = 'off';
 set(fig1,'color','w');
 colormap(jet);
 
-ylimits=[0 10];
+ylimits=[2 8];
 
 ax1=subplot(2,1,1);
 
@@ -121,17 +121,17 @@ hold on;
 sub1=surf(newTime,newASL./1000,newFindMelt,'edgecolor','none');
 ax2.Colormap=([1 0 1;1 1 0]);
 view(2);
-scatter(timeMat(elevenInds),data.asl(elevenInds)./1000,10,'k','filled');
-scatter(timeMat(fourteenInds),data.asl(fourteenInds)./1000,10,'g','filled');
-scatter(timeMat(thirteenInds),data.asl(thirteenInds)./1000,10,'c','filled');
-scatter(timeMat(twelveInds),data.asl(twelveInds)./1000,10,'b','filled');
+scatter(timeMat(elevenInds),data.asl(elevenInds)./1000,7,'k','filled','MarkerEdgeColor','k');
+scatter(timeMat(fourteenInds),data.asl(fourteenInds)./1000,7,'MarkerEdgeColor',[0.2 0.6 0.04],'MarkerFaceColor',[0.2 0.6 0.04]);
+scatter(timeMat(thirteenInds),data.asl(thirteenInds)./1000,7,'c','filled','filled','MarkerEdgeColor','c');
+scatter(timeMat(twelveInds),data.asl(twelveInds)./1000,7,'b','filled','filled','MarkerEdgeColor','b');
 
-l1=scatter(timeMat(twentyoneInds),data.asl(twentyoneInds)./1000,10,'k','filled');
-l2=scatter(timeMat(twentyfourInds),data.asl(twentyfourInds)./1000,10,'g','filled');
-l3=scatter(timeMat(twentythreeInds),data.asl(twentythreeInds)./1000,10,'c','filled');
-l4=scatter(timeMat(twentytwoInds),data.asl(twentytwoInds)./1000,10,'b','filled');
+l1=scatter(timeMat(twentyoneInds),data.asl(twentyoneInds)./1000,7,'k','filled','MarkerEdgeColor','k');
+l2=scatter(timeMat(twentyfourInds),data.asl(twentyfourInds)./1000,7,'MarkerEdgeColor',[0.2 0.6 0.04],'MarkerFaceColor',[0.2 0.6 0.04]);
+l3=scatter(timeMat(twentythreeInds),data.asl(twentythreeInds)./1000,7,'c','filled','filled','MarkerEdgeColor','c');
+l4=scatter(timeMat(twentytwoInds),data.asl(twentytwoInds)./1000,7,'b','filled','filled','MarkerEdgeColor','b');
 
-l5=plot(data.time,data.ICING_LEVEL./1000,'linewidth',1.2,'color',[0.6 0.6 0.6]);
+l5=plot(data.time,data.ICING_LEVEL./1000,'linewidth',1.2,'color',[0.8 0.8 0.8]);
 ax = gca;
 ax.SortMethod = 'childorder';
 ylim(ylimits);
@@ -139,7 +139,7 @@ ylabel('Altitude (km)');
 xlim([data.time(1),data.time(end)]);
 title('(b) Melting layer data product')
 grid on
-legend([l1 l2 l3 l4 l5],{'Zero deg','Estimated','Interpolated','Detected','Icing level'},...
+legend([l1 l2 l3 l4 l5],{'Zero deg','Estimates','Interpolations','Detections','Icing level'},...
     'Location','northeast');
 ax2.Position=[0.11 0.08 0.77 0.38];
 
