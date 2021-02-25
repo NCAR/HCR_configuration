@@ -26,7 +26,7 @@ uniqueCases = table2array(readtable(infile,'Delimiter','space'));
 startCase=1;
 uniqueCases=uniqueCases(startCase:end,:);
 numCases=size(uniqueCases,1);
-%numCases=1; % This can be set for testing if we don't want to run all cases
+numCases=1; % This can be set for testing if we don't want to run all cases
 
 % Add last row if not in file
 if size(uniqueCases,2)<14
