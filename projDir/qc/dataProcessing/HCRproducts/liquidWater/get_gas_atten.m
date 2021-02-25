@@ -15,6 +15,11 @@
 %gammaTot is the attenuation according to ITU
 function [ituTot,ituCloud,layer_itu,layer_ituC]= get_atten(f,data)
 
+if ~isfield(data,'dbzMasked')
+    data.dbzMasked=data.DBZ;
+    data.dbzMasked(data.FLAG>1)=nan;
+end
+
 % Layer depth
 layer_depth=abs(diff(data.asl,1,1));
 layer_depth=cat(1,layer_depth,layer_depth(end,:));

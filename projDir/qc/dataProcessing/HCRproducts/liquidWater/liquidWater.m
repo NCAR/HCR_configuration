@@ -24,10 +24,9 @@ addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
 %figdir=['/scr/sci/romatsch/liquidWaterHCR/'];
 figdir='/home/romatsch/plots/HCR/liquidWater/';
-outDataDir='/home/romatsch/workThings/forHuang/';
 
-dataDir=HCRdir(project,quality,dataFreq);
-dataDir=['/run/media/romatsch/RSF0006/rsf/hcr/',project,'/'];
+%dataDir=HCRdir(project,quality,dataFreq);
+dataDir=['/run/media/romatsch/RSF0006/rsf/meltingLayer/',project,'/10hz/'];
 
 % startTime=datetime(2018,2,24,2,23,0);
 % endTime=datetime(2018,2,24,2,31,0);
@@ -42,6 +41,9 @@ fileList=makeFileList(dataDir,startTime,endTime,'xxxxxx20YYMMDDxhhmmss',1);
 data=[];
 
 data.DBZ = [];
+data.U_SURF=[];
+data.V_SURF=[];
+data.SST=[];
 data.TEMP=[];
 data.PRESS=[];
 data.RH=[];
@@ -51,6 +53,8 @@ data.LDR=[];
 data.WIDTH=[];
 data.VEL_CORR=[];
 data.pitch=[];
+data.MELTING_LAYER=[];
+data.ICING_LEVEL=[];
 
 dataVars=fieldnames(data);
 
@@ -68,8 +72,25 @@ end
 
 dataVars=dataVars(~cellfun('isempty',dataVars));
 
-data.freq=ncread(fileList{1},'frequency');
+data.frq=ncread(fileList{1},'frequency');
+data.pulseWidth=ncread(fileList{1},'r_calib_pulse_width');
 
+%% One way and two way gaseous attenuation
+
+[gasAttClear,gasAttCloud,gasAttClearMat,gasAttCloudMat]=get_gas_atten(frq/1e+9,data);
+gasAttCloud2=2*gasAttCloud';
+
+%% Calculate sigma0 from model and from reflectivity
+
+% Find ocean surface gate
+[linInd maxGate rangeToSurf] = hcrSurfInds(data);
+
+% Measured sig0 from surface reflectivity
+data.surfRefl=data.DBZ(linInd);
+sig0measured=calc_sig0_surfRefl(data);
+
+% sig0 from models
+sig0model= calc_sig0_model(data);
 %% Create ocean surface mask
 % 0 extinct or not usable
 % 1 cloud
@@ -86,8 +107,7 @@ surfMask(data.TOPO>0)=0;
 % sort out data from below 2500m altitude
 surfMask(data.altitude<2500)=0;
 
-% Find ocean surface gate
-[linInd maxGate rangeToSurf] = hcrSurfInds(data);
+
 
 % Calculate reflectivity sum inside and outside ocean surface to
 % distinguish clear air and cloud
@@ -161,11 +181,6 @@ if ~max(surfMask)==0
     
     iceAttAll=iceSpecAtt.*(data.range(2)-data.range(1))./1000;
     iceAtt=sum(iceAttAll,1,'omitnan');
-    
-    %% One way and two way gaseous attenuation
-    
-    [gasAttClear,gasAttCloud,gasAttClearMat,gasAttCloudMat]=get_atten(frq/1e+9,data);
-    gasAttCloud2=2*gasAttCloud';
     
     %% Calculate clear air and cloudy ocean reflectivity
     
@@ -325,9 +340,6 @@ if ~max(surfMask)==0
     set(gcf,'PaperPositionMode','auto')
     print(f1,[figdir,project,'_lwc_',datestr(data.time(1),'yyyymmdd_HHMMSS'),'_to_',datestr(data.time(end),'yyyymmdd_HHMMSS')],'-dpng','-r0')
     
-    time=data.time;
-    save([outDataDir,project,'_att_',datestr(data.time(1),'yyyymmdd_HHMMSS'),'_to_',...
-        datestr(data.time(end),'yyyymmdd_HHMMSS')],'time','gasAttCloudMat','attLiq');
      %% Plot strat conv
 %     close all
 %     
