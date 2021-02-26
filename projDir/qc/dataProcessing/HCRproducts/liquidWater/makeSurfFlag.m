@@ -13,7 +13,7 @@ surfFlag(data.elevation>-85)=0;
 surfFlag(data.TOPO>0)=0;
 
 % sort out data from below 2500m altitude
-surfFlag(data.altitude<2500)=0;
+%surfFlag(data.altitude<2500)=0;
 
 % Calculate reflectivity sum inside and outside ocean surface to
 % distinguish clear air and cloud

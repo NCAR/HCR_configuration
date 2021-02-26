@@ -5,7 +5,7 @@ close all;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Input variables %%%%%%%%%%%%%%%%%%%%%%%%%%
 
-project='otrec'; %socrates, aristo, cset, otrec
+project='cset'; %socrates, aristo, cset, otrec
 quality='qc2'; %field, qc1, or qc2
 dataFreq='10hz';
 
@@ -32,6 +32,8 @@ caseStart=datetime(caseList.Var1,caseList.Var2,caseList.Var3, ...
     caseList.Var4,caseList.Var5,0);
 caseEnd=datetime(caseList.Var6,caseList.Var7,caseList.Var8, ...
     caseList.Var9,caseList.Var10,0);
+
+load('fit_RES_LWC_nofilt.mat')
 
 for aa=1:length(caseStart)
     
@@ -194,8 +196,95 @@ for aa=1:length(caseStart)
         end
     end
     
+    %% Calculate LWC and RES
+    % Method taking Mie scattering into account
+    piaInd=2*specAttLiq*(data.range(2)-data.range(1))./1000;
+    piaGate=cumsum(piaInd,1,'omitnan');
+    piaGate(isnan(specAttLiq))=nan;
+      
+    % Attenuation corrected reflectivity
+    dbzCorr=data.dbzMasked+piaGate;
+    
+    % Calculate Xres
+    zw=10.^(0.1*dbzCorr);
+    Xres = (zw./specAttLiq).^(1/3);
+    
+    % Interpolate fitting data
+    zw_bnd_c  = interp1(Awbnd_c,zwbnd_c,specAttLiq,'linear','extrap');
+    zw_bnd_c(zw_bnd_c<0)=0;
+    zw_bnd_dc = interp1(Awbnd_dc,zwbnd_dc,specAttLiq,'linear','extrap');
+    zw_bnd_dc(zw_bnd_dc<0)=0;
+    
+    
+    PD_lab = {'CLD';'DZL';'MIX';'RAN';'BAN';'WSE';'BLS';'URN'};
+%   Cloud
+% II = (Aw>=Aw_bnd_c)&(Aw>4)|(Aw>=Aw_bnd_c)&(Xres>0.35);
+II = (zw<=zw_bnd_c)&(Aw>7.5);
+PID(II)=8;
+% II = (Aw>=Aw_bnd_c)&(Aw<4)&(Xres<0.35);
+II = ((zw<=zw_bnd_c)&(Aw<=7.5))|(zw<min(zwbnd_dc) & Aw<=7.5);
+RES(II) = P_c(1)*Xres(II)+P_c(2);
+LWC(II) = Q_c(1)*Aw(II)+Q_c(2);
+PID(II) = 1;
+
+%   Mix
+II = ((zw>zw_bnd_c)&(zw<zw_bnd_dc))&(Xres>Xres_thres);
+PID(II)=8;
+II = ((zw>zw_bnd_c)&(zw<zw_bnd_dc))&(Xres<=Xres_thres)&(Aw<=10);
+%     Compute the Ratio
+LWC1 = NaN*ones(size(LWC));   LWC2 = LWC1;   RES1 = LWC1;   RES2 = LWC1;
+Ratio = abs(zw-zw_bnd_dc)./(abs(zw-zw_bnd_c)+abs(zw-zw_bnd_dc));
+RES1(II) = P_c(1)*Xres(II)+P_c(2);
+RES2(II) = P_dr1(1)*Xres(II)+P_dr1(2);
+LWC1(II) = Q_c(1)*Aw(II)+Q_c(2);
+LWC2(II) = Q_dr1(1)*Aw(II)+Q_dr1(2);
+LWC(II)  = Ratio(II).*LWC1(II)+(1-Ratio(II)).*LWC2(II);
+RES(II)  = Ratio(II).*RES1(II)+(1-Ratio(II)).*RES2(II);
+PID(II)=3;
+II = ((zw>zw_bnd_c)&(zw<zw_bnd_dc))&(Aw>10);
+PID(II)=4;
+
+%   Drizzle and light rain
+II = (zw>=zw_bnd_dc & zw>=min(zw_bnd_dc))&(Xres>Xres_thres);
+PID(II) = 4;
+II = (zw>=zw_bnd_dc)&(Xres<=Xres_thres);
+RES(II) = P_dr1(1)*Xres(II)+P_dr1(2);
+LWC(II) = Q_dr1(1)*Aw(II)+Q_dr1(2);
+PID(II)=2;
+
+%  Aw=0
+II = Aw==0 & zw>0 & zw<=zwc0_bnd;
+PID(II) = 1;
+LWC(II) = Q_c0(1)*zw(II).^Q_c0(2);
+RES(II) = P_c0(1)*zw(II).^P_c0(2);
+
+II = Aw==0 & zw>zwc0_bnd & zw<zwdr0_bnd;
+PID(II) = 2;
+LWC(II) = Q_dr0(1)*zw(II).^Q_dr0(2);
+RES(II) = P_dr0(1)*zw(II).^P_dr0(2);
+
+II = Aw==0 & zw>zwdr0_bnd;
+PID(II) = 8;
+LWC(II) = NaN;
+RES(II) = NaN;
+
+%  Others
+PID(flag==6)=5;   PID(flag==7)=6;   PID(flag==3)=NaN;
+PID(flag==9)=7;
+LWC(flag==3 | flag==6 | flag==7 | flag==9)=NaN;
+RES(flag==3 | flag==6 | flag==7 | flag==9)=NaN;
+
+LWC(LWC<0) = 0;   RES(RES<0) = 0;
+
+%  LWP
+LWC_p = LWC;   LWC_mp = dsdretrieved_LWC_a;
+% LWC_mp(Aw==0) = NaN;
+LWC_p(isnan(LWC_mp)==1) = NaN;
+LWP_merge = 1e3*dR*nansum(dsdretrieved_LWC_a,1);
+LWP_hcr   = 1e3*dR*nansum(LWC_p,1);
+%% Method without Mie scattering
     alpha=1./(4.792-3.63e-2*data.TEMP-1.897e-4*data.TEMP.^2);
-    LWC=specAttLiq.*alpha;
+    LWCorig=specAttLiq.*alpha;
     
     %% Plot
     close all
@@ -259,7 +348,7 @@ for aa=1:length(caseStart)
     colmap=cat(1,[1 0 1],colmap);
     
     hold on
-    surf(data.time,data.asl./1000,LWC,'edgecolor','none');
+    surf(data.time,data.asl./1000,LWCorig,'edgecolor','none');
     view(2);
     colormap(s3,colmap)
     ylabel('Altitude (km)');
