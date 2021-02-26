@@ -36,7 +36,7 @@ end
 
 % Remove data where reflectivity outside of ocean swath is more than
 % 0.8
-clearAir=find(reflNoOceanLin<=0.8);
+clearAir=find(reflNoOceanLin<=0.5); % Is 0.8 in ssCal
 surfFlag(clearAir)=2;
 surfFlag(isnan(reflOceanLin))=0;
 

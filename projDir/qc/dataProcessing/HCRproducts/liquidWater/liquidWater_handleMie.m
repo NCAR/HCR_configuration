@@ -33,7 +33,51 @@ caseStart=datetime(caseList.Var1,caseList.Var2,caseList.Var3, ...
 caseEnd=datetime(caseList.Var6,caseList.Var7,caseList.Var8, ...
     caseList.Var9,caseList.Var10,0);
 
-load('fit_RES_LWC_nofilt.mat')
+%load('fit_RES_LWC_nofilt.mat')
+
+Awbnd_c=[0.00161,0.00181,0.00582,0.00781,0.0052,0.0107,0.00985,...
+    0.00723,0.00944,0.0206,0.0262,0.0364,0.0534,0.107,0.158,...
+    0.254,0.405,0.655,0.893,1.62];
+
+Awbnd_dc=[0.000633,0.00132,0.00235,0.00334,0.00486,0.00577,...
+    0.00962,0.0127,0.0175,0.0284,0.0346,0.0598,0.074,0.113,...
+    0.154,0.19,0.268,0.423,0.925,1.13,1.4,1.66,1.76,1.89,...
+    1.97,2.48,3.41,4.09,5.56,5.64,7.29,8.78,9.71];
+
+zwbnd_c=[1.24451461177138e-05,1.92752491319093e-05,2.98538261891796e-05,...
+    4.62381021399260e-05,7.16143410212901e-05,0.000110917481526240,...
+    0.000171790838715759,0.000266072505979881,0.000412097519097330,...
+    0.000638263486190548,0.000988553094656938,0.00153108746168203,...
+    0.00237137370566166,0.00367282300498084,0.00568852930843841,...
+    0.00881048873008014,0.0136458313658892,0.0211348903983665,...
+    0.0327340694878838,0.0506990708274704];
+
+zwbnd_dc=[0.000240021419577473,0.000502631844408201,0.000727360981363162,...
+    0.00105256760608252,0.00152317569097253,0.00220419493452256,...
+    0.00318970118691486,0.00461583206750714,0.00667959298596078,...
+    0.00966607142668268,0.0139878188719147,0.0202418405737606,...
+    0.0292920657298628,0.0423886904748601,0.0613408797025088,...
+    0.0887666847106126,0.128454700237875,0.185887420117083,...
+    0.389269161853171,0.815173400515363,1.17964138399968,1.70706477169755,...
+    2.47030171567091,3.57478560135610,5.17308959249628,7.48600305479624,...
+    10.8330313508791,22.6855858864991,47.5061679731930,99.4832580824082,...
+    208.329129899000,301.474094917887,436.264625838075];
+
+P_c=[0.126782731258678,-0.000115939385913554];
+P_c0=[0.161877656181692,0.240155793871566];
+P_dr0=[0.331402635889504,0.229591393662394];
+P_dr1=[0.189219903249597,-0.0835385698027379];
+
+Q_c=[0.254509910846974,0.00105380577830583];
+Q_c0=[0.126682917191433,0.284748888720728];
+Q_dr0=[0.0136623949301112,0.581217037948342];
+Q_dr1=[0.112138117429853,0.00128536965660402];
+
+Xres_thres=3;
+
+zwc0_bnd=0.00293494522226979;
+zwdr0_bnd=2.50149707846010;
+
 
 for aa=1:length(caseStart)
     
@@ -64,6 +108,8 @@ for aa=1:length(caseStart)
     data.MELTING_LAYER=[];
     data.ICING_LEVEL=[];
     data.pulse_width=[];
+    
+    data.DBMVC=[];
     
     dataVars=fieldnames(data);
     
@@ -196,8 +242,14 @@ for aa=1:length(caseStart)
         end
     end
     
-    %% Calculate LWC and RES
-    % Method taking Mie scattering into account
+    specAttLiqNeg=find(specAttLiq<0);
+    specAttLiq(specAttLiqNeg)=nan;
+    %% Calculate LWC and RES with method taking Mie scattering into account
+    
+    PID=nan(size(data.DBZ));
+    LWC=nan(size(data.DBZ));
+    RES=nan(size(data.DBZ));
+    
     piaInd=2*specAttLiq*(data.range(2)-data.range(1))./1000;
     piaGate=cumsum(piaInd,1,'omitnan');
     piaGate(isnan(specAttLiq))=nan;
@@ -206,89 +258,96 @@ for aa=1:length(caseStart)
     dbzCorr=data.dbzMasked+piaGate;
     
     % Calculate Xres
-    zw=10.^(0.1*dbzCorr);
-    Xres = (zw./specAttLiq).^(1/3);
+    zLin=10.^(0.1*dbzCorr);
+    Xres = (zLin./specAttLiq).^(1/3);
     
     % Interpolate fitting data
-    zw_bnd_c  = interp1(Awbnd_c,zwbnd_c,specAttLiq,'linear','extrap');
+    zw_bnd_c=interp1(Awbnd_c,zwbnd_c,specAttLiq,'linear','extrap');
     zw_bnd_c(zw_bnd_c<0)=0;
-    zw_bnd_dc = interp1(Awbnd_dc,zwbnd_dc,specAttLiq,'linear','extrap');
+    zw_bnd_dc=interp1(Awbnd_dc,zwbnd_dc,specAttLiq,'linear','extrap');
     zw_bnd_dc(zw_bnd_dc<0)=0;
     
+    % Cloud
+    % Unreasonable cloud
+    cloudIndsU=zLin<=zw_bnd_c & specAttLiq>7.5;
+    PID(cloudIndsU)=5;
     
-    PD_lab = {'CLD';'DZL';'MIX';'RAN';'BAN';'WSE';'BLS';'URN'};
-%   Cloud
-% II = (Aw>=Aw_bnd_c)&(Aw>4)|(Aw>=Aw_bnd_c)&(Xres>0.35);
-II = (zw<=zw_bnd_c)&(Aw>7.5);
-PID(II)=8;
-% II = (Aw>=Aw_bnd_c)&(Aw<4)&(Xres<0.35);
-II = ((zw<=zw_bnd_c)&(Aw<=7.5))|(zw<min(zwbnd_dc) & Aw<=7.5);
-RES(II) = P_c(1)*Xres(II)+P_c(2);
-LWC(II) = Q_c(1)*Aw(II)+Q_c(2);
-PID(II) = 1;
-
-%   Mix
-II = ((zw>zw_bnd_c)&(zw<zw_bnd_dc))&(Xres>Xres_thres);
-PID(II)=8;
-II = ((zw>zw_bnd_c)&(zw<zw_bnd_dc))&(Xres<=Xres_thres)&(Aw<=10);
-%     Compute the Ratio
-LWC1 = NaN*ones(size(LWC));   LWC2 = LWC1;   RES1 = LWC1;   RES2 = LWC1;
-Ratio = abs(zw-zw_bnd_dc)./(abs(zw-zw_bnd_c)+abs(zw-zw_bnd_dc));
-RES1(II) = P_c(1)*Xres(II)+P_c(2);
-RES2(II) = P_dr1(1)*Xres(II)+P_dr1(2);
-LWC1(II) = Q_c(1)*Aw(II)+Q_c(2);
-LWC2(II) = Q_dr1(1)*Aw(II)+Q_dr1(2);
-LWC(II)  = Ratio(II).*LWC1(II)+(1-Ratio(II)).*LWC2(II);
-RES(II)  = Ratio(II).*RES1(II)+(1-Ratio(II)).*RES2(II);
-PID(II)=3;
-II = ((zw>zw_bnd_c)&(zw<zw_bnd_dc))&(Aw>10);
-PID(II)=4;
-
-%   Drizzle and light rain
-II = (zw>=zw_bnd_dc & zw>=min(zw_bnd_dc))&(Xres>Xres_thres);
-PID(II) = 4;
-II = (zw>=zw_bnd_dc)&(Xres<=Xres_thres);
-RES(II) = P_dr1(1)*Xres(II)+P_dr1(2);
-LWC(II) = Q_dr1(1)*Aw(II)+Q_dr1(2);
-PID(II)=2;
-
-%  Aw=0
-II = Aw==0 & zw>0 & zw<=zwc0_bnd;
-PID(II) = 1;
-LWC(II) = Q_c0(1)*zw(II).^Q_c0(2);
-RES(II) = P_c0(1)*zw(II).^P_c0(2);
-
-II = Aw==0 & zw>zwc0_bnd & zw<zwdr0_bnd;
-PID(II) = 2;
-LWC(II) = Q_dr0(1)*zw(II).^Q_dr0(2);
-RES(II) = P_dr0(1)*zw(II).^P_dr0(2);
-
-II = Aw==0 & zw>zwdr0_bnd;
-PID(II) = 8;
-LWC(II) = NaN;
-RES(II) = NaN;
-
-%  Others
-PID(flag==6)=5;   PID(flag==7)=6;   PID(flag==3)=NaN;
-PID(flag==9)=7;
-LWC(flag==3 | flag==6 | flag==7 | flag==9)=NaN;
-RES(flag==3 | flag==6 | flag==7 | flag==9)=NaN;
-
-LWC(LWC<0) = 0;   RES(RES<0) = 0;
-
-%  LWP
-LWC_p = LWC;   LWC_mp = dsdretrieved_LWC_a;
-% LWC_mp(Aw==0) = NaN;
-LWC_p(isnan(LWC_mp)==1) = NaN;
-LWP_merge = 1e3*dR*nansum(dsdretrieved_LWC_a,1);
-LWP_hcr   = 1e3*dR*nansum(LWC_p,1);
-%% Method without Mie scattering
-    alpha=1./(4.792-3.63e-2*data.TEMP-1.897e-4*data.TEMP.^2);
-    LWCorig=specAttLiq.*alpha;
+    % Cloud indices
+    cloudInds=(zLin<=zw_bnd_c | zLin<min(zwbnd_dc)) & specAttLiq<=7.5;
+    
+    RES(cloudInds)=P_c(1)*Xres(cloudInds)+P_c(2);
+    LWC(cloudInds)=Q_c(1)*specAttLiq(cloudInds)+Q_c(2);
+    PID(cloudInds)=1;
+    
+    %   Mixed
+    % Unreasonable mixed
+    mixedIndsU=zLin>zw_bnd_c & zLin<zw_bnd_dc & Xres>Xres_thres;
+    PID(mixedIndsU)=5;
+    
+    % Mixed indices
+    mixedInds=zLin>zw_bnd_c & zLin<zw_bnd_dc & Xres<=Xres_thres & specAttLiq<=10;
+    
+    % Compute the Ratio
+    LWC1=nan(size(data.DBZ));
+    LWC2=nan(size(data.DBZ));
+    RES1=nan(size(data.DBZ));
+    RES2=nan(size(data.DBZ));
+    
+    Ratio = abs(zLin-zw_bnd_dc)./(abs(zLin-zw_bnd_c)+abs(zLin-zw_bnd_dc));
+    
+    RES1(mixedInds)=P_c(1)*Xres(mixedInds)+P_c(2);
+    RES2(mixedInds)=P_dr1(1)*Xres(mixedInds)+P_dr1(2);
+    LWC1(mixedInds)=Q_c(1)*specAttLiq(mixedInds)+Q_c(2);
+    LWC2(mixedInds)=Q_dr1(1)*specAttLiq(mixedInds)+Q_dr1(2);
+    LWC(mixedInds)=Ratio(mixedInds).*LWC1(mixedInds)+(1-Ratio(mixedInds)).*LWC2(mixedInds);
+    RES(mixedInds)=Ratio(mixedInds).*RES1(mixedInds)+(1-Ratio(mixedInds)).*RES2(mixedInds);
+    PID(mixedInds)=3;
+    
+    % Rain below rain boundary because of large attenuation
+    rainInds1=zLin>zw_bnd_c & zLin<zw_bnd_dc & specAttLiq>10;
+    PID(rainInds1)=4;
+    
+    % Rain
+    rainInds2=zLin>=zw_bnd_dc & zLin>=min(zw_bnd_dc) & Xres>Xres_thres;
+    PID(rainInds2) = 4;
+    
+    % Drizzle (above rain boundary but small Xres)
+    drizzleInds=zLin>=zw_bnd_dc & Xres<=Xres_thres;
+    RES(drizzleInds)=P_dr1(1)*Xres(drizzleInds)+P_dr1(2);
+    LWC(drizzleInds)=Q_dr1(1)*specAttLiq(drizzleInds)+Q_dr1(2);
+    PID(drizzleInds)=2;
+    
+    % specAttLiq=0 and cloud
+    a0cInds=specAttLiq==0 & zLin>0 & zLin<=zwc0_bnd;
+    PID(a0cInds)=1;
+    LWC(a0cInds)=Q_c0(1)*zLin(a0cInds).^Q_c0(2);
+    RES(a0cInds)=P_c0(1)*zLin(a0cInds).^P_c0(2);
+    
+    % specAttLiq=0 and drizzle
+    a0dInds=specAttLiq==0 & zLin>zwc0_bnd & zLin<zwdr0_bnd;
+    PID(a0dInds)=2;
+    LWC(a0dInds)=Q_dr0(1)*zLin(a0dInds).^Q_dr0(2);
+    RES(a0dInds)=P_dr0(1)*zLin(a0dInds).^P_dr0(2);
+    
+    % specAttLiq=0 and mixed or rain -> unreasonable
+    a0mrInds=specAttLiq==0 & zLin>zwdr0_bnd;
+    PID(a0mrInds)=8;
+    LWC(a0mrInds)=nan;
+    RES(a0mrInds)=nan;
+       
+    %LWC(LWC<0) = 0;   RES(RES<0) = 0;
+    
+    LWC(specAttLiqNeg)=-99;
+    RES(specAttLiqNeg)=-99;
+    
+    %% Method without Mie scattering
+%     alpha=1./(4.792-3.63e-2*data.TEMP-1.897e-4*data.TEMP.^2);
+%     LWCorig=specAttLiq.*alpha;
     
     %% Plot
     close all
     
+    categories = {'Cloud';'Drizzle';'Mixed';'Rain';'Unreasonable'};
     %timeMat=repmat(data.time,size(data.TEMP,1),1);
     
     sig0measClear=nan(size(data.time));
@@ -298,7 +357,7 @@ LWP_hcr   = 1e3*dR*nansum(LWC_p,1);
     
     f1 = figure('Position',[200 500 1500 900],'DefaultAxesFontSize',12);
     
-    s1=subplot(3,1,1);
+    s1=subplot(4,1,1);
     hold on
     l0=plot(data.time,sig0modelCM,'-c','linewidth',2);
     l1=plot(data.time,sig0measClear,'-b','linewidth',1);
@@ -324,7 +383,7 @@ LWP_hcr   = 1e3*dR*nansum(LWC_p,1);
     title([datestr(data.time(1)),' to ',datestr(data.time(end))])
     s1pos=s1.Position;
     
-    s2=subplot(3,1,2);
+    s2=subplot(4,1,2);
     
     colormap jet
     
@@ -342,17 +401,17 @@ LWP_hcr   = 1e3*dR*nansum(LWC_p,1);
     s2pos=s2.Position;
     s2.Position=[s2pos(1),s2pos(2),s1pos(3),s2pos(4)];
     
-    s3=subplot(3,1,3);
+    s3=subplot(4,1,3);
     
     colmap=jet;
     colmap=cat(1,[1 0 1],colmap);
     
     hold on
-    surf(data.time,data.asl./1000,LWCorig,'edgecolor','none');
+    surf(data.time,data.asl./1000,LWC,'edgecolor','none');
     view(2);
     colormap(s3,colmap)
     ylabel('Altitude (km)');
-    caxis([0 2]);
+    caxis([0 1]);
     ylim([0 ylimUpper]);
     xlim([data.time(1),data.time(end)]);
     colorbar
@@ -360,6 +419,25 @@ LWP_hcr   = 1e3*dR*nansum(LWC_p,1);
     title('Liquid water content (g m^{-3})')
     s3pos=s3.Position;
     s3.Position=[s3pos(1),s3pos(2),s1pos(3),s3pos(4)];
+    
+    s4=subplot(4,1,4);
+    
+    colmap=jet;
+    colmap=cat(1,[1 0 1],colmap);
+    
+    hold on
+    surf(data.time,data.asl./1000,RES,'edgecolor','none');
+    view(2);
+    colormap(s4,colmap)
+    ylabel('Altitude (km)');
+    caxis([0 0.5]);
+    ylim([0 ylimUpper]);
+    xlim([data.time(1),data.time(end)]);
+    colorbar
+    grid on
+    title('Radar estimated size (mm)')
+    s4pos=s4.Position;
+    s4.Position=[s4pos(1),s4pos(2),s1pos(3),s4pos(4)];
     
     set(gcf,'PaperPositionMode','auto')
     print(f1,[figdir,project,'_lwc_',datestr(data.time(1),'yyyymmdd_HHMMSS'),'_to_',datestr(data.time(end),'yyyymmdd_HHMMSS')],'-dpng','-r0')
