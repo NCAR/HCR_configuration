@@ -115,9 +115,7 @@ for aa=1:length(caseStart)
     
     % Load data
     data=read_HCR(fileList,data,startTime,endTime);
-    
-    frq=ncread(fileList{1},'frequency');
-    
+        
     % Check if all variables were found
     for ii=1:length(dataVars)
         if ~isfield(data,dataVars{ii})
@@ -134,7 +132,7 @@ for aa=1:length(caseStart)
     
     %% One way and two way gaseous attenuation
     
-    [gasAttClear,gasAttCloud,gasAttClearMat,gasAttCloudMat]=get_gas_atten(frq/1e+9,data);
+    [gasAttClear,gasAttCloud,gasAttClearMat,gasAttCloudMat]=get_gas_atten(data);
     gasAttCloud2=2*gasAttCloud';
     
     %% Calculate sigma0 from model and from reflectivity

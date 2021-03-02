@@ -13,7 +13,9 @@
 %Output:
 %alphaTot is the attenuation according to Liebe
 %gammaTot is the attenuation according to ITU
-function [ituTot,ituCloud,layer_itu,layer_ituC]= get_atten(f,data)
+function [ituTot,ituCloud,layer_itu,layer_ituC]= get_atten(data)
+
+f=data.frq/1e+9;
 
 if ~isfield(data,'dbzMasked')
     data.dbzMasked=data.DBZ;

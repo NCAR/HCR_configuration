@@ -18,12 +18,12 @@ alpha = 0.21;
 salinity=35; % Ocean salinity for sig0model in per mille (world wide default is 35) and sensitivity to that number is low
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-addpath('/h/eol/romatsch/gitPriv/process_HCR/oceanScans/functions/');
-addpath(genpath('/h/eol/romatsch/gitPriv/utils/'));
+addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
 directories.figdir=['/scr/sci/romatsch/liquidWaterHCR/',project,'/'];
 
-directories.dataDir=HCRdir(project,quality,dataFreq);
+%directories.dataDir=HCRdir(project,quality,dataFreq);
+directories.dataDir=['/run/media/romatsch/RSF0006/rsf/meltingLayer/',project,'/10hz/'];
 
 startTime=datetime(2019,9,30,16,5,0);
 endTime=datetime(2019,9,30,16,17,0);
@@ -64,7 +64,6 @@ for ii=1:length(dataVars)
 end
 
 dataVars=dataVars(~cellfun('isempty',dataVars));
-frq=ncread(fileList{1},'frequency');
 xmitPowV=ncread(fileList{1},'r_calib_xmit_power_v');
 antGainV=ncread(fileList{1},'r_calib_antenna_gain_v');
 xmitPowH=ncread(fileList{1},'r_calib_xmit_power_h');
@@ -78,15 +77,17 @@ radomeLossH=ncread(fileList{1},'r_calib_two_way_radome_loss_h');
 recMismatchLoss=ncread(fileList{1},'r_calib_receiver_mismatch_loss');
 ksquared=ncread(fileList{1},'r_calib_k_squared_water');
 
+data.frq=ncread(fileList{1},'frequency');
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% sort out bad data
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 reflTemp=data.DBZ;
 data.reflMask=ones(size(data.time));
-data.elevation=abs(data.elevation+90);
+elev=abs(data.elevation+90);
 
 %sort out upward pointing
-outElevInd=find(data.elevation>90);
+outElevInd=find(elev>90);
 data.reflMask(outElevInd)=0;
 
 % sort out data from below 2500m altitude
@@ -155,7 +156,7 @@ data.DBMVC(data.reflMask==0)=nan;
 data.DBMHX(data.reflMask==0)=nan;
 
 %% Attenuation
-[alphaTot,layer_alpha,gammaTot,layer_gamma,wdspd]= get_atten(frq/10e+8,data.time,1,data);
+[ituTot,alphaTot,layer_itu,layer_ituC]= get_gas_atten(data);
 
 %% Calculate sig0
 peak_power_dBmV =xmitPowV;
@@ -165,7 +166,7 @@ peak_power_dBmH =xmitPowH;
 peak_powerH=10^((peak_power_dBmH)*0.1);
 
 c=299792458;
-wave_len = c/frq/1000; %transmit wavelength in km;
+wave_len = c/data.frq/1000; %transmit wavelength in km;
 
 tx_ant_gainV=10^(antGainV/10);
 tx_ant_gainH=10^(antGainH/10);
@@ -183,9 +184,9 @@ lossH=waveGuideLossH+radomeLossH+recMismatchLoss;
 %calculate sig0 measured 
 avg_WV_lossL= 2*alphaTot; % Two-way WV attenuation in  dB
 Wband_RC_revisedLV=Wband_RCV-lossV-avg_WV_lossL;
-sig0measuredV=-Wband_RC_revisedLV'+data.DBMVC(maxGateLin)+20*log10(data.range(maxGateLin)/1000)-10*log10(cosd(data.elevation));
+sig0measuredV=-Wband_RC_revisedLV'+data.DBMVC(maxGateLin)+20*log10(data.range(maxGateLin)/1000)-10*log10(cosd(elev));
 Wband_RC_revisedLH=Wband_RCH-lossH-avg_WV_lossL;
-sig0measuredH=-Wband_RC_revisedLH'+data.DBMHX(maxGateLin)+20*log10(data.range(maxGateLin)/1000)-10*log10(cosd(data.elevation));
+sig0measuredH=-Wband_RC_revisedLH'+data.DBMHX(maxGateLin)+20*log10(data.range(maxGateLin)/1000)-10*log10(cosd(elev));
 
 %% DBM range corrected
 % dbmvcLin=10.^(data.DBMVC./10);
@@ -204,7 +205,7 @@ if ~max(data.reflMask)==0
     subplot(3,1,1)
     hold on
     l1=plot(data.time,sig0measuredV,'-b','linewidth',1);
-    l2=plot(data.time,sig0measuredH,'-r','linewidth',1);
+    l2=plot(data.time,sig0measuredH+20,'-r','linewidth',1);
     ylabel('Sig0 (dB)');
     %ylim([40 50]);
     grid on
@@ -218,7 +219,7 @@ if ~max(data.reflMask)==0
         
     xlim([data.time(1),data.time(end)]);
     
-    legend([l1 l2],{'Sig0 V','Sig0 H','Sig0 V - Sig0 H'},'location','southwest');
+    legend([l1 l2 l3],{'Sig0 V','Sig0 H + 20','Sig0 V - Sig0 H'},'location','southwest');
     
     title(['Reflectivity: ',datestr(data.time(1)),' to ',datestr(data.time(end))])
     
@@ -240,7 +241,7 @@ if ~max(data.reflMask)==0
     hold on
     plot(data.time,data.elevation,'-k','linewidth',2);
     ylabel('Elev(deg)');
-    ylim([-0.4 0.4]);
+    ylim([-90.4 -89.6]);
     
     ax = gca;
     ax.YColor = 'k';
