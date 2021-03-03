@@ -1,4 +1,4 @@
-function surfFlag=makeSurfFlag(data,maxGate)
+function [surfFlag airFrac]=makeSurfFlag(data,gasAtt,maxGate)
 % Create flag of surface reflectivity
 % 0 extinct or not usable
 % 1 cloud
@@ -18,9 +18,7 @@ surfFlag(data.TOPO>0)=0;
 % Calculate reflectivity sum inside and outside ocean surface to
 % distinguish clear air and cloud
 reflTemp=data.DBZ;
-
-% Remove bang
-reflTemp(data.FLAG==6)=nan;
+reflTemp=reflTemp+2*cumsum(gasAtt,1);
 
 reflLin=10.^(reflTemp./10);
 reflOceanLin=nan(size(data.time));
@@ -30,13 +28,16 @@ for ii=1:length(data.time)
     if (~(maxGate(ii)<10 | maxGate(ii)>size(reflLin,1)-5)) & ~isnan(maxGate(ii))
         reflRay=reflLin(:,ii);
         reflOceanLin(ii)=sum(reflRay(maxGate(ii)-5:maxGate(ii)+5),'omitnan');
-        reflNoOceanLin(ii)=sum(reflRay(1:maxGate(ii)-6),'omitnan');
+        reflNoOceanLin(ii)=sum(reflRay(19:maxGate(ii)-8),'omitnan');
     end
 end
 
-% Remove data where reflectivity outside of ocean swath is more than
-% 0.8
-clearAir=find(reflNoOceanLin<=0.5); % Is 0.8 in ssCal
+% Remove data where reflectivity fraction outside of ocean swath is below
+% limit
+airFrac=reflNoOceanLin./reflOceanLin;
+
+%clearAir=find(reflNoOceanLin<=0.5); % Is 0.8 in ssCal
+clearAir=find(airFrac<=1e-7);
 surfFlag(clearAir)=2;
 surfFlag(isnan(reflOceanLin))=0;
 

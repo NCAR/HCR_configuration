@@ -33,7 +33,7 @@ caseStart=datetime(caseList.Var1,caseList.Var2,caseList.Var3, ...
 caseEnd=datetime(caseList.Var6,caseList.Var7,caseList.Var8, ...
     caseList.Var9,caseList.Var10,0);
 
-for aa=1:length(caseStart)
+for aa=2:length(caseStart)
     
     disp(['Case ',num2str(aa),' of ',num2str(length(caseStart))]);
     
@@ -82,7 +82,7 @@ for aa=1:length(caseStart)
     reflTemp=data.DBZ;
     
     % Remove bang
-    reflTemp(data.FLAG==6)=nan;
+    %reflTemp(data.FLAG==6)=nan;
     
     reflLin=10.^(reflTemp./10);
     reflOceanLin=nan(size(data.time));
@@ -92,7 +92,7 @@ for aa=1:length(caseStart)
         if (~(maxGate(ii)<10 | maxGate(ii)>size(reflLin,1)-5)) & ~isnan(maxGate(ii))
             reflRay=reflLin(:,ii);
             reflOceanLin(ii)=sum(reflRay(maxGate(ii)-5:maxGate(ii)+5),'omitnan');
-            reflNoOceanLin(ii)=sum(reflRay(1:maxGate(ii)-6),'omitnan');
+            reflNoOceanLin(ii)=sum(reflRay(19:maxGate(ii)-8),'omitnan');
         end
     end
     
@@ -112,12 +112,24 @@ for aa=1:length(caseStart)
         if (~(maxGate(ii)<10 | maxGate(ii)>size(powerLin,1)-5)) & ~isnan(maxGate(ii))
             powerRay=powerLin(:,ii);
             powerOceanLin(ii)=sum(powerRay(maxGate(ii)-5:maxGate(ii)+5),'omitnan');
-            powerNoOceanLin(ii)=sum(powerRay(1:maxGate(ii)-6),'omitnan');
+            powerNoOceanLin(ii)=sum(powerRay(19:maxGate(ii)-8),'omitnan');
         end
     end
     
     powerFrac=powerNoOceanLin./powerOceanLin;
     
+    
+   %% Ocean surface reflectivity and bang
+   
+   aroundOcean=nan(31,length(data.time));
+   for kk=1:length(data.time)
+       if (~(maxGate(kk)<10 | maxGate(ii)>size(powerLin,1)-5)) & ~isnan(maxGate(kk))
+           aroundOcean(:,kk)=reflLin(maxGate(kk)-15:maxGate(kk)+15,kk);
+       end
+   end
+   
+   bang=reflLin(1:20,:);
+   
     %% Plot
     close all
         
@@ -140,7 +152,7 @@ for aa=1:length(caseStart)
     s3=subplot(5,1,4);
     l2=plot(data.time,reflFrac,'-r','linewidth',1);
     ylabel('Fraction');
-    ylim([0 0.00001]);
+    ylim([0 0.0000005]);
     grid on
     set(gca,'YColor','k');
     
@@ -213,6 +225,52 @@ for aa=1:length(caseStart)
     s2.Position=[s2pos(1),s2pos(2),s1pos(3),s2pos(4)];
     
     set(gcf,'PaperPositionMode','auto')
-    print(f1,[figdir,project,'_lwc_',datestr(data.time(1),'yyyymmdd_HHMMSS'),'_to_',datestr(data.time(end),'yyyymmdd_HHMMSS')],'-dpng','-r0')
+    print(f1,[figdir,project,'_reflPower_',datestr(data.time(1),'yyyymmdd_HHMMSS'),'_to_',datestr(data.time(end),'yyyymmdd_HHMMSS')],'-dpng','-r0')
+    
+    %% Plot around ocean and bang
+            
+    f1 = figure('Position',[200 500 1500 1100],'DefaultAxesFontSize',12);
+    
+    colormap jet
+    
+    s1=subplot(3,1,1);
+    surf(data.time,repmat((1:20)',1,length(data.time)),bang,'edgecolor','none');
+    view(2)
+    ylim([0 20]);
+    grid on
+    
+    xlim([data.time(1),data.time(end)]);
+    
+    title({'Bang'})
+    s1pos=s1.Position;
+    
+    s2=subplot(3,1,2);
+    surf(data.time,repmat((-15:15)',1,length(data.time)),aroundOcean,'edgecolor','none');
+    view(2)
+    ylim([-15 15]);
+    grid on
+    title('Ocean surface reflectivity');
+    
+    xlim([data.time(1),data.time(end)]);
+    s2pos=s2.Position;
+    s2.Position=[s2pos(1),s2pos(2),s1pos(3),s2pos(4)];
+       
+    s3=subplot(3,1,3);
+    
+    hold on
+    surf(data.time,data.asl./1000,data.DBZ,'edgecolor','none');
+    view(2);
+    ylabel('Altitude (km)');
+    caxis([-25 25]);
+    ylim([0 ylimUpper]);
+    xlim([data.time(1),data.time(end)]);
+    colorbar
+    grid on
+    title('Reflectivity (dBZ)')
+    s3pos=s3.Position;
+    s3.Position=[s3pos(1),s3pos(2),s1pos(3),s3pos(4)];
+    
+    set(gcf,'PaperPositionMode','auto')
+    print(f1,[figdir,project,'_oceanBang_',datestr(data.time(1),'yyyymmdd_HHMMSS'),'_to_',datestr(data.time(end),'yyyymmdd_HHMMSS')],'-dpng','-r0')
     
 end

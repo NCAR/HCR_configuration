@@ -20,7 +20,8 @@ salinity=35; % Ocean salinity for sig0model in per mille (world wide default is 
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-directories.figdir=['/scr/sci/romatsch/liquidWaterHCR/',project,'/'];
+%directories.figdir=['/scr/sci/romatsch/liquidWaterHCR/',project,'/'];
+directories.figdir=['/home/romatsch/plots/HCR/liquidWater/clearVScloudy/'];
 
 %directories.dataDir=HCRdir(project,quality,dataFreq);
 directories.dataDir=['/run/media/romatsch/RSF0006/rsf/meltingLayer/',project,'/10hz/'];
@@ -221,7 +222,7 @@ if ~max(data.reflMask)==0
     
     legend([l1 l2 l3],{'Sig0 V','Sig0 H + 20','Sig0 V - Sig0 H'},'location','southwest');
     
-    title(['Reflectivity: ',datestr(data.time(1)),' to ',datestr(data.time(end))])
+    title([datestr(data.time(1),'yyyy-mm-dd HH:MM:SS'),' to ',datestr(data.time(end),'yyyy-mm-dd HH:MM:SS')])
     
     subplot(3,1,2)
     
@@ -241,7 +242,7 @@ if ~max(data.reflMask)==0
     hold on
     plot(data.time,data.elevation,'-k','linewidth',2);
     ylabel('Elev(deg)');
-    ylim([-90.4 -89.6]);
+    ylim([-90 -89.6]);
     
     ax = gca;
     ax.YColor = 'k';
@@ -259,6 +260,6 @@ if ~max(data.reflMask)==0
     legend({'Elevation','Tilt','Rotation-180'},'location','northeast');
         
     set(gcf,'PaperPositionMode','auto')
-    print(f1,[directories.figdir,project,'_lines_',datestr(data.time(1),'yyyymmdd_HHMMSS'),'_to_',datestr(data.time(end),'yyyymmdd_HHMMSS')],'-dpng','-r0')
+    print(f1,[directories.figdir,project,'_sig0_',datestr(data.time(1),'yyyymmdd_HHMMSS'),'_to_',datestr(data.time(end),'yyyymmdd_HHMMSS')],'-dpng','-r0')
     
 end

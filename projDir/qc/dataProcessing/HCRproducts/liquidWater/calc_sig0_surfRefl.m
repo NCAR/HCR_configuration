@@ -14,6 +14,6 @@ rc_terms = 10 .* log10(temp);
 elevTemp=abs(data.elevation+90);
 elevTemp(data.elevation>90)=nan;
 
-sig0measured=data.surfRefl - 10*log10(cosd(elevTemp)) + rc_terms;
+sig0measured=data.DBZ - 10*log10(cosd(elevTemp)) + rc_terms;
 end
 
