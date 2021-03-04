@@ -25,18 +25,14 @@ end
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
 %figdir=['/scr/sci/romatsch/liquidWaterHCR/'];
-figdir=['/home/romatsch/plots/HCR/liquidWater/',project,'/cases/'];
+figdir=['/home/romatsch/plots/HCR/liquidWater/',project,'/flights/'];
 
 %dataDir=HCRdir(project,quality,dataFreq);
 dataDir=['/run/media/romatsch/RSF0006/rsf/meltingLayer/',project,'/10hz/'];
 
-casefile=['~/git/HCR_configuration/projDir/qc/dataProcessing/HCRproducts/caseFiles/liquidWater_',project,'.txt'];
+infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_',project,'_data.txt'];
 
-caseList=readtable(casefile);
-caseStart=datetime(caseList.Var1,caseList.Var2,caseList.Var3, ...
-    caseList.Var4,caseList.Var5,0);
-caseEnd=datetime(caseList.Var6,caseList.Var7,caseList.Var8, ...
-    caseList.Var9,caseList.Var10,0);
+caseList = table2array(readtable(infile));
 
 %load('fit_RES_LWC_nofilt.mat')
 
@@ -83,14 +79,19 @@ Xres_thres=3;
 zwc0_bnd=0.00293494522226979;
 zwdr0_bnd=2.50149707846010;
 
+sig0ClearAll=[];
 
-for aa=1:length(caseStart)
+for aa=1:size(caseList,1)
+    disp(['Flight ',num2str(aa)]);
+    disp('Loading HCR data ...')
+    disp(['Starting at ',datestr(datetime('now'),'yyyy-mm-dd HH:MM')]);
     
-    disp(['Case ',num2str(aa),' of ',num2str(length(caseStart))]);
-    disp('Loading data ...');
+    clearvars -except aa Awbnd_c Awbnd_dc b_drizz b_rain caseList dataDir dataFreq figdir infile ...
+        P_c P_c0 P_dr0 P_dr1 project Q_c Q_c0 Q_dr0 Q_dr1 quality sig0ClearAll Xres_thres ylimRefl ylimUpper ...
+        zwbnd_c zwbnd_dc zwc0_bnd zwdr0_bnd
     
-    startTime=caseStart(aa);
-    endTime=caseEnd(aa);
+    startTime=datetime(caseList(aa,1:6));
+    endTime=datetime(caseList(aa,7:12));
     
     %% Get data
     
@@ -157,6 +158,11 @@ for aa=1:length(caseStart)
     [gasAttClear,gasAttCloud,gasAttClearMat,gasAttCloudMat]=get_gas_atten(data);
     gasAttCloud2=2*gasAttCloud';
     
+    data=rmfield(data,'TEMP');
+    data=rmfield(data,'PRESS');
+    data=rmfield(data,'RH');
+    
+    clear gasAttClearMat
     %% Calculate sigma0 from model and from reflectivity
     
     disp('Calculating sig0 ...');
@@ -179,6 +185,8 @@ for aa=1:length(caseStart)
         end
     end
     
+    clear sig0measLin
+    
     sig0measAtt3gates=10.*log10(sig0meas3gates)+gasAttCloud2;  
     sig0measAtt3gates(data.elevation>0)=nan;
     sig0measAtt3gates(imag(sig0measAtt3gates)~=0)=nan;
@@ -196,6 +204,7 @@ for aa=1:length(caseStart)
         
     [surfFlag1 atmFrac]=makeSurfFlag(data,gasAttCloudMat,maxGate);
     
+    clear gasAttCloudMat
     %% Create field with reference sig0
     % RefFlag
     % 1 clear air
@@ -248,6 +257,7 @@ for aa=1:length(caseStart)
     % iceAttAll=iceSpecAtt.*(data.range(2)-data.range(1))./1000;
     % piaIce2=sum(iceAttAll,1,'omitnan');
     
+    clear coldRefl warmRefl
     %% Calculate liquid attenuation
     
     piaLiq2=piaHydromet2;%-piaIce2;
@@ -394,89 +404,12 @@ for aa=1:length(caseStart)
 %     LWCorig=specAttLiq.*alpha;
     
     %% Plot reflectivity, LWC, and RES
-    close all
-    
+   
     disp('Plotting ...');
     
     categories = {'Cloud';'Drizzle';'Mixed';'Rain';'Unreasonable'};
     
-    f1 = figure('Position',[200 500 1500 900],'DefaultAxesFontSize',12);
-    
-    colormap jet
-    
-    s1=subplot(4,1,1);
-    surf(data.time,data.asl./1000,PID,'edgecolor','none');
-    view(2);
-    ylabel('Altitude (km)');
-    caxis([0.5 5.5]);
-    
-    ylim([0 ylimUpper]);
-    xlim([data.time(1),data.time(end)]);
-    s1.Colormap=[0,0,1;0,1,0;1,1,0;1,0,0;0.5,0,1];
-    c=colorbar('TickLabels',categories);
-    grid on
-    title([{[datestr(data.time(1),'yyyy-mm-dd HH:MM:SS'),' to ',datestr(data.time(end),'yyyy-mm-dd HH:MM:SS')]};{'PID'}])
-    s1pos=s1.Position;
-    
-    s2=subplot(4,1,2);
-        
-    hold on
-    surf(data.time,data.asl./1000,data.dbzMasked,'edgecolor','none');
-    view(2);
-    ylabel('Altitude (km)');
-    caxis([-25 25]);
-    ylim([0 ylimUpper]);
-    xlim([data.time(1),data.time(end)]);
-    colorbar
-    grid on
-    title('Reflectivity (dBZ)')
-    s2pos=s2.Position;
-    s2.Position=[s2pos(1),s2pos(2),s1pos(3),s2pos(4)];
-    
-    s3=subplot(4,1,3);
-    
-    colmap=jet;
-    colmap=cat(1,[1 0 1],colmap);
-    
-    hold on
-    surf(data.time,data.asl./1000,LWC,'edgecolor','none');
-    view(2);
-    colormap(s3,colmap)
-    ylabel('Altitude (km)');
-    caxis([0 1]);
-    ylim([0 ylimUpper]);
-    xlim([data.time(1),data.time(end)]);
-    colorbar
-    grid on
-    title('Liquid water content (g m^{-3})')
-    s3pos=s3.Position;
-    s3.Position=[s3pos(1),s3pos(2),s1pos(3),s3pos(4)];
-    
-    s4=subplot(4,1,4);
-    
-    colmap=jet;
-    colmap=cat(1,[1 0 1],colmap);
-    
-    hold on
-    surf(data.time,data.asl./1000,RES,'edgecolor','none');
-    view(2);
-    colormap(s4,colmap)
-    ylabel('Altitude (km)');
-    caxis([0 0.5]);
-    ylim([0 ylimUpper]);
-    xlim([data.time(1),data.time(end)]);
-    colorbar
-    grid on
-    title('Radar estimated size (mm)')
-    s4pos=s4.Position;
-    s4.Position=[s4pos(1),s4pos(2),s1pos(3),s4pos(4)];
-    
-    set(gcf,'PaperPositionMode','auto')
-    print(f1,[figdir,project,'_lwc_',datestr(data.time(1),'yyyymmdd_HHMMSS'),'_to_',datestr(data.time(end),'yyyymmdd_HHMMSS')],'-dpng','-r0')
-    
-     %% Plot debug
-      
-     sig0modelCM(upInds)=nan;
+    sig0modelCM(upInds)=nan;
      
     sig0measAtt(upInds)=nan;
     
@@ -495,90 +428,201 @@ for aa=1:length(caseStart)
     sig0refMod=nan(size(data.time));
     sig0refMod(refFlag==3)=refSig0(refFlag==3);
     
-    f1 = figure('Position',[200 500 1500 900],'DefaultAxesFontSize',12);
+    %% Plot scatter of sig0clear and altitude
     
-    s1=subplot(4,1,1);
-    hold on
-    l0=plot(data.time,sig0modelCM,'-c','linewidth',2);
-    l1=plot(data.time,sig0measClear,'-b','linewidth',1);
-    l2=plot(data.time,sig0measCloud,'color',[0.5 0.5 0.5],'linewidth',0.5);
-    l3=plot(data.time,sig0refMeas,'-r','linewidth',2);
-    l4=plot(data.time,sig0refInt,'-','color',[0.5 0 1],'linewidth',2);
-    l5=plot(data.time,sig0refMod,'-m','linewidth',2);
-    ylabel('Sig0 (dB)');
-    ylim([0 20]);
+    sig0ClearFlight=cat(2,sig0measClear(~isnan(sig0measClear)),data.altitude(~isnan(sig0measClear))./1000);
+    sig0ClearAll=cat(1,sig0ClearAll,sig0ClearFlight);
     
-    yyaxis right
-    l6=plot(data.time,gasAttCloud2,'-k','linewidth',1);
-    l7=plot(data.time,piaLiq2,'-g','linewidth',1);
-    ylabel('Atten. (dB)');
-    ylim([-5 15]);
-    grid on
-    set(gca,'YColor','k');
+    disp('Plotting ...');
     
-    xlim([data.time(1),data.time(end)]);
-    
-    legend([l0 l1 l2 l3 l4 l5 l6 l7],{'sig0 model','sig0 meas clear','sig0 meas cloud',...
-        'sig0 ref meas','sig0 ref int','sig0 ref mod','2-way gas att','2-way PIA liq'},...
-        'orientation','horizontal','location','north');
-    title([datestr(data.time(1),'yyyy-mm-dd HH:MM:SS'),' to ',datestr(data.time(end),'yyyy-mm-dd HH:MM:SS')])
-    s1pos=s1.Position;
-    
-    s2=subplot(4,1,2);
-    
-    colormap jet
-    
-    hold on
-    surf(data.time,data.asl./1000,data.DBZ,'edgecolor','none');
-    view(2);
-    l1=plot(data.time,data.altitude./1000,'-k','linewidth',2);
+    f1 = figure('Position',[200 500 700 700],'DefaultAxesFontSize',12);
+    scatter(sig0ClearFlight(:,1),sig0ClearFlight(:,2),'filled');
+    xlim([5,15])
+    ylim([0,15])
+    xlabel('sig0 clear air (db)');
     ylabel('Altitude (km)');
-    caxis([-25 25]);
-    ylim([-0.5 ylimRefl]);
-    xlim([data.time(1),data.time(end)]);
-    colorbar
-    grid on
-    legend(l1,'Altitude');
-    title('Reflectivity (dBZ)')
-    s2pos=s2.Position;
-    s2.Position=[s2pos(1),s2pos(2),s1pos(3),s2pos(4)];
-    
-    s3=subplot(4,1,3);
-    
-    hold on
-    l0=plot(data.time,atmFrac,'-r','linewidth',1);
-    l1=plot([data.time(1),data.time(end)],[1e-7,1e-7],'-k','linewidth',2);
-    ylim([0 0.0000005]);
-    xlim([data.time(1),data.time(end)]);
-    ylabel('Fraction');
-    
-    title('Fraction of atmosphere over ocean reflectivity')
-    s3pos=s3.Position;
-    s3.Position=[s3pos(1),s3pos(2),s1pos(3),s3pos(4)];
-    
-    s4=subplot(4,1,4);
-    
-    hold on
-    l0=plot(data.time,data.elevation,'-k','linewidth',2);
-    ylabel('Elevation (deg)');
-    ylim([-90 -89.6]);
-    
-    yyaxis right
-    l1=plot(data.time,wrapTo360(data.rotation),'-r','linewidth',2);
-    ylabel('Rotation (deg)');
-    ylim([160 200]);
-    grid on
-    set(gca,'YColor','k');
-    
-    xlim([data.time(1),data.time(end)]);
-    
-    legend([l0 l1],{'Elevation','Rotation'},'location','northeast');
-    
-    title('Liquid water content (g m^{-3})')
-        s4pos=s4.Position;
-    s4.Position=[s4pos(1),s4pos(2),s1pos(3),s4pos(4)];
-    
+    title(['Flight ',num2str(aa),': sig0 clear air vs altitude'])
     set(gcf,'PaperPositionMode','auto')
-    print(f1,[figdir,project,'_lines_',datestr(data.time(1),'yyyymmdd_HHMMSS'),'_to_',datestr(data.time(end),'yyyymmdd_HHMMSS')],'-dpng','-r0')
+    print(f1,[figdir,project,'_Flight',num2str(aa),'_sig0vsAlt'],'-dpng','-r0')
     
+    startPlot=startTime;
+    
+    while startPlot<endTime
+        
+        close all
+        
+        endPlot=startPlot+minutes(15);
+        timeInds=find(data.time>=startPlot & data.time<=endPlot);
+        
+        timePlot=data.time(timeInds);
+        dbzPlot=data.DBZ(:,timeInds);
+        dbzMaskedPlot=data.dbzMasked(:,timeInds);
+        aslPlot=data.asl(:,timeInds);
+        pidPlot=PID(:,timeInds);
+        lwcPlot=LWC(:,timeInds);
+        resPlot=RES(:,timeInds);
+        
+        f1 = figure('Position',[200 500 1500 900],'DefaultAxesFontSize',12);
+        
+        colormap jet
+        
+        s1=subplot(4,1,1);
+        surf(data.time(:,timeInds),data.asl(:,timeInds)./1000,PID(:,timeInds),'edgecolor','none');
+        view(2);
+        ylabel('Altitude (km)');
+        caxis([0.5 5.5]);
+        
+        ylim([0 ylimUpper]);
+        xlim([data.time(timeInds(1)),data.time(timeInds(end))]);
+        s1.Colormap=[0,0,1;0,1,0;1,1,0;1,0,0;0.5,0,1];
+        c=colorbar('TickLabels',categories);
+        grid on
+        title([{[datestr(data.time(timeInds(1)),'yyyy-mm-dd HH:MM:SS'),' to ',datestr(data.time(timeInds(end)),'yyyy-mm-dd HH:MM:SS')]};{'PID'}])
+        s1pos=s1.Position;
+        
+        s2=subplot(4,1,2);
+        
+        hold on
+        surf(data.time(:,timeInds),data.asl(:,timeInds)./1000,data.dbzMasked(:,timeInds),'edgecolor','none');
+        view(2);
+        ylabel('Altitude (km)');
+        caxis([-25 25]);
+        ylim([0 ylimUpper]);
+        xlim([data.time(timeInds(1)),data.time(timeInds(end))]);
+        colorbar
+        grid on
+        title('Reflectivity (dBZ)')
+        s2pos=s2.Position;
+        s2.Position=[s2pos(1),s2pos(2),s1pos(3),s2pos(4)];
+        
+        s3=subplot(4,1,3);
+        
+        colmap=jet;
+        colmap=cat(1,[1 0 1],colmap);
+        
+        hold on
+        surf(data.time(:,timeInds),data.asl(:,timeInds)./1000,LWC(:,timeInds),'edgecolor','none');
+        view(2);
+        colormap(s3,colmap)
+        ylabel('Altitude (km)');
+        caxis([0 1]);
+        ylim([0 ylimUpper]);
+        xlim([data.time(timeInds(1)),data.time(timeInds(end))]);
+        colorbar
+        grid on
+        title('Liquid water content (g m^{-3})')
+        s3pos=s3.Position;
+        s3.Position=[s3pos(1),s3pos(2),s1pos(3),s3pos(4)];
+        
+        s4=subplot(4,1,4);
+        
+        colmap=jet;
+        colmap=cat(1,[1 0 1],colmap);
+        
+        hold on
+        surf(data.time(:,timeInds),data.asl(:,timeInds)./1000,RES(:,timeInds),'edgecolor','none');
+        view(2);
+        colormap(s4,colmap)
+        ylabel('Altitude (km)');
+        caxis([0 0.5]);
+        ylim([0 ylimUpper]);
+        xlim([data.time(timeInds(1)),data.time(timeInds(end))]);
+        colorbar
+        grid on
+        title('Radar estimated size (mm)')
+        s4pos=s4.Position;
+        s4.Position=[s4pos(1),s4pos(2),s1pos(3),s4pos(4)];
+        
+        set(gcf,'PaperPositionMode','auto')
+        print(f1,[figdir,project,'_lwc_',datestr(data.time(timeInds(1)),'yyyymmdd_HHMMSS'),'_to_',datestr(data.time(timeInds(end)),'yyyymmdd_HHMMSS')],'-dpng','-r0')
+        
+        %% Plot debug
+        
+        f1 = figure('Position',[200 500 1500 900],'DefaultAxesFontSize',12);
+        
+        s1=subplot(4,1,1);
+        hold on
+        l0=plot(data.time(:,timeInds),sig0modelCM(:,timeInds),'-c','linewidth',2);
+        l1=plot(data.time(:,timeInds),sig0measClear(:,timeInds),'-b','linewidth',1);
+        l2=plot(data.time(:,timeInds),sig0measCloud(:,timeInds),'color',[0.5 0.5 0.5],'linewidth',0.5);
+        l3=plot(data.time(:,timeInds),sig0refMeas(:,timeInds),'-r','linewidth',2);
+        l4=plot(data.time(:,timeInds),sig0refInt(:,timeInds),'-','color',[0.5 0 1],'linewidth',2);
+        l5=plot(data.time(:,timeInds),sig0refMod(:,timeInds),'-m','linewidth',2);
+        ylabel('Sig0 (dB)');
+        ylim([0 20]);
+        
+        yyaxis right
+        l6=plot(data.time(:,timeInds),gasAttCloud2(:,timeInds),'-k','linewidth',1);
+        l7=plot(data.time(:,timeInds),piaLiq2(:,timeInds),'-g','linewidth',1);
+        ylabel('Atten. (dB)');
+        ylim([-5 15]);
+        grid on
+        set(gca,'YColor','k');
+        
+        xlim([data.time(timeInds(1)),data.time(timeInds(end))]);
+        
+        legend([l0 l1 l2 l3 l4 l5 l6 l7],{'sig0 model','sig0 meas clear','sig0 meas cloud',...
+            'sig0 ref meas','sig0 ref int','sig0 ref mod','2-way gas att','2-way PIA liq'},...
+            'orientation','horizontal','location','north');
+        title([datestr(data.time(1),'yyyy-mm-dd HH:MM:SS'),' to ',datestr(data.time(end),'yyyy-mm-dd HH:MM:SS')])
+        s1pos=s1.Position;
+        
+        s2=subplot(4,1,2);
+        
+        colormap jet
+        
+        hold on
+        surf(data.time(:,timeInds),data.asl(:,timeInds)./1000,data.DBZ(:,timeInds),'edgecolor','none');
+        view(2);
+        l1=plot(data.time(:,timeInds),data.altitude(:,timeInds)./1000,'-k','linewidth',2);
+        ylabel('Altitude (km)');
+        caxis([-25 25]);
+        ylim([-0.5 ylimRefl]);
+        xlim([data.time(timeInds(1)),data.time(timeInds(end))]);
+        colorbar
+        grid on
+        legend(l1,'Altitude');
+        title('Reflectivity (dBZ)')
+        s2pos=s2.Position;
+        s2.Position=[s2pos(1),s2pos(2),s1pos(3),s2pos(4)];
+        
+        s3=subplot(4,1,3);
+        
+        hold on
+        l0=plot(data.time(:,timeInds),atmFrac(:,timeInds),'-r','linewidth',1);
+        l1=plot([data.time(timeInds(1)),data.time(timeInds(end))],[1e-7,1e-7],'-k','linewidth',2);
+        ylim([0 0.0000005]);
+        xlim([data.time(timeInds(1)),data.time(timeInds(end))]);
+        ylabel('Fraction');
+        
+        title('Fraction of atmosphere over ocean reflectivity')
+        s3pos=s3.Position;
+        s3.Position=[s3pos(1),s3pos(2),s1pos(3),s3pos(4)];
+        
+        s4=subplot(4,1,4);
+        
+        hold on
+        l0=plot(data.time(:,timeInds),data.elevation(:,timeInds),'-k','linewidth',2);
+        ylabel('Elevation (deg)');
+        ylim([-90 -89.6]);
+        
+        yyaxis right
+        l1=plot(data.time(:,timeInds),data.rotation(:,timeInds),'-r','linewidth',2);
+        ylabel('Rotation (deg)');
+        ylim([160 200]);
+        grid on
+        set(gca,'YColor','k');
+        
+        xlim([data.time(timeInds(1)),data.time(timeInds(end))]);
+        
+        legend([l0 l1],{'Elevation','Rotation'},'location','northeast');
+        
+        title('Liquid water content (g m^{-3})')
+        s4pos=s4.Position;
+        s4.Position=[s4pos(1),s4pos(2),s1pos(3),s4pos(4)];
+        
+        set(gcf,'PaperPositionMode','auto')
+        print(f1,[figdir,project,'_lines_',datestr(data.time(timeInds(1)),'yyyymmdd_HHMMSS'),'_to_',datestr(data.time(timeInds(end)),'yyyymmdd_HHMMSS')],'-dpng','-r0')
+        startPlot=endPlot;
+    end
 end

@@ -73,6 +73,8 @@ if f<=54
     
     gamma0=(A1+A2).*A3;
     
+    clear A1 A2 A3 xi1 xi2 xi3
+    
 elseif f>54 & f<=60
     a54=1.8286;
     b54=-1.9487;
@@ -92,6 +94,8 @@ elseif f>54 & f<=60
     B3=log(gamma60)./12.*(f-54).*(f-58);
     
     gamma0=exp(B1-B2+B3);
+    
+    clear gamma54 gamma58 B1 B2 B3
     
 elseif f>60 & f<=62
     
@@ -116,6 +120,8 @@ elseif f>62 & f<=66
     C3=log(gamma66)./8.*(f-62).*(f-64);
     
     gamma0=exp(C1-C2+C3);
+    
+    clear gamma64 gamma66 C1 C2 C3
     
 elseif f>66 & f<=120
     a4=-0.0112;
@@ -150,6 +156,8 @@ elseif f>66 & f<=120
     
     gamma0=(D1+D2+D3).*D4;
     
+    clear xi4 xi5 xi6 xi7 D1 D2 D3 D4
+    
 elseif f>120 & f<=350
     adelta=3.211;
     bdelta=-14.94;
@@ -163,6 +171,8 @@ elseif f>120 & f<=350
     E3=f.^2.*rp.^2.*rt.^3.5.*10.^(-3);
     
     gamma0=(E1+E2).*E3+delta;
+    
+    clear delta E1 E2 E3
 else
     disp('Frequency must be <=350 GHz.');
     return;

@@ -6,6 +6,9 @@ refSig0=nan(size(sig0meas));
 refFlag=ones(size(sig0meas));
 
 sig0meas(surfFlag~=2)=nan;
+% In CSET we have cases where the power was lowered close to the surface
+sig0meas(sig0meas<0)=nan;
+
 % Clean up data
 % First remove outliers
 sig0medLarge=movmedian(sig0meas,2000,'omitnan');
@@ -17,7 +20,7 @@ sig0meas(diffMeasMed>1)=nan;
 % Remove short data stretches
 sig0mask=zeros(size(sig0meas));
 sig0mask(~isnan(movmedian(sig0meas,3,'omitnan')))=1;
-sig0mask=bwareaopen(sig0mask,60);
+sig0mask=bwareaopen(sig0mask,10);
 
 sig0meas(~isnan(sig0meas) & ~sig0mask)=nan;
 
