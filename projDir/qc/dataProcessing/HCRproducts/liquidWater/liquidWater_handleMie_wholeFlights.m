@@ -12,6 +12,7 @@ dataFreq='10hz';
 b_drizz = 0.52; % Z<-17 dBZ
 b_rain = 0.68; % Z>-17 dBZ
 %alpha = 0.21;
+%clearAirThresh=2e-6;
 
 ylimUpper=5;
 if strcmp(project,'otrec')
@@ -108,6 +109,7 @@ for aa=1:size(caseList,1)
     data.RH=[];
     data.TOPO=[];
     data.FLAG=[];
+    data.ANTFLAG=[];
     %data.LDR=[];
     %data.WIDTH=[];
     %data.VEL_CORR=[];
@@ -137,7 +139,7 @@ for aa=1:size(caseList,1)
     
     %% Remove all up pointing data
     
-    upInds=find(data.elevation>-85);
+    upInds=find(data.ANTFLAG~=0);
     upInds=cat(2,upInds,find(any(data.FLAG>9,1)),find(any(data.FLAG==3,1)));
     
     infields=fields(data);
@@ -185,7 +187,7 @@ for aa=1:size(caseList,1)
         end
     end
     
-    clear sig0measLin
+    clear sig0measLin sig0measured
     
     sig0measAtt3gates=10.*log10(sig0meas3gates)+gasAttCloud2;  
     sig0measAtt3gates(data.elevation>0)=nan;
@@ -197,12 +199,13 @@ for aa=1:size(caseList,1)
     %sig0modelWu=sig0modelAll(5,:);
     sig0modelCM=sig0modelAll(8,:);
     
+    clear sig0modelAll
     %% Create ocean surface mask
     % 0 extinct or not usable
     % 1 cloud
     % 2 clear air
         
-    [surfFlag1 atmFrac]=makeSurfFlag(data,gasAttCloudMat,maxGate);
+    [surfFlag1 atmFrac]=makeSurfFlag(data,linInd);
     
     clear gasAttCloudMat
     %% Create field with reference sig0
@@ -257,7 +260,7 @@ for aa=1:size(caseList,1)
     % iceAttAll=iceSpecAtt.*(data.range(2)-data.range(1))./1000;
     % piaIce2=sum(iceAttAll,1,'omitnan');
     
-    clear coldRefl warmRefl
+    clear coldRefl
     %% Calculate liquid attenuation
     
     piaLiq2=piaHydromet2;%-piaIce2;
@@ -275,6 +278,8 @@ for aa=1:size(caseList,1)
     b(warmRefl>-17)=b_rain;
     
     meanB=mode(b,1);
+    
+    clear b
     
     cloudInds=find(attFlag==1);
     
@@ -301,6 +306,8 @@ for aa=1:size(caseList,1)
     
     specAttLiqNeg=find(specAttLiq<0);
     specAttLiq(specAttLiqNeg)=nan;
+    
+    clear warmRefl cloudInds
     %% Calculate LWC and RES with method taking Mie scattering into account
     
     disp('Calculating LWC, RES, and PID ...');
@@ -311,13 +318,21 @@ for aa=1:size(caseList,1)
     
     piaInd=2*specAttLiq*(data.range(2)-data.range(1))./1000;
     piaGate=cumsum(piaInd,1,'omitnan');
+    
+    clear piaInd
+    
     piaGate(isnan(specAttLiq))=nan;
       
     % Attenuation corrected reflectivity
     dbzCorr=data.dbzMasked+piaGate;
     
+    clear piaGate
+    
     % Calculate Xres
     zLin=10.^(0.1*dbzCorr);
+    
+    clear dbzCorr
+    
     Xres = (zLin./specAttLiq).^(1/3);
     
     % Interpolate fitting data
@@ -331,6 +346,8 @@ for aa=1:size(caseList,1)
     cloudIndsU=zLin<=zw_bnd_c & specAttLiq>7.5;
     PID(cloudIndsU)=5;
     
+    clear cloudIndsU
+    
     % Cloud indices
     cloudInds=(zLin<=zw_bnd_c | zLin<min(zwbnd_dc)) & specAttLiq<=7.5;
     
@@ -338,10 +355,14 @@ for aa=1:size(caseList,1)
     LWC(cloudInds)=Q_c(1)*specAttLiq(cloudInds)+Q_c(2);
     PID(cloudInds)=1;
     
+    clear cloudInds
+    
     %   Mixed
     % Unreasonable mixed
     mixedIndsU=zLin>zw_bnd_c & zLin<zw_bnd_dc & Xres>Xres_thres;
     PID(mixedIndsU)=5;
+    
+    clear mixedIndsU
     
     % Mixed indices
     mixedInds=zLin>zw_bnd_c & zLin<zw_bnd_dc & Xres<=Xres_thres & specAttLiq<=10;
@@ -361,6 +382,8 @@ for aa=1:size(caseList,1)
     LWC(mixedInds)=Ratio(mixedInds).*LWC1(mixedInds)+(1-Ratio(mixedInds)).*LWC2(mixedInds);
     RES(mixedInds)=Ratio(mixedInds).*RES1(mixedInds)+(1-Ratio(mixedInds)).*RES2(mixedInds);
     PID(mixedInds)=3;
+    
+    clear mixedInds LWC1 LWC2 RES1 RES2
     
     % Rain below rain boundary because of large attenuation
     rainInds1=zLin>zw_bnd_c & zLin<zw_bnd_dc & specAttLiq>10;
@@ -430,20 +453,20 @@ for aa=1:size(caseList,1)
     
     %% Plot scatter of sig0clear and altitude
     
-    sig0ClearFlight=cat(2,sig0measClear(~isnan(sig0measClear)),data.altitude(~isnan(sig0measClear))./1000);
+    sig0ClearFlight=cat(2,sig0measClear(~isnan(sig0measClear))',(data.altitude(~isnan(sig0measClear))./1000)');
     sig0ClearAll=cat(1,sig0ClearAll,sig0ClearFlight);
     
-    disp('Plotting ...');
-    
-    f1 = figure('Position',[200 500 700 700],'DefaultAxesFontSize',12);
-    scatter(sig0ClearFlight(:,1),sig0ClearFlight(:,2),'filled');
-    xlim([5,15])
-    ylim([0,15])
-    xlabel('sig0 clear air (db)');
-    ylabel('Altitude (km)');
-    title(['Flight ',num2str(aa),': sig0 clear air vs altitude'])
-    set(gcf,'PaperPositionMode','auto')
-    print(f1,[figdir,project,'_Flight',num2str(aa),'_sig0vsAlt'],'-dpng','-r0')
+    if ~isempty(sig0ClearFlight)
+        f1 = figure('Position',[200 500 700 700],'DefaultAxesFontSize',12);
+        scatter(sig0ClearFlight(:,1),sig0ClearFlight(:,2),'filled');
+        xlim([5,15])
+        ylim([0,15])
+        xlabel('sig0 clear air (db)');
+        ylabel('Altitude (km)');
+        title(['Flight ',num2str(aa),': sig0 clear air vs altitude'])
+        set(gcf,'PaperPositionMode','auto')
+        print(f1,[figdir,project,'_Flight',num2str(aa),'_sig0vsAlt'],'-dpng','-r0')
+    end
     
     startPlot=startTime;
     
@@ -451,16 +474,18 @@ for aa=1:size(caseList,1)
         
         close all
         
-        endPlot=startPlot+minutes(15);
+        endPlot=startPlot+minutes(20);
         timeInds=find(data.time>=startPlot & data.time<=endPlot);
         
-        timePlot=data.time(timeInds);
-        dbzPlot=data.DBZ(:,timeInds);
-        dbzMaskedPlot=data.dbzMasked(:,timeInds);
-        aslPlot=data.asl(:,timeInds);
-        pidPlot=PID(:,timeInds);
-        lwcPlot=LWC(:,timeInds);
-        resPlot=RES(:,timeInds);
+        if length(timeInds)<3000
+            startPlot=endPlot;
+            continue
+        end
+        
+        if max(max(~isnan(LWC(:,timeInds))))==0
+            startPlot=endPlot;
+            continue
+        end
         
         f1 = figure('Position',[200 500 1500 900],'DefaultAxesFontSize',12);
         
@@ -586,16 +611,29 @@ for aa=1:size(caseList,1)
         s2pos=s2.Position;
         s2.Position=[s2pos(1),s2pos(2),s1pos(3),s2pos(4)];
         
+%         s3=subplot(4,1,3);
+%         
+%         hold on
+%         l0=plot(data.time(:,timeInds),atmFrac(:,timeInds),'-r','linewidth',1);
+%         l1=plot([data.time(timeInds(1)),data.time(timeInds(end))],[1e-6,1e-6],'-k','linewidth',2);
+%         ylim([0 0.000005]);
+%         xlim([data.time(timeInds(1)),data.time(timeInds(end))]);
+%         ylabel('Fraction');
+%         
+%         title('Fraction of atmosphere over ocean reflectivity')
+%         s3pos=s3.Position;
+%         s3.Position=[s3pos(1),s3pos(2),s1pos(3),s3pos(4)];
+        
         s3=subplot(4,1,3);
         
         hold on
         l0=plot(data.time(:,timeInds),atmFrac(:,timeInds),'-r','linewidth',1);
-        l1=plot([data.time(timeInds(1)),data.time(timeInds(end))],[1e-7,1e-7],'-k','linewidth',2);
-        ylim([0 0.0000005]);
+        l1=plot([data.time(timeInds(1)),data.time(timeInds(end))],[3,3],'-k','linewidth',2);
+        ylim([0 15]);
         xlim([data.time(timeInds(1)),data.time(timeInds(end))]);
-        ylabel('Fraction');
+        ylabel('Num cloud pix');
         
-        title('Fraction of atmosphere over ocean reflectivity')
+        title('Number of cloud pixels')
         s3pos=s3.Position;
         s3.Position=[s3pos(1),s3pos(2),s1pos(3),s3pos(4)];
         
@@ -617,12 +655,75 @@ for aa=1:size(caseList,1)
         
         legend([l0 l1],{'Elevation','Rotation'},'location','northeast');
         
-        title('Liquid water content (g m^{-3})')
+        title('Elevation and rotation angle')
         s4pos=s4.Position;
         s4.Position=[s4pos(1),s4pos(2),s1pos(3),s4pos(4)];
         
         set(gcf,'PaperPositionMode','auto')
         print(f1,[figdir,project,'_lines_',datestr(data.time(timeInds(1)),'yyyymmdd_HHMMSS'),'_to_',datestr(data.time(timeInds(end)),'yyyymmdd_HHMMSS')],'-dpng','-r0')
+        
         startPlot=endPlot;
     end
 end
+%% Scatter plot for all
+
+edges={0:0.2:30 0:0.2:30};
+
+N=hist3(cat(2,sig0ClearAll(:,1),sig0ClearAll(:,2)),'Edges',edges);
+N(N==0)=nan;
+
+f1 = figure('Position',[200 500 1300 600],'DefaultAxesFontSize',12);
+colormap jet
+
+s1=subplot(1,2,1);
+
+hold on
+%surf(edges{1},edges{2},log10(N'),'edgecolor','none')
+surf(edges{1},edges{2},N','edgecolor','none')
+view(2)
+
+%axis equal
+xlim([0,15])
+ylim([0,15])
+caxis([0 100])
+%xticks(-40:20:60);
+%yticks(-40:20:60);
+
+grid on
+xlabel('sig0 clear air (db)');
+ylabel('Altitude (km)');
+title(['sig0 clear air vs altitude'])
+s1pos=s1.Position;
+
+% Regression
+% fitOrth=gmregress(compTablePlot.DBZsur,compTablePlot.DBZrhi,1);
+% fitAll=[fitOrth(2) fitOrth(1)];
+% xFit = -40:0.1:60;
+% yFit = polyval(fitAll, xFit);
+% 
+% plot(xFit, yFit,'-b','linewidth',2);
+% 
+% ax2.SortMethod='childorder';
+
+s2=subplot(1,2,2);
+
+hold on
+%surf(edges{1},edges{2},log10(N'),'edgecolor','none')
+surf(edges{1},edges{2},N','edgecolor','none')
+view(2)
+
+xlim([0,15])
+ylim([0,5])
+caxis([0 100])
+colorbar
+
+grid on
+xlabel('sig0 clear air (db)');
+ylabel('Altitude (km)');
+title(['sig0 clear air vs altitude'])
+s2pos=s2.Position;
+s2.Position=[s2pos(1) s1pos(2) s1pos(3) s1pos(4)];
+
+set(gcf,'PaperPositionMode','auto')
+print(f1,[figdir,project,'_sig0vsAlt'],'-dpng','-r0')
+

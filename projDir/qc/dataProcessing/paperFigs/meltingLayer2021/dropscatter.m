@@ -98,7 +98,7 @@ text(minLim+offset/4,maxLim-0.5*offset,['Est.-drops.: ',num2str(estDiff,formatSp
 text(minLim+offset/4,maxLim-1.5*offset,['0 deg.-drops.: ',num2str(zeroDiff,formatSpec), ...
     '\pm',num2str(zeroStd,formatSpec),' km'],'fontsize',12);
 
-leg1=legend([l4,l3,l2,l1],{'Detections','Interpolations','Estimates','Zero deg'},'Location','southeast');
+leg1=legend([l4,l3,l2,l1,l0],{'Detections','Interpolations','Estimates','Zero deg','Identity line'},'Location','southeast');
 ax1.Position=[0.11 0.71 0.85 0.26];
 
 ax2=subplot(3,1,2);
@@ -161,7 +161,7 @@ text(minLim+offset/4,maxLim-2.5*offset,['Est.-drops.: ',num2str(estDiff,formatSp
 text(minLim+offset/4,maxLim-3.5*offset,['0 deg.-drops.: ',num2str(zeroDiff,formatSpec), ...
     '\pm',num2str(zeroStd,formatSpec),' km'],'fontsize',12);
 
-leg1=legend([l4,l3,l2,l1],{'Detections','Interpolations','Estimates','Zero deg'},'Location','southeast');
+leg1=legend([l4,l3,l2,l1,l0],{'Detections','Interpolations','Estimates','Zero deg','Identity line'},'Location','southeast');
 ax2.Position=[0.11 0.385 0.85 0.26];
 
 ax3=subplot(3,1,3);
@@ -224,7 +224,7 @@ text(minLim+offset/4,maxLim-2.5*offset,['Est.-drops.: ',num2str(estDiff,formatSp
 text(minLim+offset/4,maxLim-3.5*offset,['0 deg.-drops.: ',num2str(zeroDiff,formatSpec), ...
     '\pm',num2str(zeroStd,formatSpec),' km'],'fontsize',12);
 
-leg3=legend([l4,l3,l2,l1],{'Detections','Interpolations','Estimates','Zero deg'},'Location','southeast');
+leg1=legend([l4,l3,l2,l1,l0],{'Detections','Interpolations','Estimates','Zero deg','Identity line'},'Location','southeast');
 ax3.Position=[0.11 0.06 0.85 0.26];
 
 formatOut = 'yyyymmdd_HHMM';
