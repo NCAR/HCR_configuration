@@ -146,8 +146,8 @@ newTime2=data2.time(newInds);
 %% Plot
 close all
 
-wi=5;
-hi=6;
+wi=10;
+hi=3.5;
 
 fig1=figure('DefaultAxesFontSize',11,'DefaultFigurePaperType','<custom>','units','inch','position',[3,100,wi,hi]);
 fig1.PaperPositionMode = 'manual';
@@ -160,7 +160,7 @@ fig1.InvertHardcopy = 'off';
 
 set(fig1,'color','w');
 
-ax1=subplot(2,1,1);
+ax1=subplot(1,2,1);
 hold on;
 surf(newTime,newASL./1000,newVEL,'edgecolor','none');
 ax1.Colormap=(jet);
@@ -184,10 +184,10 @@ title('(a) VEL (m s^{-1})')
 grid on
 caxis([-6 6]);
 hcb1=colorbar('XTick',-6:2:6);
-ax1.Position=[0.11 0.577 0.77 0.38];
-hcb1.Position=[0.895 0.58 0.04 0.34];
+ax1.Position=[0.058 0.1265 0.39 0.788];
+hcb1.Position=[0.457 0.1265 0.02 0.7882];
 
-ax2=subplot(2,1,2);
+ax2=subplot(1,2,2);
 hold on;
 surf(newTime2,newASL2./1000,newVEL2,'edgecolor','none');
 ax2.Colormap=(jet);
@@ -211,8 +211,8 @@ title('(b) VEL (m s^{-1})')
 grid on
 caxis([-6 6]);
 hcb2=colorbar('XTick',-6:2:6);
-ax2.Position=[0.11 0.08 0.77 0.38];
-hcb2.Position=[0.9 0.08 0.04 0.38];
+ax2.Position=[0.559 0.1265 0.39 0.788];
+hcb2.Position=[0.958 0.1265 0.02 0.7882];
 
 print([figdir,'lowcenter'],'-dpng','-r0');
 

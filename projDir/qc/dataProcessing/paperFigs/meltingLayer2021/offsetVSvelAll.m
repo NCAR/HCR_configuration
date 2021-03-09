@@ -49,8 +49,8 @@ fitAllB=[fitOrthB(2) fitOrthB(1)];
 xFitB = -10:0.2:10;
 yFitB = polyval(fitAllB, xFitB);
 
-wi=5;
-hi=7;
+wi=10;
+hi=4;
 
 fig1=figure('DefaultAxesFontSize',11,'DefaultFigurePaperType','<custom>','units','inch','position',[3,100,wi,hi]);
 fig1.PaperPositionMode = 'manual';
@@ -109,9 +109,9 @@ s2.SortMethod='childorder';
 
 text(0.8,770,['Offset = ',num2str(fitAllB(1),2),' VEL - ',num2str(abs(fitAllB(2)),2)],'FontSize',12,'FontWeight','bold');
 
-s2.Position=[0.13 0.08 0.73 0.38];
-hcb.Position=[0.89 0.34 0.04 0.38];
-s1.Position=[0.13 0.577 0.73 0.38];
+s2.Position=[0.54 0.14 0.39 0.788];
+hcb.Position=[0.946 0.14 0.02 0.76];
+s1.Position=[0.07 0.14 0.39 0.788];
 
 set(gcf,'PaperPositionMode','auto')
 print([figdir,'offsetVSvel'],'-dpng','-r0');

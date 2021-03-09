@@ -99,7 +99,7 @@ fig1.InvertHardcopy = 'off';
 set(fig1,'color','w');
 colormap(jet);
 
-ylimits=[2 8];
+ylimits=[4 5.5];
 
 ax1=subplot(2,1,1);
 
@@ -139,8 +139,9 @@ ylabel('Altitude (km)');
 xlim([data.time(1),data.time(end)]);
 title('(b) Melting layer data product')
 grid on
-legend([l1 l2 l3 l4 l5],{'Zero deg','Estimates','Interpolations','Detections','Icing level'},...
-    'Location','northeast');
+leg=legend([l1 l2 l3 l4 l5],{'Zero deg','Estimates','Interpolations','Detections','Icing level'},...
+    'Location','north','NumColumns',3);
+leg.ItemTokenSize=[20,18];
 ax2.Position=[0.11 0.08 0.77 0.38];
 
 formatOut = 'yyyymmdd_HHMM';
