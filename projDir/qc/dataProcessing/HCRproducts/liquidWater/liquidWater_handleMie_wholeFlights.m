@@ -29,7 +29,7 @@ addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 figdir=['/home/romatsch/plots/HCR/liquidWater/',project,'/flights/'];
 
 %dataDir=HCRdir(project,quality,dataFreq);
-dataDir=['/run/media/romatsch/RSF0006/rsf/meltingLayer/',project,'/10hz/'];
+dataDir=['/run/media/romatsch/RSF0006/rsf/gasAtt/',project,'/10hz/'];
 
 infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_',project,'_data.txt'];
 
@@ -104,9 +104,9 @@ for aa=1:size(caseList,1)
     data.U_SURF=[];
     data.V_SURF=[];
     data.SST=[];
-    data.TEMP=[];
-    data.PRESS=[];
-    data.RH=[];
+    %data.TEMP=[];
+    %data.PRESS=[];
+    %data.RH=[];
     data.TOPO=[];
     data.FLAG=[];
     data.ANTFLAG=[];
@@ -118,6 +118,8 @@ for aa=1:size(caseList,1)
     data.MELTING_LAYER=[];
     %data.ICING_LEVEL=[];
     data.pulse_width=[];
+    %data.SPECIFIC_GASEOUS_ATTENUATION=[];
+    data.PATH_INTEGRATED_GASEOUS_ATTENUATION_2WAY=[];
     
     %data.DBMVC=[];
     
@@ -154,17 +156,7 @@ for aa=1:size(caseList,1)
     
     data.dbzMasked=data.DBZ;
     data.dbzMasked(data.FLAG>1)=nan;
-    %% One way and two way gaseous attenuation
-    
-    disp('Calculating gaseous attenuation ...');
-    [gasAttClear,gasAttCloud,gasAttClearMat,gasAttCloudMat]=get_gas_atten(data);
-    gasAttCloud2=2*gasAttCloud';
-    
-    data=rmfield(data,'TEMP');
-    data=rmfield(data,'PRESS');
-    data=rmfield(data,'RH');
-    
-    clear gasAttClearMat
+   
     %% Calculate sigma0 from model and from reflectivity
     
     disp('Calculating sig0 ...');
@@ -176,7 +168,7 @@ for aa=1:size(caseList,1)
     data.surfRefl=data.DBZ(linInd);
     sig0measured=calc_sig0_surfRefl(data);
     
-    sig0measAtt=sig0measured(linInd)+gasAttCloud2;
+    sig0measAtt=sig0measured(linInd)+data.PATH_INTEGRATED_GASEOUS_ATTENUATION_2WAY;
     sig0measAtt(data.elevation>-85)=nan;
     
     sig0measLin=10.^(sig0measured./10);
@@ -189,7 +181,7 @@ for aa=1:size(caseList,1)
     
     clear sig0measLin sig0measured
     
-    sig0measAtt3gates=10.*log10(sig0meas3gates)+gasAttCloud2;  
+    sig0measAtt3gates=10.*log10(sig0meas3gates)+data.PATH_INTEGRATED_GASEOUS_ATTENUATION_2WAY;  
     sig0measAtt3gates(data.elevation>0)=nan;
     sig0measAtt3gates(imag(sig0measAtt3gates)~=0)=nan;
     
@@ -442,7 +434,7 @@ for aa=1:size(caseList,1)
     sig0measCloud(surfFlag==1)=sig0measAtt(surfFlag==1);
     
     refSig0(upInds)=nan;
-    gasAttCloud2(upInds)=nan;
+    data.PATH_INTEGRATED_GASEOUS_ATTENUATION_2WAY(upInds)=nan;
     
     sig0refMeas=nan(size(data.time));
     sig0refMeas(refFlag==1)=refSig0(refFlag==1);
@@ -577,7 +569,7 @@ for aa=1:size(caseList,1)
         ylim([0 20]);
         
         yyaxis right
-        l6=plot(data.time(:,timeInds),gasAttCloud2(:,timeInds),'-k','linewidth',1);
+        l6=plot(data.time(:,timeInds),data.PATH_INTEGRATED_GASEOUS_ATTENUATION_2WAY(:,timeInds),'-k','linewidth',1);
         l7=plot(data.time(:,timeInds),piaLiq2(:,timeInds),'-g','linewidth',1);
         ylabel('Atten. (dB)');
         ylim([-5 15]);

@@ -6,7 +6,7 @@ close all;
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-project='socrates'; % socrates, cset, aristo, otrec
+project='cset'; % socrates, cset, aristo, otrec
 quality='qc2'; % field, qc1, qc2
 freqData='10hz';
 whichModel='era5';
@@ -23,7 +23,7 @@ indir=['/run/media/romatsch/RSF0006/rsf/gasAtt/',project,'/10hz/'];
 %% Run processing
 
 % Go through flights
-for ii=2:size(caseList,1)
+for ii=9:size(caseList,1)
     
     model=[];
     
@@ -36,66 +36,69 @@ for ii=2:size(caseList,1)
     
     if ~isempty(fileList)
         
-        data=[];
         
-        data.DBZ=[];
-        data.U_SURF=[];
-        data.V_SURF=[];
-        data.SST=[];
-        data.TEMP=[];
-        data.PRESS=[];
-        data.RH=[];
-        data.TOPO=[];
-        data.FLAG=[];
-                
-        dataVars=fieldnames(data);
-        
-        % Load data
-        data=read_HCR(fileList,data,startTime,endTime);
-        
-        % Check if all variables were found
-        for ii=1:length(dataVars)
-            if ~isfield(data,dataVars{ii})
-                dataVars{ii}=[];
-            end
-        end
-        
-        data.frq=ncread(fileList{1},'frequency');
-        
-        %% One way and two way gaseous attenuation
-        
-        disp('Calculating gaseous attenuation ...');
-        [gasAttClear,gasAttCloud,gasAttClearMat,gasAttCloudMat]=get_gas_atten(data);
-        gasAttCloud2=2*gasAttCloud';
-        
-        %% Prepare for writing
-        model=[];
-        model.specAtt=gasAttCloudMat;
-        model.path2way=gasAttCloud2;
-        
-        model.time=data.time;
-        timeModelNum=datenum(model.time);
         %% Write cfradial files
         for jj=1:length(fileList)
             infile=fileList{jj};
             
             disp(infile);
             
-            % Find times that are equal
-            startTimeIn=ncread(infile,'time_coverage_start')';
-            startTimeFile=datetime(str2num(startTimeIn(1:4)),str2num(startTimeIn(6:7)),str2num(startTimeIn(9:10)),...
-                str2num(startTimeIn(12:13)),str2num(startTimeIn(15:16)),str2num(startTimeIn(18:19)));
-            timeRead=ncread(infile,'time')';
-            timeHCR=startTimeFile+seconds(timeRead);
+            %             % Find times that are equal
+            %             startTimeIn=ncread(infile,'time_coverage_start')';
+            %             startTimeFile=datetime(str2num(startTimeIn(1:4)),str2num(startTimeIn(6:7)),str2num(startTimeIn(9:10)),...
+            %                 str2num(startTimeIn(12:13)),str2num(startTimeIn(15:16)),str2num(startTimeIn(18:19)));
+            %             timeRead=ncread(infile,'time')';
+            %             timeHCR=startTimeFile+seconds(timeRead);
+            %
+            %             timeHcrNum=datenum(timeHCR);
+            %
+            %             [C,ia,ib] = intersect(timeHcrNum,timeModelNum);
+            %
+            %             if length(timeHCR)~=length(ib)
+            %                 warning('Times do not match up. Skipping file.')
+            %                 continue
+            %             end
             
-            timeHcrNum=datenum(timeHCR);
+            data=[];
             
-            [C,ia,ib] = intersect(timeHcrNum,timeModelNum);
+            data.DBZ=[];
+            data.U_SURF=[];
+            data.V_SURF=[];
+            data.SST=[];
+            data.TEMP=[];
+            data.PRESS=[];
+            data.RH=[];
+            data.TOPO=[];
+            data.FLAG=[];
             
-            if length(timeHCR)~=length(ib)
-                warning('Times do not match up. Skipping file.')
-                continue
+            dataVars=fieldnames(data);
+            
+            % Load data
+            data=read_HCR(fileList(jj),data,startTime,endTime);
+            
+            % Check if all variables were found
+            for ii=1:length(dataVars)
+                if ~isfield(data,dataVars{ii})
+                    dataVars{ii}=[];
+                end
             end
+            
+            data.frq=ncread(infile,'frequency');
+            
+            %% One way and two way gaseous attenuation
+            
+            disp('Calculating gaseous attenuation ...');
+            [gasAttClear,gasAttCloud,gasAttClearMat,gasAttCloudMat]=get_gas_atten(data);
+            gasAttCloud2=2*gasAttCloud';
+            
+            %% Prepare for writing
+            model=[];
+            model.specAtt=gasAttCloudMat;
+            model.path2way=gasAttCloud2;
+            
+            model.time=data.time;
+            timeModelNum=datenum(model.time);
+            
             
             % Write output
             fillVal=-9999;
@@ -104,7 +107,7 @@ for ii=2:size(caseList,1)
             
             for kk=1:length(modVars)
                 if ~strcmp((modVars{kk}),'time')
-                    modOut.(modVars{kk})=model.(modVars{kk})(:,ib);
+                    modOut.(modVars{kk})=model.(modVars{kk});
                     modOut.(modVars{kk})(isnan(modOut.(modVars{kk})))=fillVal;
                     modOut.(modVars{kk})=modOut.(modVars{kk});
                 end
@@ -129,7 +132,7 @@ for ii=2:size(caseList,1)
             % Write variables
             netcdf.putVar(ncid,varidSpec,modOut.specAtt);
             netcdf.putVar(ncid,varidPath,modOut.path2way);
-                       
+            
             netcdf.close(ncid);
             
             % Write attributes
@@ -138,7 +141,7 @@ for ii=2:size(caseList,1)
             ncwriteatt(infile,'SPECIFIC_GASEOUS_ATTENUATION','units','dB');
             ncwriteatt(infile,'SPECIFIC_GASEOUS_ATTENUATION','grid_mapping','grid_mapping');
             ncwriteatt(infile,'SPECIFIC_GASEOUS_ATTENUATION','coordinates','time range');
-                        
+            
             ncwriteatt(infile,'PATH_INTEGRATED_GASEOUS_ATTENUATION_2WAY','long_name','path_integrated_gaseous_attenuation_2way');
             ncwriteatt(infile,'PATH_INTEGRATED_GASEOUS_ATTENUATION_2WAY','standard_name','path_integrated_gaseous_attenuation_2way');
             ncwriteatt(infile,'PATH_INTEGRATED_GASEOUS_ATTENUATION_2WAY','units','dB');
