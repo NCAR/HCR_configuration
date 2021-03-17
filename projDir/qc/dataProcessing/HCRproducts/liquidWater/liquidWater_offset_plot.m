@@ -15,24 +15,39 @@ load([figdir,'sig0data.mat']);
 %% Plot altitudes
 
 close all
-edges={0:0.2:30 0:0.2:30};
+edges={-30:0.1:30 -30:0.1:30};
 
-N=hist3(cat(2,saveAll(:,1),saveAll(:,4)),'Edges',edges);
+N=hist3(cat(2,saveAll(:,4),saveAll(:,1)),'Edges',edges);
+
+N2=hist3(cat(2,saveAll(:,4),saveAll(:,1)-saveAll(:,3)),'Edges',edges);
+
 % Regression
-% fitOrthA=gmregress(velAbove,offset,1);
-% fitAllA=[fitOrthA(2) fitOrthA(1)];
-% xFitA = -10:0.2:10;
-% yFitA = polyval(fitAllA, xFitA);
+xFit = -30:0.1:30;
 
-% N2=hist3(cat(2,velBelow,offset),'Edges',edges);
-% % Regression
-% fitOrthB=gmregress(velBelow,offset,1);
-% fitAllB=[fitOrthB(2) fitOrthB(1)];
-% xFitB = -10:0.2:10;
-% yFitB = polyval(fitAllB, xFitB);
+sig0alt=cat(2,saveAll(:,1)-saveAll(:,3),saveAll(:,4));
+sig0alt(any(isnan(sig0alt),2),:)=[];
+
+% Quadratic fit all data
+fitAA=polyfit(sig0alt(:,2),sig0alt(:,1),2);
+yFitAA = polyval(fitAA,xFit);
+
+% Zoom in
+sig0alt(sig0alt(:,2)>3,:)=[];
+%sig0alt(sig0alt(:,1)<-5,:)=[];
+
+N3=hist3(cat(2,sig0alt(:,2),sig0alt(:,1)),'Edges',edges);
+
+% Linear fit
+fitOrth=gmregress(sig0alt(:,2),sig0alt(:,1),1);
+fitAll=[fitOrth(2) fitOrth(1)];
+yFit = polyval(fitAll, xFit);
+
+% Quadratic fit
+fitA=polyfit(sig0alt(:,2),sig0alt(:,1),2);
+yFitA = polyval(fitA,xFit);
 
 wi=10;
-hi=4;
+hi=9;
 
 fig1=figure('DefaultAxesFontSize',11,'DefaultFigurePaperType','<custom>','units','inch','position',[3,100,wi,hi]);
 fig1.PaperPositionMode = 'manual';
@@ -47,53 +62,92 @@ set(fig1,'color','w');
 
 colormap jet
 
-s1=subplot(1,2,1);
+s1=subplot(2,2,1);
 
 hold on
 surf(edges{1},edges{2},log10(N'),'edgecolor','none')
 view(2)
 
-%axis equal
-xlim([0,7])
-ylim([-100,800])
-caxis([0 3.5])
+ylim([0,20])
+xlim([0,15])
+caxis([0 3])
 
 grid on
-xlabel('Velocity (m s^{-1})');
-ylabel('Offset (m)');
-title(['(a) VEL above melting layer vs offset'])
+ylabel('Sig0 (db)');
+xlabel('Altitude (km)');
+title(['(a) Sig0 vs altitude'])
 
-plot(xFitA, yFitA,'-k','linewidth',2);
-s1.SortMethod='childorder';
+s2=subplot(2,2,2);
+hold on
+surf(edges{1},edges{2},log10(N'),'edgecolor','none')
+view(2)
 
-text(0.8,770,['Offset = ',num2str(fitAllA(1),3),' VEL - ',num2str(abs(fitAllA(2)),2)],'FontSize',12,'FontWeight','bold');
+%axis equal
+ylim([0,20])
+xlim([0,5])
+caxis([0 3])
 
-s2=subplot(1,2,2);
+grid on
+ylabel('Sig0 (db)');
+xlabel('Altitude (km)');
+title(['(b) Sig0 vs altitude zoomed'])
+
+s3=subplot(2,2,3);
 
 hold on
 surf(edges{1},edges{2},log10(N2'),'edgecolor','none')
-%surf(edges{1},edges{2},N2','edgecolor','none')
 view(2)
 
-xlim([0,7])
-ylim([-100,800])
-caxis([0 3.5])
+%axis equal
+ylim([-10,10])
+xlim([0,15])
+caxis([0 3])
+
+grid on
+ylabel('Sig0 (db)');
+xlabel('Altitude (km)');
+title(['(c) Sig0meas - sig0mod vs altitude'])
+
+l2=plot(xFit, yFitAA,'-b','linewidth',2);
+
+s3.SortMethod='childorder';
+
+legend([l2],{['y=',num2str(fitAA(1)),'x^{2}+',num2str(fitAA(2)),'x+',num2str(fitAA(3))]});
+
+
+s4=subplot(2,2,4);
+hold on
+surf(edges{1},edges{2},log10(N3'),'edgecolor','none')
+view(2)
+
+%axis equal
+ylim([-10,6])
+xlim([0,3])
+caxis([0 3])
+
+grid on
+ylabel('Sig0 (db)');
+xlabel('Altitude (km)');
+title(['(d) Sig0meas - sig0mod vs altitude zoomed'])
+
 hcb=colorbar;
 hcb.Title.String='log_{10}(N)';
 
-grid on
-xlabel('Velocity (m s^{-1})');
-ylabel('Offset (m)');
-title(['(b) VEL below melting layer vs offset'])
+l1=plot(xFit, yFit,'-k','linewidth',2);
+l2=plot(xFit, yFitA,'-b','linewidth',2);
 
-plot(xFitB, yFitB,'-k','linewidth',2);
-s2.SortMethod='childorder';
+s4.SortMethod='childorder';
 
-text(0.8,770,['Offset = ',num2str(fitAllB(1),2),' VEL - ',num2str(abs(fitAllB(2)),2)],'FontSize',12,'FontWeight','bold');
+legend([l1 l2],{['y=',num2str(fitAll(1)),'x+',num2str(fitAll(2))],...
+    ['y=',num2str(fitA(1)),'x^{2}+',num2str(fitA(2)),'x+',num2str(fitA(3))]});
 
-s2.Position=[0.54 0.14 0.39 0.788];
-hcb.Position=[0.946 0.14 0.02 0.76];
-s1.Position=[0.07 0.14 0.39 0.788];
+% text(0.8,770,['Offset = ',num2str(fitAllB(1),2),' VEL - ',num2str(abs(fitAllB(2)),2)],'FontSize',12,'FontWeight','bold');
+
+s1.Position=[0.1300    0.5838    0.3347    0.3412];
+s2.Position=[0.5703    0.5838    0.3347    0.3412];
+s3.Position=[0.1300    0.1100    0.3347    0.3412];
+s4.Position=[0.5703    0.1100    0.3347    0.3412];
+hcb.Position=[0.93   0.5838    0.0222    0.3413];
 
 set(gcf,'PaperPositionMode','auto')
-print([figdir,'offsetVSvel'],'-dpng','-r0');
+print([figdir,'sig0vsAlt'],'-dpng','-r0');
