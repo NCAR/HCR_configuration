@@ -199,60 +199,49 @@ for aa=1:size(caseList,1)
     
     sig0ClearFlight=cat(2,sig0measClear(~isnan(sig0measClear))',(data.altitude(~isnan(sig0measClear))./1000)');
     sig0ClearAll=cat(1,sig0ClearAll,sig0ClearFlight);
+    sig0ClearMod=cat(2,sig0measClear(~isnan(sig0measClear))',(sig0modelCM(~isnan(sig0measClear)))');
+    sig0ClearModAll=cat(1,sig0ClearModAll,sig0ClearMod);
+    sig0Clear3gatesMod=cat(2,sig0measClear3gates(~isnan(sig0measClear3gates))',(sig0modelCM(~isnan(sig0measClear3gates)))');
+    sig0Clear3gatesModAll=cat(1,sig0Clear3gatesModAll,sig0Clear3gatesMod);
     
-    if ~isempty(sig0ClearFlight)
+    
+    if ~isempty(sig0ClearFlight) & ~isempty(sig0ClearMod)
         f1 = figure('Position',[200 500 700 700],'DefaultAxesFontSize',12);
-        scatter(sig0ClearFlight(:,1),sig0ClearFlight(:,2),'filled');
-        xlim([0,25])
+        scatter(sig0ClearFlight(:,1)-sig0ClearMod(:,2),sig0ClearFlight(:,2),'filled');
+        xlim([-10,10])
         ylim([0,15])
         grid on
-        xlabel('sig0 clear air (db)');
+        xlabel('sig0 (clear air - model) (db)');
         ylabel('Altitude (km)');
-        title(['Flight ',num2str(aa),': sig0 clear air vs altitude'])
+        title(['Flight ',num2str(aa),': sig0 (clear air - model) vs altitude'])
         set(gcf,'PaperPositionMode','auto')
         print(f1,[figdir,project,'_Flight',num2str(aa),'_sig0vsAlt'],'-dpng','-r0')
     end
     
     %% Plot scatter of sig0clear, sig0clear3gates, and model
-    
-    sig0ClearMod=cat(2,sig0measClear(~isnan(sig0measClear))',(sig0modelCM(~isnan(sig0measClear)))');
-    sig0ClearModAll=cat(1,sig0ClearModAll,sig0ClearMod);
-    
+        
     if ~isempty(sig0ClearMod)
         f1 = figure('Position',[200 500 700 700],'DefaultAxesFontSize',12);
         hold on
         scatter(sig0ClearMod(:,2),sig0ClearMod(:,1),'filled');
+        scatter(sig0Clear3gatesMod(:,2),sig0Clear3gatesMod(:,1),'filled');
         ylim([0,25])
         xlim([0,25])
         plot([0,25],[0,25],'-k','linewidth',2);
-        text(2,23,['mean(meas - mod) = ',num2str(mean(sig0ClearMod(:,1)-sig0ClearMod(:,2),'omitnan'),2),' dB'],...
-            'fontsize',12,'fontweight','bold');
+        legend(['1 gate, meas - mod: mean=',...
+            num2str(mean(sig0ClearMod(:,1)-sig0ClearMod(:,2),'omitnan')),...
+            ' dB , std=',num2str(std(sig0ClearMod(:,1)-sig0ClearMod(:,2),'omitnan')),' dB'],...
+            ['3 gates, meas - mod: mean=',...
+            num2str(mean(sig0Clear3gatesMod(:,1)-sig0Clear3gatesMod(:,2),'omitnan')),...
+            ' dB , std=',num2str(std(sig0Clear3gatesMod(:,1)-sig0Clear3gatesMod(:,2),'omitnan')),' dB'],...
+            'location','northwest');
+        
         grid on
-        xlabel('sig0 clear air measured (db)');
-        ylabel('sig0 clear air model (db)');
+        ylabel('sig0 clear air measured (db)');
+        xlabel('sig0 model (db)');
         title(['Flight ',num2str(aa),': sig0 clear air vs sig0 model'])
         set(gcf,'PaperPositionMode','auto')
         print(f1,[figdir,project,'_Flight',num2str(aa),'_sig0vsModel'],'-dpng','-r0')
-    end
-    
-    sig0Clear3gatesMod=cat(2,sig0measClear3gates(~isnan(sig0measClear3gates))',(sig0modelCM(~isnan(sig0measClear3gates)))');
-    sig0Clear3gatesModAll=cat(1,sig0Clear3gatesModAll,sig0Clear3gatesMod);
-    
-    if ~isempty(sig0Clear3gatesMod)
-        f1 = figure('Position',[200 500 700 700],'DefaultAxesFontSize',12);
-        hold on
-        scatter(sig0Clear3gatesMod(:,2),sig0Clear3gatesMod(:,1),'filled');
-        xlim([0,25])
-        ylim([0,25])
-        plot([0,25],[0,25],'-k','linewidth',2);
-        text(2,23,['mean(meas - mod) = ',num2str(mean(sig0Clear3gatesMod(:,1)-sig0Clear3gatesMod(:,2),'omitnan'),2),' dB'],...
-            'fontsize',12,'fontweight','bold');
-        grid on
-        ylabel('sig0 clear air measured 3 gates (db)');
-        xlabel('sig0 clear air model (db)');
-        title(['Flight ',num2str(aa),': sig0 clear 3 gates air vs sig0 model'])
-        set(gcf,'PaperPositionMode','auto')
-        print(f1,[figdir,project,'_Flight',num2str(aa),'_sig03gatesvsModel'],'-dpng','-r0')
     end
     
     %% Line plots
@@ -305,7 +294,7 @@ for aa=1:size(caseList,1)
             'sig0 ref meas','sig0 ref int','sig0 ref mod','2-way gas att'},...
             'orientation','horizontal','location','north');
         leg.ItemTokenSize=[20,18];
-        title([datestr(data.time(1),'yyyy-mm-dd HH:MM:SS'),' to ',datestr(data.time(end),'yyyy-mm-dd HH:MM:SS')])
+        title([datestr(data.time(timeInds(1)),'yyyy-mm-dd HH:MM:SS'),' to ',datestr(data.time(timeInds(end)),'yyyy-mm-dd HH:MM:SS')])
         s1pos=s1.Position;
         
         s2=subplot(4,1,2);
@@ -372,128 +361,4 @@ end
 
 saveAll=cat(2,sig0ClearAll(:,1),sig0Clear3gatesModAll(:,1),sig0ClearModAll(:,2),sig0ClearAll(:,2));
 save([figdir,'sig0data.mat'],'saveAll');
-
-%% Scatter plot for all
-
-edges={0:0.2:30 0:0.2:30};
-
-N=hist3(cat(2,sig0ClearAll(:,1),sig0ClearAll(:,2)),'Edges',edges);
-N(N==0)=nan;
-
-f1 = figure('Position',[200 500 1300 600],'DefaultAxesFontSize',12);
-colormap jet
-
-s1=subplot(1,2,1);
-
-hold on
-%surf(edges{1},edges{2},log10(N'),'edgecolor','none')
-surf(edges{1},edges{2},N','edgecolor','none')
-view(2)
-
-%axis equal
-xlim([0,15])
-ylim([0,15])
-caxis([0 2000])
-%xticks(-40:20:60);
-%yticks(-40:20:60);
-
-grid on
-xlabel('sig0 clear air (db)');
-ylabel('Altitude (km)');
-title(['sig0 clear air vs altitude'])
-s1pos=s1.Position;
-
-% Regression
-% fitOrth=gmregress(compTablePlot.DBZsur,compTablePlot.DBZrhi,1);
-% fitAll=[fitOrth(2) fitOrth(1)];
-% xFit = -40:0.1:60;
-% yFit = polyval(fitAll, xFit);
-% 
-% plot(xFit, yFit,'-b','linewidth',2);
-% 
-% ax2.SortMethod='childorder';
-
-s2=subplot(1,2,2);
-
-hold on
-%surf(edges{1},edges{2},log10(N'),'edgecolor','none')
-surf(edges{1},edges{2},N','edgecolor','none')
-view(2)
-
-xlim([0,15])
-ylim([0,5])
-caxis([0 2000])
-colorbar
-
-grid on
-xlabel('sig0 clear air (db)');
-ylabel('Altitude (km)');
-title(['sig0 clear air vs altitude'])
-s2pos=s2.Position;
-s2.Position=[s2pos(1) s1pos(2) s1pos(3) s1pos(4)];
-
-set(gcf,'PaperPositionMode','auto')
-print(f1,[figdir,project,'_sig0vsAlt'],'-dpng','-r0')
-
-%% Scatter plot for sig0-model
-
-edges={-30:0.2:30 0:0.2:30};
-
-N=hist3(cat(2,sig0ClearAll(:,1)-sig0ClearModAll(:,2),sig0ClearAll(:,2)),'Edges',edges);
-N(N==0)=nan;
-
-f1 = figure('Position',[200 500 1300 600],'DefaultAxesFontSize',12);
-colormap jet
-
-s1=subplot(1,2,1);
-
-hold on
-%surf(edges{1},edges{2},log10(N'),'edgecolor','none')
-surf(edges{1},edges{2},N','edgecolor','none')
-view(2)
-
-%axis equal
-xlim([-10,5])
-ylim([0,15])
-caxis([0 2000])
-%xticks(-40:20:60);
-%yticks(-40:20:60);
-
-grid on
-xlabel('sig0 clear air (db)');
-ylabel('Altitude (km)');
-title(['sig0 clear air vs altitude'])
-s1pos=s1.Position;
-
-% Regression
-% fitOrth=gmregress(compTablePlot.DBZsur,compTablePlot.DBZrhi,1);
-% fitAll=[fitOrth(2) fitOrth(1)];
-% xFit = -40:0.1:60;
-% yFit = polyval(fitAll, xFit);
-% 
-% plot(xFit, yFit,'-b','linewidth',2);
-% 
-% ax2.SortMethod='childorder';
-
-s2=subplot(1,2,2);
-
-hold on
-%surf(edges{1},edges{2},log10(N'),'edgecolor','none')
-surf(edges{1},edges{2},N','edgecolor','none')
-view(2)
-
-xlim([-10,5])
-ylim([0,5])
-caxis([0 2000])
-colorbar
-
-grid on
-xlabel('sig0 clear air - sig0 model (db)');
-ylabel('Altitude (km)');
-title(['sig0 clear air - sig0 model vs altitude'])
-s2pos=s2.Position;
-s2.Position=[s2pos(1) s1pos(2) s1pos(3) s1pos(4)];
-
-set(gcf,'PaperPositionMode','auto')
-print(f1,[figdir,project,'_sig0minusModelvsAlt'],'-dpng','-r0')
 

@@ -205,7 +205,9 @@ l2=plot(xFit, yFit,'-k','linewidth',2);
 s1.SortMethod='childorder';
 
 text(2,22,['y=',num2str(fitAll(1)),'x+',num2str(fitAll(2))],'fontsize',12);
-text(2,24,['mean(meas-mod)=',num2str(mean(saveAll(:,1)-saveAll(:,3),'omitnan')),'dB'],'fontsize',12);
+text(2,24.2,['meas-mod:'],'fontsize',12);
+text(2,23.1,['mean=',num2str(mean(saveAll(:,1)-saveAll(:,3),'omitnan')),' dB, std=',num2str(std(saveAll(:,1)-saveAll(:,3),'omitnan')),' dB'],'fontsize',12);
+
 
 grid on
 ylabel('Sig0 measured (dB)');
@@ -229,7 +231,8 @@ l2=plot(xFit, yFit2,'-k','linewidth',2);
 s2.SortMethod='childorder';
 
 text(2,22,['y=',num2str(fitAll2(1)),'x+',num2str(fitAll2(2))],'fontsize',12);
-text(2,24,['mean(meas-mod)=',num2str(mean(saveAll(:,2)-saveAll(:,3),'omitnan')),'dB'],'fontsize',12);
+text(2,24.2,['meas-mod:'],'fontsize',12);
+text(2,23.1,['mean=',num2str(mean(saveAll(:,2)-saveAll(:,3),'omitnan')),' dB, std=',num2str(std(saveAll(:,2)-saveAll(:,3),'omitnan')),' dB'],'fontsize',12);
 
 grid on
 ylabel('Sig0 measured 3 gates(dB)');
