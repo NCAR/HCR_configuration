@@ -10,37 +10,35 @@ quality='qc2'; %field, qc1, or qc2
 dataFreq='10hz';
 
 ylimUpper=5;
-if strcmp(project,'otrec')
-    ylimRefl=15;
-else
-    ylimRefl=10;
-end
+ylimRefl=15;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
 %figdir=['/scr/sci/romatsch/liquidWaterHCR/'];
-figdir=['/home/romatsch/plots/HCR/liquidWater/',project,'/offsets/'];
+figdir=['/home/romatsch/plots/HCR/liquidWater/',project,'/correctOffsets/'];
+
+corrdir=['/home/romatsch/plots/HCR/liquidWater/',project,'/offsets/'];
 
 %dataDir=HCRdir(project,quality,dataFreq);
 dataDir=['/run/media/romatsch/RSF0006/rsf/gasAtt/',project,'/10hz/'];
 
-infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_',project,'.txt'];
+infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_',project,'_data.txt'];
 
 caseList = table2array(readtable(infile));
 
-sig0ClearAll=[];
 sig0ClearModAll=[];
-sig0Clear3gatesModAll=[];
+sig0ClearAll=[];
 
-for aa=1:size(caseList,1)
+load([corrdir,project,'_corrCoeff.mat']);
+
+for aa=4:size(caseList,1)
     disp(['Flight ',num2str(aa)]);
     disp('Loading HCR data ...')
-    disp(['Starting at ',datestr(datetime('now'),'yyyy-mm-dd HH:MM')]);
-    
-    clearvars -except aa caseList dataDir dataFreq figdir infile ...
-        project quality sig0ClearAll ylimRefl ylimUpper sig0ClearAll sig0ClearModAll sig0Clear3gatesModAll
+        
+    clearvars -except aa caseList dataDir dataFreq figdir infile corrections ...
+        project quality ylimRefl ylimUpper sig0ClearModAll sig0ClearAll
     
     startTime=datetime(caseList(aa,1:6));
     endTime=datetime(caseList(aa,7:12));
@@ -55,24 +53,13 @@ for aa=1:size(caseList,1)
     data.U_SURF=[];
     data.V_SURF=[];
     data.SST=[];
-    %data.TEMP=[];
-    %data.PRESS=[];
-    %data.RH=[];
     data.TOPO=[];
     data.FLAG=[];
     data.ANTFLAG=[];
-    %data.LDR=[];
-    %data.WIDTH=[];
-    %data.VEL_CORR=[];
-    %data.pitch=[];
     data.rotation=[];
     data.MELTING_LAYER=[];
-    %data.ICING_LEVEL=[];
     data.pulse_width=[];
-    %data.SPECIFIC_GASEOUS_ATTENUATION=[];
     data.PATH_INTEGRATED_GASEOUS_ATTENUATION_2WAY=[];
-    
-    %data.DBMVC=[];
     
     dataVars=fieldnames(data);
     
@@ -119,8 +106,8 @@ for aa=1:size(caseList,1)
     data.surfRefl=data.DBZ(linInd);
     sig0measured=calc_sig0_surfRefl(data);
     
-    sig0measAtt=sig0measured(linInd)+data.PATH_INTEGRATED_GASEOUS_ATTENUATION_2WAY;
-    sig0measAtt(data.elevation>-85)=nan;
+%     sig0measAtt=sig0measured(linInd)+data.PATH_INTEGRATED_GASEOUS_ATTENUATION_2WAY;
+%     sig0measAtt(data.elevation>-85)=nan;
     
     sig0measLin=10.^(sig0measured./10);
     sig0meas3gates=nan(size(data.time));
@@ -143,6 +130,19 @@ for aa=1:size(caseList,1)
     sig0modelCM=sig0modelAll(8,:);
     
     clear sig0modelAll
+    
+    %% Correct sig0
+    
+    sig0measCorrLow=nan(size(sig0measAtt3gates));
+    lowInds=find(data.altitude./1000<corrections.maxAlt);
+    sig0measCorrLow(lowInds)=sig0measAtt3gates(lowInds);
+    fittedSig=polyval(corrections.fitA,data.altitude./1000);
+    sig0measCorrLow=sig0measCorrLow+(corrections.maxSig0-fittedSig);
+    sig0measCorrLow(isnan(sig0measCorrLow))=sig0measAtt3gates(isnan(sig0measCorrLow));
+    
+    % Correct for total offset
+    sig0measCorr=sig0measCorrLow-corrections.bias;
+    
     %% Create ocean surface mask
     % 0 extinct or not usable
     % 1 cloud
@@ -156,7 +156,7 @@ for aa=1:size(caseList,1)
     % 2 interpolated
     % 3 model
     
-    [refSig0,surfFlag,refFlag]=makeRefSig0(sig0measAtt,sig0modelCM,surfFlag1);
+    [refSig0,surfFlag,refFlag]=makeRefSig0(sig0measCorr,sig0modelCM,surfFlag1);
     
     % Find surfFlag values that have previously been clear air but are now
     % not
@@ -164,10 +164,10 @@ for aa=1:size(caseList,1)
     
     %% 2 way path integrated attenuation from hydrometeors
     
-    piaHydromet2=refSig0-sig0measAtt;
+    piaHydromet2=refSig0-sig0measCorr;
     piaHydromet2(surfFlag~=1)=nan;
   
-    %% Plot reflectivity, LWC, and RES
+    %% Plot preparation
    
     disp('Plotting ...');
     
@@ -175,15 +175,12 @@ for aa=1:size(caseList,1)
     
     sig0modelCM(upInds)=nan;
      
-    sig0measAtt(upInds)=nan;
-    sig0measAtt3gates(upInds)=nan;
-    
+    sig0measCorr(upInds)=nan;
+        
     sig0measClear=nan(size(data.time));
-    sig0measClear(surfFlag==2)=sig0measAtt(surfFlag==2);
-    sig0measClear3gates=nan(size(data.time));
-    sig0measClear3gates(surfFlag==2)=sig0measAtt3gates(surfFlag==2);
+    sig0measClear(surfFlag==2)=sig0measCorr(surfFlag==2);
     sig0measCloud=nan(size(data.time));
-    sig0measCloud(surfFlag==1)=sig0measAtt(surfFlag==1);
+    sig0measCloud(surfFlag==1)=sig0measCorr(surfFlag==1);
     
     refSig0(upInds)=nan;
     data.PATH_INTEGRATED_GASEOUS_ATTENUATION_2WAY(upInds)=nan;
@@ -200,10 +197,7 @@ for aa=1:size(caseList,1)
     sig0ClearFlight=cat(2,sig0measClear(~isnan(sig0measClear))',(data.altitude(~isnan(sig0measClear))./1000)');
     sig0ClearAll=cat(1,sig0ClearAll,sig0ClearFlight);
     sig0ClearMod=cat(2,sig0measClear(~isnan(sig0measClear))',(sig0modelCM(~isnan(sig0measClear)))');
-    sig0ClearModAll=cat(1,sig0ClearModAll,sig0ClearMod);
-    sig0Clear3gatesMod=cat(2,sig0measClear3gates(~isnan(sig0measClear3gates))',(sig0modelCM(~isnan(sig0measClear3gates)))');
-    sig0Clear3gatesModAll=cat(1,sig0Clear3gatesModAll,sig0Clear3gatesMod);
-    
+    sig0ClearModAll=cat(1,sig0ClearModAll,sig0ClearMod);   
     
     if ~isempty(sig0ClearFlight) & ~isempty(sig0ClearMod)
         f1 = figure('Position',[200 500 700 700],'DefaultAxesFontSize',12);
@@ -218,22 +212,17 @@ for aa=1:size(caseList,1)
         print(f1,[figdir,project,'_Flight',num2str(aa),'_sig0vsAlt'],'-dpng','-r0')
     end
     
-    %% Plot scatter of sig0clear, sig0clear3gates, and model
+    %% Plot scatter of sig0clear, and model
         
     if ~isempty(sig0ClearMod)
         f1 = figure('Position',[200 500 700 700],'DefaultAxesFontSize',12);
         hold on
         scatter(sig0ClearMod(:,2),sig0ClearMod(:,1),'filled');
-        scatter(sig0Clear3gatesMod(:,2),sig0Clear3gatesMod(:,1),'filled');
         ylim([0,25])
         xlim([0,25])
         plot([0,25],[0,25],'-k','linewidth',2);
-        legend(['1 gate, meas - mod: mean=',...
-            num2str(mean(sig0ClearMod(:,1)-sig0ClearMod(:,2),'omitnan')),...
+        legend(['mean=',num2str(mean(sig0ClearMod(:,1)-sig0ClearMod(:,2),'omitnan')),...
             ' dB , std=',num2str(std(sig0ClearMod(:,1)-sig0ClearMod(:,2),'omitnan')),' dB'],...
-            ['3 gates, meas - mod: mean=',...
-            num2str(mean(sig0Clear3gatesMod(:,1)-sig0Clear3gatesMod(:,2),'omitnan')),...
-            ' dB , std=',num2str(std(sig0Clear3gatesMod(:,1)-sig0Clear3gatesMod(:,2),'omitnan')),' dB'],...
             'location','northwest');
         
         grid on
@@ -274,7 +263,6 @@ for aa=1:size(caseList,1)
         l0=plot(data.time(:,timeInds),sig0modelCM(:,timeInds),'-c','linewidth',2);
         l1=plot(data.time(:,timeInds),sig0measClear(:,timeInds),'-b','linewidth',1);
         l2=plot(data.time(:,timeInds),sig0measCloud(:,timeInds),'color',[0.5 0.5 0.5],'linewidth',0.5);
-        l3=plot(data.time(:,timeInds),sig0measClear3gates(:,timeInds),'-g','linewidth',1);
         l4=plot(data.time(:,timeInds),sig0refMeas(:,timeInds),'-r','linewidth',2);
         l5=plot(data.time(:,timeInds),sig0refInt(:,timeInds),'-','color',[0.5 0 1],'linewidth',2);
         l6=plot(data.time(:,timeInds),sig0refMod(:,timeInds),'-m','linewidth',2);
@@ -290,7 +278,7 @@ for aa=1:size(caseList,1)
         
         xlim([data.time(timeInds(1)),data.time(timeInds(end))]);
         
-        leg=legend([l0 l1 l2 l3 l4 l5 l6 l7],{'sig0 model','sig0 meas clear','sig0 meas cloud','sig0 meas clear 3 gates',...
+        leg=legend([l0 l1 l2 l4 l5 l6 l7],{'sig0 model','sig0 meas clear','sig0 meas cloud',...
             'sig0 ref meas','sig0 ref int','sig0 ref mod','2-way gas att'},...
             'orientation','horizontal','location','north');
         leg.ItemTokenSize=[20,18];
@@ -357,8 +345,90 @@ for aa=1:size(caseList,1)
         startPlot=endPlot;
     end
 end
-%% Scatter plot for all
+%% Save
 
-saveAll=cat(2,sig0ClearAll(:,1),sig0Clear3gatesModAll(:,1),sig0ClearModAll(:,2),sig0ClearAll(:,2));
+saveAll=cat(2,sig0ClearAll(:,1),sig0ClearModAll(:,2),sig0ClearAll(:,2));
 save([figdir,project,'_sig0data.mat'],'saveAll');
 
+%% Plot
+
+edges={-30:0.1:30 -30:0.1:30};
+
+N=hist3(cat(2,saveAll(:,2),saveAll(:,1)),'Edges',edges);
+
+N2=hist3(cat(2,saveAll(:,3),saveAll(:,1)-saveAll(:,2)),'Edges',edges);
+
+% Regression
+xFit = -30:0.1:30;
+
+% Linear fit
+fitOrth=gmregress(saveAll(:,2),saveAll(:,1),1);
+fitAll=[fitOrth(2) fitOrth(1)];
+yFit = polyval(fitAll, xFit);
+
+wi=11;
+hi=5;
+
+fig1=figure('DefaultAxesFontSize',11,'DefaultFigurePaperType','<custom>','units','inch','position',[3,100,wi,hi]);
+fig1.PaperPositionMode = 'manual';
+fig1.PaperUnits = 'inches';
+fig1.Units = 'inches';
+fig1.PaperPosition = [0, 0, wi, hi];
+fig1.PaperSize = [wi, hi];
+fig1.Resize = 'off';
+fig1.InvertHardcopy = 'off';
+
+set(fig1,'color','w');
+
+colormap jet
+
+s1=subplot(1,2,1);
+
+hold on
+surf(edges{1},edges{2},log10(N'),'edgecolor','none')
+view(2)
+
+%axis equal
+ylim([0,25])
+xlim([0,25])
+caxis([0 3])
+
+l1=plot([0,25],[0,25],'-g','linewidth',1.5);
+l2=plot(xFit, yFit,'-k','linewidth',2);
+s1.SortMethod='childorder';
+
+text(2,22,['y=',num2str(fitAll(1)),'x+',num2str(fitAll(2))],'fontsize',12);
+text(2,24.2,['meas-mod:'],'fontsize',12);
+text(2,23.1,['mean=',num2str(mean(saveAll(:,1)-saveAll(:,2),'omitnan')),' dB, std=',num2str(std(saveAll(:,1)-saveAll(:,2),'omitnan')),' dB'],'fontsize',12);
+
+
+grid on
+ylabel('Sig0 measured (dB)');
+xlabel('Sig0 model (dB)');
+title(['Sig0 measured vs model'])
+
+s2=subplot(1,2,2);
+
+hold on
+surf(edges{1},edges{2},log10(N2'),'edgecolor','none')
+view(2)
+
+%axis equal
+ylim([-10,10])
+xlim([0,15])
+caxis([0 3])
+
+grid on
+ylabel('Sig0 (db)');
+xlabel('Altitude (km)');
+title(['Sig0 (meas-mod) vs altitude'])
+
+hcb=colorbar;
+hcb.Title.String='log_{10}(N)';
+
+s1.Position=[0.1300    0.1100    0.3347    0.8150];
+s2.Position=[0.5703    0.1100    0.3347    0.8150];
+hcb.Position=[0.93    0.2204    0.0202    0.5939];
+
+set(gcf,'PaperPositionMode','auto')
+print([figdir,project,'_sig0vsModel'],'-dpng','-r0');
