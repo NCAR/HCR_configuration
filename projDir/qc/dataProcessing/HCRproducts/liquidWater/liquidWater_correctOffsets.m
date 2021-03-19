@@ -24,7 +24,7 @@ corrdir=['/home/romatsch/plots/HCR/liquidWater/',project,'/offsets/'];
 %dataDir=HCRdir(project,quality,dataFreq);
 dataDir=['/run/media/romatsch/RSF0006/rsf/gasAtt/',project,'/10hz/'];
 
-infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_',project,'_data.txt'];
+infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_',project,'.txt'];
 
 caseList = table2array(readtable(infile));
 
@@ -33,7 +33,7 @@ sig0ClearAll=[];
 
 load([corrdir,project,'_corrCoeff.mat']);
 
-for aa=4:size(caseList,1)
+for aa=1:size(caseList,1)
     disp(['Flight ',num2str(aa)]);
     disp('Loading HCR data ...')
         
