@@ -21,12 +21,12 @@ end
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
 %figdir=['/scr/sci/romatsch/liquidWaterHCR/'];
-figdir=['/home/romatsch/plots/HCR/liquidWater/',project,'/offsets/'];
+figdir=['/home/romatsch/plots/HCR/liquidWater/',project,'/offsetsShort/'];
 
 %dataDir=HCRdir(project,quality,dataFreq);
 dataDir=['/run/media/romatsch/RSF0006/rsf/gasAtt/',project,'/10hz/'];
 
-infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_',project,'_data.txt'];
+infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_',project,'_short.txt'];
 
 caseList = table2array(readtable(infile));
 
@@ -360,5 +360,5 @@ end
 %% Scatter plot for all
 
 saveAll=cat(2,sig0ClearAll(:,1),sig0Clear3gatesModAll(:,1),sig0ClearModAll(:,2),sig0ClearAll(:,2));
-save([figdir,'sig0data.mat'],'saveAll');
+save([figdir,project,'_sig0data.mat'],'saveAll');
 
