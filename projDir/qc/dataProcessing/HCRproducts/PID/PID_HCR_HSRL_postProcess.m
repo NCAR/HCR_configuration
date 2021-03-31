@@ -5,7 +5,7 @@ close all
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-project='socrates'; %socrates, aristo, cset
+project='cset'; %socrates, aristo, cset
 quality='qc2'; %field, qc1, or qc2
 freqData='combined'; % 10hz, 100hz, 2hz, or combined
 
@@ -13,13 +13,14 @@ ylimits=[0 3];
 
 plotComp=1; % 1 to plot comparison plot of HCR vs HSRL
 plotFields=1; % 1 to plot input fields
-whichFilter=0; % 0: no filter, 1: mode filter, 2: coherence filter
+whichFilter=1; % 0: no filter, 1: mode filter, 2: coherence filter
+postProcess=1; % 1 if post processing is desired
 
-figdir='/home/romatsch/plots/HCR/pid/noFilt/';
+figdir=['/home/romatsch/plots/HCR/pid/',project,'/'];
 
 %indir=HCRdir(project,quality,freqData);
 %indir=HCRdirWFH(project,quality,freqData);
-indir='/run/media/romatsch/RSF0006/rsf/meltingLayer/socrates/combined/';
+indir=['/run/media/romatsch/RSF0006/rsf/meltingLayer/',project,'/combined/'];
 
 % Loop through cases
 casefile=['~/git/HCR_configuration/projDir/qc/dataProcessing/HCRproducts/caseFiles/pid_',project,'.txt'];
@@ -93,7 +94,7 @@ for aa=1:length(caseStart)
           
         %% Calculate HCR without attenuation correction
         
-        [pid_hcr]=calc_pid_hcr_postProcess(data.HCR_DBZ,data);
+        [pid_hcr]=calc_pid_hcr_postProcess(data.HCR_DBZ,data,postProcess);
         pid_hcr(isnan(data.HCR_DBZ))=nan;
              
         % Combined from merging hcr and hsrl pid
@@ -135,7 +136,7 @@ for aa=1:length(caseStart)
         %% Calculate PID with attenuation correction
         
         % HCR
-        [pid_hcr_cor]=calc_pid_hcr_postProcess(dBZ_cor,data);
+        [pid_hcr_cor]=calc_pid_hcr_postProcess(dBZ_cor,data,postProcess);
         pid_hcr_cor(isnan(dBZ_cor))=nan;
         
         if whichFilter==1

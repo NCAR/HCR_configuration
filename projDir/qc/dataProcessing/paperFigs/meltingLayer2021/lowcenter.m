@@ -146,8 +146,8 @@ newTime2=data2.time(newInds);
 %% Plot
 close all
 
-wi=5;
-hi=6;
+wi=10;
+hi=3.5;
 
 fig1=figure('DefaultAxesFontSize',11,'DefaultFigurePaperType','<custom>','units','inch','position',[3,100,wi,hi]);
 fig1.PaperPositionMode = 'manual';
@@ -160,22 +160,21 @@ fig1.InvertHardcopy = 'off';
 
 set(fig1,'color','w');
 
-ax1=subplot(2,1,1);
+ax1=subplot(1,2,1);
 hold on;
 surf(newTime,newASL./1000,newVEL,'edgecolor','none');
 ax1.Colormap=(jet);
 view(2);
-scatter(timeMat(elevenInds),data.asl(elevenInds)./1000,10,'k','filled');
-scatter(timeMat(fourteenInds),data.asl(fourteenInds)./1000,10,'g','filled');
-scatter(timeMat(thirteenInds),data.asl(thirteenInds)./1000,10,'c','filled');
-scatter(timeMat(twelveInds),data.asl(twelveInds)./1000,10,'b','filled');
+scatter(timeMat(elevenInds),data.asl(elevenInds)./1000,7,'k','filled','MarkerEdgeColor','k');
+scatter(timeMat(fourteenInds),data.asl(fourteenInds)./1000,7,'MarkerEdgeColor',[0.2 0.6 0.04],'MarkerFaceColor',[0.2 0.6 0.04]);
+scatter(timeMat(thirteenInds),data.asl(thirteenInds)./1000,7,'c','filled','filled','MarkerEdgeColor','c');
+scatter(timeMat(twelveInds),data.asl(twelveInds)./1000,7,'b','filled','filled','MarkerEdgeColor','b');
 
-scatter(timeMat(twentyoneInds),data.asl(twentyoneInds)./1000,10,'k','filled');
-scatter(timeMat(twentyfourInds),data.asl(twentyfourInds)./1000,10,'g','filled');
-scatter(timeMat(twentythreeInds),data.asl(twentythreeInds)./1000,10,'c','filled');
-scatter(timeMat(twentytwoInds),data.asl(twentytwoInds)./1000,10,'b','filled');
+l1=scatter(timeMat(twentyoneInds),data.asl(twentyoneInds)./1000,7,'k','filled','MarkerEdgeColor','k');
+l2=scatter(timeMat(twentyfourInds),data.asl(twentyfourInds)./1000,7,'MarkerEdgeColor',[0.2 0.6 0.04],'MarkerFaceColor',[0.2 0.6 0.04]);
+l3=scatter(timeMat(twentythreeInds),data.asl(twentythreeInds)./1000,7,'c','filled','filled','MarkerEdgeColor','c');
+l4=scatter(timeMat(twentytwoInds),data.asl(twentytwoInds)./1000,7,'b','filled','filled','MarkerEdgeColor','b');
 
-plot(data.time,data.ICING_LEVEL./1000,'linewidth',1,'color',[0.6 0.6 0.6]);
 ax = gca;
 ax.SortMethod = 'childorder';
 ylim([0 2]);
@@ -185,25 +184,24 @@ title('(a) VEL (m s^{-1})')
 grid on
 caxis([-6 6]);
 hcb1=colorbar('XTick',-6:2:6);
-ax1.Position=[0.11 0.577 0.77 0.38];
-hcb1.Position=[0.895 0.58 0.04 0.34];
+ax1.Position=[0.058 0.1265 0.39 0.788];
+hcb1.Position=[0.457 0.1265 0.02 0.7882];
 
-ax2=subplot(2,1,2);
+ax2=subplot(1,2,2);
 hold on;
 surf(newTime2,newASL2./1000,newVEL2,'edgecolor','none');
 ax2.Colormap=(jet);
 view(2);
-l1=scatter(timeMat2(elevenInds2),data2.asl(elevenInds2)./1000,10,'k','filled');
-l2=scatter(timeMat2(fourteenInds2),data2.asl(fourteenInds2)./1000,10,'g','filled');
-l3=scatter(timeMat2(thirteenInds2),data2.asl(thirteenInds2)./1000,10,'c','filled');
-l4=scatter(timeMat2(twelveInds2),data2.asl(twelveInds2)./1000,10,'b','filled');
+scatter(timeMat2(elevenInds2),data2.asl(elevenInds2)./1000,7,'k','filled','MarkerEdgeColor','k');
+scatter(timeMat2(fourteenInds2),data2.asl(fourteenInds2)./1000,7,'MarkerEdgeColor',[0.2 0.6 0.04],'MarkerFaceColor',[0.2 0.6 0.04]);
+scatter(timeMat2(thirteenInds2),data2.asl(thirteenInds2)./1000,7,'c','filled','filled','MarkerEdgeColor','c');
+scatter(timeMat2(twelveInds2),data2.asl(twelveInds2)./1000,7,'b','filled','filled','MarkerEdgeColor','b');
 
-scatter(timeMat2(twentyoneInds2),data2.asl(twentyoneInds2)./1000,10,'k','filled');
-scatter(timeMat2(twentyfourInds2),data2.asl(twentyfourInds2)./1000,10,'g','filled');
-scatter(timeMat2(twentythreeInds2),data2.asl(twentythreeInds2)./1000,10,'c','filled');
-scatter(timeMat2(twentytwoInds2),data2.asl(twentytwoInds2)./1000,10,'b','filled');
+l1=scatter(timeMat2(twentyoneInds2),data2.asl(twentyoneInds2)./1000,7,'k','filled','MarkerEdgeColor','k');
+l2=scatter(timeMat2(twentyfourInds2),data2.asl(twentyfourInds2)./1000,7,'MarkerEdgeColor',[0.2 0.6 0.04],'MarkerFaceColor',[0.2 0.6 0.04]);
+l3=scatter(timeMat2(twentythreeInds2),data2.asl(twentythreeInds2)./1000,7,'c','filled','filled','MarkerEdgeColor','c');
+l4=scatter(timeMat2(twentytwoInds2),data2.asl(twentytwoInds2)./1000,7,'b','filled','filled','MarkerEdgeColor','b');
 
-l5=plot(data2.time,data2.ICING_LEVEL./1000,'linewidth',1,'color',[0.6 0.6 0.6]);
 ax = gca;
 ax.SortMethod = 'childorder';
 ylim([3 6]);
@@ -213,8 +211,8 @@ title('(b) VEL (m s^{-1})')
 grid on
 caxis([-6 6]);
 hcb2=colorbar('XTick',-6:2:6);
-ax2.Position=[0.11 0.08 0.77 0.38];
-hcb2.Position=[0.9 0.08 0.04 0.38];
+ax2.Position=[0.559 0.1265 0.39 0.788];
+hcb2.Position=[0.958 0.1265 0.02 0.7882];
 
 print([figdir,'lowcenter'],'-dpng','-r0');
 

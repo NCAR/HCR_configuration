@@ -3,7 +3,7 @@
 clear all;
 close all;
 
-plotTest=0;
+plotTest=1;
 
 project='otrec'; %socrates, aristo, cset
 quality='qc2'; %field, qc1, or qc2
@@ -25,7 +25,7 @@ if ~exist(figdir, 'dir')
 end
 
 %indir=HCRdir(project,quality,freqData);
-indir=['/run/media/romatsch/RSF0006/rsf/hcr/',project,'/'];
+indir=['/run/media/romatsch/RSF0006/rsf/meltingLayer/',project,'/10hz/'];
 
 % Loop through cases
 casefile=['~/git/HCR_configuration/projDir/qc/dataProcessing/HCRproducts/caseFiles/cloudPuzzle_',project,'.txt'];
@@ -36,7 +36,7 @@ caseStart=datetime(caseList.Var1,caseList.Var2,caseList.Var3, ...
 caseEnd=datetime(caseList.Var6,caseList.Var7,caseList.Var8, ...
     caseList.Var9,caseList.Var10,0);
 
-for aa=8:length(caseStart)
+for aa=2:length(caseStart)
     
     disp(['Case ',num2str(aa),' of ',num2str(length(caseStart))]);
     
@@ -144,7 +144,7 @@ for aa=8:length(caseStart)
             
             BW2=imerode(BW, strel('disk', 5));
             BW3 = bwareaopen(BW2,1000);
-            
+                        
             % Distance of each cloud pixel from reflectivity threshold mask
             D = bwdist(BW3);
             

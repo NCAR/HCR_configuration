@@ -17,14 +17,14 @@ ylimits=[0 1.5];
 %indir=HCRdir(project,quality,freqData);
 indir=['/run/media/romatsch/RSF0006/rsf/pid_hcr/',project,'Mat/'];
 
-infilePID=[indir,'era5.pid.20180128_224515_to_20180129_060956.Flight6.mat'];
-infileTime=[indir,'era5.time.20180128_224515_to_20180129_060956.Flight6.mat'];
-%infilePID=[indir,'era5.pid.20180129_013000_to_20180129_020000.Flight6.mat'];
-%infileTime=[indir,'era5.time.20180129_013000_to_20180129_020000.Flight6.mat'];
+%infilePID=[indir,'era5.pidComb.20180115_230000_to_20180116_052608.Flight1.mat'];
+%infileTime=[indir,'era5.time.20180115_230000_to_20180116_052608.Flight1.mat'];
+infilePID=[indir,'era5.pid.20180129_013000_to_20180129_020000.Flight6.mat'];
+infileTime=[indir,'era5.time.20180129_013000_to_20180129_020000.Flight6.mat'];
 
 %HCR data
 PIDin=load(infilePID);
-PID=PIDin.pid;
+PID=PIDin.pidComb;
 Timein=load(infileTime);
 time=Timein.timeHCR;
 
@@ -48,8 +48,8 @@ s1=subplot(1,1,1);
 fig1=surf(time,asl,PID+1,'edgecolor','none');
 view(2);
 ylim(ylimits);
-%xlim([data.time(1),data.time(end)]);
-xlim([datetime(2018,1,29,1,50,0),time(end)]);
+xlim([data.time(1),data.time(end)]);
+%xlim([datetime(2018,1,29,1,50,0),time(end)]);
 caxis([.5 9.5]);
 colormap(s1,cscale_comb);
 cb=colorbar;

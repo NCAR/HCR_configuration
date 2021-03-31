@@ -3,14 +3,14 @@
 clear all;
 close all;
 
-project='otrec'; %socrates, aristo, cset
+project='cset'; %socrates, aristo, cset
 quality='qc2'; %field, qc1, or qc2
-freqData='10hz'; % 10hz, 100hz, 2hz, or combined
+freqData='combined'; % 10hz, 100hz, 2hz, or combined
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
 % figdir=['/scr/snow1/rsfdata/projects/otrec/hcr/qc2/cfradial/final2/10hz/plots/testHourly/'];
-figdir=['/home/romatsch/plots/HCR/meltingLayer/hourly/',project,'/10hz/'];
+figdir=['/home/romatsch/plots/HCR/meltingLayer/hourly/',project,'/',freqData,'/'];
 
 if ~exist(figdir, 'dir')
     mkdir(figdir)
@@ -19,7 +19,7 @@ end
 ylimits=[-0.2 7];
 
 %indir=HCRdir(project,quality,freqData);
-indir=['/run/media/romatsch/RSF0006/rsf/meltingLayer/',project,'/10hz/'];
+indir=['/run/media/romatsch/RSF0006/rsf/meltingLayer/',project,'/',freqData,'/'];
 
 infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_',project,'_data.txt'];
 
@@ -115,7 +115,7 @@ for aa=1:size(caseList,1)
         
         close all
         
-        if etime(datevec(endTime),datevec(startTime))<=900
+        if etime(datevec(endTime),datevec(startTime))<=900 | strcmp(freqData,'combined')
             newInds=1:1:length(data.time);
         elseif etime(datevec(endTime),datevec(startTime))<=3600
             newInds=1:10:length(data.time);

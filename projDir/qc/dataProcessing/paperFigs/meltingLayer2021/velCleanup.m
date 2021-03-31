@@ -441,7 +441,7 @@ ylim([3.7 5.9])
 grid on
 legend('Discontinuity','Upward motion','Distance to LDR melt. alt.',...
     'Distance to moving avg.','Standard deviation');
-title('(b) Discontinuity and elimitanted data');
+title('(b) Discontinuity and eliminated data');
 ylabel('Altitude (km)');
 s2.Position=[0.12 0.08 0.83 0.38];
 

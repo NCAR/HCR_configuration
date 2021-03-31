@@ -9,14 +9,15 @@ project='socrates'; %socrates, aristo, cset
 quality='qc2'; %field, qc1, or qc2
 freqData='combined'; % 10hz, 100hz, 2hz, or combined
 
-figdir='/home/romatsch/plots/HCR/pid/noDrizzle/';
+figdir='/home/romatsch/plots/HCR/pid/old/test/';
 
 ylimits=[0 3];
 
-plotComp=1; % 1 to plot comparison plot of HCR vs HSRL
+plotComp=0; % 1 to plot comparison plot of HCR vs HSRL
 
 %indir=HCRdir(project,quality,freqData);
-indir=HCRdirWFH(project,quality,freqData);
+%indir=HCRdirWFH(project,quality,freqData);
+indir='/run/media/romatsch/RSF0006/rsf/pid_hcr/socrates/';
 
 % Loop through cases
 casefile=['~/git/HCR_configuration/projDir/qc/dataProcessing/HCRproducts/caseFiles/pid_',project,'.txt'];
@@ -27,7 +28,7 @@ caseStart=datetime(caseList.Var1,caseList.Var2,caseList.Var3, ...
 caseEnd=datetime(caseList.Var6,caseList.Var7,caseList.Var8, ...
     caseList.Var9,caseList.Var10,0);
 
-for aa=1:length(caseStart)
+for aa=4:length(caseStart)
     
     disp(['Case ',num2str(aa),' of ',num2str(length(caseStart))]);
     
