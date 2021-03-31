@@ -423,6 +423,8 @@ def doPlot(colHdrs, obsTimes, colData):
     homeDir = os.environ['HOME']
     saveDir = os.path.join(homeDir, 'Downloads')
     saveDir = os.path.join(saveDir, 'images')
+    if (os.path.isdir(saveDir) == False):
+        os.makedirs(saveDir)
     saveName1 = 'power_vs_temp_timeseries.' + \
                startTime.isoformat() + "-" + endTime.isoformat() + \
                saveLabel + '.png'
