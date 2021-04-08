@@ -6,21 +6,22 @@ close all;
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
 project='otrec'; % socrates, cset, aristo, otrec
-qualityGood='qc2'; % field, qc0, qc1, qc2
-qualityTest='qc2.1'; % field, qc0, qc1, qc2
+qc='qc2'; % field, qc0, qc1, qc2
+qcVersionGood='v2.0';
+qcVersionTest='v2.2';
 freqGood='10hz'; % 10hz, 2hz, 2hzMerged
 freqTest='10hz'; % 10hz, 2hz, 2hzMerged
 
 thresh12=[10 50];
 
-figdir=['/h/eol/romatsch/hcrCalib/checkData/'];
+figdir=['/h/eol/romatsch/hcrCalib/checkData/v2.2/'];
 
 infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_',project,'.txt'];
 
 caseList = table2array(readtable(infile));
 
-indirGood=HCRdir(project,qualityGood,freqGood);
-indirTest=HCRdir(project,qualityTest,freqTest);
+indirGood=HCRdir(project,qc,qcVersionGood,freqGood);
+indirTest=HCRdir(project,qc,qcVersionTest,freqTest);
 
 %% Run processing
 
@@ -43,7 +44,8 @@ compareVars={'DBZ','DBZ',0;
     'SST','SST',0;
     'TOPO','TOPO',0;
     'U_SURF','U_SURF',0;
-    'V_SURF','V_SURF',0};
+    'V_SURF','V_SURF',0
+    'ANTFLAG','ANTFLAG',0};
     
     dataVarsGood={};
     dataVarsTest={};
@@ -284,7 +286,7 @@ for ii=1:size(caseList,1)
         'Margin',0.2,'EdgeColor','k');
     
     legend(freqGood,freqTest,'location','best');
-    title([project,' RF ',num2str(ii),' ',qualityTest,' ',freqTest,' vs ',qualityGood,' ',freqGood]);
+    title([project,' RF ',num2str(ii),' ',qualityTest,' ',freqTest,' vs ',qc,' ',freqGood]);
     
     ax2=subplot(3,1,2);
     ax2.Position = [0.1300    0.36    0.7750    0.25];
@@ -336,10 +338,10 @@ for ii=1:size(caseList,1)
     legend([s1 s2 s3 s4],{['<=',num2str(thresh12(1))],['>',num2str(thresh12(1)),', <=',num2str(thresh12(2))],...
         ['>',num2str(thresh12(2))],'Dropouts'},'location','best');
     
-    title(['Missing contiguous points ',qualityGood,' ',freqGood]);
+    title(['Missing contiguous points ',qc,' ',freqGood]);
     grid on
     
     set(gcf,'PaperPositionMode','auto')
-    print(f1,[figdir,project,'_RF',num2str(ii),'_dataCheck_',qualityTest,'_',freqTest,'_vs_',qualityGood,'_',freqGood,'.png'],'-dpng','-r0')
+    print(f1,[figdir,project,'_RF',num2str(ii),'_dataCheck_',qualityTest,'_',freqTest,'_vs_',qc,'_',freqGood,'.png'],'-dpng','-r0')
     
 end
