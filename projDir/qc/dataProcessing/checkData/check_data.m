@@ -5,8 +5,9 @@ close all;
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-project='otrec'; % socrates, cset, aristo, otrec
-qc='qc2'; % field, qc0, qc1, qc2
+project='socrates'; % socrates, cset, aristo, otrec
+qcGood='qc2'; % field, qc0, qc1, qc2
+qcTest='qc2'; % field, qc0, qc1, qc2
 qcVersionGood='v2.0';
 qcVersionTest='v2.2';
 freqGood='10hz'; % 10hz, 2hz, 2hzMerged
@@ -14,14 +15,14 @@ freqTest='10hz'; % 10hz, 2hz, 2hzMerged
 
 thresh12=[10 50];
 
-figdir=['/h/eol/romatsch/hcrCalib/checkData/v2.2/'];
+figdir=['/scr/sleet2/rsfdata/projects/otrec/hcr/qc2/cfradial/v2.2/checkPlots/'];
 
 infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_',project,'.txt'];
 
 caseList = table2array(readtable(infile));
 
-indirGood=HCRdir(project,qc,qcVersionGood,freqGood);
-indirTest=HCRdir(project,qc,qcVersionTest,freqTest);
+indirGood=HCRdir(project,qcGood,qcVersionGood,freqGood);
+indirTest=HCRdir(project,qcTest,qcVersionTest,freqTest);
 
 %% Run processing
 
@@ -59,7 +60,7 @@ compareVars={'DBZ','DBZ',0;
     dataVarsTest=dataVarsTest';
 
 % Go through flights
-for ii=1:size(caseList,1)
+for ii=2:size(caseList,1)
     disp(['Flight ',num2str(ii),' of ',num2str(size(caseList,1))]);
     
     startTime=datetime(caseList(ii,1:6));
@@ -285,8 +286,8 @@ for ii=1:size(caseList,1)
         'HorizontalAlignment','center','VerticalAlignment','bottom','BackgroundColor','w',...
         'Margin',0.2,'EdgeColor','k');
     
-    legend(freqGood,freqTest,'location','best');
-    title([project,' RF ',num2str(ii),' ',qualityTest,' ',freqTest,' vs ',qc,' ',freqGood]);
+    legend([qcGood,' ',qcVersionGood,' ',freqGood],[qcTest,' ',qcVersionTest,' ',freqTest],'location','best');
+    title([project,' RF ',num2str(ii),', ',qcTest,' ',qcVersionTest,' ',freqTest,' vs ',qcGood,' ',qcVersionGood,' ',freqGood]);
     
     ax2=subplot(3,1,2);
     ax2.Position = [0.1300    0.36    0.7750    0.25];
@@ -310,7 +311,7 @@ for ii=1:size(caseList,1)
     yticks(1:size(plotMatT,2));
     yticklabels(makeLabels2);
     
-    title(['Missing contiguous points ',qualityTest,' ',freqTest]);
+    title(['Missing contiguous points ',qcTest,' ',qcVersionTest,' ',freqTest]);
     grid on
     
     ax3=subplot(3,1,3);
@@ -338,10 +339,10 @@ for ii=1:size(caseList,1)
     legend([s1 s2 s3 s4],{['<=',num2str(thresh12(1))],['>',num2str(thresh12(1)),', <=',num2str(thresh12(2))],...
         ['>',num2str(thresh12(2))],'Dropouts'},'location','best');
     
-    title(['Missing contiguous points ',qc,' ',freqGood]);
+    title(['Missing contiguous points ',qcGood,' ',qcVersionGood,' ',freqGood]);
     grid on
     
     set(gcf,'PaperPositionMode','auto')
-    print(f1,[figdir,project,'_RF',num2str(ii),'_dataCheck_',qualityTest,'_',freqTest,'_vs_',qc,'_',freqGood,'.png'],'-dpng','-r0')
+    print(f1,[figdir,project,'_RF',num2str(ii),'_dataCheck_',qcTest,'_',qcVersionTest,'_',freqTest,'_vs_',qcGood,'_',qcVersionGood,'_',freqGood,'.png'],'-dpng','-r0')
     
 end
