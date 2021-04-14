@@ -5,17 +5,17 @@ close all;
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-project='socrates'; % socrates, cset, aristo, otrec
+project='cset'; % socrates, cset, aristo, otrec
 qcGood='qc2'; % field, qc0, qc1, qc2
 qcTest='qc2'; % field, qc0, qc1, qc2
 qcVersionGood='v2.0';
-qcVersionTest='v2.2';
+qcVersionTest='v2.1';
 freqGood='10hz'; % 10hz, 2hz, 2hzMerged
 freqTest='10hz'; % 10hz, 2hz, 2hzMerged
 
 thresh12=[10 50];
 
-figdir=['/scr/sleet2/rsfdata/projects/otrec/hcr/qc2/cfradial/v2.2/checkPlots/'];
+figdir=['/scr/snow2/rsfdata/projects/cset/hcr/qc2/cfradial/v2.1/checkPlots/'];
 
 infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_',project,'.txt'];
 
@@ -60,7 +60,7 @@ compareVars={'DBZ','DBZ',0;
     dataVarsTest=dataVarsTest';
 
 % Go through flights
-for ii=2:size(caseList,1)
+for ii=1:size(caseList,1)
     disp(['Flight ',num2str(ii),' of ',num2str(size(caseList,1))]);
     
     startTime=datetime(caseList(ii,1:6));
