@@ -19,26 +19,6 @@ if (-d $bindir) then
   end
 endif
 
-# kill 32-bit processes
-
-cd
-set CIDD=`which CIDD`
-set bindir32=`dirname $CIDD`
-
-if ($bindir == $bindir32) then
-  # same dir, no need to duplicate
-  exit 0
-endif
-
-if (-d $bindir32) then
-  cd $bindir32
-  foreach file (*)
-    if (-f $file && -x $file) then
-      killall -q $file >& /dev/null
-    endif
-  end
-endif
-
 pkill java
 pkill Xvfb
 

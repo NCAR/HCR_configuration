@@ -37,7 +37,6 @@ kill_SymprodServers
 # kill all processes
 
 killall_processes
-kill_SysView
 
 # remove shared memory segments
 

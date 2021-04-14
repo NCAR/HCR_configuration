@@ -1,0 +1,5 @@
+#! /bin/csh -f
+
+stop_HcrPmc730Daemon
+
+start_HcrPmc730Daemon.ops 

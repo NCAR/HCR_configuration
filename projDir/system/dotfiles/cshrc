@@ -62,7 +62,6 @@ setenv DATA_HOST archiver
 setenv PROJ_DIR $HOME/projDir
 setenv TITAN_HOME $PROJ_DIR
 setenv DATA_DIR $PROJ_DIR/data
-setenv RAP_DATA_DIR $DATA_DIR
 setenv TMP_DIR $DATA_DIR/tmp
 setenv LOG_DIR $DATA_DIR/logs
 setenv DATA_DISTRIB_LOG_DIR $LOG_DIR/distrib
@@ -100,8 +99,9 @@ if ( -d $PROJ_DIR ) then
   end
 endif
 
-set path = ($path $LROSE_INSTALL_DIR/bin)
-set path = ($path $HOME/cidd/bin)
+if ( -d $LROSE_INSTALL_DIR/bin ) then
+  set path = ($path $LROSE_INSTALL_DIR/bin)
+endif
 
 set savehist=0
 
