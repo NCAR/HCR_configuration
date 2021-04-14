@@ -17,30 +17,30 @@
   <kSquaredWater>0.711</kSquaredWater>
   <radarConstH>79.2999</radarConstH>
   <radarConstV>79.1498</radarConstV>
-  <noiseDbmHc>-57.8023</noiseDbmHc>
-  <noiseDbmHx>-57.8023</noiseDbmHx>
-  <noiseDbmVc>-59.378</noiseDbmVc>
-  <noiseDbmVx>-59.378</noiseDbmVx>
-  <i0DbmHc>-120.209</i0DbmHc>
-  <i0DbmHx>-120.209</i0DbmHx>
-  <i0DbmVc>-121.661</i0DbmVc>
-  <i0DbmVx>-121.661</i0DbmVx>
-  <receiverGainDbHc>62.4068</receiverGainDbHc>
-  <receiverGainDbHx>62.4068</receiverGainDbHx>
-  <receiverGainDbVc>62.283</receiverGainDbVc>
-  <receiverGainDbVx>62.283</receiverGainDbVx>
-  <receiverSlopeDbHc>0.964866</receiverSlopeDbHc>
-  <receiverSlopeDbHx>0.964866</receiverSlopeDbHx>
-  <receiverSlopeDbVc>0.970293</receiverSlopeDbVc>
-  <receiverSlopeDbVx>0.970293</receiverSlopeDbVx>
-  <dynamicRangeDbHc>68.7913</dynamicRangeDbHc>
-  <dynamicRangeDbHx>68.7913</dynamicRangeDbHx>
-  <dynamicRangeDbVc>70.387</dynamicRangeDbVc>
-  <dynamicRangeDbVx>70.387</dynamicRangeDbVx>
-  <baseDbz1kmHc>-40.8942</baseDbz1kmHc>
-  <baseDbz1kmHx>-40.8942</baseDbz1kmHx>
-  <baseDbz1kmVc>-42.5003</baseDbz1kmVc>
-  <baseDbz1kmVx>-42.5003</baseDbz1kmVx>
+  <noiseDbmHc>-59.8785</noiseDbmHc>
+  <noiseDbmHx>-59.8785</noiseDbmHx>
+  <noiseDbmVc>-61.4794</noiseDbmVc>
+  <noiseDbmVx>-61.4794</noiseDbmVx>
+  <i0DbmHc>-100.335</i0DbmHc>
+  <i0DbmHx>-100.335</i0DbmHx>
+  <i0DbmVc>-101.581</i0DbmVc>
+  <i0DbmVx>-101.581</i0DbmVx>
+  <receiverGainDbHc>40.4567</receiverGainDbHc>
+  <receiverGainDbHx>40.4567</receiverGainDbHx>
+  <receiverGainDbVc>40.1015</receiverGainDbVc>
+  <receiverGainDbVx>40.1015</receiverGainDbVx>
+  <receiverSlopeDbHc>0.966639</receiverSlopeDbHc>
+  <receiverSlopeDbHx>0.966639</receiverSlopeDbHx>
+  <receiverSlopeDbVc>0.986342</receiverSlopeDbVc>
+  <receiverSlopeDbVx>0.986342</receiverSlopeDbVx>
+  <dynamicRangeDbHc>70.8675</dynamicRangeDbHc>
+  <dynamicRangeDbHx>70.8675</dynamicRangeDbHx>
+  <dynamicRangeDbVc>72.4884</dynamicRangeDbVc>
+  <dynamicRangeDbVx>72.4884</dynamicRangeDbVx>
+  <baseDbz1kmHc>-21.004</baseDbz1kmHc>
+  <baseDbz1kmHx>-21.004</baseDbz1kmHx>
+  <baseDbz1kmVc>-22.4229</baseDbz1kmVc>
+  <baseDbz1kmVx>-22.4229</baseDbz1kmVx>
   <sunPowerDbmHc>-9999</sunPowerDbmHc>
   <sunPowerDbmHx>-9999</sunPowerDbmHx>
   <sunPowerDbmVc>-9999</sunPowerDbmVc>

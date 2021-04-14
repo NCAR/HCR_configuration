@@ -191,7 +191,7 @@ siggen_ip_address = "10.40.0.21";
 //
 
 // siggen_max_power = -35.67;
-siggen_max_power = -56.71;
+siggen_max_power = -34.30;
 
 ///////////// siggen_min_power ////////////////////////
 //
