@@ -191,7 +191,8 @@ siggen_ip_address = "10.40.0.21";
 //
 
 // siggen_max_power = -35.67;
-siggen_max_power = -56.71;
+// siggen_max_power = -56.71;
+siggen_max_power = -56.68; // 2021/04/14
 
 ///////////// siggen_min_power ////////////////////////
 //
@@ -201,7 +202,8 @@ siggen_max_power = -56.71;
 // Type: double
 //
 
-siggen_min_power = -116.93;
+// siggen_min_power = -116.93;
+siggen_min_power = -116.68;
 
 ///////////// siggen_delta_power //////////////////////
 //
@@ -238,7 +240,8 @@ siggen_specify_power_sequence = TRUE;
 // Type: double
 //
 
-siggen_sequence_start_power = -56.71;
+// siggen_sequence_start_power = -56.71;
+siggen_sequence_start_power = -56.68;
 
 ///////////// siggen_delta_power_sequence /////////////
 //
