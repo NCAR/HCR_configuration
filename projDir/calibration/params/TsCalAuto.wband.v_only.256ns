@@ -186,14 +186,12 @@ siggen_ip_address = "10.40.0.21";
 //
 // Max power for siggen signal (dBm).
 //
-// -34.65 dBm - Benchtop cal dated 11132017 (Tsai)
-// -34.3 dBm - Benchtop cal dated 09212018 (Tsai)
-// -36.15 dBm - Benchtop cal dated 06192019 (Tsai)
 //
 // Type: double
 //
 
-siggen_max_power = -36.15;
+siggen_max_power = -56.71;
+//siggen_max_power = -35.67;
 
 ///////////// siggen_min_power ////////////////////////
 //
@@ -229,7 +227,20 @@ siggen_delta_power = 5;
 
 siggen_specify_power_sequence = TRUE;
 
-///////////// siggen_power_sequence ///////////////////
+///////////// siggen_sequence_start_power /////////////
+//
+// Start value for siggen power sequence (dBm).
+//
+// The actual power is the sum of this value, with the delta power in 
+//   the sequence.
+//
+//
+// Type: double
+//
+
+siggen_sequence_start_power = -56.71;
+
+///////////// siggen_delta_power_sequence /////////////
 //
 // Min power for siggen signal (dBm).
 //
@@ -238,45 +249,43 @@ siggen_specify_power_sequence = TRUE;
 // 1D array - variable length.
 //
 
- // siggen_power_sequence = {
- //  -34.65,
- //  -39.65,
- //  -44.65,
- //  -49.65,
- //  -54.65,
- //  -59.65,
- //  -64.65,
- //  -69.65,
- //  -74.65,
- //  -80.70,
- //  -85.70,
- //  -90.70,
- //  -95.70,
- //  -100.70,
- //  -105.70,
- //  -110.70,
- //  -115.70
- // };
-
-siggen_power_sequence = {
-  -36.15,
-  -41.15,
-  -46.15,
-  -51.15,
-  -56.15,
-  -61.15,
-  -66.15,
-  -71.15,
-  -76.15,
-  -81.93,
-  -86.93,
-  -91.93,
-  -96.93,
-  -101.93,
-  -106.93,
-  -111.93,
-  -116.93
+siggen_delta_power_sequence = {
+ 0,
+ -5,
+ -10,
+ -15,
+ -20,
+ -25,
+ -30,
+ -35,
+ -40,
+ -45,
+ -50,
+ -55,
+ -60,
+ -65
 };
+
+// siggen_delta_power_sequence = {
+//  0,
+//  -5,
+//  -10,
+//  -15,
+//  -20,
+//  -25,
+//  -30,
+//  -35,
+//  -40,
+//  -46.85,
+//  -51.85,
+//  -56.85,
+//  -61.85,
+//  -66.85,
+//  -71.85,
+//  -76.85,
+//  -81.85,
+//  -86.85
+// };
 
 ///////////// set_sig_freq ////////////////////////////
 //
@@ -300,7 +309,7 @@ set_sig_freq = TRUE;
 // Type: double
 //
 
-siggen_frequency = 94.40625;
+siggen_frequency = 94.4062;
 
 ///////////// siggen_cmd_delay ////////////////////////
 //
@@ -353,6 +362,31 @@ suspend_test_pulse = FALSE;
 
 TestPulse_pid_file = "/tmp/TestPulse.pid";
 
+///////////// reset_siggen_power_after_cal ////////////
+//
+// Option to reset the siggen power after the cal is completed.
+//
+// If set, after the cal the siggen will be set to the specified power 
+//   and the RF will be turned on.
+//
+//
+// Type: boolean
+//
+
+reset_siggen_power_after_cal = FALSE;
+
+///////////// siggen_power_val_after_cal //////////////
+//
+// Siggen power after calibration complete (dBm).
+//
+// See 'reset_siggen_power_after_cal'.
+//
+//
+// Type: double
+//
+
+siggen_power_val_after_cal = -50;
+
 //======================================================================
 //
 // CALIBRATION PROCEDURE PARAMETERS.
@@ -379,7 +413,7 @@ radarName = "HCR";
 // Type: double
 //
 
-radar_frequency = 94.40625;
+radar_frequency = 94.4062;
 
 ///////////// k_squared ///////////////////////////////
 //
@@ -404,8 +438,6 @@ k_squared = 0.711;
 //
 // Transmitter peak power H (dBm).
 //
-// Benchtop Cal dated 11132017 (Tsai) Pout = 59.22 dBm
-// Benchtop Cal dated 06192019 (Tsai) Pout = 59.56 dBm
 //
 // Type: double
 //
@@ -416,8 +448,6 @@ xmitPowerDbmH = 59.56;
 //
 // Transmitter peak power V (dBm).
 //
-// Benchtop Cal dated 11132017 (Tsai) Pout = 59.77 dBm
-// Benchtop Cal dated 06192019 (Tsai) Pout = 59.91 dBm
 //
 // Type: double
 //
@@ -438,7 +468,6 @@ pulseWidthUs = 0.256;
 //
 // Antenna 3dB beam width H (deg).
 //
-// Measured Value, CMi, March 2019
 //
 // Type: double
 //
@@ -449,7 +478,6 @@ beamWidthDegH = 0.73;
 //
 // Antenna 3dB beam width V (deg).
 //
-// Measured Value, CMi, March 2019
 //
 // Type: double
 //
@@ -460,7 +488,6 @@ beamWidthDegV = 0.73;
 //
 // Antenna gain H (dB).
 //
-// Measured Value, CMi, March 2019
 //
 // Type: double
 //
@@ -471,7 +498,6 @@ antGainDbH = 45.5;
 //
 // Antenna gain V (dB).
 //
-// Measured Value, CMi, 2019
 //
 // Type: double
 //
@@ -512,7 +538,6 @@ twoWayWaveguideLossDbV = 0;
 //
 // Set to 0 if no radome.
 //
-// Measured Value, CMi March 2019
 //
 // Type: double
 //
@@ -525,7 +550,6 @@ twoWayRadomeLossDbH = 3.4;
 //
 // Set to 0 if no radome.
 //
-// Measured Value, CMi March 2019
 //
 // Type: double
 //
@@ -556,7 +580,6 @@ receiverMismatchLossDb = 2.3;
 // Some operational calibrations are computed with a calbrated noise 
 //   source of known power.
 //
-// Calculated with 256 ns PW & ENR 20.84 dB & T0 = 300K (Tsai)
 //
 // Type: double
 //
@@ -570,7 +593,6 @@ noiseSourcePowerDbmH = -88.6214;
 // Some operational calibrations are computed with a calbrated noise 
 //   source of known power.
 //
-// Calculated with 256 ns PW & ENR 20.84 dB & T0 = 300K (Tsai)
 //
 // Type: double
 //
@@ -656,13 +678,13 @@ systemPhidpDeg = 0;
 // Type: double
 //
 
-linear_region_min_power = -87.5;
+// linear_region_min_power = -87.5;
+linear_region_min_power = -67.5;
 
 ///////////// linear_region_max_power /////////////////
 //
 // power value at upper end of linear region (dBm).
 //
-// Determined with P1dB point for LNA
 //
 // Type: double
 //
@@ -673,7 +695,6 @@ linear_region_max_power = -37.5;
 //
 // power value at upper end of noise region (dBm).
 //
-// Determined by Te of the receiver system 2285.32K
 //
 // Type: double
 //

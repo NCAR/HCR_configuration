@@ -42,7 +42,7 @@ for ii=1:length(varNames)
             str2num(allFiles(jj).name(underSc(4)+3:underSc(4)+4)),...
             str2num(allFiles(jj).name(underSc(4)+5:underSc(4)+6)))+minutes(10));
     end
-    fileInd=max(find(fileStart<startTime));
+    fileInd=max(find(fileStart<startTime+hours(1)));
     if endTime<fileEnd(fileInd)+seconds(1) | abs(fileEnd(fileInd)-endTime)<hours(1)
         fileOut=[allFiles(fileInd).folder,'/',allFiles(fileInd).name];
         fileList{end+1}=fileOut;
@@ -63,6 +63,7 @@ end
 
 % Get right times
 timeInds=find(modelTemp.time.timeHCR>=startTime & modelTemp.time.timeHCR<=endTime);
+
 for ii=1:length(varNames)
     nameIn=fields(modelTemp.(varNames{ii}));
     dataIn=modelTemp.(varNames{ii}).(nameIn{:});

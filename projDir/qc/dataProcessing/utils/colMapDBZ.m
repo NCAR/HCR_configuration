@@ -1,4 +1,4 @@
-function [fig] = colMapDBZ(fig)
+function [fig hcb] = colMapDBZ(fig)
 %Change dbz color map
 
 fld=fig.CData;

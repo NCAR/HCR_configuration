@@ -140,6 +140,8 @@ def computeAngles():
           '{:>10} '.format('az'),
           '{:>10} '.format('rot'),
           '{:>10} '.format('tilt'),
+          '{:>10} '.format('el2'),
+          '{:>10} '.format('az2'),
           file=sys.stderr)
 
     for pitch in np.arange(_pitchMin, _pitchMax, _pitchDelta):
@@ -157,6 +159,27 @@ def computeAngles():
                   '{:10.4f} '.format(az),
                   '{:10.4f} '.format(rot),
                   '{:10.4f} '.format(tilt),
+                  file=sys.stderr)
+
+    for pitch in np.arange(-2.0, 4.1, 1.0):
+
+        for roll in np.arange(-30.0, 30.1, 10.0):
+
+            el = 90.0
+            az = _hdg + 90
+
+            rot, tilt = computeRotTiltYPrime(pitch, roll, _hdg, el, az)
+            el2, az2 = computeAzElYPrime(pitch, roll, _hdg, rot, tilt)
+
+            print("  ",
+                  '{:10.4f} '.format(pitch),
+                  '{:10.4f} '.format(roll),
+                  '{:10.4f} '.format(el),
+                  '{:10.4f} '.format(az),
+                  '{:10.4f} '.format(rot),
+                  '{:10.4f} '.format(tilt),
+                  '{:10.4f} '.format(el2),
+                  '{:10.4f} '.format(az2),
                   file=sys.stderr)
 
 ########################################################################
@@ -213,6 +236,10 @@ def computeAzElYPrime(pitch, roll, hdg, rot, tilt):
 
     # compute az and el
 
+    print("#  xx   : ", '{:10.4f} '.format(xx), file=sys.stderr)
+    print("#  yy   : ", '{:10.4f} '.format(yy), file=sys.stderr)
+    print("#  zz   : ", '{:10.4f} '.format(zz), file=sys.stderr)
+    
     az = math.degrees(math.atan2(xx, yy))
     el = math.degrees(math.asin(zz))
 

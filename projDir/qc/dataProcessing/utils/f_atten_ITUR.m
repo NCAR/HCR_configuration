@@ -30,8 +30,12 @@ gammaW=[];
 %calculate absolute humidity rho from relative humidity rh
 rho=(es.*rh.*2.167)./(273.15+t); %water vapour density in g/m^3 (absolute humidity)
 
+clear rh es
+
 rp = ptot./1013;
 rt = 288./(273+t);
+
+clear t ptot
 
 %calculate dry attenuation
 a60=0.9003;
@@ -43,9 +47,6 @@ a62=0.9886;
 b62=3.4176;
 c62=0.1827;
 d62=1.3429;
-
-gamma60=15.*rp.^a60.*rt.^b60.*exp(c60.*(1-rp)+d60.*(1-rt));
-gamma62=14.28.*rp.^a62.*rt.^b62.*exp(c62.*(1-rp)+d62.*(1-rt));
 
 if f<=54
     a1=0.0717;
@@ -73,6 +74,8 @@ if f<=54
     
     gamma0=(A1+A2).*A3;
     
+    clear A1 A2 A3 xi1 xi2 xi3
+    
 elseif f>54 & f<=60
     a54=1.8286;
     b54=-1.9487;
@@ -86,6 +89,7 @@ elseif f>54 & f<=60
     
     gamma54=2.192.*rp.^a54.*rt.^b54.*exp(c54.*(1-rp)+d54.*(1-rt));
     gamma58=12.59.*rp.^a58.*rt.^b58.*exp(c58.*(1-rp)+d58.*(1-rt));
+    gamma60=15.*rp.^a60.*rt.^b60.*exp(c60.*(1-rp)+d60.*(1-rt));
         
     B1=log(gamma54)./24.*(f-58).*(f-60);
     B2=log(gamma58)./8.*(f-54).*(f-60);
@@ -93,10 +97,15 @@ elseif f>54 & f<=60
     
     gamma0=exp(B1-B2+B3);
     
+    clear gamma54 gamma58 gamma60 B1 B2 B3
+    
 elseif f>60 & f<=62
+    gamma60=15.*rp.^a60.*rt.^b60.*exp(c60.*(1-rp)+d60.*(1-rt));
+    gamma62=14.28.*rp.^a62.*rt.^b62.*exp(c62.*(1-rp)+d62.*(1-rt));
     
     gamma0=gamma60+(gamma62-gamma60).*(f-60)./2;
     
+    clear gamma60 gamma62
 elseif f>62 & f<=66
     a64=1.432;
     b64=0.6258;
@@ -108,6 +117,7 @@ elseif f>62 & f<=66
     c66=0.491;
     d66=-4.8718;
     
+    gamma62=14.28.*rp.^a62.*rt.^b62.*exp(c62.*(1-rp)+d62.*(1-rt));
     gamma64=6.819.*rp.^a64.*rt.^b64.*exp(c64.*(1-rp)+d64.*(1-rt));
     gamma66=1.908.*rp.^a66.*rt.^b66.*exp(c66.*(1-rp)+d66.*(1-rt));
     
@@ -116,6 +126,8 @@ elseif f>62 & f<=66
     C3=log(gamma66)./8.*(f-62).*(f-64);
     
     gamma0=exp(C1-C2+C3);
+    
+    clear gamma62 gamma64 gamma66 C1 C2 C3
     
 elseif f>66 & f<=120
     a4=-0.0112;
@@ -143,12 +155,16 @@ elseif f>66 & f<=120
     xi6 = rp.^a6.*rt.^b6.*exp(c6.*(1-rp)+d6.*(1-rt));
     xi7 = rp.^a7.*rt.^b7.*exp(c7.*(1-rp)+d7.*(1-rt));
     
-    D1=3.02.*10.^(-4).*rt.^3.5;
-    D2=(0.283.*rt.^3.8)./((f-118.75).^2+2.91.*rp.^2.*rt.^1.6);
-    D3=(0.502.*xi6.*(1-0.0163.*xi7.*(f-66)))./((f-66).^(1.4346.*xi4)+1.15.*xi5);
+    D1=(0.502.*xi6.*(1-0.0163.*xi7.*(f-66)))./((f-66).^(1.4346.*xi4)+1.15.*xi5);
+    clear xi4 xi5 xi6 xi7 
+    D1=D1+((0.283.*rt.^3.8)./((f-118.75).^2+2.91.*rp.^2.*rt.^1.6));
+    D1=D1+(3.02.*10.^(-4).*rt.^3.5);
+    
     D4=f.^2.*rp.^2.*10.^(-3);
     
-    gamma0=(D1+D2+D3).*D4;
+    gamma0=D1.*D4;
+    
+    clear D1 D4
     
 elseif f>120 & f<=350
     adelta=3.211;
@@ -163,6 +179,8 @@ elseif f>120 & f<=350
     E3=f.^2.*rp.^2.*rt.^3.5.*10.^(-3);
     
     gamma0=(E1+E2).*E3+delta;
+    
+    clear delta E1 E2 E3
 else
     disp('Frequency must be <=350 GHz.');
     return;
@@ -182,17 +200,20 @@ eta1=0.955.*rp.*rt.^0.68+0.006.*rho;
 
 eta2=0.735.*rp.*rt.^0.5+0.0353.*rt.^4.*rho;
 
+clear rp
+
 F=(3.98.*eta1.*exp(2.23.*(1-rt)))./((f-22.235).^2+9.42.*eta1.^2).*g1;
-G=(11.96.*eta1.*exp(0.7.*(1-rt)))./((f-183.31).^2+11.14.*eta1.^2);
-H=(0.081.*eta1.*exp(6.44.*(1-rt)))./((f-321.226).^2+6.29.*eta1.^2);
-I=(3.66.*eta1.*exp(1.6.*(1-rt)))./((f-325.153).^2+9.22.*eta1.^2);
-J=(25.37.*eta1.*exp(1.09.*(1-rt)))./(f-380).^2;
-K=(17.4.*eta1.*exp(1.46.*(1-rt)))./(f-448).^2;
-L=(844.6.*eta1.*exp(0.17.*(1-rt)))./(f-557).^2.*g2;
-M=(290.*eta1.*exp(0.41.*(1-rt)))./(f-752).^2.*g3;
-N=(8.3328.*10.^4.*eta2.*exp(0.99.*(1-rt)))./(f-1780).^2.*g4;
+F=F+((11.96.*eta1.*exp(0.7.*(1-rt)))./((f-183.31).^2+11.14.*eta1.^2));
+F=F+((0.081.*eta1.*exp(6.44.*(1-rt)))./((f-321.226).^2+6.29.*eta1.^2));
+F=F+((3.66.*eta1.*exp(1.6.*(1-rt)))./((f-325.153).^2+9.22.*eta1.^2));
+F=F+((25.37.*eta1.*exp(1.09.*(1-rt)))./(f-380).^2);
+F=F+((17.4.*eta1.*exp(1.46.*(1-rt)))./(f-448).^2);
+F=F+((844.6.*eta1.*exp(0.17.*(1-rt)))./(f-557).^2.*g2);
+F=F+((290.*eta1.*exp(0.41.*(1-rt)))./(f-752).^2.*g3);
+F=F+((8.3328.*10.^4.*eta2.*exp(0.99.*(1-rt)))./(f-1780).^2.*g4);
 O=f.^2.*rt.^2.5.*rho.*10.^(-4);
 
-gammaW=(F+G+H+I+J+K+L+M+N).*O;
+gammaW=F.*O;
 
+clear F O
 gamma=gamma0+gammaW;

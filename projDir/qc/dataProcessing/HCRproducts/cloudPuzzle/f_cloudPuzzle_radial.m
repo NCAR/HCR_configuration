@@ -1,66 +1,52 @@
-function cloudPuzzleOut = f_cloudPuzzle_radial(data)
-% Make cloud puzzle
-
-startThresh=-20;
+function cloudPuzzle=f_cloudPuzzle_radial(data)
+% Create cloud puzzle
 
 cloudPuzzleOut=nan(size(data.DBZ));
 
-%% Add extinct back in
-
-disp('Filling extinct echo ...');
-
-refl=fillExtinct(data);
+refl=data.DBZ;
+refl(data.FLAG>1)=nan;
 
 %% Handle missing and NS cal
 
-disp('Filling missing and NS cal ...');
+%disp('Filling missing and NS cal ...');
 
 refl = fillMissingNScal(refl,data);
 
-%% Smooth with convolution
-
-% Create mask for convolution
-radius=5;
-numPix=radius*2+1;
-[rr cc] = meshgrid(1:numPix);
-cirMask = sqrt((rr-(radius+1)).^2+(cc-(radius+1)).^2)<=radius;
-cirMask=double(cirMask);
-
-% Normalize
-cirMask=cirMask./(sum(reshape(cirMask,1,[])));
-
-% Convolution
-reflConv=nanconv(refl,cirMask);
-
 %% Identify contiguous clouds that are too small
 
-disp('Identifying small clouds ...');
-
-reflLarge=refl;
+%disp('Identifying small clouds ...');
 
 reflMask=zeros(size(refl));
 reflMask(~isnan(refl))=1;
 
-pixCut=5000;
+pixCut=3000;
 CC = bwconncomp(reflMask);
 
-cloudNum=nan(size(data.DBZ));
+cloudNumOrig=nan(size(data.DBZ));
 countCloud=1;
 
 for ii=1:CC.NumObjects
     area=CC.PixelIdxList{ii};
     if length(area)<=pixCut
-        reflLarge(area)=nan;
         cloudPuzzleOut(area)=0;
     else
-        cloudNum(area)=countCloud;
+        cloudNumOrig(area)=countCloud;
         countCloud=countCloud+1;
     end
 end
 
+%% Add extinct back in
+
+%disp('Filling extinct echo ...');
+
+%[cloudNum,reflExt]=fillExtinct(data,cloudNumOrig,refl);
+cloudNum=cloudNumOrig;
+reflExt=refl;
+
+clear cloudNumOrig refl
 %% Split up individual clouds
 
-disp('Splitting clouds ...');
+%disp('Splitting clouds ...');
 
 numMax=max(reshape(cloudNum,1,[]),[],'omitnan');
 
@@ -70,46 +56,71 @@ for ii=1:numMax
     
     cloudInds=find(cloudNum==ii);
     
-    if length(cloudInds)>100000
-             
-        reflMapBig=nan(size(cloudNum));
-        reflMapBig(cloudInds)=reflConv(cloudInds);
+    if length(cloudInds)>30000
         
-        [clR clC]=ind2sub(size(cloudNum),cloudInds);
+        reflMapBig=nan(size(cloudNum));
+        reflMapBig(cloudInds)=reflExt(cloudInds);
+        
+        [clR,clC]=ind2sub(size(cloudNum),cloudInds);
         
         reflMap=reflMapBig(min(clR):max(clR),min(clC):max(clC));
-        aslMap=data.asl(min(clR):max(clR),min(clC):max(clC));
-        timeMap=data.time(min(clC):max(clC));
         
         % Zero padding
         reflPadded=cat(1,nan(10,size(reflMap,2)),reflMap,nan(10,size(reflMap,2)));
         reflPadded=cat(2,nan(size(reflPadded,1),10),reflPadded,nan(size(reflPadded,1),10));
-                     
-        % BW mask with filled holes
+        
         BW=zeros(size(reflPadded));
         BW(~isnan(reflPadded))=1;
         
-        BW2 = imfill(BW,'holes');
-                 
-        % Distance
-        D = -bwdist(~BW2);
-               
-        % Thresholding
-        maskBig = thresholdMask(reflPadded,startThresh,500);
-                
-        newMin = imimposemin(D,maskBig);
-        waterShed = watershed(newMin);
+        %% Shrink, watershed
+        BW2=imerode(BW, strel('disk', 15)); % Originally 5
+        BW3 = bwareaopen(BW2,1000);
         
-        waterMasked=joinCloudParts(waterShed,BW2);
+        % Distance of each cloud pixel from reflectivity threshold mask
+        D = bwdist(BW3);
+        
+        % Watershed is an image segmentation method that looks for
+        % ridges and valleys in an image
+        waterShed = watershed(D);
+        
+        % Watershed usually over-segments so we join areas back together
+        % that share a large border or where one area is too small
+        
+        waterCensored=double(waterShed);
+        waterCensored(~BW)=nan;
+        
+        %% Repeat previous steps
+        BWrepeat=zeros(size(BW));
+        BWrepeat(waterCensored>0)=1;
+        
+        BW4=imerode(BWrepeat, strel('disk', 5)); % Originally 5
+        BW5 = bwareaopen(BW4,1000);
+        
+        % Distance of each cloud pixel from reflectivity threshold mask
+        D2 = bwdist(BW5);
+        
+        % Watershed is an image segmentation method that looks for
+        % ridges and valleys in an image
+        waterShed2 = watershed(D2);
+        
+        % Watershed usually over-segments so we join areas back together
+        % that share a large border or where one area is too small
+        
+        waterCensored2=double(waterShed2);
+        waterCensored2(~BW)=nan;
+        
+        %% Join cloud parts back together
+        waterMasked=joinCloudParts(waterCensored2);
         
         maskJoined=zeros(size(BW2));
         maskJoined(waterMasked>0)=1;
         
+        % Reverser zero padding
         maskJoined=maskJoined(11:end-10,11:end-10);
         
         maskBack=zeros(size(reflMapBig));
         maskBack(min(clR):max(clR),min(clC):max(clC))=maskJoined;
-                
+        
         uniqueClouds=bwconncomp(maskBack);
         
         for kk=1:uniqueClouds.NumObjects
@@ -117,9 +128,57 @@ for ii=1:numMax
             cloudPuzzleOut(areaU)=cloudCount;
             cloudCount=cloudCount+1;
         end
+        
     else
         cloudPuzzleOut(cloudInds)=cloudCount;
         cloudCount=cloudCount+1;
     end
 end
+
+cloudPuzzleOut(isnan(reflExt))=nan;
+
+%% Fill in pixels that are not in small areas (i.e. not zero) that have
+% reflectivities but are nan in cloudPuzzle
+
+%disp('Filling in final pixels ...');
+allReflMask=zeros(size(reflExt));
+allReflMask(~isnan(reflExt))=1;
+allReflMask(cloudPuzzleOut==0)=0;
+
+puzzleMask=zeros(size(reflExt));
+puzzleMask(cloudPuzzleOut>0)=1;
+
+[oldR oldC]=find(puzzleMask==1);
+[addR addC]=find(puzzleMask==0 & allReflMask==1);
+idx = knnsearch([oldR oldC], [addR addC]);
+nearest_OldValue = cloudPuzzleOut(sub2ind(size(cloudPuzzleOut), oldR(idx), oldC(idx)));
+cloudPuzzleAttached=cloudPuzzleOut;
+cloudPuzzleAttached(sub2ind(size(cloudPuzzleOut), addR, addC))=nearest_OldValue;
+
+clear cloudNum puzzleMask reflExt reflMap reflMapBig reflMask
+
+% Sometimes areas get attached to wrong area
+cloudPuzzle=cloudPuzzleAttached;
+for jj=1:cloudCount-1
+    maskNumber=zeros(size(cloudPuzzleAttached));
+    maskNumber(cloudPuzzleAttached==jj)=1;
+    individs=bwconncomp(maskNumber);
+    if individs.NumObjects>1
+        indivClouds=individs.PixelIdxList;
+        for ll=1:individs.NumObjects
+            if length(indivClouds{ll})<1001
+                maskIndiv=zeros(size(cloudPuzzleAttached));
+                maskIndiv(indivClouds{ll})=1;
+                maskExp=imdilate(maskIndiv, strel('disk', 2));
+                pixExp=cloudPuzzleAttached(find(maskExp==1));
+                pixExp(find(pixExp==0 | pixExp==jj | isnan(pixExp)))=[];
+                if ~isempty(pixExp)
+                    pixU=mode(pixExp);
+                    cloudPuzzle(indivClouds{ll})=pixU;
+                end
+            end
+        end
+    end
+end
+cloudPuzzle(isnan(data.DBZ) | data.FLAG>1)=nan;
 end

@@ -6,39 +6,47 @@ close all;
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
 project='cset'; % socrates, cset, aristo, otrec
-qualityGood='qc2'; % field, qc0, qc1, qc2
-qualityTest='qc2'; % field, qc0, qc1, qc2
+qcGood='qc2'; % field, qc0, qc1, qc2
+qcTest='qc2'; % field, qc0, qc1, qc2
+qcVersionGood='v2.0';
+qcVersionTest='v2.1';
 freqGood='10hz'; % 10hz, 2hz, 2hzMerged
-freqTest='2hzMerged'; % 10hz, 2hz, 2hzMerged
+freqTest='10hz'; % 10hz, 2hz, 2hzMerged
 
 thresh12=[10 50];
 
-figdir=['/h/eol/romatsch/hcrCalib/checkData/'];
+figdir=['/scr/snow2/rsfdata/projects/cset/hcr/qc2/cfradial/v2.1/checkPlots/'];
 
 infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_',project,'.txt'];
 
 caseList = table2array(readtable(infile));
 
-indirGood=HCRdir(project,qualityGood,freqGood);
-indirTest=HCRdir(project,qualityTest,freqTest);
+indirGood=HCRdir(project,qcGood,qcVersionGood,freqGood);
+indirTest=HCRdir(project,qcTest,qcVersionTest,freqTest);
 
 %% Run processing
 
-compareVars={'DBZ','HCR_DBZ',1;
-    'WIDTH','HCR_WIDTH',1;
-    'SNR','HCR_SNR',1;
-    'DBMVC','HCR_DBMVC',0;
-    'NCP','HCR_NCP',1;
-    'LDR','HCR_LDR',1;
+compareVars={'DBZ','DBZ',0;
+    'VEL','VEL',0;
+    'VEL_RAW','VEL_RAW',0;
+    'WIDTH','WIDTH',0;
+    'WIDTH_RAW','WIDTH_RAW',0;
+    'SNR','SNR',0;
+    'DBMVC','DBMVC',0;
+    'DBMHX','DBMHX',0;
+    'NCP','NCP',0;
+    'LDR','LDR',0;
     'PRESS','PRESS',0;
     'TEMP','TEMP',0;
     'RH','RH',0;
     'FLAG','FLAG',0;
-    'VEL_CORR','HCR_VEL',1;
+    'DBZ_MASKED','DBZ_MASKED',0;
+    'VEL_CORR','VEL_CORR',0;
     'SST','SST',0;
     'TOPO','TOPO',0;
     'U_SURF','U_SURF',0;
-    'V_SURF','V_SURF',0};
+    'V_SURF','V_SURF',0
+    'ANTFLAG','ANTFLAG',0};
     
     dataVarsGood={};
     dataVarsTest={};
@@ -113,7 +121,7 @@ for ii=1:size(caseList,1)
                 return
             end
             
-            [~,iaG,ibG]=intersect(dataGood.time,newTime);
+            [~,iaG,ibG]=intersect(datenum(dataGood.time),datenum(newTime));
         end
         
         newDataG=nan(size(dataGood.(compareVars{ll,1}),1),length(newTime));
@@ -131,7 +139,7 @@ for ii=1:size(caseList,1)
         
         % Resample
         if ll==1
-            [~,iaT,ibT]=intersect(dataTest.time,newTime);
+            [~,iaT,ibT]=intersect(datenum(dataTest.time),datenum(newTime));
         end
         
         newDataT=nan(size(dataTest.(compareVars{ll,2}),1),length(newTime));
@@ -239,12 +247,12 @@ for ii=1:size(caseList,1)
     plotMatT(maxCountT>thresh12(2),2,3)=2;
     
     timeSmallG=dataGood.time(:,iaG);
-    [~,iaMissG] = setdiff(newTime,timeSmallG);
+    [~,iaMissG] = setdiff(datenum(newTime),datenum(timeSmallG));
     
     plotMatG(iaMissG,1,3)=1;
     
     timeSmallT=dataTest.time(:,iaT);
-    [~,iaMissT] = setdiff(newTime,timeSmallT);
+    [~,iaMissT] = setdiff(datenum(newTime),datenum(timeSmallT));
     
     plotMatT(iaMissT,1,3)=1;
     
@@ -278,8 +286,8 @@ for ii=1:size(caseList,1)
         'HorizontalAlignment','center','VerticalAlignment','bottom','BackgroundColor','w',...
         'Margin',0.2,'EdgeColor','k');
     
-    legend(freqGood,freqTest,'location','best');
-    title([project,' RF ',num2str(ii),' ',qualityTest,' ',freqTest,' vs ',qualityGood,' ',freqGood]);
+    legend([qcGood,' ',qcVersionGood,' ',freqGood],[qcTest,' ',qcVersionTest,' ',freqTest],'location','best');
+    title([project,' RF ',num2str(ii),', ',qcTest,' ',qcVersionTest,' ',freqTest,' vs ',qcGood,' ',qcVersionGood,' ',freqGood]);
     
     ax2=subplot(3,1,2);
     ax2.Position = [0.1300    0.36    0.7750    0.25];
@@ -303,7 +311,7 @@ for ii=1:size(caseList,1)
     yticks(1:size(plotMatT,2));
     yticklabels(makeLabels2);
     
-    title(['Missing contiguous points ',qualityTest,' ',freqTest]);
+    title(['Missing contiguous points ',qcTest,' ',qcVersionTest,' ',freqTest]);
     grid on
     
     ax3=subplot(3,1,3);
@@ -331,10 +339,10 @@ for ii=1:size(caseList,1)
     legend([s1 s2 s3 s4],{['<=',num2str(thresh12(1))],['>',num2str(thresh12(1)),', <=',num2str(thresh12(2))],...
         ['>',num2str(thresh12(2))],'Dropouts'},'location','best');
     
-    title(['Missing contiguous points ',qualityGood,' ',freqGood]);
+    title(['Missing contiguous points ',qcGood,' ',qcVersionGood,' ',freqGood]);
     grid on
     
     set(gcf,'PaperPositionMode','auto')
-    print(f1,[figdir,project,'_RF',num2str(ii),'_dataCheck_',qualityTest,'_',freqTest,'_vs_',qualityGood,'_',freqGood,'.png'],'-dpng','-r0')
+    print(f1,[figdir,project,'_RF',num2str(ii),'_dataCheck_',qcTest,'_',qcVersionTest,'_',freqTest,'_vs_',qcGood,'_',qcVersionGood,'_',freqGood,'.png'],'-dpng','-r0')
     
 end

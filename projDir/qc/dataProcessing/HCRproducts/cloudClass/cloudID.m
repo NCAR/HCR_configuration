@@ -1,468 +1,243 @@
-% Analyze HCR clouds
+% Cloud classification algorithm
+% Small clouds or not classified because e.g. plane in cloud (0)
+% Low clouds: Deep (1), Ns (2), Cu (3), Sc (4), St (5)
+% Middle clouds: As (6), Ac (7)
+% High clouds (8)
 
 clear all;
 close all;
 
-% startTime=datetime(2018,2,7,18,0,0);
-% endTime=datetime(2018,2,8,12,0,0);
-
-startTime=datetime(2019,10,2,15,0,0);
-endTime=datetime(2019,10,2,15,59,0);
-
-plotFields=1;
-plotWholeFlight=0;
-
-project='otrec'; %socrates, aristo, cset
+project='socrates'; %socrates, aristo, cset
 quality='qc2'; %field, qc1, or qc2
 freqData='10hz'; % 10hz, 100hz, or 2hz
 
-% Expected bright band altitude. Determines plot zoom.
 if strcmp(project,'otrec')
-    expBBalt=5;
     ylimits=[-0.2 15];
-elseif strcmp(project,'socrates')
-    expBBalt=2;
-    ylimits=[-0.2 9];
-elseif strcmp(project,'otrec')
-    expBBalt=5;
-    ylimits=[-0.2 9];
+else
+    ylimits=[-0.2 10];
 end
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-figdir=['/h/eol/romatsch/hcrCalib/clouds/cloudID/',project,'/'];
+%figdir=['/scr/sci/romatsch/cloudClassHCR/',project,'/'];
+figdir=['/home/romatsch/plots/HCR/cloudClass/',project,'/'];
 
 if ~exist(figdir, 'dir')
     mkdir(figdir)
 end
 
-indir=HCRdir(project,quality,freqData);
+%indir=HCRdir(project,quality,freqData);
+indir=['/run/media/romatsch/RSF0006/rsf/hcr/',project,'/'];
 
-%% Load data
+casefile=['~/git/HCR_configuration/projDir/qc/dataProcessing/HCRproducts/caseFiles/cloudID_',project,'.txt'];
 
-disp('Loading data ...');
+% Loop through cases
 
-data.DBZ=[];
-data.TEMP=[];
-data.FLAG=[];
+caseList=readtable(casefile);
+caseStart=datetime(caseList.Var1,caseList.Var2,caseList.Var3, ...
+    caseList.Var4,caseList.Var5,0);
+caseEnd=datetime(caseList.Var6,caseList.Var7,caseList.Var8, ...
+    caseList.Var9,caseList.Var10,0);
 
-dataVars=fieldnames(data);
+for aa=1:length(caseStart)
 
-% Make list of files within the specified time frame
-fileList=makeFileList(indir,startTime,endTime,'xxxxxx20YYMMDDxhhmmss',1);
+    disp(['Case ',num2str(aa),' of ',num2str(length(caseStart))]);
 
-if length(fileList)==0
-    disp('No data files found.');
-    return
-end
-
-% Load data
-data=read_HCR(fileList,data,startTime,endTime);
-
-% Check if all variables were found
-for ii=1:length(dataVars)
-    if ~isfield(data,dataVars{ii})
-        dataVars{ii}=[];
-    end
-end
-
-dataVars=dataVars(~cellfun('isempty',dataVars));
-
-cloudIDout=nan(size(data.DBZ));
-
-%% Find zero degree altitude
-
-disp('Searching 0 deg altitude ...');
-
-timeMat=repmat(data.time,size(data.TEMP,1),1);
-
-tempTemp=data.TEMP;
-tempTemp(1:16,:)=nan;
-signTemp=sign(tempTemp);
-zeroDeg=diff(signTemp,1);
-
-zeroDeg(isnan(zeroDeg))=0;
-zeroDeg=cat(1,zeroDeg,zeros(size(data.time)));
-zeroDeg(zeroDeg~=0)=1;
-
-zeroAlt=nan(size(data.asl));
-zeroAlt(zeroDeg==1)=data.asl(zeroDeg==1);
-
-zeroInds=find(~isnan(zeroAlt));
-
-%% Mask non cloud
-
-refl=data.DBZ;
-refl(data.FLAG>1)=nan;
-
-%% Add extinct back in
-
-flagTemp=data.FLAG;
-flagTemp(data.FLAG==8)=7;
-surfMask=ones(1,size(flagTemp,2));
-surfMask(find(any(data.FLAG==7 | data.FLAG==8,1)))=0;
-surfDiff=diff(surfMask);
-
-% Add surface echo back in
-holeStart=find(surfDiff==1);
-holeStart=holeStart+1;
-holeEnd=find(surfDiff==-1);
-
-if holeStart(1)>holeEnd(1)
-    holeStart=[1 holeStart];
-end
-if length(holeStart)~=length(holeEnd)
-    holeEnd=[holeEnd,size(flagTemp,2)-1];
-end
-
-for ii=1:length(holeStart)
-    flagColStart=flagTemp(:,holeStart(ii)-1);
-    flagColEnd=flagTemp(:,holeEnd(ii)+1);
+    startTime=caseStart(aa);
+    endTime=caseEnd(aa);
     
-    minStart=min(find(flagColStart==7));
-    minEnd=min(find(flagColEnd==7));
+    %% Load data
     
-    if isempty(minStart)
-        minStart=minEnd;
-    end
-    if isempty(minEnd)
-        minEnd=minStart;
-    end
+    disp('Loading data ...');
     
-    newVec=holeStart(ii):holeEnd(ii);
-    holeLength=holeEnd(ii)-holeStart(ii);
+    data=[];
+    data.DBZ=[];
+    data.FLAG=[];
+    data.TOPO=[];
+    data.TEMP=[];
     
-    if holeLength==0
-        dataFill=holeStart(ii);
-    else        
-        x=[holeStart(ii),holeEnd(ii)];
-        v=[minStart,minEnd];        
-        dataFill=round(interp1(x,v,newVec));
-    end
-    for jj=1:length(dataFill)
-        flagTemp(dataFill(jj):end,newVec(jj))=7;
-    end
-end
-
-% Fill in extinct echo with median of column above
-extInd=find(any(data.FLAG==3,1));
-
-for ii=1:length(extInd)
-    reflCol=refl(:,extInd(ii));
-    reflMed=median(reflCol,'omitnan');
+    dataVars=fieldnames(data);
     
-    extCol=flagTemp(:,extInd(ii));
-    extData=find(extCol==3);
-    refl(extData,extInd(ii))=reflMed;
-end
-
-%% Smooth with convolution
-
-% Create mask for convolution
-radius=5;
-numPix=radius*2+1;
-[rr cc] = meshgrid(1:numPix);
-cirMask = sqrt((rr-(radius+1)).^2+(cc-(radius+1)).^2)<=radius;
-cirMask=double(cirMask);
-
-% Normalize
-cirMask=cirMask./(sum(reshape(cirMask,1,[])));
-
-% Convolution
-reflConv=nanconv(refl,cirMask);
-
-%% Remove contiguous clouds that are too small
-
-reflLarge=reflConv;
-
-reflMask=zeros(size(reflConv));
-reflMask(~isnan(reflConv))=1;
-
-pixCut=5000;
-CC = bwconncomp(reflMask);
-
-cloudNum=nan(size(data.DBZ));
-countCloud=1;
-
-for ii=1:CC.NumObjects
-    area=CC.PixelIdxList{ii};
-    if length(area)<=pixCut
-        reflLarge(area)=nan;
-        cloudIDout(area)=1;
-    else
-        cloudNum(area)=countCloud;
-        countCloud=countCloud+1;
-    end
-end
-
-%% Split up individual clouds
-numMax=max(reshape(cloudNum,1,[]),[],'omitnan');
-
-for ii=1:numMax
+    % Make list of files within the specified time frame
+    fileList=makeFileList(indir,startTime,endTime,'xxxxxx20YYMMDDxhhmmss',1);
     
-    cloudInds=find(cloudNum==ii);
-    
-    if length(cloudInds)>100000
-        close all;
-        cloudRefl=reflLarge(cloudInds);
-        
-        reflMapBig=nan(size(cloudNum));
-        reflMapBig(cloudInds)=cloudRefl;
-        
-        [clR clC]=ind2sub(size(cloudNum),cloudInds);
-        
-        reflMap=reflMapBig(min(clR):max(clR),min(clC):max(clC));
-        aslMap=data.asl(min(clR):max(clR),min(clC):max(clC));
-        %zeroAltMap=zeroAlt(min(clR):max(clR),min(clC):max(clC));
-        timeMap=data.time(min(clC):max(clC));
-        
-        %         % Watershed
-        bw=zeros(size(reflMap));
-        bw(~isnan(reflMap))=1;
-        
-        %
-        %         D = -bwdist(~bw);
-        %
-        %         mask = imextendedmin(D,50);
-        %
-        %         D2 = imimposemin(D,mask);
-        %         Ld2 = watershed(D2);
-        %
-        %         I2 = im2double(Ld2);
-        %         I2(isnan(reflMap))=nan;
-        %
-        %         % Find unique cloud parts
-        %         noNan=I2;
-        %         noNan(isnan(noNan))=-999;
-        %         unClouds=unique(noNan);
-        %         unClouds(unClouds==-999)=[];
-        %         unClouds(unClouds==0)=[];
-        %
-        %         % Test if unique cloud parts should be separate
-        %         if length(unClouds)>1
-        %             for aa=1:length(unClouds)
-        %                 for bb=aa+1:length(unClouds)
-        %                     refl1=reflMap(I2==unClouds(aa));
-        %                     refl2=reflMap(I2==unClouds(bb));
-        %
-        %                     figure
-        %                     subplot(2,1,1);
-        %                     histogram(refl1);
-        %                     subplot(2,1,2);
-        %                     histogram(refl2);
-        %                     mean(refl1)
-        %                     mean(refl2)
-        %                 end
-        %             end
-        %         end
-        
-        % Number of layers
-        
-        % Create mask
-%         BW2 = imfill(bw,'holes');
-%         
-        BWext=cat(1,zeros(1,size(bw,2)),bw,zeros(1,size(bw,2)));
-        BWdiffOrig=abs(diff(BWext,1,1));
-        BWdiffOrig=BWdiffOrig(1:end-1,:);
-        BWdiff=BWdiffOrig;
-        
-        % Connect layer edges
-
-disp('Connecting layer edges ...');
-
-% Find how many melting layers there are and connect the right ones
-
-% Remove contiguous layers that are too small
-% if length(timeMap)>9000
-%     zeroCut=10;
-%     CC = bwconncomp(BWdiff);
-%     
-%     for ii=1:CC.NumObjects
-%         area=CC.PixelIdxList{ii};
-%         if length(area)<=zeroCut
-%             BWdiff(area)=nan;
-%         end
-%     end
-% end
-
-numZero=sum(BWdiff,1,'omitnan');
-
-% Connect layers
-layerInds=nan(1,length(timeMap));
-layerAlts=nan(1,length(timeMap));
-
-for aa=1:length(timeMap)
-    if numZero(aa)==0
+    if length(fileList)==0
+        disp('No data files found.');
         continue
     end
-    colInds=find(BWdiffOrig(:,aa)==1);
-    colAltsAll=aslMap(:,aa);
-    colAlts=colAltsAll(colInds);
     
-    if aa>1
-        prevAlts=layerAlts(:,aa-1);
+    % Load data
+    data=read_HCR(fileList,data,startTime,endTime);
+    
+    % Check if all variables were found
+    for ii=1:length(dataVars)
+        if ~isfield(data,dataVars{ii})
+            dataVars{ii}=[];
+        end
     end
     
-    % Go through all layers
-    for bb=1:numZero(aa)
-        % First data points or after nans
-        if aa==1 | numZero(aa-1)==0
-            if aa==1 & bb==1
-                layerInds(bb,aa)=colInds(bb);
-                layerAlts(bb,aa)=colAlts(bb);
+    dataVars=dataVars(~cellfun('isempty',dataVars));
+    
+    %% Mask
+    data.dbzMasked=data.DBZ;
+    data.dbzMasked(data.FLAG>1)=nan;
+    
+    %% Cloud puzzle
+    
+    data.cloudPuzzle=f_cloudPuzzle_radial(data);
+    
+    %% Surface refl
+    [linInd rowInd rangeToSurf] = hcrSurfInds(data);
+    data.surfRefl=data.DBZ(linInd);
+    
+    %% Loop through clouds
+    
+    puzzleReplace=data.cloudPuzzle;
+    puzzleReplace(isnan(puzzleReplace))=-99;
+    
+    cloudNums=unique(puzzleReplace);
+    cloudNums(cloudNums==0 | cloudNums==-99)=[];
+    
+    % Output
+    cloudClass=nan(size(data.DBZ));
+    
+    for ii=1:length(cloudNums)
+        [rowInd colInd]=find(data.cloudPuzzle==cloudNums(ii));
+        wholeInd=find(data.cloudPuzzle==cloudNums(ii));
+        
+        disp(['Identifying cloud ',num2str(ii),' of ',num2str(length(cloudNums)),' ...']);
+        
+        %% Cut out columns with cloud data
+        allVars=fields(data);
+        
+        for jj=1:size(allVars,1)
+            varIn=data.(allVars{jj});
+            startVar=min(colInd);
+            if startVar~=1
+                startVar=startVar-1;
+            end
+            endVar=max(colInd);
+            if endVar~=length(data.time)
+                endVar=endVar+1;
+            end
+            if min(size(varIn))==1
+                dataCut.(allVars{jj})=varIn(startVar:endVar);
             else
-                % Add new row
-                layerInds=cat(1,layerInds,nan(size(timeMap)));
-                layerAlts=cat(1,layerAlts,nan(size(timeMap)));
-                layerInds(size(layerInds,1),aa)=colInds(bb);
-                layerAlts(size(layerInds,1),aa)=colAlts(bb);
-            end
-        else % Find closest altitude
-            zeroAltDiffs=abs(prevAlts-colAlts(bb));
-            zeroAltDiffs(isnan(zeroAltDiffs))=100000;
-            minDiff=min(zeroAltDiffs);
-            if minDiff<50
-                diffInd=find(zeroAltDiffs==minDiff);
-                layerInds(diffInd,aa)=colInds(bb);
-                layerAlts(diffInd,aa)=colAlts(bb);
-            elseif minDiff~=100000;
-                % Add new row
-                layerInds=cat(1,layerInds,nan(size(timeMap)));
-                layerAlts=cat(1,layerAlts,nan(size(timeMap)));
-                layerInds(size(layerInds,1),aa)=colInds(bb);
-                layerAlts(size(layerInds,1),aa)=colAlts(bb);
+                dataCut.(allVars{jj})=varIn(:,startVar:endVar);
             end
         end
-    end
-end
         
-edgeLength=sum(~isnan(layerInds),2);
-
-tooShort=find(edgeLength<10);
-layerInds(tooShort,:)=[];
-layerAlts(tooShort,:)=[];
-
-        % Metrics per ray
-        minAlt=nan(size(timeMap));
-        maxAlt=nan(size(timeMap));
-        maxRefl=nan(size(timeMap));
-        medRefl=nan(size(timeMap));
-        numLayers=ones(size(timeMap));
-        maxThick=nan(size(timeMap));
+        dataCut.puzzleOne=dataCut.cloudPuzzle;
+        dataCut.puzzleOne(dataCut.puzzleOne~=cloudNums(ii))=nan;
         
-        for kk=1:size(reflMap,2)
-            reflRay=reflMap(:,kk);
-            dataRay=find(~isnan(reflRay));
-            
-            closeGate=aslMap(min(dataRay),kk);
-            farGate=aslMap(max(dataRay),kk);
-            
-            minAlt(kk)=min([closeGate,farGate]);
-            maxAlt(kk)=max([closeGate,farGate]);
-            
-            maxRefl(kk)=max(reflRay,[],'omitnan');
-            medRefl(kk)=median(reflRay,'omitnan');
-            
-%             % Number of layers
-%             BWray=BWdiff(:,kk);
-%             startBW=find(BWray==1);
-%             endBW=find(BWray==-1);
-%             
-%             thickness=endBW-startBW;
-%             maxThick(kk)=max(thickness);
-%             largeLayers=length(find(thickness>10));
-%             if largeLayers>0
-%                 numLayers(kk)=largeLayers;
-%             end
-        end
-               
-        maxThickKM=maxThick.*(data.range(2)-data.range(1))./1000;
+        dataCut.asl=dataCut.asl./1000; % In km
+        dataCut.asl(dataCut.puzzleOne~=cloudNums(ii))=nan;
+        dataCut.TEMP(dataCut.puzzleOne~=cloudNums(ii))=nan;
+        dataCut.DBZ(dataCut.puzzleOne~=cloudNums(ii))=nan;
+        dataCut.FLAG(dataCut.FLAG==8)=7;
+        dataCut.flagCensored=dataCut.FLAG;
+        dataCut.flagCensored(dataCut.puzzleOne~=cloudNums(ii))=nan;
         
+        %% Calculate cloud parameters
+        cloudParams=calcCloudParams(dataCut);
         
-        % Plot
-        timeMat=repmat(timeMap,size(reflMap,1),1);
+        %% Cloud classifier
+        % Remove cloudParams if they are nan so they cannot be used. Then
+        % try statement below will go into catch.
+        fieldParams=fields(cloudParams);
         
-        fig1=figure('DefaultAxesFontSize',11,'position',[100,100,1300,900]);
-        
-        s1=subplot(2,1,1);
-        hold on
-        sub1=surf(timeMap,aslMap./1000,reflMap,'edgecolor','none');
-        view(2);
-        sub1=colMapDBZ(sub1);
-        ylabel('Altitude (km)');
-        xlim([timeMap(1),timeMap(end)]);
-        title('Reflectivity')
-        grid on
-        pos1=s1.Position;
-        
-        colIndsAll=1:length(timeMap);
-        for aa=1:size(layerAlts,1)
-            rowInds=layerInds(aa,:);
-            colInds=colIndsAll;
-            colInds(isnan(rowInds))=[];
-            rowInds(isnan(rowInds))=[];
-            
-            linPlot=sub2ind(size(aslMap),rowInds,colInds);
-            
-            rowAlts=layerAlts(aa,:);
-            rowAlts(isnan(rowAlts))=[];
-            scatter(timeMat(linPlot),rowAlts./1000,10,'filled');
+        for ii=1:length(fieldParams)
+            if isnan(cloudParams.(fieldParams{ii})) & ~strcmp(fieldParams{ii},'max10dbzAgl')
+                cloudParams=rmfield(cloudParams,(fieldParams{ii}));
+            end
         end
         
-        s2=subplot(2,1,2);
-        hold on
-        plot(timeMap,minAlt./1000,'-g','linewidth',1.5);
-        plot(timeMap,maxAlt./1000,'-b','linewidth',1.5);
-        %plot(timeMap,numLayers,'-c','linewidth',1.5);
-        plot(timeMap,maxThickKM,'-k','linewidth',1.5);
-        
-        yyaxis right
-        plot(timeMap,maxRefl,'-r','linewidth',1.5);
-        plot(timeMap,medRefl,'-m','linewidth',1.5);
-        xlim([timeMap(1),timeMap(end)]);
-        grid on
-        pos2=s2.Position;
-        s2.Position=[pos1(1),pos2(2),pos1(3),pos1(4)];
-        show1=1;
+        % Cloud classification
+        cloudFlag=[];
+        try
+            if cloudParams.meanMinAgl>10 & cloudParams.precip~=1 % High cloud (8)
+                cloudFlag=8;
+            elseif cloudParams.maxThickness>10 & cloudParams.precip % Deep (1)
+                cloudFlag=1;
+            elseif (cloudParams.meanMaxAgl>2.5 & cloudParams.precip) % Precipitating clouds: Deep (1), Ns (2), Cu (3), Sc (4), St (5), Ac (7)
+                cloudFlag=precipCloudClass(cloudParams);
+            elseif (cloudParams.meanMaxReflTemp<-23 & cloudParams.meanMaxRefl<-3 & ...
+                    cloudParams.meanMaxReflAgl>5 & cloudParams.meanMinAgl>5)
+                cloudFlag=highCloudClass(cloudParams); % High clouds: Deep (1), Cu (3), As (6), High (8)
+            elseif (cloudParams.meanMaxReflTemp>-15 & cloudParams.meanMaxReflAgl<2) ...
+                    | cloudParams.meanMinAgl<1.5 % Low clouds: Deep (1), Ns (2), Cu (3), Sc (4), St (5), As (6), Ac (7)
+                cloudFlag=lowCloudClass(cloudParams);
+            else
+                cloudFlag=middleCloudClass(cloudParams); % Middle clouds: Ns (2), Cu (3), Sc (4), St (5), As (6), Ac (7)
+            end
+            
+            cloudClass(wholeInd)=cloudFlag;
+        catch
+            cloudClass(wholeInd)=0;
+        end
     end
-end
-%% Plot
-
-close all
-
-if plotFields
-    fig1=figure('DefaultAxesFontSize',11,'position',[100,100,1300,900]);
     
-    %%%%%%%%%%%%%%%%%%%%%%%% DBZ%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    ax1=subplot(2,1,1);
+    cloudClass(data.cloudPuzzle==0)=0; % Small, unclassified echos
+    
+    %% Plot
+    
+    disp('Plotting ...');
+
+    timeMat=repmat(data.time,size(data.DBZ,1),1);
+    
+    close all
+    
+    fig1=figure('DefaultAxesFontSize',11,'position',[100,1300,1200,900]);
+    
+    ax1=subplot(3,1,1);
     hold on;
-    
-    sub1=surf(data.time,data.asl./1000,refl,'edgecolor','none');
+    sub1=surf(data.time,data.asl./1000,data.dbzMasked,'edgecolor','none');
     view(2);
     sub1=colMapDBZ(sub1);
-    scatter(timeMat(zeroInds),data.asl(zeroInds)./1000,10,'k','filled');
-    ax = gca;
-    ax.SortMethod = 'childorder';
     ylim(ylimits);
     ylabel('Altitude (km)');
     xlim([data.time(1),data.time(end)]);
-    title('Reflectivity and ERA5 freezing level')
+    title('Reflectivity')
     grid on
+    ax1.Position=[0.13 0.7093 0.775 0.2157];
     
-    ax2=subplot(2,1,2);
+    ax2=subplot(3,1,2);
+    cloudsInPuz=unique(data.cloudPuzzle);
+    cloudsInPuz(isnan(cloudsInPuz))=[];
+    cloudCount=length(cloudsInPuz);
+    
+    colMapLines=jet(cloudCount-1);
+    colMapLines=cat(1,[0 0 0],colMapLines);
+    ax2.Colormap=colMapLines;
     hold on;
-    sub2=surf(data.time,data.asl./1000,cloudNum,'edgecolor','none');
+    sub2=surf(data.time,data.asl./1000,data.cloudPuzzle,'edgecolor','none');
     view(2);
-    ax = gca;
-    ax.SortMethod = 'childorder';
+    ylim(ylimits);
+    caxis([-0.5 cloudCount-1+0.5])
+    ylabel('Altitude (km)');
+    xlim([data.time(1),data.time(end)]);
+    title('Cloud puzzle')
+    grid on
+    colorbar
+    ax2.Position=[0.13 0.4096 0.775 0.2157];
+    
+    ax3=subplot(3,1,3);
+    colmap=jet(8);
+    ax3.Colormap=cat(1,[0 0 0],colmap);
+    hold on;
+    sub3=surf(data.time,data.asl./1000,cloudClass,'edgecolor','none');
+    view(2);
+    caxis([0 9]);
+    colorbar('Ticks',(0.5:1:9.5),'YTickLabel',{'N/A','Deep','Ns','Cu','Sc','St','As','Ac','High'});
     ylim(ylimits);
     ylabel('Altitude (km)');
     xlim([data.time(1),data.time(end)]);
-    title('Reflectivity and melting layer')
+    title('Cloud classification')
     grid on
+    ax3.Position=[0.13 0.11 0.775 0.2157];
     
     formatOut = 'yyyymmdd_HHMM';
     set(gcf,'PaperPositionMode','auto')
-    % print([figdir,'refl_',datestr(startTime,formatOut),'_to_',datestr(endTime,formatOut),'_zeroDegree'],'-dpng','-r0');
+    print([figdir,'cloudID_',datestr(startTime,formatOut),'_to_',datestr(endTime,formatOut)],'-dpng','-r0');
+    
 end
-

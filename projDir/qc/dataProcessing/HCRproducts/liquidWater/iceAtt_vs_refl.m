@@ -18,7 +18,8 @@ addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
 figdir=['/scr/sci/romatsch/liquidWaterHCR/iceAttVSrefl/'];
 
-dataDir=HCRdir(project,quality,dataFreq);
+%dataDir=HCRdir(project,quality,dataFreq);
+dataDir=['/run/media/romatsch/RSF0006/rsf/meltingLayer/',project,'/10hz/'];
 
 % startTime=datetime(2019,8,7,17,5,0);
 % endTime=datetime(2019,8,7,17,16,0);
