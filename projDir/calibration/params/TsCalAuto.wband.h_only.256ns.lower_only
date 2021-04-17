@@ -41,7 +41,7 @@ debug = DEBUG_NORM;
 // Type: string
 //
 
-instance = "wband_256ns.v_only";
+instance = "wband_256ns.h_only";
 
 ///////////// register_with_procmap ///////////////////
 //
@@ -190,7 +190,9 @@ siggen_ip_address = "10.40.0.21";
 // Type: double
 //
 
-siggen_max_power = -35.73;
+// siggen_max_power = -35.67;
+// siggen_max_power = -56.71;
+siggen_max_power = -56.68; // 2021/04/14
 
 ///////////// siggen_min_power ////////////////////////
 //
@@ -200,7 +202,8 @@ siggen_max_power = -35.73;
 // Type: double
 //
 
-siggen_min_power = -115.73;
+// siggen_min_power = -116.93;
+siggen_min_power = -116.68;
 
 ///////////// siggen_delta_power //////////////////////
 //
@@ -237,7 +240,8 @@ siggen_specify_power_sequence = TRUE;
 // Type: double
 //
 
-siggen_sequence_start_power = -35.73;
+// siggen_sequence_start_power = -56.71;
+siggen_sequence_start_power = -56.68;
 
 ///////////// siggen_delta_power_sequence /////////////
 //
@@ -248,22 +252,22 @@ siggen_sequence_start_power = -35.73;
 // 1D array - variable length.
 //
 
-// siggen_delta_power_sequence = {
-//  0,
-//  -5,
-//  -10,
-//  -15,
-//  -20,
-//  -25,
-//  -30,
-//  -35,
-//  -40,
-//  -45,
-//  -50,
-//  -55,
-//  -60,
-//  -65
-// };
+siggen_delta_power_sequence = {
+ 0,
+ -5,
+ -10,
+ -15,
+ -20,
+ -25,
+ -30,
+ -35,
+ -40,
+ -45,
+ -50,
+ -55,
+ -60,
+ -65
+};
 
 // siggen_delta_power_sequence = {
 //  0,
@@ -285,27 +289,6 @@ siggen_sequence_start_power = -35.73;
 //  -81.85,
 //  -86.85
 // };
-
-siggen_delta_power_sequence = {
- 0,
- -5,
- -10,
- -15,
- -20,
- -25,
- -30,
- -35,
- -40,
- -45.95,
- -50.95,
- -55.95,
- -60.95,
- -65.95,
- -70.95,
- -75.95,
- -80.95,
- -85.95
-};
 
 ///////////// set_sig_freq ////////////////////////////
 //
@@ -751,7 +734,7 @@ snr_for_mds = -6;
 // Type: string
 //
 
-output_dir = "$(PROJ_DIR)/calibration/data/wband_256ns/v_only";
+output_dir = "$(PROJ_DIR)/calibration/data/wband_256ns/h_only";
 
 ///////////// output_file_label ///////////////////////
 //
