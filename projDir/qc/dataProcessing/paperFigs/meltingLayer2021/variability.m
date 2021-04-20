@@ -5,13 +5,16 @@ close all;
 
 project='otrec'; %socrates, aristo, cset
 quality='qc2'; %field, qc1, or qc2
+qcVersion='v2.2';
 freqData='10hz'; % 10hz, 100hz, or 2hz
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-figdir=['/home/romatsch/plots/HCR/meltingLayer/paper/'];
+%figdir=['/home/romatsch/plots/HCR/meltingLayer/paper/'];
+figdir='/scr/sci/romatsch/paperFigs/meltLayer/';
 
-indir=['/run/media/romatsch/RSF0006/rsf/meltingLayer/',project,'/10hz/'];
+%indir=['/run/media/romatsch/RSF0006/rsf/meltingLayer/',project,'/10hz/'];
+indir=HCRdir(project,quality,qcVersion,freqData);
 
 %% Load data1
 
@@ -268,6 +271,7 @@ ax.SortMethod = 'childorder';
 ylim([4 5]);
 ylabel('Altitude (km)');
 xlim([data2.time(1),data2.time(end)]);
+ax2.XTick=datetime(2019,8,16,15,34,0):minutes(2):datetime(2019,8,16,15,42,0);
 title('(b) VEL (m s^{-1})')
 grid on
 caxis([-6 6]);

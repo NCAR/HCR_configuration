@@ -5,13 +5,16 @@ close all;
 
 project='socrates'; %socrates, aristo, cset
 quality='qc2'; %field, qc1, or qc2
+qcVersion='v2.1';
 freqData='10hz'; % 10hz, 100hz, or 2hz
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-figdir=['/home/romatsch/plots/HCR/meltingLayer/paper/'];
+%figdir=['/home/romatsch/plots/HCR/meltingLayer/paper/'];
+figdir='/scr/sci/romatsch/paperFigs/meltLayer/';
 
-indir=['/run/media/romatsch/RSF0006/rsf/meltingLayer/',project,'/10hz/'];
+%indir=['/run/media/romatsch/RSF0006/rsf/meltingLayer/',project,'/10hz/'];
+indir=HCRdir(project,quality,qcVersion,freqData);
 
 %% Load data1
 
@@ -215,7 +218,7 @@ set(fig1,'color','w');
 ax1=subplot(2,2,1);
 hold on;
 surf(newTime,newASL./1000,newFindMelt,'edgecolor','none');
-ax1.Colormap=([1 0 1;1 1 0]);
+ax1.Colormap=([1 0.8 0.88;1 1 0]);
 view(2);
 scatter(timeMat(elevenInds),data.asl(elevenInds)./1000,7,'k','filled','MarkerEdgeColor','k');
 scatter(timeMat(fourteenInds),data.asl(fourteenInds)./1000,7,'MarkerEdgeColor',[0.2 0.6 0.04],'MarkerFaceColor',[0.2 0.6 0.04]);
@@ -227,7 +230,7 @@ l2=scatter(timeMat(twentyfourInds),data.asl(twentyfourInds)./1000,7,'MarkerEdgeC
 l3=scatter(timeMat(twentythreeInds),data.asl(twentythreeInds)./1000,7,'c','filled','filled','MarkerEdgeColor','c');
 l4=scatter(timeMat(twentytwoInds),data.asl(twentytwoInds)./1000,7,'b','filled','filled','MarkerEdgeColor','b');
 
-l5=plot(data.time,data.ICING_LEVEL./1000,'linewidth',1.2,'color',[0.8 0.8 0.8]);
+l5=plot(data.time,data.ICING_LEVEL./1000,'linewidth',1.5,'color',[1 0 0]);
 
 ax = gca;
 ax.SortMethod = 'childorder';
@@ -241,7 +244,7 @@ ax1.Position=[0.048 0.57 0.43 0.38];
 ax3=subplot(2,2,3);
 hold on;
 surf(newTime2,newASL2./1000,newFindMelt2,'edgecolor','none');
-ax3.Colormap=([1 0 1;1 1 0]);
+ax3.Colormap=([1 0.8 0.88;1 1 0]);
 view(2);
 scatter(timeMat2(elevenInds2),data2.asl(elevenInds2)./1000,7,'k','filled','MarkerEdgeColor','k');
 scatter(timeMat2(fourteenInds2),data2.asl(fourteenInds2)./1000,7,'MarkerEdgeColor',[0.2 0.6 0.04],'MarkerFaceColor',[0.2 0.6 0.04]);
@@ -253,7 +256,7 @@ l2=scatter(timeMat2(twentyfourInds2),data2.asl(twentyfourInds2)./1000,7,'MarkerE
 l3=scatter(timeMat2(twentythreeInds2),data2.asl(twentythreeInds2)./1000,7,'c','filled','filled','MarkerEdgeColor','c');
 l4=scatter(timeMat2(twentytwoInds2),data2.asl(twentytwoInds2)./1000,7,'b','filled','filled','MarkerEdgeColor','b');
 
-l5=plot(data2.time,data2.ICING_LEVEL./1000,'linewidth',1.2,'color',[0.8 0.8 0.8]);
+l5=plot(data2.time,data2.ICING_LEVEL./1000,'linewidth',1.5,'color',[1 0 0]);
 
 ax = gca;
 ax.SortMethod = 'childorder';
@@ -286,7 +289,7 @@ hcb2.Position=[0.95 0.57 0.02 0.38];
 ax4=subplot(2,2,4);
 hold on;
 sub1=surf(newTime3,newASL3./1000,newFindMelt3,'edgecolor','none');
-ax4.Colormap=([1 0 1;1 1 0]);
+ax4.Colormap=([1 0.8 0.88;1 1 0]);
 view(2);
 scatter(timeMat3(elevenInds3),data3.asl(elevenInds3)./1000,7,'k','filled','MarkerEdgeColor','k');
 scatter(timeMat3(fourteenInds3),data3.asl(fourteenInds3)./1000,7,'MarkerEdgeColor',[0.2 0.6 0.04],'MarkerFaceColor',[0.2 0.6 0.04]);
@@ -298,7 +301,7 @@ l2=scatter(timeMat3(twentyfourInds3),data3.asl(twentyfourInds3)./1000,7,'MarkerE
 l3=scatter(timeMat3(twentythreeInds3),data3.asl(twentythreeInds3)./1000,7,'c','filled','filled','MarkerEdgeColor','c');
 l4=scatter(timeMat3(twentytwoInds3),data3.asl(twentytwoInds3)./1000,7,'b','filled','filled','MarkerEdgeColor','b');
 
-l5=plot(data3.time,data3.ICING_LEVEL./1000,'linewidth',1.2,'color',[0.8 0.8 0.8]);
+l5=plot(data3.time,data3.ICING_LEVEL./1000,'linewidth',1.5,'color',[1 0 0]);
 
 ax = gca;
 ax.SortMethod = 'childorder';
