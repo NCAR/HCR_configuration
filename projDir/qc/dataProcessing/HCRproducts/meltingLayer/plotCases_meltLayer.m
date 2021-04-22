@@ -5,6 +5,7 @@ close all;
 
 project='otrec'; %socrates, aristo, cset
 quality='qc2'; %field, qc1, or qc2
+qcVersion='v2.2';
 freqData='10hz'; % 10hz, 100hz, or 2hz
 
 % Determines plot zoom.
@@ -18,8 +19,8 @@ end
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-%figdir=['/h/eol/romatsch/hcrCalib/clouds/brightBand/',project,'/'];
-figdir=['/home/romatsch/plots/HCR/meltingLayer/selected/',project,'/'];
+figdir=['/scr/sci/romatsch/meltLayerHCR/',project,'/cases/'];
+%figdir=['/home/romatsch/plots/HCR/meltingLayer/selected/',project,'/'];
 
 if ~exist(figdir, 'dir')
     mkdir(figdir)
@@ -27,8 +28,8 @@ end
 
 casefile=['~/git/HCR_configuration/projDir/qc/dataProcessing/HCRproducts/caseFiles/meltLayer_',project,'.txt'];
 
-%indir=HCRdir(project,quality,freqData);
-indir=['/run/media/romatsch/RSF0006/rsf/meltingLayer/',project,'/10hz/'];
+indir=HCRdir(project,quality,qcVersion,freqData);
+%indir=['/run/media/romatsch/RSF0006/rsf/meltingLayer/',project,'/10hz/'];
 
 % Loop through cases
 
