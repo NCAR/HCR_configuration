@@ -4,13 +4,15 @@ close all;
 
 project='socrates'; %socrates, aristo, cset
 quality='qc2'; %field, qc1, or qc2
+qcVersion='v2.1';
 freqData='10hz'; % 10hz, 100hz, or 2hz
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
+%figdir=['/home/romatsch/plots/HCR/meltingLayer/paper/'];
+figdir='/scr/sci/romatsch/paperFigs/meltLayer/';
 
-figdir=['/home/romatsch/plots/HCR/meltingLayer/paper/'];
-
-indir=['/run/media/romatsch/RSF0006/rsf/meltingLayer/',project,'/10hz/'];
+%indir=['/run/media/romatsch/RSF0006/rsf/meltingLayer/',project,'/10hz/'];
+indir=HCRdir(project,quality,qcVersion,freqData);
 
 startTime=datetime(2018,2,5,0,5,0);
 endTime=datetime(2018,2,5,0,37,0);
@@ -113,7 +115,7 @@ ax.SortMethod = 'childorder';
 ylim(ylimits);
 ylabel('Altitude (km)');
 xlim([data.time(1),data.time(end)]);
-title('(a) TEMP (deg C)')
+title(['(a) TEMP (',char(176),'C)'])
 grid on
 ax1.Position=[0.08 0.71 0.8 0.26];
 hcb1.Position=[0.895 0.71 0.04 0.26];
