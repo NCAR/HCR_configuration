@@ -1,8 +1,8 @@
-function dbzText=f_reflTexture(DBZ,pixRad,dbzThresh)
+function dbzText=f_reflTexture_noMean(DBZ,pixRad,dbzThresh)
 % Calculate reflectivity texture
 dbzText=nan(size(DBZ));
 
-%DBZ(DBZ<dbzThresh)=nan;
+DBZ(DBZ<dbzThresh)=nan;
 
 % Pad data at start and end
 dbzPadded=padarray(DBZ,[0 pixRad],nan);
@@ -33,8 +33,7 @@ for ii=1:size(dbzPadded,2)-pixRad*2-1
     newY=a+b.*X;
     
     % Remove slope
-    dbzCorr=dbzBlock-newY+mean(dbzBlock,2,'omitnan');
-    dbzCorr(dbzCorr<1)=1;
+    dbzCorr=dbzBlock-newY;
     
     % Calculate texture
     tdbz=sqrt(std(dbzCorr.^2,[],2,'omitnan'));
