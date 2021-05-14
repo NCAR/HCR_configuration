@@ -16,7 +16,7 @@ pause(1);
 ax4 = gca;
 
 %% Plot
-close
+%close
 wi=10;
 hi=8;
 
@@ -41,7 +41,7 @@ copyobj(in1,s1);
 ylim([-20 15]);
 xlim([0,25]);
 xlabel('Incidence angle (deg)');
-ylabel('sigma_0 (dB)')
+ylabel('\sigma_0 (dB)')
 text1= findobj(gcf, 'Type', 'Text');
 firstLine=text1(1);
 firstLine.Position=[10 12 0];
@@ -59,7 +59,7 @@ copyobj(in2,s2);
 ylim([-20 15]);
 xlim([0,25]);
 xlabel('Incidence angle (deg)');
-ylabel('sigma_0 (dB)')
+ylabel('\sigma_0 (dB)')
 text1= findobj(gcf, 'Type', 'Text');
 firstLine=text1(1);
 firstLine.Position=[10 12 0];
@@ -77,7 +77,7 @@ copyobj(in3,s3);
 ylim([-20 15]);
 xlim([0,25]);
 xlabel('Incidence angle (deg)');
-ylabel('sigma_0 (dB)')
+ylabel('\sigma_0 (dB)')
 text1= findobj(gcf, 'Type', 'Text');
 firstLine=text1(1);
 firstLine.Position=[10 12 0];
@@ -95,7 +95,7 @@ copyobj(in4,s4);
 ylim([-20 15]);
 xlim([0,25]);
 xlabel('Incidence angle (deg)');
-ylabel('sigma_0 (dB)')
+ylabel('\sigma_0 (dB)')
 text1= findobj(gcf, 'Type', 'Text');
 firstLine=text1(1);
 firstLine.Position=[10 12 0];

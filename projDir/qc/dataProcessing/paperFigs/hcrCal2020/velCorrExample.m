@@ -8,10 +8,11 @@ addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 project='otrec'; % socrates, cset, aristo, otrec
 quality='qc2'; % field, qc1, qc2
 freqData='10hz'; % 10hz, 100hz, or 2hz
+qcVersion='v2.2';
 
 figdir=['/h/eol/romatsch/papers/HCRcalibration/figs/'];
 
-indir=HCRdir(project,quality,freqData);
+indir=HCRdir(project,quality,qcVersion,freqData);
 
 maxEdge=10; % Upper edge for plotting
 color_map=colormap(vel_default(29));
@@ -96,7 +97,7 @@ end
 fig2.CData=col_def;
 
 hcb=colorbar;
-set(get(hcb,'Title'),'String','m/s');
+set(get(hcb,'Title'),'String','m s^{-1}');
 colormap(gca,color_map);
 caxis([0 size(color_map,1)]);
 caxis_ytick_labels=num2str((-4:1:4)');
@@ -139,7 +140,7 @@ end
 fig2.CData=col_def;
 
 hcb=colorbar;
-set(get(hcb,'Title'),'String','m/s');
+set(get(hcb,'Title'),'String','m s^{-1}');
 colormap(gca,color_map);
 caxis([0 size(color_map,1)]);
 caxis_ytick_labels=num2str((-4:1:4)');
@@ -181,7 +182,7 @@ end
 fig2.CData=col_def;
 
 hcb=colorbar;
-set(get(hcb,'Title'),'String','m/s');
+set(get(hcb,'Title'),'String','m s^{-1}');
 colormap(gca,color_map);
 caxis([0 size(color_map,1)]);
 caxis_ytick_labels=num2str((-4:1:4)');

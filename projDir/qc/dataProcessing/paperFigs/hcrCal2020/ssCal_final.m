@@ -20,7 +20,7 @@ pause(1)
 ax6 = gca;
 
 %% Plot
-close
+%close
 wi=10;
 hi=6;
 
@@ -47,7 +47,7 @@ xlim([5,15]);
 xticks(6:15)
 yticks(-4:2:14);
 xlabel('Incidence angle (deg)');
-ylabel('sigma_0 (dB)')
+ylabel('\sigma_0 (dB)')
 text(5,15.5,'(a) CSET','fontsize',12,'fontweight','bold')
 grid on
 
@@ -93,7 +93,7 @@ xlim([5,15]);
 xticks(6:15)
 yticks(-4:1:14);
 xlabel('Incidence angle (deg)');
-ylabel('sigma_0 (dB)')
+ylabel('\sigma_0 (dB)')
 text1= findobj(gcf, 'Type', 'Text');
 line1=text1(1);
 line1.FontSize=11;

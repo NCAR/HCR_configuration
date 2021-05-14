@@ -54,8 +54,8 @@ oceanTemp=30;
 %% Figure
 close all
 
-wi=5;
-hi=8;
+wi=10;
+hi=5;
 
 fig=figure('DefaultAxesFontSize',11,'DefaultFigurePaperType','<custom>','units','inch','position',[1,100,wi,hi],'renderer','painters');
 fig.PaperPositionMode = 'manual';
@@ -68,9 +68,8 @@ fig.InvertHardcopy = 'off';
 
 set(fig,'color','w');
 
-ax1=subplot(2,1,1,'units','inch');
+ax1=subplot(1,2,1,'units','inch');
 hold on;
-ax1.Position = [0.7 4.55 4.0 3.1];
 
 cols=jet(5);
 
@@ -84,14 +83,13 @@ xlim([0,20]);
 ylim([-5 15]);
 grid on
 xlabel('Incidence angle (deg)');
-ylabel('sigma_{0} (dB)');
+ylabel('\sigma_0 (dB)');
 
 legend('2 m s^{-1}','5 m s^{-1}','10 m s^{-1}','15 m s^{-1}','20 m s^{-1}');
 text(0,16,'(a) \sigma_0 variation with surface wind speed','fontsize',12,'fontweight','bold')
 
-ax2=subplot(2,1,2,'units','inch');
+ax2=subplot(1,2,2,'units','inch');
 hold on;
-ax2.Position = [0.7 0.55 4.0 3.1];
 
 cols=jet(5);
 
@@ -104,10 +102,13 @@ xlim([0,20]);
 ylim([-5 15]);
 grid on
 xlabel('Incidence angle (deg)');
-ylabel('sigma_{0} (dB)');
+ylabel('\sigma_0 (dB)');
 
-legend('0 C','10 C','20 C','30 C');
+legend(['0 ',char(176),'C'],['10 ',char(176),'C'],['20 ',char(176),'C'],['30 ',char(176),'C']);
 text(0,16,'(b) \sigma_0 variation with SST','fontsize',12,'fontweight','bold')
+
+ax1.Position = [0.65 0.55 4.2 4];
+ax2.Position = [5.6 0.55 4.2 4];
 
 if savefig
     set(gcf,'PaperPositionMode','auto')
