@@ -1,4 +1,4 @@
-function dbzText=f_reflTexture(DBZ,pixRad,dbzThresh)
+function dbzText=f_reflTexture(DBZ,pixRad)
 % Calculate reflectivity texture
 dbzText=nan(size(DBZ));
 
@@ -47,5 +47,22 @@ for ii=1:size(dbzPadded,2)-pixRad*2-1
     dbzText(:,ii)=tdbz;
 end
 dbzText(isnan(DBZ))=nan;
+
+
+% f1 = figure('Position',[200 500 1500 900],'DefaultAxesFontSize',12);
+% s1=subplot(3,1,1);
+% surf(flipud(dbzText),'edgecolor','none');
+% view(2);
+% s1.Colormap=lines(12);
+% caxis([0 12]);
+% colorbar;
+% 
+% s2=subplot(3,1,2);
+% surf(flipud(DBZ),'edgecolor','none');
+% view(2);
+% s2.Colormap=jet;
+% caxis([-20 20]);
+% colorbar;
+
 end
 
