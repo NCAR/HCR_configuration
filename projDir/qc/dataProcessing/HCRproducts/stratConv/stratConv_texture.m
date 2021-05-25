@@ -5,23 +5,37 @@ close all;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Input variables %%%%%%%%%%%%%%%%%%%%%%%%%%
 
-project='socrates'; %socrates, aristo, cset, otrec
+loc='office'; % home or office
+project='otrec'; %socrates, aristo, cset, otrec
 quality='qc2'; %field, qc1, or qc2
 dataFreq='10hz';
 
-ylimUpper=15;
+if strcmp(project,'otrec')
+    qcVersion='v2.2';
+    ylimUpper=15;
+else
+    qcVersion='v2.1';
+    ylimUpper=10;
+end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-%figdir=['/h/eol/romatsch/hcrCalib/clouds/stratConv/'];
-figdir=['/home/romatsch/plots/HCR/stratConv/',project,'/cases/'];
+if strcmp(loc,'office')
+    figdir=['/scr/sci/romatsch/HCR/stratConv/',project,'/cases/'];
+    if strcmp(project,'otrec')
+        dataDir='/scr/sleet2/rsfdata/projects/otrec/hcr/qc2/cfradial/development/cloudPuzzle/10hz/';
+    elseif strcmp(project,'socrates')
+        dataDir='/scr/snow2/rsfdata/projects/socrates/hcr/qc2/cfradial/development/cloudPuzzle/10hz/';
+    end
+    %dataDir=HCRdir(project,quality,qcVersion,dataFreq);
+elseif strcmp(loc,'home')
+    figdir=['/home/romatsch/plots/HCR/stratConv/',project,'/cases/'];
+    dataDir=['/run/media/romatsch/RSF0006/rsf/cloudPuzzle/',project,'/10hz/'];
+end
 
 casefile=['~/git/HCR_configuration/projDir/qc/dataProcessing/HCRproducts/caseFiles/stratConv_',project,'.txt'];
-
-%dataDir=HCRdir(project,quality,dataFreq);
-dataDir=['/run/media/romatsch/RSF0006/rsf/cloudPuzzle/',project,'/10hz/'];
 
 % Loop through cases
 
