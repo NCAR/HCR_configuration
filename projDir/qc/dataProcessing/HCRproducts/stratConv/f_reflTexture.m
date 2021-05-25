@@ -1,4 +1,4 @@
-function dbzText=f_reflTexture(DBZ,pixRad)
+function dbzText=f_reflTexture(DBZ,pixRad,dbzBase)
 % Calculate reflectivity texture
 dbzText=nan(size(DBZ));
 
@@ -9,6 +9,9 @@ dbzPadded=padarray(DBZ,[0 pixRad],nan);
 
 % Fill in areas with no data
 dbzPadded=fillmissing(dbzPadded,'linear',2,'EndValues','nearest');
+
+% Adjust reflectivity with base value
+dbzPadded=dbzPadded-dbzBase;
 
 % Loop through data points in time direction and pull out right window
 for ii=1:size(dbzPadded,2)-pixRad*2-1

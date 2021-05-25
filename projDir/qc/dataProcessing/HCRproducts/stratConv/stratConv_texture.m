@@ -5,7 +5,7 @@ close all;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Input variables %%%%%%%%%%%%%%%%%%%%%%%%%%
 
-project='socrates'; %socrates, aristo, cset, otrec
+project='otrec'; %socrates, aristo, cset, otrec
 quality='qc2'; %field, qc1, or qc2
 dataFreq='10hz';
 
@@ -77,9 +77,15 @@ for aa=1:length(caseStart)
     %stratConvNearSurf=nan(size(data.DBZ));
     
     dbzText=nan(size(data.DBZ));
+    convectivity=nan(size(data.DBZ));
+    classBasic=nan(size(data.DBZ));
         
     pixRad=50; % Radius over which texture is calculated in pixels. Default is 50.
-    %stratConvThresh=4; % Texture above (below) is convective (stratiform)
+    dbzBase=-10; % Reflectivity base value which is subtracted from DBZ.
+    
+    upperLim=14; % Upper limit for convectivity mapping. Texture above that will be set to 1.
+    stratMixed=0.4; % Convectivity boundary between strat and mixed.
+    mixedConv=0.5; % Convectivity boundary between mixed and conv.
     
     for jj=1:length(uClouds)
         disp(['Calculating texture for tethered cloud ',num2str(jj),' of ',num2str(length(uClouds))]);
@@ -90,13 +96,28 @@ for aa=1:length(caseStart)
         % Shrink to good data area
         nonNanCols=find(any(~isnan(dbzIn),1));
         dbzIn=dbzIn(:,nonNanCols);
-                
-        dbzTextOne=f_reflTexture(dbzIn,pixRad);
         
+        dbzTextOne=f_reflTexture(dbzIn,pixRad,dbzBase);
+                
+        % Convectivity        
+        convOne=1/upperLim.*dbzTextOne;
+        
+        % Basic classification       
+        classBasicOne=f_classBasic(convOne,stratMixed,mixedConv);
+        
+                
         % Fill into large matrix
         dbzTextLarge=nan(size(dbzText));
         dbzTextLarge(:,nonNanCols)=dbzTextOne;
         dbzText(~isnan(dbzTextLarge))=dbzTextLarge(~isnan(dbzTextLarge));
+        
+        convLarge=nan(size(convectivity));
+        convLarge(:,nonNanCols)=convOne;
+        convectivity(~isnan(convLarge))=convLarge(~isnan(convLarge));
+        
+        classBasicLarge=nan(size(classBasic));
+        classBasicLarge(:,nonNanCols)=classBasicOne;
+        classBasic(~isnan(classBasicLarge))=classBasicLarge(~isnan(classBasicLarge));
         
         % Prepare asl and topo
 %         topoIn=data.TOPO(nonNanCols);
@@ -109,18 +130,7 @@ for aa=1:length(caseStart)
 %         stratConvNearSurf(~isnan(scLarge))=scLarge(~isnan(scLarge));
     end
     
-    % Convectivity
-    upperLim=8; % Upper limit for convectivity mapping. Texture above that will be set to 1.
-    convectivity=1/upperLim.*dbzText;
     
-    % Basic classification
-    stratMixed=0.3;
-    mixedConv=0.5;
-    
-    classBasic=nan(size(data.DBZ));
-    classBasic(convectivity<stratMixed)=1; % Stratiform
-    classBasic(convectivity>=stratMixed & convectivity<mixedConv)=2;
-    classBasic(convectivity>=mixedConv)=3;
     
 %     %% Calculate reflectivity texture for elevated convective echo
 %     stratConvTot=nan(size(data.DBZ));
@@ -256,7 +266,7 @@ hold on
 surf(data.time,data.asl./1000,dbzText,'edgecolor','none');
 view(2);
 ylabel('Altitude (km)');
-caxis([0 12]);
+%caxis([0 12]);
 ylim([0 ylimUpper]);
 xlim([data.time(1),data.time(end)]);
 colorbar
