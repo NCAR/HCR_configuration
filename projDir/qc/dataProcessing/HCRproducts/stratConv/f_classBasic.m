@@ -115,5 +115,7 @@ for ii=1:mixedAreas.NumObjects
         classBasic(mixedAreas.PixelIdxList{ii})=3;
     end
 end
+
+classBasic(isnan(convOne))=nan;
 end
 
