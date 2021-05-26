@@ -13,22 +13,23 @@ crosswind_limit=2;
 % data
 filterAttitudeCorrOff=1;
 
-project='otrec'; % socrates, cset, aristo, otrec
-quality='qc0'; % field, qc0, qc1, qc2
+project='spicule'; % socrates, cset, aristo, otrec
+quality='field'; % field, qc0, qc1, qc2
+qcVersion='v0.1';
 freq='10hz';
 
 figdir=['/h/eol/romatsch/hcrCalib/pointAng/',project];
 formatOut = 'yyyymmdd_HHMM';
 
-infile=['/h/eol/romatsch/hcrCalib/oceanScans/biasInFiles/flights_',project,'.txt'];
+infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_',project,'.txt'];
 
 caseList = table2array(readtable(infile));
 
-indir=HCRdir(project,quality,freq);
+indir=HCRdir(project,quality,qcVersion,freq);
 
 lineCols=lines;
 
-gvfiles=dir('/scr/snow1/rsfdata/projects/otrec/GV/OTRECrf*.nc');
+gvfiles=dir('/scr/sleet2/rsfdata/projects/spicule/GV/SPICULEtf*.nc');
 
 %% Run processing
 
@@ -233,15 +234,18 @@ for ii=1:size(caseList,1)
     %%
     close all
     
+    dataInds=find(~isnan(vel_ground_mean));
+    xlims=[data.time(min(dataInds)),data.time(max(dataInds))];
+    
     f1=figure('DefaultAxesFontSize',12);
     set(f1,'Position',[200 500 2000 1300]);
     
-    subplot(4,1,1)
+    s1=subplot(4,1,1);
     hold on
     yyaxis right
-    plot(data.time,data.roll,'-','linewidth',2,'color',lineCols(1,:));
-    plot(data.time,data.pitch,'-','linewidth',2,'color',lineCols(2,:));
-    plot(data.time,data.drift,'-','linewidth',2,'color',lineCols(3,:));
+    l1=plot(data.time,data.roll,'-','linewidth',2,'color',lineCols(1,:));
+    l2=plot(data.time,data.pitch,'-','linewidth',2,'color',lineCols(2,:));
+    l3=plot(data.time,data.drift,'-','linewidth',2,'color',lineCols(3,:));
            
     ylabel('Angles (deg)');
     
@@ -253,7 +257,7 @@ for ii=1:size(caseList,1)
     grid on
     
     yyaxis left
-    plot(data.time,movmean(data.elevation+90,100),'-','linewidth',2,'color',lineCols(4,:));
+    l4=plot(data.time,movmean(data.elevation+90,100),'-','linewidth',2,'color',lineCols(4,:));
     ylim([-0.175 0.175]);
     yticks(-5:0.05:5);
     ylabel('Elev+90 (deg)');
@@ -261,29 +265,34 @@ for ii=1:size(caseList,1)
     ax.SortMethod = 'childorder';
     ax.YColor=lineCols(4,:);
     
-    xlim([data.time(1) data.time(end)]);
-
-    legend('Elev+90','Roll','Pitch','Drift');
-        
-    title([project,' RF ',num2str(ii)]);
-        
-    subplot(4,1,2)
-    hold on
-    plot(data.time,data.vertical_velocity,'linewidth',1);
-    plot(data.time,VEL_ground,'linewidth',1);
-    plot(data.time,vel_ground_mean,'linewidth',2);
+    xlim(xlims);
+       
+    title([project,' TF ',num2str(ii)]);
     
-    legend('Vel vert','Vel ground','Vel ground mean');
+    plot(xlims,[0 0],'-k');
+    s1.SortMethod = 'childorder';
+    legend([l1 l2 l3 l4],{'Elev+90','Roll','Pitch','Drift'});
+        
+    s2=subplot(4,1,2);
+    hold on
+    l1=plot(data.time,data.vertical_velocity,'linewidth',1);
+    l2=plot(data.time,VEL_ground,'linewidth',1);
+    l3=plot(data.time,vel_ground_mean,'linewidth',2);
     
     ylabel('Velocity (m/s)');
     
-    xlim([data.time(1) data.time(end)]);
+    xlim(xlims);
     ylim([-2 2]);
     yticks(-10:0.5:10);
     
+    t1=text(xlims(1)+minutes(5),-1.5,['Mean ground velocity error: ',num2str(mean(VEL_ground,'omitnan')),' m s^{-1}'],'fontsize',11);
+    t1.BackgroundColor=[1,1,1];
     grid on
+    plot(xlims,[0 0],'-k');
+    s2.SortMethod = 'childorder';
+    legend([l1 l2 l3],{'Vel vert','Vel ground','Vel ground mean'});
     
-    subplot(4,1,3)
+    s3=subplot(4,1,3);
     hold on
       
     yyaxis left
@@ -307,13 +316,16 @@ for ii=1:size(caseList,1)
     ax.YColor=lineCols(2,:);
     
     %legend('Tilt error all','Tilt error good','Rotation error all','Rotation error good');
-    legend([l1,l2],{'Max rotation error','Max tilt error'});
-    
-    xlim([data.time(1) data.time(end)]);
+        
+    xlim(xlims);
         
     grid on
     
-    subplot(4,1,4)
+    plot(xlims,[0 0],'-k');
+    s3.SortMethod = 'childorder';
+    legend([l1,l2],{'Max rotation error','Max tilt error'});
+    
+    s4=subplot(4,1,4);
     hold on
     
     yyaxis left
@@ -337,15 +349,19 @@ for ii=1:size(caseList,1)
     ax = gca;
     ax.SortMethod = 'childorder';
     ax.YColor=lineCols(2,:);
+            
+    xlim(xlims);
         
+    t1=text(xlims(1)+minutes(5),-0.3,['Mean tilt error: ',num2str(mean(abs_tilt_error,'omitnan')),...
+        ' deg, mean rotation error: ',num2str(mean(goodRot,'omitnan')),' deg'],'fontsize',11);
+    t1.BackgroundColor=[1,1,1];
+    grid on
+    plot(xlims,[0 0],'-k');
+    s4.SortMethod = 'childorder';
     legend([l1,l2,l3,l4],{'Rotation error','Tilt error','Rot error event','Tilt error event'});
     
-    xlim([data.time(1) data.time(end)]);
-        
-    grid on
-    
     set(gcf,'PaperPositionMode','auto')
-    print(f1,[figdir,'/wholeFlights/',project,'_RF',num2str(ii),'_',datestr(data.time(1),'yyyymmdd_HHMMSS'),'_to_',datestr(data.time(end),'yyyymmdd_HHMMSS')],'-dpng','-r0')
+    print(f1,[figdir,'/wholeFlights/',project,'_TF',num2str(ii),'_',datestr(data.time(1),'yyyymmdd_HHMMSS'),'_to_',datestr(data.time(end),'yyyymmdd_HHMMSS')],'-dpng','-r0')
     
     %% Drift from GV
   

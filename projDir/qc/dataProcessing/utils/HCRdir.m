@@ -79,8 +79,8 @@ elseif strcmp(project,'otrec')
         end
     elseif strcmp(qc,'qc1')
         if strcmp(freq,'100hz') | strcmp(freq,'10hz')
-           % indir=['/scr/snow1/rsfdata/projects/otrec/hcr/qc1/cfradial/final/',freq,'/'];
-           disp('Got lost.');
+            % indir=['/scr/snow1/rsfdata/projects/otrec/hcr/qc1/cfradial/final/',freq,'/'];
+            disp('Got lost.');
         else
             disp('No 2hz data in qc1 data.');
             return
@@ -93,6 +93,15 @@ elseif strcmp(project,'otrec')
             return
         end
     end
+    
+    %% SPICULE
+elseif strcmp(project,'spicule')
+    if strcmp(qc,'field')
+        if strcmp(freq,'100hz') | strcmp(freq,'10hz')
+            indir=['/scr/sleet2/rsfdata/projects/spicule/hcr/cfradial/moments/',freq,'/'];
+        end
+    end
 end
+
 end
 
