@@ -4,13 +4,16 @@ close all;
 
 project='otrec'; %socrates, aristo, cset
 quality='qc2'; %field, qc1, or qc2
+qcVersion='v2.2';
 freqData='10hz'; % 10hz, 100hz, or 2hz
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-figdir=['/home/romatsch/plots/HCR/meltingLayer/paper/'];
+%figdir=['/home/romatsch/plots/HCR/meltingLayer/paper/'];
+figdir='/scr/sci/romatsch/paperFigs/meltLayer/';
 
-indir=['/run/media/romatsch/RSF0006/rsf/meltingLayer/',project,'/10hz/'];
+%indir=['/run/media/romatsch/RSF0006/rsf/meltingLayer/',project,'/10hz/'];
+indir=HCRdir(project,quality,qcVersion,freqData);
 
 startTime=datetime(2019,8,7,17,26,0);
 endTime=datetime(2019,8,7,17,32,0);
@@ -119,7 +122,7 @@ hcb.Position=[0.895 0.58 0.04 0.34];
 ax2=subplot(2,1,2);
 hold on;
 sub1=surf(newTime,newASL./1000,newFindMelt,'edgecolor','none');
-ax2.Colormap=([1 0 1;1 1 0]);
+ax2.Colormap=([1 0.8 0.88;1 1 0]);
 view(2);
 scatter(timeMat(elevenInds),data.asl(elevenInds)./1000,7,'k','filled','MarkerEdgeColor','k');
 scatter(timeMat(fourteenInds),data.asl(fourteenInds)./1000,7,'MarkerEdgeColor',[0.2 0.6 0.04],'MarkerFaceColor',[0.2 0.6 0.04]);
@@ -131,7 +134,8 @@ l2=scatter(timeMat(twentyfourInds),data.asl(twentyfourInds)./1000,7,'MarkerEdgeC
 l3=scatter(timeMat(twentythreeInds),data.asl(twentythreeInds)./1000,7,'c','filled','filled','MarkerEdgeColor','c');
 l4=scatter(timeMat(twentytwoInds),data.asl(twentytwoInds)./1000,7,'b','filled','filled','MarkerEdgeColor','b');
 
-l5=plot(data.time,data.ICING_LEVEL./1000,'linewidth',1.2,'color',[0.8 0.8 0.8]);
+l5=plot(data.time,data.ICING_LEVEL./1000,'linewidth',1.5,'color',[1 0 0]);
+
 ax = gca;
 ax.SortMethod = 'childorder';
 ylim(ylimits);

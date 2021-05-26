@@ -1,17 +1,14 @@
-function dbzText=f_reflTexture(DBZ,pixRad,dbzBase)
+function dbzText=f_reflTexture_noMean(DBZ,pixRad,dbzThresh)
 % Calculate reflectivity texture
 dbzText=nan(size(DBZ));
 
-%DBZ(DBZ<dbzThresh)=nan;
+DBZ(DBZ<dbzThresh)=nan;
 
 % Pad data at start and end
 dbzPadded=padarray(DBZ,[0 pixRad],nan);
 
 % Fill in areas with no data
 dbzPadded=fillmissing(dbzPadded,'linear',2,'EndValues','nearest');
-
-% Adjust reflectivity with base value
-dbzPadded=dbzPadded-dbzBase;
 
 % Loop through data points in time direction and pull out right window
 for ii=1:size(dbzPadded,2)-pixRad*2-1
@@ -36,8 +33,7 @@ for ii=1:size(dbzPadded,2)-pixRad*2-1
     newY=a+b.*X;
     
     % Remove slope
-    dbzCorr=dbzBlock-newY+mean(dbzBlock,2,'omitnan');
-    dbzCorr(dbzCorr<1)=1;
+    dbzCorr=dbzBlock-newY;
     
     % Calculate texture
     tdbz=sqrt(std(dbzCorr.^2,[],2,'omitnan'));
@@ -50,22 +46,5 @@ for ii=1:size(dbzPadded,2)-pixRad*2-1
     dbzText(:,ii)=tdbz;
 end
 dbzText(isnan(DBZ))=nan;
-
-
-% f1 = figure('Position',[200 500 1500 900],'DefaultAxesFontSize',12);
-% s1=subplot(3,1,1);
-% surf(flipud(dbzText),'edgecolor','none');
-% view(2);
-% s1.Colormap=lines(12);
-% caxis([0 12]);
-% colorbar;
-% 
-% s2=subplot(3,1,2);
-% surf(flipud(DBZ),'edgecolor','none');
-% view(2);
-% s2.Colormap=jet;
-% caxis([-20 20]);
-% colorbar;
-
 end
 

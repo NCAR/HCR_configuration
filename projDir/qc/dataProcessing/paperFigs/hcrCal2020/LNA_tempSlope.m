@@ -333,7 +333,7 @@ for ii=24:24
     yyaxis right
     plot(timeTemp,VLnaTemp,'-c','linewidth',1.)
     plot(timeTemp,meanVLNAt,'-b','linewidth',1.5)
-    ylabel('VLNA temperature (C)');
+    ylabel(['VLNA temperature (',char(176),'C)']);
     ax = gca;
     ax.YColor = 'b';
     
@@ -361,7 +361,7 @@ for ii=24:24
     grid on
     
     plot(syncShift.time,syncShift.VLNAtemps,'-b','linewidth',1.5);
-    ylabel('VLNA temperature (C)');
+    ylabel(['VLNA temperature (',char(176),'C)']);
     ax = gca;
     ax.YColor = 'b';
     
@@ -379,7 +379,7 @@ for ii=24:24
     
     scatter(syncShift.VLNAtemps,syncShift.DBMVC,plotSym,'MarkerFaceColor','b');
     
-    xlabel('VLNA temperature (C)');
+    xlabel(['VLNA temperature (',char(176),'C)']);
     ylabel('DBMVC (dB)');
     
     xlimits1=xlim;

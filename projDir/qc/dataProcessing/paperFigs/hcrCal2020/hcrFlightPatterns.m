@@ -84,3 +84,4 @@ ylabel('Altitude (km)')
 title('(c)            OTREC Research Flight 01')
 
 print(fig1, [figdir,'flightPatterns.png'],'-dpng','-r0');
+saveas(fig1,[figdir,'flightPatterns.pdf'])

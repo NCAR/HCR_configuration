@@ -5,16 +5,21 @@ close all;
 
 project='socrates'; %socrates, aristo, cset
 quality='qc2'; %field, qc1, or qc2
-freqData='10hz'; % 10hz, 100hz, 2hz, or combined
+qcVersion='v2.1';
+freqData='10hz'; % 10hz, 100hz, or 2hz
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
-figdir=['/home/romatsch/plots/HCR/meltingLayer/paper/'];
+%figdir=['/home/romatsch/plots/HCR/meltingLayer/paper/'];
+figdir='/scr/sci/romatsch/paperFigs/meltLayer/';
 
 ylimits=[0 5.5];
 
 %indir=HCRdir(project,quality,freqData);
-indir=['/run/media/romatsch/RSF0006/rsf/meltingLayer/',project,'/',freqData,'/'];
-dropsondedir=['/run/media/romatsch/RSF0006/rsf/dropsondes/',project,'/'];
+%indir=['/run/media/romatsch/RSF0006/rsf/meltingLayer/',project,'/',freqData,'/'];
+indir=HCRdir(project,quality,qcVersion,freqData);
+
+%dropsondedir=['/run/media/romatsch/RSF0006/rsf/dropsondes/',project,'/'];
+dropsondedir='/scr/snow2/rsfdata/projects/socrates/dropsondes/';
 
 dropFormat='eol';
 
@@ -219,7 +224,7 @@ ax.SortMethod = 'childorder';
 ylim(ylimits);
 ylabel('Altitude (km)');
 xlim([data.time(1),data.time(end)]);
-title({'(a) VEL (m s^{-1}), melting layer,';'and dropsonde temperatures (C)'})
+title({'(a) VEL (m s^{-1}), melting layer,';['and dropsonde temperatures (',char(176),'C)']})
 grid on
 
 ax1.Position=[0.09 0.577 0.79 0.34];
@@ -257,7 +262,7 @@ ax.SortMethod = 'childorder';
 ylim(ylimits);
 ylabel('Altitude (km)');
 xlim([data.time(1),data.time(end)]);
-title({'(b) TEMP and dropsonde temperatures (C),';'and melting layer'})
+title({['(b) TEMP and dropsonde temperatures (',char(176),'C),'];'and melting layer'})
 grid on
 
 ax2.Position=[0.09 0.08 0.79 0.34];

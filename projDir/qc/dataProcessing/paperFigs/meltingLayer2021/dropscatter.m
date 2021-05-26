@@ -83,6 +83,8 @@ grid on
 
 xlim([minLim maxLim]);
 ylim([minLim maxLim]);
+ax1.XTick=0:1:7;
+ax1.YTick=0:1:7;
 
 measDiff=mean((compAltsC.meltAltMeas-compAltsC.sondeAlt)./1000,'omitnan');
 measStd=std((compAltsC.meltAltMeas-compAltsC.sondeAlt)./1000,'omitnan');
@@ -142,6 +144,8 @@ grid on
 
 xlim([minLim maxLim]);
 ylim([minLim maxLim]);
+ax2.XTick=0:1:5;
+ax2.YTick=0:1:5;
 
 measDiff=mean((compAltsS.meltAltMeas-compAltsS.sondeAlt)./1000,'omitnan');
 measStd=std((compAltsS.meltAltMeas-compAltsS.sondeAlt)./1000,'omitnan');
