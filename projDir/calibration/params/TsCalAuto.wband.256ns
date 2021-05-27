@@ -410,7 +410,8 @@ k_squared = 0.711;
 // Type: double
 //
 
-xmitPowerDbmH = 59.56;
+// xmitPowerDbmH = 59.56;
+xmitPowerDbmH = 60.45; // spicule
 
 ///////////// xmitPowerDbmV ///////////////////////////
 //
@@ -422,7 +423,8 @@ xmitPowerDbmH = 59.56;
 // Type: double
 //
 
-xmitPowerDbmV = 59.91;
+// xmitPowerDbmV = 59.91;
+xmitPowerDbmV = 60.27; // spicule
 
 ///////////// pulseWidthUs ////////////////////////////
 //
