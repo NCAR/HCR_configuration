@@ -29,7 +29,7 @@ indir=HCRdir(project,quality,qcVersion,freq);
 
 lineCols=lines;
 
-gvfiles=dir('/scr/sleet2/rsfdata/projects/spicule/GV/SPICULEtf*.nc');
+gvfiles=dir('/scr/sleet2/rsfdata/projects/spicule/GV/SPICULErf*.nc');
 
 %% Run processing
 
@@ -267,7 +267,7 @@ for ii=1:size(caseList,1)
     
     xlim(xlims);
        
-    title([project,' TF ',num2str(ii)]);
+    title([project,' RF ',num2str(ii)]);
     
     plot(xlims,[0 0],'-k');
     s1.SortMethod = 'childorder';
@@ -361,7 +361,7 @@ for ii=1:size(caseList,1)
     legend([l1,l2,l3,l4],{'Rotation error','Tilt error','Rot error event','Tilt error event'});
     
     set(gcf,'PaperPositionMode','auto')
-    print(f1,[figdir,'/wholeFlights/',project,'_TF',num2str(ii),'_',datestr(data.time(1),'yyyymmdd_HHMMSS'),'_to_',datestr(data.time(end),'yyyymmdd_HHMMSS')],'-dpng','-r0')
+    print(f1,[figdir,'/wholeFlights/',project,'_RF',num2str(ii),'_',datestr(data.time(1),'yyyymmdd_HHMMSS'),'_to_',datestr(data.time(end),'yyyymmdd_HHMMSS')],'-dpng','-r0')
     
     %% Drift from GV
   
@@ -385,13 +385,13 @@ for ii=1:size(caseList,1)
     f2=figure('DefaultAxesFontSize',12);
     set(f2,'Position',[200 500 2000 1100]);
     
-    subplot(3,1,1)
+    s1=subplot(3,1,1);
     
     hold on
     
     yyaxis left
-    plot(data.time,data.roll,'-','linewidth',2,'color',lineCols(1,:));
-    plot(gvtime,gvroll,'-','linewidth',2,'color',lineCols(6,:));
+    l1=plot(data.time,data.roll,'-','linewidth',2,'color',lineCols(1,:));
+    l2=plot(gvtime,gvroll,'-','linewidth',2,'color',lineCols(6,:));
     ylabel('Roll (deg)');
     ylim([-20 20]);
     yticks(-20:5:20);
@@ -400,10 +400,10 @@ for ii=1:size(caseList,1)
     ax.YColor=lineCols(6,:);
     
     yyaxis right
-    plot(data.time,data.pitch,'-','linewidth',2,'color',lineCols(4,:));
-    plot(gvtime,gvpitch,'-','linewidth',2,'color',lineCols(2,:));
-    plot(data.time,data.drift,'-','linewidth',2,'color',lineCols(5,:));
-    plot(gvtime,gvdrift,'-','linewidth',2,'color',lineCols(3,:));
+    l3=plot(data.time,data.pitch,'-','linewidth',2,'color',lineCols(4,:));
+    l4=plot(gvtime,gvpitch,'-','linewidth',2,'color',lineCols(2,:));
+    l5=plot(data.time,data.drift,'-','linewidth',2,'color',lineCols(5,:));
+    l6=plot(gvtime,gvdrift,'-','linewidth',2,'color',lineCols(3,:));
     ylabel('Pitch and drift (deg)');
     ylim([-8 8]);
     yticks(-8:2:8);
@@ -411,31 +411,37 @@ for ii=1:size(caseList,1)
     ax.SortMethod = 'childorder';
     ax.YColor=lineCols(2,:);
     
-    legend('HCR roll','GV roll','HCR pitch','GV pitch','HCR drift','GV drift');
+    plot(xlims,[0 0],'-k');
+    s1.SortMethod = 'childorder';
+    
+    legend([l1 l2 l3 l4 l5 l6],{'HCR roll','GV roll','HCR pitch','GV pitch','HCR drift','GV drift'});
     
     grid on
-    xlim([data.time(1),data.time(end)]);
+    xlim(xlims);
     
     title([project,' RF ',num2str(ii)]);
     
-    subplot(3,1,2)
+    s2=subplot(3,1,2);
     hold on
-    plot(data.time,ttsync.Var2-ttsync.gvroll,'linewidth',2);
-    plot(data.time,ttsync.Var1-ttsync.gvpitch,'linewidth',2);
-    plot(data.time,ttsync.Var3-ttsync.gvdrift,'linewidth',2);
+    l1=plot(data.time,ttsync.Var2-ttsync.gvroll,'linewidth',2);
+    l2=plot(data.time,ttsync.Var1-ttsync.gvpitch,'linewidth',2);
+    l3=plot(data.time,ttsync.Var3-ttsync.gvdrift,'linewidth',2);
     
-    legend('HCR roll - GV roll','HCR pitch - GV pitch','HCR drift - GV drift')
+    plot(xlims,[0 0],'-k');
+    s2.SortMethod = 'childorder';
+    
+    legend([l1 l2 l3],{'HCR roll - GV roll','HCR pitch - GV pitch','HCR drift - GV drift'})
     
     grid on
     ylabel('Angles (deg)');
     ylim([-3 3]);
-    xlim([data.time(1),data.time(end)]);
+    xlim(xlims);
     
-    subplot(3,1,3)
+    s3=subplot(3,1,3);
     hold on
     
     yyaxis left
-    plot(data.time,ttsync.Var1-ttsync.gvpitch,'linewidth',2,'color',lineCols(2,:));
+    l1=plot(data.time,ttsync.Var1-ttsync.gvpitch,'linewidth',2,'color',lineCols(2,:));
     ylim([-1 1]);
     yticks(-1:0.2:1);
     ax = gca;
@@ -444,18 +450,21 @@ for ii=1:size(caseList,1)
     ylabel('Pitch (deg)');
     
     yyaxis right
-    plot(data.time,movmean(abs_tilt_error,100),'-','linewidth',2,'color',lineCols(4,:));
+    l2=plot(data.time,movmean(abs_tilt_error,100),'-','linewidth',2,'color',lineCols(4,:));
     ylim([-0.2 0.2]);
     yticks(-1:0.04:1);
     ax = gca;
     ax.SortMethod = 'childorder';
     ax.YColor=lineCols(4,:);
     
-    legend('HCR pitch - GV pitch','Tilt error')
+    plot(xlims,[0 0],'-k');
+    s3.SortMethod = 'childorder';
+    
+    legend([l1 l2],{'HCR pitch - GV pitch','Tilt error'})
     
     grid on
     ylabel('Tilt (deg)');
-    xlim([data.time(1),data.time(end)]);
+    xlim(xlims);
     
     set(gcf,'PaperPositionMode','auto')
     print(f2,[figdir,'/insCompare/',project,'_RF',num2str(ii),'_',datestr(data.time(1),'yyyymmdd_HHMMSS'),'_to_',datestr(data.time(end),'yyyymmdd_HHMMSS')],'-dpng','-r0')
@@ -474,7 +483,7 @@ set(f3,'renderer','painters');
 set(f3,'Position',[200 500 1000 600]);
 
 plot(tiltErrorFlight,'linewidth',2)
-xlim([1 22])
+xlim([1 12])
 ylim([-0.15 0.15])
 xticks(1:22)
 xlabel('Flight')

@@ -5,17 +5,18 @@ close all;
 
 addpath(genpath('/h/eol/romatsch/gitPriv/utils/'));
 
-project='otrec'; % socrates, cset, aristo, otrec
-quality='qc0'; % field, qc1, qc2
+project='spicule'; % socrates, cset, aristo, otrec
+quality='field'; % field, qc0, qc1, qc2
+qcVersion='v0.1';
 freq='10hz';
 
 figdir=['/h/eol/romatsch/hcrCalib/temps/',project,'/'];
 
-infile=['/h/eol/romatsch/hcrCalib/oceanScans/biasInFiles/flights_',project,'.txt'];
+infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_',project,'.txt'];
 
 caseList = table2array(readtable(infile));
 
-indir=HCRdir(project,quality,freq);
+indir=HCRdir(project,quality,qcVersion,freq);
 
 for jj=1:size(caseList,1)
     
@@ -71,9 +72,9 @@ for jj=1:size(caseList,1)
     %% Plot
     close all
     
-    f2=figure('DefaultAxesFontSize',14);
-    set(f2,'Position',[200 500 2000 1300]);
-    set(f2,'renderer','painters');
+    f1=figure('DefaultAxesFontSize',14);
+    set(f1,'Position',[200 500 2000 1300]);
+    set(f1,'renderer','painters');
     
     subplot(4,1,1)
     hold on;
@@ -82,9 +83,9 @@ for jj=1:size(caseList,1)
     plot(timeTemp,ps28VT,'linewidth',2);
     
     xlim([timeTemp(1) timeTemp(end)]);
-    ylim([30 70])
+    ylim([20 80])
     ylabel('Temperature [C]');
-    legend('PentekFpga','PentekBoard','Ps28V','Orientation','horizontal');
+    legend('PentekFpga','PentekBoard','Ps28V','Orientation','horizontal','location','northwest');
     grid on
     title([project,' RF ',num2str(jj)]);
     
@@ -95,9 +96,9 @@ for jj=1:size(caseList,1)
     plot(timeTemp,XmitT,'linewidth',2);
         
     xlim([timeTemp(1) timeTemp(end)]);
-    ylim([20 40])
+    ylim([20 50])
     ylabel('Temperature [C]');
-    legend('VLna','HLna','Xmitter','Orientation','horizontal');
+    legend('VLna','HLna','Xmitter','Orientation','horizontal','location','northwest');
     grid on
     
     subplot(4,1,3)
@@ -112,9 +113,9 @@ for jj=1:size(caseList,1)
     plot(timeTemp,rdsT,'-k','linewidth',2);
     
     xlim([timeTemp(1) timeTemp(end)]);
-    ylim([-5 45])
+    ylim([-5 60])
     ylabel('Temperature [C]');
-    legend('RotationMotor','TiltMotor','Eik','PolarizationSwitch','RfDetector','NoiseSource','Plo','RdsInDuct','Orientation','horizontal');
+    legend('RotationMotor','TiltMotor','Eik','PolarizationSwitch','RfDetector','NoiseSource','Plo','RdsInDuct','Orientation','horizontal','location','northwest');
     grid on
     
     subplot(4,1,4)
@@ -123,9 +124,9 @@ for jj=1:size(caseList,1)
     plot(timeTemp,tailT,'linewidth',2);
     
     xlim([timeTemp(1) timeTemp(end)]);
-    ylim([-45 35])
+    ylim([-20 50])
     ylabel('Temperature [C]');
-    legend('Ins','Tailcone','Orientation','horizontal');
+    legend('Ins','Tailcone','Orientation','horizontal','location','northwest');
     grid on
         
     print([figdir,project,'_RF',num2str(jj),'_',datestr(timeTemp(1),'yyyymmdd_HHMMSS'),'_to_',datestr(timeTemp(end),'yyyymmdd_HHMMSS'),'_temperatures'],'-dpng','-r0')
