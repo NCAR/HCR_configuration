@@ -373,6 +373,12 @@ for ii=1:size(caseList,1)
     gvroll=ncread(gvfile,'ROLL');
     gvpitch=ncread(gvfile,'PITCH');
     
+    if min(size(gvdrift))~=1
+        gvdrift=gvdrift(1,:)';
+        gvroll=gvroll(1,:)';
+        gvpitch=gvpitch(1,:)';
+    end
+    
     gvtime=refTimegv+seconds(gvtimeIn);
     
     hcrTT=timetable(data.time',data.pitch',data.roll',data.drift');

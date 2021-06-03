@@ -12,7 +12,7 @@ freq='10hz';
 
 figdir=['/h/eol/romatsch/hcrCalib/temps/',project,'/'];
 
-infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_',project,'.txt'];
+infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_',project,'_data.txt'];
 
 caseList = table2array(readtable(infile));
 
@@ -83,6 +83,7 @@ for jj=1:size(caseList,1)
     plot(timeTemp,ps28VT,'linewidth',2);
     
     xlim([timeTemp(1) timeTemp(end)]);
+    yticks(-100:10:100);
     ylim([20 80])
     ylabel('Temperature [C]');
     legend('PentekFpga','PentekBoard','Ps28V','Orientation','horizontal','location','northwest');
@@ -96,7 +97,8 @@ for jj=1:size(caseList,1)
     plot(timeTemp,XmitT,'linewidth',2);
         
     xlim([timeTemp(1) timeTemp(end)]);
-    ylim([20 50])
+    yticks(-100:10:100);
+    ylim([10 50])
     ylabel('Temperature [C]');
     legend('VLna','HLna','Xmitter','Orientation','horizontal','location','northwest');
     grid on
@@ -113,7 +115,8 @@ for jj=1:size(caseList,1)
     plot(timeTemp,rdsT,'-k','linewidth',2);
     
     xlim([timeTemp(1) timeTemp(end)]);
-    ylim([-5 60])
+    yticks(-100:10:100);
+    ylim([0 60])
     ylabel('Temperature [C]');
     legend('RotationMotor','TiltMotor','Eik','PolarizationSwitch','RfDetector','NoiseSource','Plo','RdsInDuct','Orientation','horizontal','location','northwest');
     grid on
@@ -124,6 +127,7 @@ for jj=1:size(caseList,1)
     plot(timeTemp,tailT,'linewidth',2);
     
     xlim([timeTemp(1) timeTemp(end)]);
+    yticks(-100:10:100);
     ylim([-20 50])
     ylabel('Temperature [C]');
     legend('Ins','Tailcone','Orientation','horizontal','location','northwest');
