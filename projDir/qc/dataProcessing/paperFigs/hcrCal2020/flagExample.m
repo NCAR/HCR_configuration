@@ -10,6 +10,7 @@ endTime=datetime(2018,1,23,0,20,0);
 
 project='socrates'; %socrates, aristo, cset
 quality='qc2'; %field, qc1, or qc2
+qcVersion='v2.1';
 freqData='10hz'; % 10hz, 100hz, or 2hz
 whichModel='era5';
 
@@ -17,7 +18,7 @@ addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
 figdir=['/h/eol/romatsch/papers/HCRcalibration/figs/'];
 
-directories.dataDir=HCRdir(project,quality,freqData);
+directories.dataDir=HCRdir(project,quality,qcVersion,freqData);
 
 if strcmp(whichModel,'era5')
     directories.modeldir=['/scr/sci/romatsch/data/reanalysis/ecmwf/era5interp/',project,'/',freqData,'/'];
@@ -29,7 +30,11 @@ end
 
 data.DBZ=[];
 data.FLAG=[];
-data.DBZ_MASKED=[];
+data.DBZ=[];
+data.WIDTH=[];
+data.DBMVC=[];
+data.LDR=[];
+data.TOPO=[];
 
 dataVars=fieldnames(data);
 
@@ -52,6 +57,18 @@ for ii=1:length(dataVars)
 end
 
 dataVars=dataVars(~cellfun('isempty',dataVars));
+
+%% Create FLAG
+[maskData antStat]=echoMask(data);
+
+refl=data.DBZ;
+refl(maskData>1)=nan;
+
+maskPlot=maskData;
+maskPlot(maskData==0)=nan;
+
+data.FLAG=maskData;
+data.DBZ_MASKED=refl;
 
 %% Plot
 ylimits=[-0.5 6];

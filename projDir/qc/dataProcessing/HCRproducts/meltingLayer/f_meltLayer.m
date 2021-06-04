@@ -168,9 +168,9 @@ rightAlt=(data.altitude(tempDataY)-data.TOPO(tempDataY))*2;
 
 altMat=repmat(rightAlt,size(data.asl(:,tempDataY),1),1);
 % Lower limit
-blMask(data.asl(:,tempDataY)<(altMat-600))=0;
+blMask(data.range(:,tempDataY)<(altMat-600))=0; % Used to be blMask(data.asl(:,tempDataY)<(altMat-600))=0; but I believe that is wrong
 % Upper limit
-blMask(data.asl(:,tempDataY)>(altMat+600))=0;
+blMask(data.range(:,tempDataY)>(altMat+600))=0; % Used to be blMask(data.asl(:,tempDataY)>(altMat+600))=0; but I believe that is wrong
 
 LDRdata(blMask==1)=nan;
 VELdata(blMask==1)=nan;

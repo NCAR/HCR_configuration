@@ -4,9 +4,14 @@ function [echoMask antStat] = echoMask(data)
 
 antStat=nan(size(data.time));
 
-downInd=find(data.elevation<-89.5);
+downInd=find(movmean(data.elevation,10)<-88);
 antStat(downInd)=0;
-upInd=find(data.elevation>89.5);
+upInd=find(movmean(data.elevation,10)>88);
+antStat(upInd)=1;
+
+downInd=find(movmean(data.elevation,500)<-88 & isnan(antStat));
+antStat(downInd)=0;
+upInd=find(movmean(data.elevation,500)>88 & isnan(antStat));
 antStat(upInd)=1;
 
 antDiff=diff(data.elevation);
@@ -41,7 +46,7 @@ if ~isempty(ones1) | ~isempty(minones1)
     antStat(scan==1)=3;
 end
 
-antStat(isnan(antStat))=2; % Scanning
+antStat(isnan(antStat))=2; % pointing
 
 echoMask=nan(size(data.DBZ));
 
@@ -124,19 +129,25 @@ end
 
 blMask(data.DBZ<-20 & data.WIDTH>1.4)=1;
 
+% Remove small areas
+blMask=bwareaopen(blMask,10);
+
+% Fill holes
+blMask=imfill(blMask,'holes');
+
 % Only within right altitude
 if isfield(data,'topo')
-    rightAlt=data.altitude-data.topo;
+    rightAlt=(data.altitude-data.topo)*2;
 elseif isfield(data,'TOPO')
-    rightAlt=data.altitude-data.TOPO;
+    rightAlt=(data.altitude-data.TOPO)*2;
 else
-    rightAlt=data.altitude;
+    rightAlt=data.altitude*2;
 end
 altMat=repmat(rightAlt,size(data.range,1),1);
 % Lower limit
-blMask(data.range<(altMat-100))=0;
+blMask(data.range<(altMat-600))=0;
 % Upper limit
-blMask(data.range>(altMat+2500))=0;
+blMask(data.range>(altMat+600))=0;
 
 % Only when scanning up
 blMask(:,find(data.elevation<0))=0;
@@ -191,6 +202,15 @@ noSurfInds(isnan(dbzRatio))=1;
 oceanInds=any(echoMask==7,1);
 oceanLowInds=find(linInSurfDBZ<10000 & oceanInds==1);
 noSurfInds(oceanLowInds)=1;
+
+% Not when last range is higher than topo
+lastAsl=data.asl(end,:);
+diffLast=lastAsl-data.TOPO;
+noSurfInds(lastAsl-data.TOPO>0)=0;
+
+% Not when last index is cloud
+lowest=echoMask(end,:);
+noSurfInds(lowest==1)=0;
 
 noSurfInds(linAboveSurf<300)=0;
 noSurfInds(~isnan(outRangePix))=0;

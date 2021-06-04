@@ -3,35 +3,31 @@
 clear all;
 close all;
 
-startTime=datetime(2019,10,1,14,37,0);
-endTime=datetime(2019,10,1,14,41,0);
+startTime=datetime(2021,5,29,18,30,0);
+endTime=datetime(2021,5,29,19,30,0);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Input variables %%%%%%%%%%%%%%%%%%%%%%%%%%
 
-project='otrec'; %socrates, aristo, cset
-quality='qc1'; %field, qc1, or qc2
+project='spicule'; %socrates, aristo, cset
+quality='qc0'; %field, qc1, or qc2
 freqData='10hz'; % 10hz, 100hz, or 2hz
-addName=''; % Extra name part for output files. Default is ''.
-whichModel='era5';
+qcVersion='v0.1';
 
-addpath('~/gitPriv/process_HCR/oceanScans/functions/');
-addpath('~/gitPriv/process_HCR/oceanScans/colormaps/');
-addpath('~/gitPriv/process_HCR/NSCAL/functions/');
-addpath(genpath('~/gitPriv/utils/'));
+addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-figdir=['/h/eol/romatsch/hcrCalib/mask/'];
+figdir=['/scr/sleet2/rsfdata/projects/spicule/hcr/qc0/cfradial/v0.1/flagPlots/'];
 
 if ~exist(figdir, 'dir')
     mkdir(figdir)
 end
 
-directories.dataDir=HCRdir(project,quality,freqData);
+directories.dataDir=HCRdir(project,quality,qcVersion,freqData);
 
-if strcmp(whichModel,'era5')
-    directories.modeldir=['/scr/sci/romatsch/data/reanalysis/ecmwf/era5interp/',project,'/',freqData,'/'];
-elseif strcmp(whichModel,'ecmwf')
-    directories.modeldir=['/scr/sci/romatsch/data/reanalysis/ecmwf/forecastInterp/',project,'/',freqData,'/'];
-end
+% if strcmp(whichModel,'era5')
+%     directories.modeldir=['/scr/sci/romatsch/data/reanalysis/ecmwf/era5interp/',project,'/',freqData,'/'];
+% elseif strcmp(whichModel,'ecmwf')
+%     directories.modeldir=['/scr/sci/romatsch/data/reanalysis/ecmwf/forecastInterp/',project,'/',freqData,'/'];
+% end
 
 %% Load data
 
@@ -44,7 +40,7 @@ data.WIDTH=[];
 data.DBMVC=[];
 %data.SNR=[];
 %data.NCP=[];
-data.LDR=[];
+%data.LDR=[];
 data.TOPO=[];
 
 dataVars=fieldnames(data);
@@ -82,7 +78,7 @@ maskPlot(maskData==0)=nan;
 data.FLAG=maskData;
 
 %% Plot
-ylimits=[-0.5 10];
+ylimits=[-0.5 15];
 
 ytickLabels={'Cloud (1)';'Speckle (2)';'Extinct (3)';'Backlobe (4)';'Out of range (5)';...
     'Bang (6)';'Water (7)';'Land (8)';'Below surf. (9)';...

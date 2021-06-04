@@ -5,15 +5,15 @@ close all;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Input variables %%%%%%%%%%%%%%%%%%%%%%%%%%
 
-project='socrates'; %socrates, aristo, cset
-quality='qc2'; %field, qc1, or qc2
+project='spicule'; %socrates, aristo, cset
+quality='qc0'; %field, qc1, or qc2
 freqData='10hz'; % 10hz, 100hz, or 2hz
-addName=''; % Extra name part for output files. Default is ''.
-whichModel='era5';
+qcVersion='v0.1';
+whichModel='ecmwf';
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-directories.dataDir=HCRdir(project,quality,freqData);
+directories.dataDir=HCRdir(project,quality,qcVersion,freqData);
 
 [~,directories.modeldir]=modelDir(project,whichModel,freqData);
 
