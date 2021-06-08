@@ -4,49 +4,63 @@ function [echoMask antStat] = echoMask(data)
 
 antStat=nan(size(data.time));
 
-downInd=find(movmean(data.elevation,10)<-88);
-antStat(downInd)=0;
-upInd=find(movmean(data.elevation,10)>88);
-antStat(upInd)=1;
+% Find transition areas
+% Find areas with large standard deviation
+movStd=movstd(data.elevation,100);
+stdFake=zeros(size(movStd));
+stdFake(movStd>5)=movStd(movStd>5);
 
-downInd=find(movmean(data.elevation,500)<-88 & isnan(antStat));
-antStat(downInd)=0;
-upInd=find(movmean(data.elevation,500)>88 & isnan(antStat));
-antStat(upInd)=1;
+% Find the peaks with maximum Std
+[peakTrans,locs] = findpeaks(stdFake);
+% Broaden the peaks
+broadPeak=nan(size(stdFake));
+broadPeak(locs)=1;
+broadPeak=movmean(broadPeak,70,'omitnan');
 
+% Find areas with lots of antenna movement around std peaks
 antDiff=diff(data.elevation);
+antDiff=cat(2,0,antDiff);
+findTrans=abs(movmean(antDiff,10));
 
-scan=zeros(size(data.time));
-scanInd=find(movmean(abs(antDiff),60)>0.1);
-scan(scanInd)=1;
+% Transision zones
+antStat(findTrans>0.2 & broadPeak==1)=4;
 
-transInd=find(abs(antDiff)>2);
-antStat(transInd)=4;
+% Loop through contiguous non transition areas and classify them
+nonTransMask=ones(size(antStat));
+nonTransMask(antStat==4)=0;
 
-scan(transInd)=0;
-ssdiff=diff(scan);
-ones1=find(ssdiff==1);
-minones1=find(ssdiff==-1);
+nonTransAreas=bwconncomp(nonTransMask);
 
-if ~isempty(ones1) | ~isempty(minones1)
-    if ones1(1)>minones1(1)
-        ones1=cat(2,1,ones1);
+% Start loop
+for ii=1:nonTransAreas.NumObjects
+    if length(nonTransAreas.PixelIdxList{ii})<=10 % If the stretch is too short, set to transition
+        antStat(nonTransAreas.PixelIdxList{ii})=4;
+    elseif std(data.elevation(nonTransAreas.PixelIdxList{ii}))>2 % If std of stretch is too large, set to transition
+        antStat(nonTransAreas.PixelIdxList{ii})=4;
+    elseif median(data.elevation(nonTransAreas.PixelIdxList{ii}))>88 % Up pointing
+        antStat(nonTransAreas.PixelIdxList{ii})=1;
+    elseif median(data.elevation(nonTransAreas.PixelIdxList{ii}))<-88 % Down pointing
+        antStat(nonTransAreas.PixelIdxList{ii})=0;
+    else
+        antStat(nonTransAreas.PixelIdxList{ii})=2; % Pointing
     end
-    if length(ones1)~=length(minones1)
-        minones1=cat(2,minones1,length(scan));
-    end
-    
-    for ii=1:length(ones1)
-        calLen=minones1(ii)-ones1(ii);
-        if calLen<60
-            scan(ones1(ii)+1:minones1(ii))=0;
-        end
-    end
-    
-    antStat(scan==1)=3;
 end
 
-antStat(isnan(antStat))=2; % pointing
+% Find scanning
+scanRate=abs(data.elevation(4:end)-data.elevation(1:end-3));
+scanRate=cat(2,0,scanRate,0,0);
+scanMask=zeros(size(scanRate));
+scanMask(scanRate>0.5)=1;
+scanMaskFilt=modefilt(scanMask,[1,99]);
+
+% Again we loop through scanning stretches
+scanAreas=bwconncomp(scanMaskFilt);
+
+for ii=1:scanAreas.NumObjects
+    if length(scanAreas.PixelIdxList{ii})>500 % If the stretch is too short, set to transition
+        antStat(scanAreas.PixelIdxList{ii})=3;
+    end
+end
 
 echoMask=nan(size(data.DBZ));
 
