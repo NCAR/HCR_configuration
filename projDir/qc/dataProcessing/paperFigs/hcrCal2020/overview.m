@@ -7,7 +7,7 @@ figdir=['/h/eol/romatsch/papers/HCRcalibration/figs/'];
 loadData=1;
 
 wi=10;
-hi=8;
+hi=10;
 
 fig1=figure('DefaultAxesFontSize',11,'DefaultFigurePaperType','<custom>','units','inch','position',[690,100,wi,hi],'renderer','painters');
 fig1.PaperPositionMode = 'manual';
@@ -21,14 +21,15 @@ fig1.InvertHardcopy = 'off';
 set(fig1,'color','w');
 
 %% Conceptual drawing
-conc=imread('/h/eol/romatsch/papers/HCRcalibration/figs/HCR_concept.png');
+conc=imread('/h/eol/romatsch/papers/HCRcalibration/figs/HCR.jpg');
+concSmall=conc(900:1330,700:2850,:);
 
 s1=subplot(3,1,1);
-imshow(conc);
+imshow(concSmall);
 
 %% Foto
 foto=imread('/h/eol/romatsch/papers/HCRcalibration/figs/HCR_image5.jpg');
-fotoSmall=foto(170:end,100:end,:);
+fotoSmall=foto(170:end,300:end,:);
 
 s2=subplot(3,2,3);
 imshow(fotoSmall);
@@ -203,15 +204,24 @@ if loadData
     end    
 end
 
-s1.Position = [-0.01 0.59 1.03 0.6];
-s2.Position=[0.01 0.46 0.4 0.36];
-s3.Position=[0.475 0.445 0.5 0.31];
-s4.Position=[0.06 0.065 0.36 0.38];
-s5.Position=[0.475 0.065 0.5 0.31];
+s1.Position = [0.01 0.59 0.98 0.6];
+s2.Position=[0.01 0.43 0.4 0.36];
+s3.Position=[0.475 0.42 0.5 0.31];
+s4.Position=[0.06 0.05 0.36 0.38];
+s5.Position=[0.475 0.05 0.5 0.31];
 
-text(30,-450,'(a)','fontsize',12,'fontweight','bold');
+text(30,-550,'(a)','fontsize',12,'fontweight','bold');
 text(30,52,'(b)','fontsize',12,'fontweight','bold','BackgroundColor',[1 1 1],'EdgeColor',[0 0 0]);
-text(360,450,'HCR','fontsize',12,'fontweight','bold','BackgroundColor',[1 1 1],'EdgeColor',[0 0 0]);
-annotation('arrow',[0.185 0.208],[0.585,0.571],'Linewidth',2,'color',[1 1 1]);
+text(200,450,'HCR','fontsize',12,'fontweight','bold','BackgroundColor',[1 1 1],'EdgeColor',[0 0 0]);
+annotation('arrow',[0.145 0.172],[0.555,0.545],'Linewidth',2,'color',[1 1 1]);
+
+text(10,-60,'Cooling exhaust','fontsize',10,'BackgroundColor',[1 1 1],'EdgeColor',[0 0 0]);
+text(310,-60,'Data system','fontsize',10,'BackgroundColor',[1 1 1],'EdgeColor',[0 0 0]);
+text(560,-60,'Klystron power','fontsize',10,'BackgroundColor',[1 1 1],'EdgeColor',[0 0 0]);
+text(900,-60,'Radar front end','fontsize',10,'BackgroundColor',[1 1 1],'EdgeColor',[0 0 0]);
+text(1200,-60,'Cooling inlet','fontsize',10,'BackgroundColor',[1 1 1],'EdgeColor',[0 0 0]);
+text(1460,-60,'Antenna','fontsize',10,'BackgroundColor',[1 1 1],'EdgeColor',[0 0 0]);
+text(1750,-60,'Reflector','fontsize',10,'BackgroundColor',[1 1 1],'EdgeColor',[0 0 0]);
+text(2000,-60,'Inertial nav head','fontsize',10,'BackgroundColor',[1 1 1],'EdgeColor',[0 0 0]);
 
 print(fig1, [figdir,'overview.png'],'-dpng','-r0');

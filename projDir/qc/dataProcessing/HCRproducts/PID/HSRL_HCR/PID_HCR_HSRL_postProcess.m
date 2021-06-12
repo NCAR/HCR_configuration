@@ -124,7 +124,6 @@ for aa=1:length(caseStart)
         wt_exp(data.HCR_DBZ > -15)=0.68;
         
         att_cumul=2.*0.0192*cumsum((wt_coef.*Z_95_lin.^wt_exp),1,'omitnan');
-        att_cumul(data.HCR_DBZ < -200)=NaN;
         dBZ_cor_all=data.HCR_DBZ+att_cumul;
         
         % Replace dBZ values with attenuation corrected values in liquid and

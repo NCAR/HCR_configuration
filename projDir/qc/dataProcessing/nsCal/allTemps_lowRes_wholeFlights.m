@@ -84,7 +84,7 @@ for jj=1:size(caseList,1)
     
     xlim([timeTemp(1) timeTemp(end)]);
     yticks(-100:10:100);
-    ylim([20 80])
+    ylim([10 80])
     ylabel('Temperature [C]');
     legend('PentekFpga','PentekBoard','Ps28V','Orientation','horizontal','location','northwest');
     grid on
@@ -98,7 +98,7 @@ for jj=1:size(caseList,1)
         
     xlim([timeTemp(1) timeTemp(end)]);
     yticks(-100:10:100);
-    ylim([10 50])
+    ylim([-10 50])
     ylabel('Temperature [C]');
     legend('VLna','HLna','Xmitter','Orientation','horizontal','location','northwest');
     grid on
@@ -116,7 +116,7 @@ for jj=1:size(caseList,1)
     
     xlim([timeTemp(1) timeTemp(end)]);
     yticks(-100:10:100);
-    ylim([0 60])
+    ylim([-20 60])
     ylabel('Temperature [C]');
     legend('RotationMotor','TiltMotor','Eik','PolarizationSwitch','RfDetector','NoiseSource','Plo','RdsInDuct','Orientation','horizontal','location','northwest');
     grid on
@@ -128,7 +128,7 @@ for jj=1:size(caseList,1)
     
     xlim([timeTemp(1) timeTemp(end)]);
     yticks(-100:10:100);
-    ylim([-20 50])
+    ylim([-30 50])
     ylabel('Temperature [C]');
     legend('Ins','Tailcone','Orientation','horizontal','location','northwest');
     grid on
