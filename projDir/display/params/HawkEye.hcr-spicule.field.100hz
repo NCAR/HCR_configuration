@@ -70,7 +70,7 @@ register_with_procmap = FALSE;
 // Type: string
 //
 
-instance = "hcr-spicule.10hz";
+instance = "hcr-spicule.100hz";
 
 //======================================================================
 //
@@ -110,7 +110,7 @@ input_mode = IWRF_FMQ_INPUT;
 // Type: string
 //
 
-input_fmq_url = "fmqp:://localhost::fmq/moments/10hz/shmem_20010";
+input_fmq_url = "fmqp:://localhost::fmq/moments/100hz/shmem_20010";
 
 ///////////// seek_to_start_of_fmq ////////////////////
 //
@@ -214,7 +214,7 @@ archive_time_span_secs = 3600;
 // Type: string
 //
 
-archive_data_url = "/scr/sleet2/rsfdata/projects/spicule/hcr/cfradial/moments/10hz";
+archive_data_url = "/scr/sleet2/rsfdata/projects/spicule/hcr/cfradial/moments/100hz";
 
 //======================================================================
 //
@@ -536,7 +536,7 @@ override_radar_name = TRUE;
 // Type: string
 //
 
-radar_name = "HCR-10hz";
+radar_name = "HCR-100hz";
 
 ///////////// display_site_name ///////////////////////
 //
