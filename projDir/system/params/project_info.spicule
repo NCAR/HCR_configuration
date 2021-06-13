@@ -1,0 +1,27 @@
+#############################################
+# project-specific parameters for SPICULE
+#############################################
+
+# set up the environment for HCR processing for spicule
+
+setenv PROJECT_NAME spicule
+
+setenv  BSCAN_MAX_ALTITUDE_KM      12.5
+setenv  BSCAN_MIN_ALTITUDE_KM      0
+
+setenv PROJ_DIR ~/git/HCR_configuration/projDir
+setenv DATA_DIR  /scr/sleet2/rsfdata/projects/spicule/hcr
+setenv LOG_DIR $HOME/logs
+setenv QC_VERSION qc0
+
+# make sure the output dirs exist
+
+mkdir -p $DATA_DIR
+mkdir -p $DATA_DIR/logs
+mkdir -p $LOG_DIR
+
+# length of wave filter for HcrVelCorrect 
+# This is commented because velcorr is run from matlab
+# setenv WAVE_FILTER_LENGTH_SECS 20
+
+
