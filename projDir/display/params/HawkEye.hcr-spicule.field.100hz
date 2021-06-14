@@ -70,7 +70,7 @@ register_with_procmap = FALSE;
 // Type: string
 //
 
-instance = "hcr-spicule.100hz";
+instance = "hcr-spicule.field.100hz";
 
 //======================================================================
 //

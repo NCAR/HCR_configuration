@@ -70,7 +70,7 @@ register_with_procmap = FALSE;
 // Type: string
 //
 
-instance = "hcr-spicule.field.10hz";
+instance = "hcr-spicule.qc0.10hz";
 
 //======================================================================
 //
@@ -190,7 +190,7 @@ begin_in_archive_mode = TRUE;
 // Type: string
 //
 
-archive_start_time = "2021 06 11 22 58 00";
+archive_start_time = "2021 06 02 23 35 00";
 
 ///////////// archive_time_span_secs //////////////////
 //
@@ -214,7 +214,7 @@ archive_time_span_secs = 3600;
 // Type: string
 //
 
-archive_data_url = "/scr/sleet2/rsfdata/projects/spicule/hcr/cfradial/moments/10hz";
+archive_data_url = "/scr/sleet2/rsfdata/projects/spicule/hcr/qc0/cfradial/v0.1/10hz";
 
 //======================================================================
 //
@@ -353,6 +353,24 @@ fields = {
   }
   ,
   {
+    label = "DBZ_MASKED",
+    raw_name = "DBZ_MASKED",
+    filtered_name = "",
+    units = "dBZ",
+    color_map = "dbz_w.colors",
+    shortcut = "1"
+  }
+  ,
+  {
+    label = "VEL_CORR",
+    raw_name = "VEL_CORR",
+    filtered_name = "",
+    units = "m/s",
+    color_map = "vel_w_8.colors",
+    shortcut = "2"
+  }
+  ,
+  {
     label = "VEL",
     raw_name = "VEL",
     filtered_name = "",
@@ -380,17 +398,35 @@ fields = {
   }
   ,
   {
-    label = "SNRVC",
-    raw_name = "SNRVC",
+    label = "WIDTH_RAW",
+    raw_name = "WIDTH_RAW",
+    filtered_name = "",
+    units = "m/s",
+    color_map = "width_w.colors",
+    shortcut = "6"
+  }
+  ,
+  {
+    label = "NCP",
+    raw_name = "NCP",
+    filtered_name = "",
+    units = "",
+    color_map = "ncp.colors",
+    shortcut = "7"
+  }
+  ,
+  {
+    label = "LDR",
+    raw_name = "LDR",
     filtered_name = "",
     units = "dB",
-    color_map = "snr.colors",
+    color_map = "ldr.colors",
     shortcut = "8"
   }
   ,
   {
-    label = "SNRHX",
-    raw_name = "SNRHX",
+    label = "SNR",
+    raw_name = "SNR",
     filtered_name = "",
     units = "dB",
     color_map = "snr.colors",
@@ -403,7 +439,7 @@ fields = {
     filtered_name = "",
     units = "dBm",
     color_map = "dbm.colors",
-    shortcut = "c"
+    shortcut = "a"
   }
   ,
   {
@@ -412,25 +448,52 @@ fields = {
     filtered_name = "",
     units = "dBm",
     color_map = "dbm.colors",
+    shortcut = "b"
+  }
+  ,
+  {
+    label = "TEMP",
+    raw_name = "TEMP",
+    filtered_name = "",
+    units = "C",
+    color_map = "temp.colors",
+    shortcut = "c"
+  }
+  ,
+  {
+    label = "PRESS",
+    raw_name = "PRESS",
+    filtered_name = "",
+    units = "hPa",
+    color_map = "pressure_xml.colors",
     shortcut = "d"
   }
   ,
   {
-    label = "NCP",
-    raw_name = "NCP",
+    label = "RH",
+    raw_name = "RH",
+    filtered_name = "",
+    units = "%",
+    color_map = "rh.colors",
+    shortcut = "e"
+  }
+  ,
+  {
+    label = "FLAG",
+    raw_name = "FLAG",
     filtered_name = "",
     units = "",
-    color_map = "ncp.colors",
+    color_map = "hcr_flag.colors",
     shortcut = "f"
   }
   ,
   {
-    label = "LDRV",
-    raw_name = "LDRV",
+    label = "FZLEVEL",
+    raw_name = "FREEZING_LEVEL",
     filtered_name = "",
-    units = "dB",
-    color_map = "ldr.colors",
-    shortcut = "i"
+    units = "",
+    color_map = "fzlevel.colors",
+    shortcut = "g"
   }
 };
 
