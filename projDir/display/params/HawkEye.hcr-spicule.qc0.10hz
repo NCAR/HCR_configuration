@@ -474,7 +474,7 @@ fields = {
     raw_name = "MELTING_LAYER",
     filtered_name = "",
     units = "",
-    color_map = "fzlevel.colors",
+    color_map = "melting_layer.colors",
     shortcut = "g"
   }
 };
