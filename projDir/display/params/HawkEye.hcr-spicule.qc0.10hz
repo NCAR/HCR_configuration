@@ -190,7 +190,7 @@ begin_in_archive_mode = TRUE;
 // Type: string
 //
 
-archive_start_time = "2021 06 02 23 35 00";
+archive_start_time = "2021 05 29 19 20 00";
 
 ///////////// archive_time_span_secs //////////////////
 //
@@ -353,15 +353,6 @@ fields = {
   }
   ,
   {
-    label = "DBZ_MASKED",
-    raw_name = "DBZ_MASKED",
-    filtered_name = "",
-    units = "dBZ",
-    color_map = "dbz_w.colors",
-    shortcut = "1"
-  }
-  ,
-  {
     label = "VEL_CORR",
     raw_name = "VEL_CORR",
     filtered_name = "",
@@ -395,15 +386,6 @@ fields = {
     units = "m/s",
     color_map = "width_w.colors",
     shortcut = "5"
-  }
-  ,
-  {
-    label = "WIDTH_RAW",
-    raw_name = "WIDTH_RAW",
-    filtered_name = "",
-    units = "m/s",
-    color_map = "width_w.colors",
-    shortcut = "6"
   }
   ,
   {
@@ -488,8 +470,8 @@ fields = {
   }
   ,
   {
-    label = "FZLEVEL",
-    raw_name = "FREEZING_LEVEL",
+    label = "MELTING_LAYER",
+    raw_name = "MELTING_LAYER",
     filtered_name = "",
     units = "",
     color_map = "fzlevel.colors",
