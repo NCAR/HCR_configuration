@@ -6,6 +6,9 @@ data.VEL_CORR(data.elevation>0)=-data.VEL_CORR(data.elevation>0);
 %   Membership functions for particle detection
 % 1:Beta  2:Delta
 
+plotMR=1;
+plotMax=1;
+
 w=[40 15 10 10 25];%w=[30 15 15 20 20];
 
 % pid_hcr
@@ -17,7 +20,9 @@ w=[40 15 10 10 25];%w=[30 15 15 20 20];
 %  6 Snow
 %  7 Wet snow/rimed ice
 
-result=nan(7,size(data.LDR,1),size(data.LDR,2));
+if plotMR
+    result=nan(7,size(data.LDR,1),size(data.LDR,2));
+end
 
 %  Membership functions for cloud liquid
 m=nan(5,size(dBZ,1),size(dBZ,2));
@@ -28,7 +33,11 @@ m(4,:,:)=zmf(data.WIDTH,[0.1,0.2]);
 m(5,:,:)=smf(data.TEMP,[-1,2]);
 
 result(1,:,:)=m(1,:,:)*w(1)+m(2,:,:)*w(2)+m(3,:,:)*w(3)...
-        +m(4,:,:)*w(4)+m(5,:,:)*w(5);
+    +m(4,:,:)*w(4)+m(5,:,:)*w(5);
+
+if plotMR
+    plotMresult(data,m,result(1,:,:),'CloudLiquid');
+end
 
 %  Membership functions for drizzle
 m=nan(5,size(dBZ,1),size(dBZ,2));
@@ -39,7 +48,11 @@ m(4,:,:)=zmf(data.WIDTH,[0.1,0.2]);
 m(5,:,:)=smf(data.TEMP,[-27,-25]);
 
 result(2,:,:)=m(1,:,:)*w(1)+m(2,:,:)*w(2)+m(3,:,:)*w(3)...
-        +m(4,:,:)*w(4)+m(5,:,:)*w(5);
+    +m(4,:,:)*w(4)+m(5,:,:)*w(5);
+
+if plotMR
+    plotMresult(data,m,result(2,:,:),'Drizzle');
+end
 
 %  Membership functions for rain
 m=nan(5,size(dBZ,1),size(dBZ,2));
@@ -50,7 +63,11 @@ m(4,:,:)=smf(data.WIDTH,[0.2,0.3]);
 m(5,:,:)=smf(data.TEMP,[-1,2]);
 
 result(3,:,:)=m(1,:,:)*w(1)+m(2,:,:)*w(2)+m(3,:,:)*w(3)...
-        +m(4,:,:)*w(4)+m(5,:,:)*w(5);
+    +m(4,:,:)*w(4)+m(5,:,:)*w(5);
+
+if plotMR
+    plotMresult(data,m,result(3,:,:),'Rain');
+end
 
 %  Membership functions for SLW
 m=nan(5,size(dBZ,1),size(dBZ,2));
@@ -61,7 +78,11 @@ m(4,:,:)=zmf(data.WIDTH,[0.1,0.2]);
 m(5,:,:)=zmf(data.TEMP,[-2,0]);
 
 result(4,:,:)=m(1,:,:)*w(1)+m(2,:,:)*w(2)+m(3,:,:)*w(3)...
-        +m(4,:,:)*w(4)+m(5,:,:)*w(5);
+    +m(4,:,:)*w(4)+m(5,:,:)*w(5);
+
+if plotMR
+    plotMresult(data,m,result(4,:,:),'SLW');
+end
 
 %  Membership functions for ice
 m=nan(5,size(dBZ,1),size(dBZ,2));
@@ -72,7 +93,11 @@ m(4,:,:)=zmf(data.WIDTH,[0.7,0.9]);
 m(5,:,:)=zmf(data.TEMP,[-2,0]);
 
 result(5,:,:)=m(1,:,:)*w(1)+m(2,:,:)*w(2)+m(3,:,:)*w(3)...
-        +m(4,:,:)*w(4)+m(5,:,:)*w(5);
+    +m(4,:,:)*w(4)+m(5,:,:)*w(5);
+
+if plotMR
+    plotMresult(data,m,result(5,:,:),'Ice');
+end
 
 %  Membership functions for snow
 m=nan(5,size(dBZ,1),size(dBZ,2));
@@ -83,7 +108,11 @@ m(4,:,:)=smf(data.WIDTH,[0.2, 0.3]);
 m(5,:,:)=zmf(data.TEMP,[-2,0]);
 
 result(6,:,:)=m(1,:,:)*w(1)+m(2,:,:)*w(2)+m(3,:,:)*w(3)...
-        +m(4,:,:)*w(4)+m(5,:,:)*w(5);
+    +m(4,:,:)*w(4)+m(5,:,:)*w(5);
+
+if plotMR
+    plotMresult(data,m,result(6,:,:),'Snow');
+end
 
 %  Membership functions for snow/rimed ice
 m=nan(5,size(dBZ,1),size(dBZ,2));
@@ -94,12 +123,16 @@ m(4,:,:)=smf(data.WIDTH,[0.2, 0.3]);
 m(5,:,:)=trapmf(data.TEMP,[-5,-3,2,4]);
 
 result(7,:,:)=m(1,:,:)*w(1)+m(2,:,:)*w(2)+m(3,:,:)*w(3)...
-        +m(4,:,:)*w(4)+m(5,:,:)*w(5);
-
-clear m
+    +m(4,:,:)*w(4)+m(5,:,:)*w(5);
 
 inoldr=find(isnan(data.LDR));
 result(7,inoldr)=0;
+
+if plotMR
+    plotMresult(data,m,result(7,:,:),'WetSnowRimedIce');
+end
+
+clear m
 
 max1=squeeze(nanmax(result,[],1));
 maxMat=repmat(max1,[1,1,7]);
@@ -113,6 +146,10 @@ classOut=nan(size(data.LDR));
 for ii=1:7
     testMat=squeeze(zerosMat(ii,:,:));
     classOut(isnan(classOut) & testMat==1)=ii;
+end
+
+if plotMax
+    plotResMax(data,result,max1);
 end
 
 clearvars -except data classOut postProcess
