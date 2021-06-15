@@ -189,7 +189,7 @@ timeIZeroAll={};
 
 % Transition length should be 600 seconds
 resol=seconds(median(diff(data.time)));
-transLength=1/resol*600;
+transLength=round(1/resol*600);
 
 BBaltRawAll=cell(1,size(layerAltsAdj,1));
 

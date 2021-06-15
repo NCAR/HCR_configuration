@@ -6,8 +6,8 @@ data.VEL_CORR(data.elevation>0)=-data.VEL_CORR(data.elevation>0);
 %   Membership functions for particle detection
 % 1:Beta  2:Delta
 
-plotMR=1;
-plotMax=1;
+plotMR=0;
+plotMax=0;
 
 w=[40 15 10 10 25];%w=[30 15 15 20 20];
 

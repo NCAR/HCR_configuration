@@ -4,10 +4,11 @@ close all;
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-project='otrec'; % socrates, cset, aristo, otrec
-quality='qc1'; % field, qc1, qc2
+project='spicule'; % socrates, cset, aristo, otrec
+quality='qc0'; % field, qc1, qc2
+qcVersion='v0.1';
 freqData='10hz';
-whichModel='era5';
+whichModel='ecmwf';
 
 formatOut = 'yyyymmdd';
 
@@ -15,7 +16,7 @@ infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_
 
 caseList = table2array(readtable(infile));
 
-indir=HCRdir(project,quality,freqData);
+indir=HCRdir(project,quality,qcVersion,freqData);
 
 [~,modeldir]=modelDir(project,whichModel,freqData);
 
@@ -100,12 +101,18 @@ for ii=1:size(caseList,1)
             ncwriteatt(infile,'FLAG','long_name','data_flag');
             ncwriteatt(infile,'FLAG','standard_name','data_flag');
             ncwriteatt(infile,'FLAG','units','');
+            ncwriteatt(infile,'FLAG','flag_values',[1,2,3,4,5,6,7,8,9,10,11,12]);
+            ncwriteatt(infile,'FLAG','flag_meanings',...
+                'cloud speckle extinct backlobe out_of_range transmitter_pulse water_surface land_surface below_surface noise_source_cal antenna_transition missing');
             ncwriteatt(infile,'FLAG','grid_mapping','grid_mapping');
             ncwriteatt(infile,'FLAG','coordinates','time range');
                         
             ncwriteatt(infile,'ANTFLAG','long_name','antenna_flag');
             ncwriteatt(infile,'ANTFLAG','standard_name','antenna_flag');
             ncwriteatt(infile,'ANTFLAG','units','');
+            ncwriteatt(infile,'ANTFLAG','flag_values',[0,1,2,3,4]);
+            ncwriteatt(infile,'ANTFLAG','flag_meanings',...
+                'down up pointing scanning transition');
             ncwriteatt(infile,'ANTFLAG','coordinates','time');
             
         end

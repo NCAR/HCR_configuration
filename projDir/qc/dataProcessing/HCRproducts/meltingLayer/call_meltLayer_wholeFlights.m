@@ -3,18 +3,19 @@
 clear all;
 close all;
 
-project='otrec'; %socrates, otrec, cset
-quality='qc2'; %field, qc1, or qc2
+project='spicule'; %socrates, otrec, cset
+quality='qc0'; %field, qc1, or qc2
+qcVersion='v0.1';
 freqData='10hz'; % 10hz, 100hz
-whichModel='era5';
+whichModel='ecmwf';
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-%figdir=['/scr/snow1/rsfdata/projects/otrec/hcr/qc2/cfradial/final2/10hz/plots/'];
-figdir=['/home/romatsch/plots/HCR/meltingLayer/flights/',project,'/10hz/'];
+figdir=['/scr/sleet2/rsfdata/projects/spicule/hcr/qc0/cfradial/v0.1/meltLayerPlots/'];
+%figdir=['/home/romatsch/plots/HCR/meltingLayer/flights/',project,'/10hz/'];
 
-saveOffset=1;
-offsetIn=-200;
+saveOffset=0;
+offsetIn=-100;
 % If no data is found within one flight, take mean of previous flight (0)
 % or mean over all flights (1) which is given as offsetIn above.
 prevOrTotOffset=0;
@@ -25,12 +26,12 @@ end
 
 ylimits=[-0.2 8];
 
-%indir=HCRdir(project,quality,freqData);
-indir=HCRdirWFH(project,quality,freqData);
+indir=HCRdir(project,quality,qcVersion,freqData);
+%indir=HCRdirWFH(project,quality,freqData);
 
 [~,directories.modeldir]=modelDir(project,whichModel,freqData);
-%outdir=directories.modeldir;
-outdir=['/run/media/romatsch/RSF0006/rsf/meltingLayer/',project,'Mat/'];
+outdir=directories.modeldir;
+%outdir=['/run/media/romatsch/RSF0006/rsf/meltingLayer/',project,'Mat/'];
 
 infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_',project,'_data.txt'];
 
@@ -38,7 +39,7 @@ caseList = table2array(readtable(infile));
 
 zeroAdjust=offsetIn;
 
-for aa=4:size(caseList,1)
+for aa=1:size(caseList,1)
     disp(['Flight ',num2str(aa)]);
     disp('Loading HCR data.')
     disp(['Starting at ',datestr(datetime('now'),'yyyy-mm-dd HH:MM')]);

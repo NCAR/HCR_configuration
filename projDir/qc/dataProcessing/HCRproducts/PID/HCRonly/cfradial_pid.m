@@ -4,10 +4,10 @@ close all;
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-project='spicule'; % socrates, cset, aristo, otrec
-quality='qc0'; % field, qc1, qc2
+project='spicule'; %socrates, aristo, cset
+quality='qc0'; %field, qc1, or qc2
 qcVersion='v0.1';
-freqData='10hz';
+freqData='10hz'; % 10hz, 100hz, 2hz, or combined
 whichModel='ecmwf';
 
 formatOut = 'yyyymmdd';
@@ -17,8 +17,10 @@ infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_
 caseList = table2array(readtable(infile));
 
 indir=HCRdir(project,quality,qcVersion,freqData);
+%indir='/run/media/romatsch/RSF0006/rsf/pid_hcr/socrates/';
 
 [~,modeldir]=modelDir(project,whichModel,freqData);
+%modeldir='/run/media/romatsch/RSF0006/rsf/pid_hcr/socratesMat/';
 
 %% Run processing
 
@@ -35,7 +37,8 @@ for ii=1:size(caseList,1)
     if ~isempty(fileList)
         
         % Get model data
-        model.velCorr=[];
+        model=[];
+        model.pid=[];
         
         model=read_model(model,modeldir,startTime,endTime);
         timeModelNum=datenum(model.time);
@@ -63,7 +66,7 @@ for ii=1:size(caseList,1)
             end
             
             % Write output
-            fillVal=-9999;
+            fillVal=-99;
             
             modVars=fields(model);
             
@@ -85,23 +88,25 @@ for ii=1:size(caseList,1)
             
             % Define variables
             netcdf.reDef(ncid);
-            varidVEL = netcdf.defVar(ncid,'VEL_CORR','NC_FLOAT',[dimrange dimtime]);
-            netcdf.defVarFill(ncid,varidVEL,false,fillVal);
+            varidPID_HCR = netcdf.defVar(ncid,'PID','NC_SHORT',[dimrange dimtime]);
+            netcdf.defVarFill(ncid,varidPID_HCR,false,fillVal);
             netcdf.endDef(ncid);
-            
+                        
             % Write variables
-            netcdf.putVar(ncid,varidVEL,modOut.velCorr);
-                       
+            netcdf.putVar(ncid,varidPID_HCR,modOut.pid);
+                                   
             netcdf.close(ncid);
             
             % Write attributes
-            ncwriteatt(infile,'VEL_CORR','long_name','doppler_velocity_corrected_using_surface_measurement');
-            ncwriteatt(infile,'VEL_CORR','standard_name','radial_velocity_of_scatterers_away_from_instrument');
-            ncwriteatt(infile,'VEL_CORR','units','m/s');
-            ncwriteatt(infile,'VEL_CORR','comment','This field is computed by correcting the velocity using the measured velocity of the surface echo.');
-            ncwriteatt(infile,'VEL_CORR','grid_mapping','grid_mapping');
-            ncwriteatt(infile,'VEL_CORR','coordinates','time range');
                         
+            ncwriteatt(infile,'PID','long_name','particle_id_hcr');
+            ncwriteatt(infile,'PID','standard_name','hydrometeor_type');
+            ncwriteatt(infile,'PID','units','');
+            ncwriteatt(infile,'PID','flag_values',[1, 2, 3, 4, 5, 6, 7]);
+            ncwriteatt(infile,'PID','flag_meanings','cloud_liquid drizzle rain slw ice_crystals snow wet_snow_rimed_ice');
+            ncwriteatt(infile,'PID','grid_mapping','grid_mapping');
+            ncwriteatt(infile,'PID','coordinates','time range');
+                                    
         end
     end
 end

@@ -4,10 +4,11 @@ close all;
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-project='otrec'; % socrates, cset, aristo, otrec
-quality='qc2'; % field, qc1, qc2
+project='spicule'; % socrates, cset, aristo, otrec
+quality='qc0'; % field, qc1, qc2
+qcVersion='v0.1';
 freqData='10hz';
-whichModel='era5';
+whichModel='ecmwf';
 
 formatOut = 'yyyymmdd';
 
@@ -15,11 +16,11 @@ infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_
 
 caseList = table2array(readtable(infile));
 
-%indir=HCRdir(project,quality,freqData);
-indir=['/run/media/romatsch/RSF0006/rsf/meltingLayer/',project,'/10hz/'];
+indir=HCRdir(project,quality,qcVersion,freqData);
+%indir=['/run/media/romatsch/RSF0006/rsf/meltingLayer/',project,'/10hz/'];
 
-%[~,modeldir]=modelDir(project,whichModel,freqData);
-modeldir=['/run/media/romatsch/RSF0006/rsf/meltingLayer/',project,'Mat/'];
+[~,modeldir]=modelDir(project,whichModel,freqData);
+%modeldir=['/run/media/romatsch/RSF0006/rsf/meltingLayer/',project,'Mat/'];
 
 %% Run processing
 

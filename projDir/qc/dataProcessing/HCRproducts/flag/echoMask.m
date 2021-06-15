@@ -241,7 +241,7 @@ for ii=1:length(noSurfCols)
 end
 echoMask=flipud(maskTemp);
 
-%% Speckle
+%% Speckle (2)
 specCut=100;
 
 reflTemp=data.DBZ;
