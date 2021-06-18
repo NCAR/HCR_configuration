@@ -10,7 +10,7 @@ quality='qc2'; %field, qc1, or qc2
 qcVersion='v2.1';
 freqData='10hz'; % 10hz, 100hz, 2hz, or combined
 
-ylimits=[0 3];
+ylimits=[0 5];
 
 whichFilter=0; % 0: no filter, 1: mode filter, 2: coherence filter
 postProcess=0; % 1 if post processing is desired
@@ -29,7 +29,7 @@ caseStart=datetime(caseList.Var1,caseList.Var2,caseList.Var3, ...
 caseEnd=datetime(caseList.Var6,caseList.Var7,caseList.Var8, ...
     caseList.Var9,caseList.Var10,0);
 
-for aa=1:length(caseStart)
+for aa=11:length(caseStart)
     
     disp(['Case ',num2str(aa),' of ',num2str(length(caseStart))]);
     
