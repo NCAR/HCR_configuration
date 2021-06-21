@@ -18,7 +18,7 @@ caseList = table2array(readtable(infile));
 
 indir=HCRdir(project,quality,qcVersion,freq);
 
-for jj=7:size(caseList,1)
+for jj=8:size(caseList,1)
     
     disp(['Flight ',num2str(jj),' of ',num2str(size(caseList,1))]);
     startTime=datetime(caseList(jj,1:6));
