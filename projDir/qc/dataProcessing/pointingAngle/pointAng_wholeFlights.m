@@ -4,7 +4,7 @@
 clear all;
 close all;
 
-addpath(genpath('/h/eol/romatsch/gitPriv/utils/'));
+addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
 upwind_limit=2;
 crosswind_limit=2;
@@ -489,9 +489,9 @@ set(f3,'renderer','painters');
 set(f3,'Position',[200 500 1000 600]);
 
 plot(tiltErrorFlight,'linewidth',2)
-xlim([1 12])
+xlim([1 length(tiltErrorFlight)])
 ylim([-0.15 0.15])
-xticks(1:22)
+xticks(1:length(tiltErrorFlight))
 xlabel('Flight')
 ylabel('Mean tilt error (deg)')
 grid on

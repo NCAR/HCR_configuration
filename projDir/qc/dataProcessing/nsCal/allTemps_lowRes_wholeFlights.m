@@ -3,7 +3,7 @@
 clear all;
 close all;
 
-addpath(genpath('/h/eol/romatsch/gitPriv/utils/'));
+addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
 project='spicule'; % socrates, cset, aristo, otrec
 quality='field'; % field, qc0, qc1, qc2
@@ -18,7 +18,7 @@ caseList = table2array(readtable(infile));
 
 indir=HCRdir(project,quality,qcVersion,freq);
 
-for jj=8:size(caseList,1)
+for jj=9:size(caseList,1)
     
     disp(['Flight ',num2str(jj),' of ',num2str(size(caseList,1))]);
     startTime=datetime(caseList(jj,1:6));

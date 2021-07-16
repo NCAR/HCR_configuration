@@ -20,7 +20,7 @@ for ii=1:size(vars,1)
     try
         indata.(vars{ii})=ncread(infile,vars{ii});
     catch
-        disp(['Variable ' vars{ii} ' does not exist in CfRadial file.']);
+        disp(['Variable ' vars{ii} ' does not exist in CfRadial file ',infile]);
         indata=rmfield(indata,vars{ii});
     end
 end
