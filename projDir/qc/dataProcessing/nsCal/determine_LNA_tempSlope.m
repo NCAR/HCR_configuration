@@ -3,11 +3,11 @@
 clear all;
 close all;
 
-project='otrec';
+project='spicule';
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-figdir=['/h/eol/romatsch/hcrCalib/nsCal/figs/qc2/' project '/lnaTemps/'];
+figdir=['/h/eol/romatsch/hcrCalib/nsCal/figs/qc1/' project '/lnaTemps/'];
 
 if strcmp(project,'socrates')
     indir='/scr/snow2/rsfdata/projects/socrates/hcr/cfradial/moments/10hz/'; %socrates
@@ -21,6 +21,9 @@ elseif strcmp(project,'aristo')
 elseif strcmp(project,'otrec')
     indir='/scr/snow1/rsfdata/projects/otrec/hcr/qc0/cfradial/moments/100hz/'; % otrec field
     highResTempDir='/scr/snow1/rsfdata/projects/otrec/hcr/txt/';
+elseif strcmp(project,'spicule')
+    indir='/scr/sleet2/rsfdata/projects/spicule/hcr/cfradial/moments/100hz/'; % spicule field
+    highResTempDir='/scr/sleet2/rsfdata/projects/spicule/hcr/txt/';
 else
     disp('Project name not valid.')
     return
