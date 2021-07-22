@@ -4,11 +4,11 @@
 clear all;
 close all;
 
-project='otrec';
+project='spicule';
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-figdir=['/h/eol/romatsch/hcrCalib/nsCal/figs/qc2/' project '/podTemps/'];
+figdir=['/h/eol/romatsch/hcrCalib/nsCal/figs/qc1/' project '/podTemps/'];
 
 if strcmp(project,'socrates')
     indir='/scr/snow2/rsfdata/projects/socrates/hcr/cfradial/moments/10hz/'; %socrates
@@ -22,6 +22,9 @@ elseif strcmp(project,'aristo')
 elseif strcmp(project,'otrec')
     indir='/scr/snow1/rsfdata/projects/otrec/hcr/qc0/cfradial/moments/100hz/'; % otrec field
     highResTempDir='/scr/snow1/rsfdata/projects/otrec/hcr/txt/';
+elseif strcmp(project,'spicule')
+    indir='/scr/sleet2/rsfdata/projects/spicule/hcr/cfradial/moments/100hz/'; % spicule field
+    highResTempDir='/scr/sleet2/rsfdata/projects/spicule/hcr/qc0/txt/';
 else
     disp('Project name not valid.')
     return
@@ -54,6 +57,8 @@ elseif strcmp(project,'cset') | strcmp(project,'aristo')
     %[refTemp refTempStd]=f_getRefTemp(['/scr/snow2/rsfdata/projects/cset/hcr/cfradial/moments/10hz/20140825/'],datetime(2014,8,25,22,30,0),datetime(2014,8,25,23,0,0),'vlnaTemp');
     [refTemp refTempStd]=f_getRefTemp(['/scr/snow2/rsfdata/projects/cset/hcr/cfradial/moments/10hz/20160822/'],datetime(2016,8,22,21,0,0),datetime(2016,8,22,22,0,0),'vlnaTemp');
 elseif strcmp(project,'otrec')
+    [refTemp refTempStd]=f_getRefTemp(['/scr/snow1/rsfdata/projects/otrec/hcr/cfradial/moments/10hz/20190619/'],datetime(2019,6,19,20,0,0),datetime(2019,6,19,22,0,0),'vlnaTemp');
+elseif strcmp(project,'spicule')
     [refTemp refTempStd]=f_getRefTemp(['/scr/snow1/rsfdata/projects/otrec/hcr/cfradial/moments/10hz/20190619/'],datetime(2019,6,19,20,0,0),datetime(2019,6,19,22,0,0),'vlnaTemp');
 end
 

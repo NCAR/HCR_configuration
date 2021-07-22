@@ -3,6 +3,8 @@
 clear all;
 close all;
 
+dispFig='off';
+
 project='spicule';
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
@@ -23,7 +25,7 @@ elseif strcmp(project,'otrec')
     highResTempDir='/scr/snow1/rsfdata/projects/otrec/hcr/txt/';
 elseif strcmp(project,'spicule')
     indir='/scr/sleet2/rsfdata/projects/spicule/hcr/cfradial/moments/100hz/'; % spicule field
-    highResTempDir='/scr/sleet2/rsfdata/projects/spicule/hcr/txt/';
+    highResTempDir='/scr/sleet2/rsfdata/projects/spicule/hcr/qc0/txt/';
 else
     disp('Project name not valid.')
     return
@@ -57,7 +59,7 @@ powerDiff=[];
 TempAll=[];
 dbmvcAll=[];
 
-f1=figure;
+f1=figure('visible',dispFig);
 set(f1,'Position',[200 100 1200 1000]);
 hold on
 
@@ -66,7 +68,7 @@ f3=nan;
 f4=nan;
 
 if any(inlist{:,13}==1) | any(inlist{:,13}==2)
-    f5=figure;
+    f5=figure('visible',dispFig);
     set(f5,'Position',[200 100 1200 1000]);
     hold on
     legendCell={};
@@ -76,7 +78,7 @@ if any(inlist{:,13}==1) | any(inlist{:,13}==2)
     lnaTempsAll=[];
 end
 
-f6=figure;
+f6=figure('visible',dispFig);
 set(f6,'Position',[200 100 1200 1000]);
 hold on
 legendCell={};
@@ -85,6 +87,8 @@ colorAll=jet(size(inlist,1));
 plotSym='^';
 
 for ii=1:size(inlist,1)
+    
+    %% Load HCR data
     
     disp(['Case ' num2str(ii) ' from ' num2str(size(inlist,1))]);
     startTime=datetime(inlist{ii,1:6});
@@ -158,17 +162,22 @@ for ii=1:size(inlist,1)
     
     time(outOfBoundsInds)=[];
         
+    %% Load High res temperature data
+    
+    disp('Loading temperature data ...')
     %Get high resolution temperature data if wanted
     if inlist{ii,13}==1 | inlist{ii,13}==2
        if strcmp(project,'socrates')
            tempFile=highResTempFiles_socrates(startTime,endTime,highResTempDir);
            indata=txtTable2matTable(tempFile,',');
-       elseif strcmp(project,'cset') | strcmp(project,'aristo') | strcmp(project,'otrec')
-           if ii==1
+       elseif strcmp(project,'cset') | strcmp(project,'aristo') | strcmp(project,'otrec') | strcmp(project,'spicule')
+           if ~exist('indata')
                if strcmp(project,'cset')
                    tempFile=[highResTempDir,'CSET.temperatures.txt'];
                elseif strcmp(project,'otrec')
                    tempFile=[highResTempDir,'OTREC.temperatures.txt'];
+               elseif strcmp(project,'spicule')
+                   tempFile=[highResTempDir,'SPICULE.temperatures.txt'];
                elseif strcmp(project,'aristo')
                    tempFile=[highResTempDir,project,'_temps.txt'];
                end
@@ -209,10 +218,9 @@ for ii=1:size(inlist,1)
        timeTemp(outOfTimeInds)=[];
     end
     
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    % Make correlation between mean temperature and powers
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        
+    %% Make correlation between mean temperature and powers
+            
+    disp('Finding temperature-power correlation ...');
     dnTime=datenum(time);
     dnTimeTemp=datenum(timeTemp);
     
@@ -282,7 +290,7 @@ for ii=1:size(inlist,1)
 %     plot(time,movmean(dBZmean,600));
     % %%%%%%%%%%%
     
-    f2=figure;
+    f2=figure('visible',dispFig);
     set(f2,'Position',[1500 500 1500 500]);
     
     hold on;
@@ -309,10 +317,8 @@ for ii=1:size(inlist,1)
     set(f2,'PaperPositionMode','auto')
     print(f2, [figdir 'nsCal_' project '_',timestring],'-dpng','-r0')
     
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    % When using high resolution temperature data, plot LNA temperature vs
-    % powers to get that correlation too
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %% Plot LNA temperature vs powers for high res temp data
+    
     if  inlist{ii,13}==1 | inlist{ii,13}==2     
        
         % Smooth LNA temperature data
@@ -409,8 +415,8 @@ for ii=1:size(inlist,1)
             plotSym='+';
         end
                      
-        % Plot dbmvc and vlna temp
-        f3=figure;
+        %% Plot dbmvc and vlna temp
+        f3=figure('visible',dispFig);
         set(f3,'Position',[1500 500 1500 1000]);
         
         subplot(2,1,1)
@@ -461,8 +467,8 @@ for ii=1:size(inlist,1)
         set(f3,'PaperPositionMode','auto')
         print(f3, [figdir 'lnaTemps_nsCal_' project '_',timestring,],'-dpng','-r0')
         
-        %scatter plot vlna temp vs dbmvc
-        f4=figure;
+        %% Scatter plot vlna temp vs dbmvc
+        f4=figure('visible',dispFig);
         set(f4,'Position',[1500 500 500 500]);
         
         hold on;
