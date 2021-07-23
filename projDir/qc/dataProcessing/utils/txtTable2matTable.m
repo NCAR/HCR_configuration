@@ -11,13 +11,22 @@ commentInds = find(contains(M,'#'));
 
 header=strread(M{1},'%s','delimiter',del1)';
 
-for i=size(commentInds,1)+1:length(M)
-    temp=strread(M{i},'%f','delimiter',del1);
+goodInds=1:length(M);
+goodInds(commentInds)=[];
+
+for i=1:length(goodInds)
+    try
+        temp=strread(M{goodInds(i)},'%f','delimiter',del1);
+    catch
+        temp=strread(M{goodInds(i)},'%s','delimiter',del1);
+    end
     for j=1:length(temp)
         MM(i,j)=temp(j);
     end;
 end;
-MM(1:size(commentInds,1),:)=[];
 
-outtable=array2table(MM(:,2:end),'VariableNames',header(2:end));
+try
+    outtable=array2table(MM,'VariableNames',header(2:end));
+catch
+    outtable=array2table(MM);
 end

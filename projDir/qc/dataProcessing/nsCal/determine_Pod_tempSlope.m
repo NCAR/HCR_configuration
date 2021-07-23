@@ -59,7 +59,43 @@ elseif strcmp(project,'cset') | strcmp(project,'aristo')
 elseif strcmp(project,'otrec')
     [refTemp refTempStd]=f_getRefTemp(['/scr/snow1/rsfdata/projects/otrec/hcr/cfradial/moments/10hz/20190619/'],datetime(2019,6,19,20,0,0),datetime(2019,6,19,22,0,0),'vlnaTemp');
 elseif strcmp(project,'spicule')
-    [refTemp refTempStd]=f_getRefTemp(['/scr/snow1/rsfdata/projects/otrec/hcr/cfradial/moments/10hz/20190619/'],datetime(2019,6,19,20,0,0),datetime(2019,6,19,22,0,0),'vlnaTemp');
+    tempFile1='/scr/sleet2/rsfdata/projects/spicule/hcr/qc0/txt/TsPrint.cal_temp.20210414_222329.txt';
+    tempnames1={'time','prf','el','az','Hc','Hcorr','Harg','Vc',...
+        'Vcorr','Varg','IFD0','IFD1','Lag1Hc','Lag1Vc',...
+        'HLnaTemp','VLnaTemp','EikTemp','RfDetTemp',...
+        'NoiseTemp','PolSwTemp'};
+    indata1=readtable(tempFile1);
+    indata1=txtTable2matTable(tempFile1,' ');
+    indata1.Properties.VariableNames=tempnames1;
+    
+    % Remove spaces in variable names if necessary
+    varNames1=indata1.Properties.VariableNames;
+    newNames1={};
+    for aa=1:length(varNames1)
+        newNames1{end+1}=erase(varNames1{aa}," ");
+    end
+    indata1.Properties.VariableNames=newNames1;
+    
+    eikTemp1=str2double(indata1.EikTemp);
+    polSwitchTemp1=str2double(indata1.PolSwTemp);
+    RfDetTemp1=str2double(indata1.RfDetTemp);
+    NoisSourceTemp1=str2double(indata1.NoiseTemp);
+    VLnaTemp1=str2double(indata1.VLnaTemp);
+    HLnaTemp1=str2double(indata1.HLnaTemp);
+    
+    eikTemp1(eikTemp1>500)=nan;
+    polSwitchTemp1(polSwitchTemp1>500)=nan;
+    RfDetTemp1(RfDetTemp1>500)=nan;
+    NoisSourceTemp1(NoisSourceTemp1>500)=nan;
+    VLnaTemp1(VLnaTemp1>500)=nan;
+    HLnaTemp1(HLnaTemp1>500)=nan;
+    
+    meanTemp=nanmean([eikTemp1,polSwitchTemp1,RfDetTemp1,NoisSourceTemp1],1);
+    podTemp=mean(meanTemp);
+    podTempStd=std(meanTemp);
+    
+    refTemp=mean(VLnaTemp1);
+    refTempStd=std(VLnaTemp1);
 end
 
 %% Loop through cases
@@ -168,12 +204,14 @@ for ii=1:size(inlist,1)
     if strcmp(project,'socrates')
         tempFile=highResTempFiles_socrates(startTime,endTime,highResTempDir);
         indata=txtTable2matTable(tempFile,',');
-    elseif strcmp(project,'cset') | strcmp(project,'aristo') | strcmp(project,'otrec')
+    elseif strcmp(project,'cset') | strcmp(project,'aristo') | strcmp(project,'otrec') | strcmp(project,'spicule')
         if ii==1
             if strcmp(project,'cset')
                 tempFile=[highResTempDir,'CSET.temperatures.txt'];
             elseif strcmp(project,'otrec')
                 tempFile=[highResTempDir,'OTREC.temperatures.txt'];
+            elseif strcmp(project,'spicule')
+                tempFile=[highResTempDir,'SPICULE.temperatures.txt'];
             elseif strcmp(project,'aristo')
                 tempFile=[highResTempDir,project,'_temps.txt'];
             end

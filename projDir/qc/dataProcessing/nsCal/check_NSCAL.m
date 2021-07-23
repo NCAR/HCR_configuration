@@ -3,11 +3,11 @@
 clear all;
 close all;
 
-project='otrec';
+project='spicule';
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-figdir=['/h/eol/romatsch/hcrCalib/nsCal/figs/qc2/' project '/checkQC2/'];
+figdir=['/h/eol/romatsch/hcrCalib/nsCal/figs/qc1/' project '/checkQC/'];
 
 if strcmp(project,'socrates')
     indir='/scr/snow2/rsfdata/projects/socrates/hcr/qc2/cfradial/moments/100hz/'; %socrates
@@ -21,6 +21,9 @@ elseif strcmp(project,'aristo')
 elseif strcmp(project,'otrec')
     indir='/scr/snow1/rsfdata/projects/otrec/hcr/qc1/cfradial/moments/100hz/'; % otrec
     highResTempDir='/scr/snow1/rsfdata/projects/otrec/hcr/txt/';
+elseif strcmp(project,'spicule')
+    indir='/scr/sleet2/rsfdata/projects/spicule/hcr/cfradial/moments/100hz/'; % spicule field
+    highResTempDir='/scr/sleet2/rsfdata/projects/spicule/hcr/qc0/txt/';
 else
     disp('Project name not valid.')
     return
@@ -153,12 +156,14 @@ for ii=1:size(inlist,1)
         if strcmp(project,'socrates')
             tempFile=highResTempFiles_socrates(startTime,endTime,highResTempDir);
             indata=txtTable2matTable(tempFile,',');
-        elseif strcmp(project,'cset') | strcmp(project,'aristo') | strcmp(project,'otrec')
+        elseif strcmp(project,'cset') | strcmp(project,'aristo') | strcmp(project,'otrec') | strcmp(project,'spicule')
             if ii==1
                 if strcmp(project,'cset')
                     tempFile=[highResTempDir,'CSET.temperatures.txt'];
                 elseif strcmp(project,'otrec')
                     tempFile=[highResTempDir,'OTREC.temperatures.txt'];
+                elseif strcmp(project,'spicule')
+                    tempFile=[highResTempDir,'SPICULE.temperatures.txt'];
                 elseif strcmp(project,'aristo')
                     tempFile=[highResTempDir,project,'_temps.txt'];
                 end
