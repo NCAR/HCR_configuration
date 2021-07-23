@@ -4,7 +4,7 @@ close all;
 
 addpath(genpath('/h/eol/romatsch/gitPriv/utils/'));
 
-project='cset'; % socrates, cset, aristo, otrec
+project='spicule'; % socrates, cset, aristo, otrec
 quality='qc2'; % field, qc1, qc2
 freqData='10hz';
 

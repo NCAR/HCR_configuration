@@ -22,7 +22,7 @@ elseif strcmp(project,'otrec')
     indir='/scr/snow1/rsfdata/projects/otrec/hcr/qc1/cfradial/moments/100hz/'; % otrec
     highResTempDir='/scr/snow1/rsfdata/projects/otrec/hcr/txt/';
 elseif strcmp(project,'spicule')
-    indir='/scr/sleet2/rsfdata/projects/spicule/hcr/cfradial/moments/100hz/'; % spicule field
+    indir='/scr/sleet2/rsfdata/projects/spicule/hcr/qc1/cfradial/moments/100hz/'; % spicule field
     highResTempDir='/scr/sleet2/rsfdata/projects/spicule/hcr/qc0/txt/';
 else
     disp('Project name not valid.')
