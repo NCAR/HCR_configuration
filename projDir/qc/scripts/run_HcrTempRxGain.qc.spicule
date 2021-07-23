@@ -1,0 +1,10 @@
+#! /bin/csh
+
+# run the temperate vs gain analysis for HCR in spicule
+
+source ~/git/HCR_configuration/projDir/system/params/project_info.spicule
+cd $PROJ_DIR/qc/params
+
+HcrTempRxGain -params HcrTempRxGain.qc.spicule -debug -start "2021 05 25 00 00 00" -end "2021 06 26 00 00 00" > $DATA_DIR/logs/HcrTempRxGain.qc.spicule.log &
+
+tail -f $DATA_DIR/logs/HcrTempRxGain.qc.spicule.log
