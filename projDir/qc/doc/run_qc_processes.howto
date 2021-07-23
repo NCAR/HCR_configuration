@@ -96,6 +96,11 @@ $DATA_DIR/txt/SOCRATES.temperatures.txt
 /scr/snow2/rsfdata/projects/socrates/hcr/qc2/spdb/tempVsGain
 
 #################################################################
+#################################################################
+# Rerun time series
+# !!!! This step is only needed when major corrections are required.!!!!!
+#################################################################
+  
 # Dsr2Radx and Iq2Dsr - 100 hz
 #
 # Iq2Dsr
@@ -132,6 +137,23 @@ snuff run_Iq2Dsr.qc.100hz.socrates
 snuff "Iq2Dsr -params Iq2Dsr.qc.100hz.socrates"
 
 #################################################################
+#################################################################
+# Run RadxCalUpdate.qc.100hz
+#
+# This updates the calibration if necessary, adjusts the calibration gain
+# for temperature variations, and fixes the altitudes.
+#
+# Set up the params file
+cd ~/git/HCR_configuration/projDir/qc/params
+RadxCalUpdate.qc.100hz.spicule
+
+# Modify and run the run script
+cd ~/git/HCR_configuration/projDir/qc/scripts
+./run_RadxCalUpdate.qc.100hz.spicule
+
+# Output is the 100hz data in the QC_VERSION directory
+
+#################################################################
 # Check tempereature correction
 # To check if the temperature correction from the previous step
 # worked as expected, run
@@ -149,6 +171,12 @@ $PROJ_DIR/qc/dataProcessing/nsCal/check_NSCAL.m
 cd ~/git/HCR_configuration/projDir/qc/scripts
 ./run_RadxDwellCombine.qc.10hz
 
+#################################################################
+# Check altitude correction
+# Run this procedure for the field and qc data and check the improvement
+#
+# Modify and run $PROJ_DIR/qc/dataProcessing/altitudeCorr/plotAltDiff.m
+  
 #################################################################
 # Output fields
 # Make data copy with selected fields. Run

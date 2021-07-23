@@ -12,7 +12,7 @@ setenv  BSCAN_MIN_ALTITUDE_KM      0
 setenv PROJ_DIR ~/git/HCR_configuration/projDir
 setenv DATA_DIR  /scr/sleet2/rsfdata/projects/spicule/hcr
 setenv LOG_DIR $HOME/logs
-setenv QC_VERSION qc0
+setenv QC_VERSION qc1
 
 # make sure the output dirs exist
 

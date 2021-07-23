@@ -6,20 +6,20 @@
 # Reads 100 hz data in CfRadial files, combines into 10 hz dwells
 # Writes 10hz CfRadial data
 
-source ~/git/HCR_configuration/projDir/system/params/project_info.otrec
+source ~/git/HCR_configuration/projDir/system/params/project_info.spicule
 
 cd $PROJ_DIR/qc/params
 
 # run for entire project
 
-#RadxCalUpdate -params RadxCalUpdate.qc.100hz -debug -start "2019 08 07 00 00 00" -end "2019 10 10 00 00 00" >& $LOG_DIR/RadxCalUpdate.qc.100hz.otrec.log &
+#RadxCalUpdate -params RadxCalUpdate.qc.100hz -debug -start "2019 08 07 00 00 00" -end "2019 10 10 00 00 00" >& $LOG_DIR/RadxCalUpdate.qc.100hz.spicule.log &
 
-#tail -f $LOG_DIR/RadxCalUpdate.qc.100hz.otrec.log
+#tail -f $LOG_DIR/RadxCalUpdate.qc.100hz.spicule.log
 
 # run 1 day at a time, as separate processes
 
-foreach day ( 20190807 20190811 20190812 20190816 20190817 20190818 20190822 20190823 20190825 20190903 20190904 20190909 20190917 20190921 20190922 20190924 20190925 20190927 20190928 20190930 20191001 20191002 )
-  RadxCalUpdate -params RadxCalUpdate.qc.100hz -debug -f ${DATA_DIR}/cfradial/moments/100hz/${day}/cfrad*.nc >& $LOG_DIR/RadxCalUpdate.qc.100hz.otrec.${day}.log &
+foreach day ( 20210525 20210527 20210529 20210601 20210602 20210603 20210605 20210609 20210611 20210612 20210617 20210618 20210620 20210621 20210624 20210625 )
+  RadxCalUpdate -params RadxCalUpdate.qc.100hz.spicule -debug -f ${DATA_DIR}/cfradial/moments/100hz/${day}/cfrad*.nc >& $LOG_DIR/RadxCalUpdate.qc.100hz.spicule.${day}.log &
 end
 
 
