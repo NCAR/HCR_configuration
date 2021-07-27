@@ -3,9 +3,9 @@
 clear all;
 close all;
 
-project='otrec'; %socrates, aristo, cset
-quality='qc2'; %field, qc1, or qc2
-qcVersion='v2.2';
+project='spicule'; %socrates, aristo, cset
+quality='qc0'; %field, qc1, or qc2
+qcVersion='v0.1';
 freqData='10hz'; % 10hz, 100hz, or 2hz
 
 % Determines plot zoom.
@@ -13,13 +13,15 @@ if strcmp(project,'otrec')
     ylimits=[-0.2 6];
 elseif strcmp(project,'socrates')
     ylimits=[-0.2 6];
+elseif strcmp(project,'spicule')
+    ylimits=[-0.2 6];
 elseif strcmp(project,'cset')
     ylimits=[-0.2 9];
 end
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-figdir=['/scr/sci/romatsch/meltLayerHCR/',project,'/cases/'];
+figdir=['/scr/sci/romatsch/HCR/meltLayer/',project,'/cases/'];
 %figdir=['/home/romatsch/plots/HCR/meltingLayer/selected/',project,'/'];
 
 if ~exist(figdir, 'dir')

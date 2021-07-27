@@ -3,8 +3,9 @@
 clear all;
 close all;
 
-project='socrates'; %socrates, aristo, cset
-quality='qc2'; %field, qc1, or qc2
+project='spicule'; %socrates, aristo, cset
+quality='qc0'; %field, qc1, or qc2
+qcVersion='v0.1';
 freqData='10hz'; % 10hz, 100hz, or 2hz
 
 % Determines plot zoom.
@@ -12,14 +13,15 @@ if strcmp(project,'otrec')
     ylimits=[-0.2 15];
 elseif strcmp(project,'socrates')
     ylimits=[-0.2 5];
+elseif strcmp(project,'spicule')
+    ylimits=[-0.2 9];
 elseif strcmp(project,'cset')
     ylimits=[-0.2 9];
 end
-ylimits=[-0.2 4];
+
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-%figdir=['/h/eol/romatsch/hcrCalib/clouds/brightBand/',project,'/'];
-figdir=['/home/romatsch/plots/HCR/meltingLayer/selected/',project,'/'];
+figdir=['/scr/sci/romatsch/HCR/meltLayer/',project,'/cases/'];
 
 if ~exist(figdir, 'dir')
     mkdir(figdir)
@@ -27,8 +29,8 @@ end
 
 casefile=['~/git/HCR_configuration/projDir/qc/dataProcessing/HCRproducts/caseFiles/meltLayer_',project,'.txt'];
 
-%indir=HCRdir(project,quality,freqData);
-indir='/run/media/romatsch/RSF0006/rsf/meltingLayer/socrates/10hz/';
+indir=HCRdir(project,quality,qcVersion,freqData);
+%indir='/run/media/romatsch/RSF0006/rsf/meltingLayer/socrates/10hz/';
 
 % Loop through cases
 
@@ -85,7 +87,7 @@ for aa=1:length(caseStart)
     data.dbzMasked=data.DBZ;
     data.dbzMasked(data.FLAG>1)=nan;
     
-    [meltLayer iceLayer offset]=f_meltLayer(data,-170);
+    [meltLayer iceLayer offset]=f_meltLayer(data,-500);
     elevenInds=find(meltLayer==11);
     twelveInds=find(meltLayer==12);
     thirteenInds=find(meltLayer==13);
