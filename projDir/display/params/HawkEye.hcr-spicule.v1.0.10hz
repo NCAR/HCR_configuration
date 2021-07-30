@@ -316,7 +316,8 @@ show_status_in_gui = {
 // Type: string
 //
 
-color_scale_dir = "/opt/local/git/HCR_configuration/projDir/display/color_scales";
+// color_scale_dir = "/opt/local/git/HCR_configuration/projDir/display/color_scales";
+color_scale_dir = "$(PROJ_DIR)/display/color_scales";
 
 ///////////// fields //////////////////////////////////
 //
@@ -353,21 +354,12 @@ fields = {
   }
   ,
   {
-    label = "VEL_CORR",
-    raw_name = "VEL_CORR",
+    label = "DBZ_MASKED",
+    raw_name = "DBZ_MASKED",
     filtered_name = "",
-    units = "m/s",
-    color_map = "vel_w_8.colors",
+    units = "dBZ",
+    color_map = "dbz_w.colors",
     shortcut = "2"
-  }
-  ,
-  {
-    label = "VEL",
-    raw_name = "VEL",
-    filtered_name = "",
-    units = "m/s",
-    color_map = "vel_w_8.colors",
-    shortcut = "3"
   }
   ,
   {
@@ -376,7 +368,34 @@ fields = {
     filtered_name = "",
     units = "m/s",
     color_map = "vel_w_8.colors",
+    shortcut = "3"
+  }
+  ,
+  {
+    label = "VEL",
+    raw_name = "VEL",
+    filtered_name = "",
+    units = "m/s",
+    color_map = "vel_w_8.colors",
     shortcut = "4"
+  }
+  ,
+  {
+    label = "VEL_CORR",
+    raw_name = "VEL_CORR",
+    filtered_name = "",
+    units = "m/s",
+    color_map = "vel_w_8.colors",
+    shortcut = "5"
+  }
+  ,
+  {
+    label = "VEL_MASKED",
+    raw_name = "VEL_MASKED",
+    filtered_name = "",
+    units = "m/s",
+    color_map = "vel_w_8.colors",
+    shortcut = "6"
   }
   ,
   {
@@ -385,7 +404,7 @@ fields = {
     filtered_name = "",
     units = "m/s",
     color_map = "width_w.colors",
-    shortcut = "5"
+    shortcut = "7"
   }
   ,
   {
@@ -394,7 +413,7 @@ fields = {
     filtered_name = "",
     units = "",
     color_map = "ncp.colors",
-    shortcut = "7"
+    shortcut = "8"
   }
   ,
   {
@@ -403,7 +422,7 @@ fields = {
     filtered_name = "",
     units = "dB",
     color_map = "ldr.colors",
-    shortcut = "8"
+    shortcut = "9"
   }
   ,
   {
@@ -412,7 +431,7 @@ fields = {
     filtered_name = "",
     units = "dB",
     color_map = "snr.colors",
-    shortcut = "9"
+    shortcut = "a"
   }
   ,
   {
@@ -421,7 +440,7 @@ fields = {
     filtered_name = "",
     units = "dBm",
     color_map = "dbm.colors",
-    shortcut = "a"
+    shortcut = "b"
   }
   ,
   {
@@ -430,7 +449,7 @@ fields = {
     filtered_name = "",
     units = "dBm",
     color_map = "dbm.colors",
-    shortcut = "b"
+    shortcut = "c"
   }
   ,
   {
@@ -439,7 +458,7 @@ fields = {
     filtered_name = "",
     units = "C",
     color_map = "temp.colors",
-    shortcut = "c"
+    shortcut = "d"
   }
   ,
   {
@@ -448,7 +467,7 @@ fields = {
     filtered_name = "",
     units = "hPa",
     color_map = "pressure_xml.colors",
-    shortcut = "d"
+    shortcut = "e"
   }
   ,
   {
@@ -457,7 +476,7 @@ fields = {
     filtered_name = "",
     units = "%",
     color_map = "rh.colors",
-    shortcut = "e"
+    shortcut = "f"
   }
   ,
   {
@@ -466,7 +485,7 @@ fields = {
     filtered_name = "",
     units = "",
     color_map = "hcr_flag.colors",
-    shortcut = "f"
+    shortcut = "g"
   }
   ,
   {
@@ -475,7 +494,7 @@ fields = {
     filtered_name = "",
     units = "",
     color_map = "melting_layer.colors",
-    shortcut = "g"
+    shortcut = "h"
   }
 };
 

@@ -5,10 +5,10 @@ close all;
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
 project='spicule'; % socrates, cset, aristo, otrec
-quality='qc0'; % field, qc1, qc2
-qcVersion='v0.1';
+quality='qc1'; % field, qc1, qc2
+qcVersion='v1.0';
 freqData='10hz';
-whichModel='ecmwf';
+whichModel='narr';
 
 formatOut = 'yyyymmdd';
 

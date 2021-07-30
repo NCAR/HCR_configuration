@@ -45,6 +45,6 @@ RadxDwellCombine -params RadxDwellCombine.qc.10hz -debug -start "2021 06 17 17 0
 
 RadxDwellCombine -params RadxDwellCombine.qc.10hz -debug -start "2021 06 20 17 00 00" -end "2021 06 21 05 00 00" >& $LOG_DIR/RadxDwellCombine.qc.10hz.spicule.20210620.log &
 
-RadxDwellCombine -params RadxDwellCombine.qc.10hz -debug -start "2021 06 24 19 00 00" -end "2021 06 25 00 00 00" >& $LOG_DIR/RadxDwellCombine.qc.10hz.spicule.20210624.log &
+RadxDwellCombine -params RadxDwellCombine.qc.10hz -debug -start "2021 06 24 19 57 00" -end "2021 06 25 00 00 00" >& $LOG_DIR/RadxDwellCombine.qc.10hz.spicule.20210624.log &
 
 RadxDwellCombine -params RadxDwellCombine.qc.10hz -debug -start "2021 06 25 18 00 00" -end "2021 06 25 23 00 00" >& $LOG_DIR/RadxDwellCombine.qc.10hz.spicule.20210625.log &

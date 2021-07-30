@@ -22,7 +22,7 @@ cd $PROJ_DIR/qc/params
 
 RadxConvert -params RadxConvert.qc.select_fields -debug -start "2021 05 29 15 20 00" -end "2021 05 29 20 00 00" >& $LOG_DIR/RadxConvert.qc.select_fields.spicule.20210529.log &
 
-RadxConvert -params RadxConvert.qc.select_fields -debug -start "2021 06 01 50 00 00" -end "2021 06 01 22 00 00" >& $LOG_DIR/RadxConvert.qc.select_fields.spicule.20210601.log &
+RadxConvert -params RadxConvert.qc.select_fields -debug -start "2021 06 01 16 50 00" -end "2021 06 01 22 00 00" >& $LOG_DIR/RadxConvert.qc.select_fields.spicule.20210601.log &
 
 RadxConvert -params RadxConvert.qc.select_fields -debug -start "2021 06 02 20 45 00" -end "2021 06 03 02 00 00" >& $LOG_DIR/RadxConvert.qc.select_fields.spicule.20210602.log &
 
@@ -36,6 +36,6 @@ RadxConvert -params RadxConvert.qc.select_fields -debug -start "2021 06 17 18 25
 
 RadxConvert -params RadxConvert.qc.select_fields -debug -start "2021 06 20 18 55 00" -end "2021 06 21 05 00 00" >& $LOG_DIR/RadxConvert.qc.select_fields.spicule.20210620.log &
 
-RadxConvert -params RadxConvert.qc.select_fields -debug -start "2021 06 24 19 55 00" -end "2021 06 25 00 00 00" >& $LOG_DIR/RadxConvert.qc.select_fields.spicule.20210624.log &
+RadxConvert -params RadxConvert.qc.select_fields -debug -start "2021 06 24 19 57 00" -end "2021 06 25 00 00 00" >& $LOG_DIR/RadxConvert.qc.select_fields.spicule.20210624.log &
 
 RadxConvert -params RadxConvert.qc.select_fields -debug -start "2021 06 25 18 50 00" -end "2021 06 25 23 00 00" >& $LOG_DIR/RadxConvert.qc.select_fields.spicule.20210625.log &

@@ -10,6 +10,8 @@ qcVersion='v1.0';
 freqData='10hz';
 whichModel='narr';
 
+formatOut = 'yyyymmdd';
+
 infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_',project,'_data.txt'];
 
 caseList = table2array(readtable(infile));
@@ -24,6 +26,7 @@ indir=HCRdir(project,quality,qcVersion,freqData);
 for ii=1:size(caseList,1)
     
     disp(['Flight ',num2str(ii)]);
+    
     startTime=datetime(caseList(ii,1:6));
     endTime=datetime(caseList(ii,7:12));
     
@@ -32,12 +35,11 @@ for ii=1:size(caseList,1)
     if ~isempty(fileList)
         
         % Get model data
-        model.antstat=[];
-        model.flagfield=[];
-        
+        model.topo=[];
+                
         model=read_model(model,modeldir,startTime,endTime);
         timeModelNum=datenum(model.time);
-        
+                
         %% Loop through HCR data files
         for jj=1:length(fileList)
             infile=fileList{jj};
@@ -61,15 +63,14 @@ for ii=1:size(caseList,1)
             end
             
             % Write output
-            fillVal=-99;
+            fillVal=-9999;
             
             modVars=fields(model);
             
             for kk=1:length(modVars)
-                if ~strcmp((modVars{kk}),'time')
+                if ~strcmp((modVars{kk}),'time') & ~strcmp((modVars{kk}),'asl')
                     modOut.(modVars{kk})=model.(modVars{kk})(:,ib);
                     modOut.(modVars{kk})(isnan(modOut.(modVars{kk})))=fillVal;
-                    modOut.(modVars{kk})=int16(modOut.(modVars{kk}));
                 end
             end
             
@@ -79,40 +80,22 @@ for ii=1:size(caseList,1)
             
             % Get dimensions
             dimtime = netcdf.inqDimID(ncid,'time');
-            dimrange = netcdf.inqDimID(ncid,'range');
-            
+                        
             % Define variables
             netcdf.reDef(ncid);
-            varidFLAG = netcdf.defVar(ncid,'FLAG','NC_SHORT',[dimrange dimtime]);
-            netcdf.defVarFill(ncid,varidFLAG,false,fillVal);
-            varidANT = netcdf.defVar(ncid,'ANTFLAG','NC_SHORT',[dimtime]);
-            netcdf.defVarFill(ncid,varidANT,false,fillVal);
+            varidTOPO = netcdf.defVar(ncid,'TOPO','NC_FLOAT',[dimtime]);
+            netcdf.defVarFill(ncid,varidTOPO,false,fillVal);
             netcdf.endDef(ncid);
             
             % Write variables
-            netcdf.putVar(ncid,varidFLAG,modOut.flagfield);
-            netcdf.putVar(ncid,varidANT,modOut.antstat);
+            netcdf.putVar(ncid,varidTOPO,modOut.topo);
             
             netcdf.close(ncid);
             
-            % Write attributes
-            ncwriteatt(infile,'FLAG','long_name','data_flag');
-            ncwriteatt(infile,'FLAG','standard_name','data_flag');
-            ncwriteatt(infile,'FLAG','units','');
-            ncwriteatt(infile,'FLAG','flag_values',[1,2,3,4,5,6,7,8,9,10,11]);
-            ncwriteatt(infile,'FLAG','flag_meanings',...
-                'cloud speckle extinct backlobe out_of_range transmitter_pulse water_surface land_surface below_surface noise_source_cal missing');
-            ncwriteatt(infile,'FLAG','grid_mapping','grid_mapping');
-            ncwriteatt(infile,'FLAG','coordinates','time range');
-                        
-            ncwriteatt(infile,'ANTFLAG','long_name','antenna_flag');
-            ncwriteatt(infile,'ANTFLAG','standard_name','antenna_flag');
-            ncwriteatt(infile,'ANTFLAG','units','');
-            ncwriteatt(infile,'ANTFLAG','flag_values',[1,2,3,4,5,6]);
-            ncwriteatt(infile,'ANTFLAG','flag_meanings',...
-                'down up pointing scanning transition failure');
-            ncwriteatt(infile,'ANTFLAG','coordinates','time');
-            
+            % Write attributes          
+            ncwriteatt(infile,'TOPO','long_name','terrain_height_above_mean_sea_level');
+            ncwriteatt(infile,'TOPO','units','m');
+            ncwriteatt(infile,'TOPO','coordinates','time');
         end
     end
 end

@@ -8,13 +8,10 @@ savefig=0;
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
 project='spicule'; % socrates, cset, aristo, otrec
-quality='qc0'; % field, qc1, qc2
-qcVersion='v0.1';
+quality='qc1'; % field, qc1, qc2
+qcVersion='v1.0';
 freqData='10hz'; % 10hz, 100hz, or 2hz
-whichModel='ecmwf';
-
-plotLine=1;
-plotSurf=0;
+whichModel='narr';
 
 [~,directories.modeldir]=modelDir(project,whichModel,freqData);
 
@@ -24,19 +21,10 @@ infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_
 
 caseList = table2array(readtable(infile));
 
-figdir=['/h/eol/romatsch/hcrCalib/velCorr/',project,'/velFigs_VEL_CORR/'];
-formatOut = 'yyyymmdd_HHMM';
-
 indir=HCRdir(project,quality,qcVersion,freqData);
 
 polyTimePeriod=15; %Time period for poly fit in seconds
 polyOrder=3; % Order of polynomial fit
-
-maxEdge=14.6; % Upper edge for plotting
-color_map=colormap(vel_default(29));
-
-% limits=-4.05:0.3:4.05;
-% limits=[-inf limits inf];
 
 for kk=1:size(caseList,1)
     

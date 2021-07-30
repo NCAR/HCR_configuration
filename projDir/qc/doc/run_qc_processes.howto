@@ -193,9 +193,46 @@ $PROJ_DIR/qc/scripts/run_RadxConvert.qc.select_fields.socrates
 # additional fields.
 
 #################################################################
+Interpolate topography data
+# Modify and run $PROJ_DIR/qc/dataProcessing/HCRproducts/topoData/topo2HCR.m
+
+# It needs an input file with the start and end dates of each flight
+# $PROJ_DIR/qc/dataProcessing/scriptsFiles/flights_socrates_data.txt
+
+# To Write data to files run
+# $PROJ_DIR/qc/dataProcessing/HCRproducts/topoData/cfradialTopo.m
+
+#################################################################
+# VEL_CORR
+
+# Find out which poly order to use by running
+$PROJ_DIR/qc/dataProcessing/HCRproducts/velCorr/plotVelCorr_findPoly.m
+
+# To make the VEL_CORR field, modify and run
+$PROJ_DIR/qc/dataProcessing/HCRproducts/velCorr/make_VEL_CORR_wholeFlights.m
+# The filter lenght can be adjusted in this file. To test out 
+# different filter lenghts, run
+$PROJ_DIR/qc/dataProcessing/HCRproducts/velCorr/plotVelCorr_findPoly.m
+# on a few test cases.
+
+# To add it to the cfradial files, run
+$PROJ_DIR/qc/dataProcessing/HCRproducts/velCorr/cfradialVelCorr.m
+
+#################################################################
+# FLAG field and DBZ_masked
+# To create the flag field, run
+$PROJ_DIR/qc/dataProcessing/HCRproducts/flag/makeFlagField_wholeFlights.m
+
+# To add it to the cfradial files, run
+$PROJ_DIR/qc/dataProcessing/HCRproducts/flag/cfradialFlagfield.m
+
+# To add a DBZ field that has only cloud data, run
+$PROJ_DIR/qc/dataProcessing/modelAndFlag/cfradialDBZmasked.m
+
+#################################################################
 # Interpolate forecast or reanalysis data
 # 
-# Modify and run $PROJ_DIR/qc/dataProcessing/modelAndFlag/model2HCR4d.m
+# Modify and run $PROJ_DIR/qc/dataProcessing/HCRproducts/modelData/model2HCR4d.m
 
 # It needs an input file with the start and end dates of each flight
 # $PROJ_DIR/qc/dataProcessing/scriptsFiles/flights_socrates_data.txt
@@ -217,33 +254,10 @@ cd ../model/era5interp/10hz
 # $DATA_DIR/QC_VERSION/cfradial/final
 
 # Run
-$PROJ_DIR/qc/dataProcessing/modelAndFlag/cfradialModel.m
+$PROJ_DIR/qc/dataProcessing/HCRproducts/modelData/cfradialModel.m
 
 #################################################################
-# FLAG field and DBZ_masked
-# To create the flag field, run
-$PROJ_DIR/qc/dataProcessing/modelAndFlag/makeFlagField_wholeFlights.m
 
-# To add it to the cfradial files, run
-$PROJ_DIR/qc/dataProcessing/modelAndFlag/cfradialFlagfield.m
-
-# To add a DBZ field that has only cloud data, run
-$PROJ_DIR/qc/dataProcessing/modelAndFlag/cfradialDBZmasked.m
-
-#################################################################
-# VEL_CORR
-
-# To make the VEL_CORR field, modify and run
-$PROJ_DIR/qc/dataProcessing/velCorr/make_VEL_CORR_wholeFlights.m
-# The filter lenght can be adjusted in this file. To test out 
-# different filter lenghts, run
-$PROJ_DIR/qc/dataProcessing/velCorr/plotVelCorr_findPoly.m
-# on a few test cases.
-
-# To add it to the cfradial files, run
-$PROJ_DIR/qc/dataProcessing/velCorr/cfradialVelCorr.m
-
-#################################################################
 # Sea Surface Cal
 
 # To check the sea surface calfor ssCal events, run

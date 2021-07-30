@@ -1,6 +1,7 @@
 function [echoMask antStat] = echoMask(data)
 
-%% Antenna status (down=0, up=1, pointing=2, scanning=3, transition=4)
+%% Antenna status (down=1, up=2, pointing=3, scanning=4, transition=5, failure=6)
+disp('Working on antenna status ...');
 
 antStat=nan(size(data.time));
 
@@ -15,7 +16,7 @@ stdFake(movStd>5)=movStd(movStd>5);
 % Broaden the peaks
 broadPeak=nan(size(stdFake));
 broadPeak(locs)=1;
-broadPeak=movmean(broadPeak,70,'omitnan');
+broadPeak=movmean(broadPeak,50,'omitnan');
 
 % Find areas with lots of antenna movement around std peaks
 antDiff=diff(data.elevation);
@@ -23,26 +24,34 @@ antDiff=cat(2,0,antDiff);
 findTrans=abs(movmean(antDiff,10));
 
 % Transision zones
-antStat(findTrans>0.2 & broadPeak==1)=4;
+antStat(findTrans>0.2 & broadPeak==1)=5;
 
-% Loop through contiguous non transition areas and classify them
-nonTransMask=ones(size(antStat));
-nonTransMask(antStat==4)=0;
+% Small scale moving std
+movStdSmall=movstd(data.elevation,40);
 
-nonTransAreas=bwconncomp(nonTransMask);
+smoothIndsIn=double(movStdSmall<0.25);
+smoothIndsIn(smoothIndsIn==0)=nan;
+% Fill holes
+smoothIndsLarge=movmean(smoothIndsIn,20,'omitnan');
+smoothIndsSmall=movmean(smoothIndsLarge,20,'includenan');
+% Remove short
+smoothIndsSmall(isnan(smoothIndsSmall))=0;
+smoothInds=bwareaopen(smoothIndsSmall,10);
+
+% Remove areas that are classified as transition
+smoothInds(antStat==5)=0;
+
+% Loop through smooth areas and classify them as up, down, pointing
+smoothAreas=bwconncomp(smoothInds);
 
 % Start loop
-for ii=1:nonTransAreas.NumObjects
-    if length(nonTransAreas.PixelIdxList{ii})<=10 % If the stretch is too short, set to transition
-        antStat(nonTransAreas.PixelIdxList{ii})=4;
-    elseif std(data.elevation(nonTransAreas.PixelIdxList{ii}))>2 % If std of stretch is too large, set to transition
-        antStat(nonTransAreas.PixelIdxList{ii})=4;
-    elseif median(data.elevation(nonTransAreas.PixelIdxList{ii}))>88 % Up pointing
-        antStat(nonTransAreas.PixelIdxList{ii})=1;
-    elseif median(data.elevation(nonTransAreas.PixelIdxList{ii}))<-88 % Down pointing
-        antStat(nonTransAreas.PixelIdxList{ii})=0;
+for ii=1:smoothAreas.NumObjects
+    if median(data.elevation(smoothAreas.PixelIdxList{ii}))>88 % Up pointing
+        antStat(smoothAreas.PixelIdxList{ii})=2;
+    elseif median(data.elevation(smoothAreas.PixelIdxList{ii}))<-88 % Down pointing
+        antStat(smoothAreas.PixelIdxList{ii})=1;
     else
-        antStat(nonTransAreas.PixelIdxList{ii})=2; % Pointing
+        antStat(smoothAreas.PixelIdxList{ii})=3; % Pointing
     end
 end
 
@@ -58,9 +67,54 @@ scanAreas=bwconncomp(scanMaskFilt);
 
 for ii=1:scanAreas.NumObjects
     if length(scanAreas.PixelIdxList{ii})>500 % If the stretch is too short, set to transition
-        antStat(scanAreas.PixelIdxList{ii})=3;
+        antStat(scanAreas.PixelIdxList{ii})=4;
     end
 end
+
+% Failure
+antStat(isnan(antStat))=6;
+
+% Go through failure stretches. If they are short and next to transition and smooth,
+% set to smooth
+fmask=antStat==6;
+
+failAreas=bwconncomp(fmask);
+
+% Start loop
+for ii=1:failAreas.NumObjects
+    if length(failAreas.PixelIdxList{ii})<20
+        pixArea=failAreas.PixelIdxList{ii};
+        pixBefore=max([1,pixArea(1)-1]);
+        pixAfter=min([length(antStat),pixArea(end)+1]);
+        antStatBA=[antStat(pixBefore),antStat(pixAfter)];
+        if any(antStatBA==5)
+            antStatBA(antStatBA==5)=[];
+            if antStatBA~=6
+                antStat(failAreas.PixelIdxList{ii})=antStatBA;
+            end
+        end
+    end
+end
+
+% Go through transition stretches. If they are between failure
+% set to failure
+tmask=antStat==5;
+% Loop through smooth areas and classify them as up, down, pointing
+transAreas=bwconncomp(tmask);
+
+% Start loop
+for ii=1:transAreas.NumObjects
+    pixArea=transAreas.PixelIdxList{ii};
+    pixBefore=max([1,pixArea(1)-1]);
+    pixAfter=min([length(antStat),pixArea(end)+1]);
+    antStatBA=[antStat(pixBefore),antStat(pixAfter)];
+    if antStatBA(1)==6 & antStatBA(2)==6
+        antStat(transAreas.PixelIdxList{ii})=6;
+    end
+end
+
+%% Echo mask
+disp('Working on flag ...')
 
 echoMask=nan(size(data.DBZ));
 
@@ -159,7 +213,7 @@ else
 end
 altMat=repmat(rightAlt,size(data.range,1),1);
 % Lower limit
-blMask(data.range<(altMat-600))=0;
+blMask(data.range<(altMat-1000))=0;
 % Upper limit
 blMask(data.range>(altMat+600))=0;
 
@@ -171,11 +225,7 @@ blMask(echoMask==6)=0;
 
 echoMask(blMask==1)=4;
 
-%% Transition (11)
-
-echoMask(:,find(antStat==4))=11;
-
-%% Missing data (12)
+%% Missing data (11)
 bangData=data.DBZ(1:14,:);
 bangData(bangData<-10)=nan;
 bangMask=zeros(size(bangData));
@@ -183,7 +233,7 @@ bangMask(isnan(bangData))=1;
 sumNan=sum(bangMask,1,'omitnan');
 
 missInds=find(sumNan>13);
-echoMask(:,missInds)=12;
+echoMask(:,missInds)=11;
 
 %% NS cal (10)
 firstGate=data.DBMVC(1,:);

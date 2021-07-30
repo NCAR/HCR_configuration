@@ -1,4 +1,4 @@
-% add model data to cfradial files
+% Created masked velocity field
 clear all;
 close all;
 
@@ -40,20 +40,22 @@ for ii=1:size(caseList,1)
             disp(infile);
             
             try
-                testField=ncread(infile,'DBZ_MASKED');
+                testField=ncread(infile,'VEL_MASKED');
             end
             if ~isempty(testField)
                 warning('Field already exists. Skipping file.')
                 continue
             end                
                         
-            % Create masked DBZ field
-            dbz=ncread(infile,'DBZ')';
-            mask=ncread(infile,'FLAG')';
+            % Create masked VEL field
+            vel=ncread(infile,'VEL')';
+            maskFlag=ncread(infile,'FLAG')';
+            maskAnt=ncread(infile,'ANTFLAG')';
             
-            dbzMasked=dbz;
-            dbzMasked(mask>1)=nan;
-            dbzMasked=dbzMasked';
+            velMasked=vel;
+            velMasked(maskAnt>2,:)=nan;
+            velMasked(maskFlag>1)=nan;
+            velMasked=velMasked';
             
             % Write output
             fillVal=-9999;
@@ -68,22 +70,22 @@ for ii=1:size(caseList,1)
             
             % Define variables
             netcdf.reDef(ncid);
-            varidDBZm = netcdf.defVar(ncid,'DBZ_MASKED','NC_FLOAT',[dimrange dimtime]);
-            netcdf.defVarFill(ncid,varidDBZm,false,fillVal);
+            varidVELm = netcdf.defVar(ncid,'VEL_MASKED','NC_FLOAT',[dimrange dimtime]);
+            netcdf.defVarFill(ncid,varidVELm,false,fillVal);
             netcdf.endDef(ncid);
             
             % Write variables
-            netcdf.putVar(ncid,varidDBZm,dbzMasked);
+            netcdf.putVar(ncid,varidVELm,velMasked);
             
             netcdf.close(ncid);
             
             % Write attributes
-            ncwriteatt(infile,'DBZ_MASKED','long_name','reflectivity');
-            ncwriteatt(infile,'DBZ_MASKED','standard_name','equivalent_reflectivity_factor');
-            ncwriteatt(infile,'DBZ_MASKED','units','dBZ');
-            ncwriteatt(infile,'DBZ_MASKED','comment','This field is computed by applying DBZ(FLAG>1)=NAN');
-            ncwriteatt(infile,'DBZ_MASKED','grid_mapping','grid_mapping');
-            ncwriteatt(infile,'DBZ_MASKED','coordinates','time range');
+            ncwriteatt(infile,'VEL_MASKED','long_name','doppler_velocity');
+            ncwriteatt(infile,'VEL_MASKED','standard_name','radial_velocity_of_scatterers_away_from_instrument');
+            ncwriteatt(infile,'VEL_MASKED','units','m/s');
+            ncwriteatt(infile,'VEL_MASKED','comment','This field is computed by applying VEL_CORR(FLAG>1)=NAN and VEL_CORR(ANTFLAG>2)=NAN');
+            ncwriteatt(infile,'VEL_MASKED','grid_mapping','grid_mapping');
+            ncwriteatt(infile,'VEL_MASKED','coordinates','time range');
             
         end
     end

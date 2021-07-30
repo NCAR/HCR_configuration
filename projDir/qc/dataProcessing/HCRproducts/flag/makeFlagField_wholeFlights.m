@@ -6,10 +6,10 @@ close all;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Input variables %%%%%%%%%%%%%%%%%%%%%%%%%%
 
 project='spicule'; %socrates, aristo, cset
-quality='qc0'; %field, qc1, or qc2
+quality='qc1'; %field, qc1, or qc2
 freqData='10hz'; % 10hz, 100hz, or 2hz
-qcVersion='v0.1';
-whichModel='ecmwf';
+qcVersion='v1.0';
+whichModel='narr';
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
@@ -35,15 +35,8 @@ for mm=1:size(caseList,1)
     data=[];
     
     data.DBZ=[];
-    %data.VEL=[];
-    %data.VEL_RAW=[];
-    %data.VEL_CORR=[];
     data.WIDTH=[];
-    %data.WIDTH_CORR=[];
     data.DBMVC=[];
-    %data.SNR=[];
-    %data.NCP=[];
-    %data.LDR=[];
     data.TOPO=[];
         
     dataVars=fieldnames(data);

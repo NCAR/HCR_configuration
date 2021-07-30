@@ -13,8 +13,7 @@
   <Range min="7.5" max="8.5"  color="0.7065, 0.4415, 0.2812" />
   <Range min="8.5" max="9.5"  color="0.5, 0.5, 0.5" />
   <Range min="9.5" max="10.5"  color="0.9290, 0.8940, 0.1250" />
-  <Range min="10.5" max="11.5"  color="1, 0, 1" />
-  <Range min="11.5" max="12.5"  color="1, 0.6, 0" />
+  <Range min="10.5" max="11.5"  color="1, 0.6, 0" />
 
   <Label value="1"       text="Cloud"      />
   <Label value="2"       text="Speckle"      />
@@ -26,7 +25,6 @@
   <Label value="8"       text="Land"      />
   <Label value="9"       text="Below surf."      />
   <Label value="10"      text="NS cal"      />
-  <Label value="11"      text="Ant. trans."      />
-  <Label value="12"      text="No transmit"      />
-
+  <Label value="11"      text="No transmit"      />
+  
 </ColorScale>

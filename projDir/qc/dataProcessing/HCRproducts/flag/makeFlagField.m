@@ -3,19 +3,19 @@
 clear all;
 close all;
 
-startTime=datetime(2021,5,29,20,30,0);
-endTime=datetime(2021,5,29,21,30,0);
+startTime=datetime(2021,6,5,18,45,0);
+endTime=datetime(2021,6,5,18,50,0);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Input variables %%%%%%%%%%%%%%%%%%%%%%%%%%
 
 project='spicule'; %socrates, aristo, cset
-quality='qc0'; %field, qc1, or qc2
+quality='qc1'; %field, qc1, or qc2
 freqData='10hz'; % 10hz, 100hz, or 2hz
-qcVersion='v0.1';
+qcVersion='v1.0';
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-figdir=['/scr/sleet2/rsfdata/projects/spicule/hcr/qc0/cfradial/v0.1/flagPlots/'];
+figdir=['/scr/sleet2/rsfdata/projects/spicule/hcr/qc1/cfradial/v1.0/flagPlots/'];
 
 if ~exist(figdir, 'dir')
     mkdir(figdir)
@@ -23,24 +23,11 @@ end
 
 directories.dataDir=HCRdir(project,quality,qcVersion,freqData);
 
-% if strcmp(whichModel,'era5')
-%     directories.modeldir=['/scr/sci/romatsch/data/reanalysis/ecmwf/era5interp/',project,'/',freqData,'/'];
-% elseif strcmp(whichModel,'ecmwf')
-%     directories.modeldir=['/scr/sci/romatsch/data/reanalysis/ecmwf/forecastInterp/',project,'/',freqData,'/'];
-% end
-
 %% Load data
 
 data.DBZ=[];
-%data.VEL=[];
-%data.VEL_RAW=[];
-%data.VEL_CORR=[];
 data.WIDTH=[];
-%data.WIDTH_CORR=[];
 data.DBMVC=[];
-%data.SNR=[];
-%data.NCP=[];
-%data.LDR=[];
 data.TOPO=[];
 
 dataVars=fieldnames(data);
@@ -82,7 +69,7 @@ ylimits=[-0.5 15];
 
 ytickLabels={'Cloud (1)';'Speckle (2)';'Extinct (3)';'Backlobe (4)';'Out of range (5)';...
     'Bang (6)';'Water (7)';'Land (8)';'Below surf. (9)';...
-    'NS cal (10)';'Ant. trans. (11)';'Missing (12)'};
+    'NS cal (10)';'Missing (11)'};
 
 colMask=[0.4,0.8,1;
     0,0,0;
@@ -93,8 +80,7 @@ colMask=[0.4,0.8,1;
     0,0,0.6;
     0.7065,0.4415,0.2812;
     0.5,0.5,0.5;    
-    0.9290,0.8940,0.1250;
-    1,0,1;    
+    0.9290,0.8940,0.1250;    
     1,0.6,0];
 
 close all
@@ -122,10 +108,10 @@ title('Reflectivity (cloud only, i.e. DBZ(FLAG>1)=NAN)')
 ax2=subplot(3,1,2);
 fig2=surf(data.time,data.asl./1000,maskPlot,'edgecolor','none');
 view(2);
-caxis([1 12]);
+caxis([1 11]);
 colormap(ax2,colMask);
 hcb=colorbar;
-set(hcb,'ytick',[1.5:0.91:12.5]);
+set(hcb,'ytick',[1.5:0.9:11.5]);
 set(hcb,'YTickLabel',ytickLabels);
 ylim(ylimits);
 ylabel('Altitude (km)');
@@ -134,8 +120,7 @@ title('Flag field')
 
 linkaxes([ax1,ax2,ax3],'xy');
 
-formatOut = 'yyyymmdd_HHMM';
-set(gcf,'PaperPositionMode','auto')
+formatOut = 'yyyymmdd_HHMM'; set(gcf,'PaperPositionMode','auto')
 print([figdir,datestr(startTime,formatOut),'_to_',datestr(endTime,formatOut),'_echoMask'],...
    '-dpng','-r0');
 
@@ -145,8 +130,9 @@ figure('DefaultAxesFontSize',11,'position',[1,100,1800,300],'renderer','painters
 plot(data.time,antStat,'linewidth',2)
 xlim([data.time(1),data.time(end)]);
 title('Antenna status')
-yticks(0:4)
-yticklabels({'Down (0)','Up (1)','Pointing (2)','Scanning (3)','Transition (4)'})
+yticks(1:6)
+yticklabels({'Down (1)','Up (2)','Pointing (3)','Scanning (4)','Transition (5)','Failure(6)'})
+ylim([0 7])
 
 set(gcf,'PaperPositionMode','auto')
 print([figdir,datestr(startTime,formatOut),'_to_',datestr(endTime,formatOut),'_antStat'],...
