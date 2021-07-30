@@ -219,7 +219,7 @@ $PROJ_DIR/qc/dataProcessing/HCRproducts/velCorr/plotVelCorr_findPoly.m
 $PROJ_DIR/qc/dataProcessing/HCRproducts/velCorr/cfradialVelCorr.m
 
 #################################################################
-# FLAG field and DBZ_masked
+# FLAG field, DBZ_masked, and VEL_masked
 # To create the flag field, run
 $PROJ_DIR/qc/dataProcessing/HCRproducts/flag/makeFlagField_wholeFlights.m
 
@@ -227,7 +227,10 @@ $PROJ_DIR/qc/dataProcessing/HCRproducts/flag/makeFlagField_wholeFlights.m
 $PROJ_DIR/qc/dataProcessing/HCRproducts/flag/cfradialFlagfield.m
 
 # To add a DBZ field that has only cloud data, run
-$PROJ_DIR/qc/dataProcessing/modelAndFlag/cfradialDBZmasked.m
+$PROJ_DIR/qc/dataProcessing/HCRproducts/flag/cfradialDBZmasked.m
+
+# To add a VEL field that has only cloud data and up and down pointing times, run
+$PROJ_DIR/qc/dataProcessing/HCRproducts/flag/cfradialVELmasked.m
 
 #################################################################
 # Interpolate forecast or reanalysis data
