@@ -105,5 +105,5 @@ for ii=5:size(caseList,1)
 end
 %% Save
 outTable=table(startEndTimesAll);
-outTable.startEndTimesAll.Format = 'yyyy-MM-dd hh:mm:ss';
+outTable.startEndTimesAll.Format = 'yyyy-MM-dd HH:mm:ss';
 writetable(outTable,[project,'HighDBMHXtimes.txt'],'delimiter',' ');
