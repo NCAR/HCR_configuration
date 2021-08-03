@@ -67,6 +67,9 @@ timeInds=find(modelTemp.time.timeHCR>=startTime & modelTemp.time.timeHCR<=endTim
 for ii=1:length(varNames)
     nameIn=fields(modelTemp.(varNames{ii}));
     dataIn=modelTemp.(varNames{ii}).(nameIn{:});
+    if size(dataIn,2)==1
+        dataIn=dataIn';
+    end
     model.(varNamesIn{ii})=dataIn(:,timeInds);
 end
 end

@@ -5,10 +5,13 @@ close all;
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
 project='spicule'; % socrates, cset, aristo, otrec
-quality='qc0'; % field, qc1, qc2
-qcVersion='v0.1';
+quality='qc1'; % field, qc1, qc2
+qcVersion='v1.0';
 freqData='10hz';
-whichModel='ecmwf';
+whichModel='narr';
+
+addTOPO=0;
+addSST=0;
 
 formatOut = 'yyyymmdd';
 
@@ -38,8 +41,12 @@ for ii=1:size(caseList,1)
         model.p=[];
         model.temp=[];
         %model.asl=[];
-        model.sst=[];
-        model.topo=[];
+        if addSST
+            model.sst=[];
+        end
+        if addTOPO
+            model.topo=[];
+        end
         model.uSurf=[];
         model.vSurf=[];
         model.rh=[];
@@ -99,10 +106,14 @@ for ii=1:size(caseList,1)
             netcdf.defVarFill(ncid,varidT,false,fillVal);
             varidRH = netcdf.defVar(ncid,'RH','NC_FLOAT',[dimrange dimtime]);
             netcdf.defVarFill(ncid,varidRH,false,fillVal);
-            varidSST = netcdf.defVar(ncid,'SST','NC_FLOAT',[dimtime]);
-            netcdf.defVarFill(ncid,varidSST,false,fillVal);
-            varidTOPO = netcdf.defVar(ncid,'TOPO','NC_FLOAT',[dimtime]);
-            netcdf.defVarFill(ncid,varidTOPO,false,fillVal);
+            if addSST
+                varidSST = netcdf.defVar(ncid,'SST','NC_FLOAT',[dimtime]);
+                netcdf.defVarFill(ncid,varidSST,false,fillVal);
+            end
+            if addTOPO
+                varidTOPO = netcdf.defVar(ncid,'TOPO','NC_FLOAT',[dimtime]);
+                netcdf.defVarFill(ncid,varidTOPO,false,fillVal);
+            end
             varidUSURF = netcdf.defVar(ncid,'U_SURF','NC_FLOAT',[dimtime]);
             netcdf.defVarFill(ncid,varidUSURF,false,fillVal);
             varidVSURF = netcdf.defVar(ncid,'V_SURF','NC_FLOAT',[dimtime]);
@@ -113,8 +124,12 @@ for ii=1:size(caseList,1)
             netcdf.putVar(ncid,varidP,modOut.p);
             netcdf.putVar(ncid,varidT,modOut.temp);
             netcdf.putVar(ncid,varidRH,modOut.rh);
-            netcdf.putVar(ncid,varidSST,modOut.sst);
-            netcdf.putVar(ncid,varidTOPO,modOut.topo);
+            if addSST
+                netcdf.putVar(ncid,varidSST,modOut.sst);
+            end
+            if addTOPO
+                netcdf.putVar(ncid,varidTOPO,modOut.topo);
+            end
             netcdf.putVar(ncid,varidUSURF,modOut.uSurf);
             netcdf.putVar(ncid,varidVSURF,modOut.vSurf);
             
@@ -139,14 +154,18 @@ for ii=1:size(caseList,1)
             ncwriteatt(infile,'RH','grid_mapping','grid_mapping');
             ncwriteatt(infile,'RH','coordinates','time range');
             
-            ncwriteatt(infile,'SST','long_name','sea_surface_temperature');
-            ncwriteatt(infile,'SST','standard_name','sea_surface_temperature');
-            ncwriteatt(infile,'SST','units','degC');
-            ncwriteatt(infile,'SST','coordinates','time');
+            if addSST
+                ncwriteatt(infile,'SST','long_name','sea_surface_temperature');
+                ncwriteatt(infile,'SST','standard_name','sea_surface_temperature');
+                ncwriteatt(infile,'SST','units','degC');
+                ncwriteatt(infile,'SST','coordinates','time');
+            end
             
-            ncwriteatt(infile,'TOPO','long_name','terrain_height_above_mean_sea_level');
-            ncwriteatt(infile,'TOPO','units','m');
-            ncwriteatt(infile,'TOPO','coordinates','time');
+            if addTOPO
+                ncwriteatt(infile,'TOPO','long_name','terrain_height_above_mean_sea_level');
+                ncwriteatt(infile,'TOPO','units','m');
+                ncwriteatt(infile,'TOPO','coordinates','time');
+            end
             
             ncwriteatt(infile,'U_SURF','long_name','u_wind_velocity');
             ncwriteatt(infile,'U_SURF','standard_name','eastward_wind');

@@ -25,7 +25,7 @@ caseList = table2array(readtable(infile));
 indir=HCRdir(project,quality,qcVersion,freqData);
 
 %% Go through flights
-for ii=1:size(caseList,1)
+for ii=10:size(caseList,1)
     disp(['Flight ',num2str(ii)]);
     
     startTime=datetime(caseList(ii,1:6));
@@ -81,19 +81,25 @@ for ii=1:size(caseList,1)
     end
     
     %% Topo data
-    [modelData.topo modelData.topolon modelData.topolat]=read_gtopo30(topodir,modelData.lon,modelData.lat);
+    [modelData.topo modelData.topolon modelData.topolat]=read_gtopo30(topodir,data.longitude,data.latitude);
     
-    %% Remove sst data that is over land
-    lonMat=double(repmat(modelData.lon,1,size(modelData.z,2),size(modelData.z,4)));
-    latMat=double(repmat(fliplr(modelData.lat'),size(modelData.z,1),1,size(modelData.z,4)));
+    %% Set up grid
+    if strcmp(whichModel,'narr')
+        lonMat=double(repmat(modelData.lon,1,1,size(modelData.z,4)));
+        latMat=double(repmat(modelData.lat,1,1,size(modelData.z,4)));
+    else
+        lonMat=double(repmat(modelData.lon,1,size(modelData.z,2),size(modelData.z,4)));
+        latMat=double(repmat(fliplr(modelData.lat'),size(modelData.z,1),1,size(modelData.z,4)));
+    end
     timeMat=repmat(datenum(modelData.time),size(modelData.z,1),1,size(modelData.z,2));
     timeMat=permute(timeMat,[1,3,2]);
     
-    % Interpolate topo data to model grid
-    topoModel=interpn(modelData.topolon',modelData.topolat',modelData.topo',...
-        lonMat(:,:,1),latMat(:,:,1));
-    
+    % Remove SST data that is over land
     if strcmp(whichModel,'ecmwf')
+        % Interpolate topo data to model grid
+        topoModel=interpn(modelData.topolon',modelData.topolat',modelData.topo',...
+            lonMat(:,:,1),latMat(:,:,1));
+        
         for ll=1:size(modelData.sstSurf,3)
             tempSST=modelData.sstSurf(:,:,ll);
             tempSST(topoModel>0)=nan;
@@ -102,7 +108,7 @@ for ii=1:size(caseList,1)
     end
     %% Interpolate
     disp('Interpolating to HCR track ...');
-        
+    
     % Make thinned out time vector
     % Get 10 second interval
     %     startMinute=datetime(year(data.time(1)),month(data.time(1)),day(data.time(1)),...
@@ -123,40 +129,130 @@ for ii=1:size(caseList,1)
     int.pHCR=[];
     int.rhHCR=[];
     
-    for jj=1:size(modelData.z,3)
-        Vq = interpn(lonMat,latMat,timeMat,squeeze(modelData.Temperature(:,:,jj,:)),...
-            wrapTo360(data.longitude(timeInd)),data.latitude(timeInd),datenum(data.time(timeInd)));
-        int.tempHCR=cat(1,int.tempHCR,Vq);
-        Vq = interpn(lonMat,latMat,timeMat,squeeze(modelData.z(:,:,jj,:)),...
-            wrapTo360(data.longitude(timeInd)),data.latitude(timeInd),datenum(data.time(timeInd)));
-        int.zHCR=cat(1,int.zHCR,Vq);
-        Vq = interpn(lonMat,latMat,timeMat,squeeze(modelData.p(:,:,jj,:)),...
-            wrapTo360(data.longitude(timeInd)),data.latitude(timeInd),datenum(data.time(timeInd)));
-        int.pHCR=cat(1,int.pHCR,Vq);
-        Vq = interpn(lonMat,latMat,timeMat,squeeze(modelData.rh(:,:,jj,:)),...
-            wrapTo360(data.longitude(timeInd)),data.latitude(timeInd),datenum(data.time(timeInd)));
-        int.rhHCR=cat(1,int.rhHCR,Vq);
-    end
-    
-    % 2D variables
-    surfData.pHCR = interpn(lonMat,latMat,timeMat,modelData.pSurf,...
-        wrapTo360(data.longitude),data.latitude,datenum(data.time));
-    surfData.tempHCR = interpn(lonMat,latMat,timeMat,modelData.tSurf,...
-        wrapTo360(data.longitude),data.latitude,datenum(data.time));
-    surfData.rhHCR = interpn(lonMat,latMat,timeMat,modelData.rhSurf,...
-        wrapTo360(data.longitude),data.latitude,datenum(data.time));
-    surfData.uHCR = interpn(lonMat,latMat,timeMat,modelData.uSurf,...
-        wrapTo360(data.longitude),data.latitude,datenum(data.time));
-    surfData.vHCR = interpn(lonMat,latMat,timeMat,modelData.vSurf,...
-        wrapTo360(data.longitude),data.latitude,datenum(data.time));
-    if isfield(modelData,'sstSurf')
-        surfData.sstHCR = interpn(lonMat,latMat,timeMat,modelData.sstSurf,...
+    if strcmp(whichModel,'narr')
+        
+        % Make grid smaller
+        minLonFlight=min(wrapTo360(data.longitude(timeInd)));
+        maxLonFlight=max(wrapTo360(data.longitude(timeInd)));
+        minLatFlight=min(data.latitude(timeInd));
+        maxLatFlight=max(data.latitude(timeInd));
+        [r c]=find(modelData.lon>=minLonFlight & modelData.lon<=maxLonFlight & ...
+            modelData.lat>=minLatFlight & modelData.lat<=maxLatFlight);
+        
+        lonMatS=lonMat(min(r)-1:max(r)+1,min(c)-1:max(c)+1,:);
+        latMatS=latMat(min(r)-1:max(r)+1,min(c)-1:max(c)+1,:);
+        timeMatS=timeMat(min(r)-1:max(r)+1,min(c)-1:max(c)+1,:);
+        
+        xIn=cat(2,lonMatS(:),latMatS(:),timeMatS(:));
+        xqIn=cat(2,wrapTo360(data.longitude(timeInd))',data.latitude(timeInd)',datenum(data.time(timeInd))');
+        goodIndXQ=find(~any(isnan(xqIn),2));
+        xqIn(any(isnan(xqIn),2),:)=[];        
+        
+        for jj=1:size(modelData.z,3)
+            vIn1=squeeze(modelData.Temperature(min(r)-1:max(r)+1,min(c)-1:max(c)+1,jj,:));
+            vIn=vIn1(:);
+            Vq = griddatan(xIn,vIn,xqIn);
+            VqOut=nan(length(timeInd),1);
+            VqOut(goodIndXQ)=Vq;
+            int.tempHCR=cat(1,int.tempHCR,VqOut');
+            vIn1=squeeze(modelData.z(min(r)-1:max(r)+1,min(c)-1:max(c)+1,jj,:));
+            vIn=vIn1(:);
+            Vq = griddatan(xIn,vIn,xqIn);
+            VqOut=nan(length(timeInd),1);
+            VqOut(goodIndXQ)=Vq;
+            int.zHCR=cat(1,int.zHCR,VqOut');
+            vIn1=squeeze(modelData.p(min(r)-1:max(r)+1,min(c)-1:max(c)+1,jj,:));
+            vIn=vIn1(:);
+            Vq = griddatan(xIn,vIn,xqIn);
+            VqOut=nan(length(timeInd),1);
+            VqOut(goodIndXQ)=Vq;
+            int.pHCR=cat(1,int.pHCR,VqOut');
+            vIn1=squeeze(modelData.rh(min(r)-1:max(r)+1,min(c)-1:max(c)+1,jj,:));
+            vIn=vIn1(:);
+            Vq = griddatan(xIn,vIn,xqIn);
+            VqOut=nan(length(timeInd),1);
+            VqOut(goodIndXQ)=Vq;
+            int.rhHCR=cat(1,int.rhHCR,VqOut');
+        end
+        
+        % 2D variables
+        xqIn=cat(2,wrapTo360(data.longitude)',data.latitude',datenum(data.time)');
+        goodIndXQ=find(~any(isnan(xqIn),2));
+        xqIn(any(isnan(xqIn),2),:)=[];
+        
+        vIn1=squeeze(modelData.pSurf(min(r)-1:max(r)+1,min(c)-1:max(c)+1,:));
+        vIn=vIn1(:);
+        Vq=griddatan(xIn,vIn,xqIn);
+        surfData.pHCR=nan(length(data.time),1);
+        surfData.pHCR(goodIndXQ)=Vq;
+        vIn1=squeeze(modelData.tSurf(min(r)-1:max(r)+1,min(c)-1:max(c)+1,:));
+        vIn=vIn1(:);
+        Vq=griddatan(xIn,vIn,xqIn);
+        surfData.tempHCR=nan(length(data.time),1);
+        surfData.tempHCR(goodIndXQ)=Vq;
+        vIn1=squeeze(modelData.rhSurf(min(r)-1:max(r)+1,min(c)-1:max(c)+1,:));
+        vIn=vIn1(:);
+        Vq=griddatan(xIn,vIn,xqIn);
+        surfData.rhHCR=nan(length(data.time),1);
+        surfData.rhHCR(goodIndXQ)=Vq;
+        vIn1=squeeze(modelData.uSurf(min(r)-1:max(r)+1,min(c)-1:max(c)+1,:));
+        vIn=vIn1(:);
+        Vq=griddatan(xIn,vIn,xqIn);
+        surfData.uHCR=nan(length(data.time),1);
+        surfData.uHCR(goodIndXQ)=Vq;
+        vIn1=squeeze(modelData.vSurf(min(r)-1:max(r)+1,min(c)-1:max(c)+1,:));
+        vIn=vIn1(:);
+        Vq=griddatan(xIn,vIn,xqIn);
+        surfData.vHCR=nan(length(data.time),1);
+        surfData.vHCR(goodIndXQ)=Vq;
+        if isfield(modelData,'sstSurf')
+            vIn1=squeeze(modelData.sstSurf(min(r)-1:max(r)+1,min(c)-1:max(c)+1,:));
+            vIn=vIn1(:);
+            Vq=griddatan(xIn,vIn,xqIn);
+            surfData.sstHCR=nan(length(data.time),1);
+            surfData.sstHCR(goodIndXQ)=Vq;
+        end
+        
+    else
+        for jj=1:size(modelData.z,3)
+            Vq = interpn(lonMat,latMat,timeMat,squeeze(modelData.Temperature(:,:,jj,:)),...
+                wrapTo360(data.longitude(timeInd)),data.latitude(timeInd),datenum(data.time(timeInd)));
+            int.tempHCR=cat(1,int.tempHCR,Vq);
+            Vq = interpn(lonMat,latMat,timeMat,squeeze(modelData.z(:,:,jj,:)),...
+                wrapTo360(data.longitude(timeInd)),data.latitude(timeInd),datenum(data.time(timeInd)));
+            int.zHCR=cat(1,int.zHCR,Vq);
+            Vq = interpn(lonMat,latMat,timeMat,squeeze(modelData.p(:,:,jj,:)),...
+                wrapTo360(data.longitude(timeInd)),data.latitude(timeInd),datenum(data.time(timeInd)));
+            int.pHCR=cat(1,int.pHCR,Vq);
+            Vq = interpn(lonMat,latMat,timeMat,squeeze(modelData.rh(:,:,jj,:)),...
+                wrapTo360(data.longitude(timeInd)),data.latitude(timeInd),datenum(data.time(timeInd)));
+            int.rhHCR=cat(1,int.rhHCR,Vq);
+        end
+        
+        % 2D variables
+        surfData.pHCR = interpn(lonMat,latMat,timeMat,modelData.pSurf,...
             wrapTo360(data.longitude),data.latitude,datenum(data.time));
+        surfData.tempHCR = interpn(lonMat,latMat,timeMat,modelData.tSurf,...
+            wrapTo360(data.longitude),data.latitude,datenum(data.time));
+        surfData.rhHCR = interpn(lonMat,latMat,timeMat,modelData.rhSurf,...
+            wrapTo360(data.longitude),data.latitude,datenum(data.time));
+        surfData.uHCR = interpn(lonMat,latMat,timeMat,modelData.uSurf,...
+            wrapTo360(data.longitude),data.latitude,datenum(data.time));
+        surfData.vHCR = interpn(lonMat,latMat,timeMat,modelData.vSurf,...
+            wrapTo360(data.longitude),data.latitude,datenum(data.time));
+        if isfield(modelData,'sstSurf')
+            surfData.sstHCR = interpn(lonMat,latMat,timeMat,modelData.sstSurf,...
+                wrapTo360(data.longitude),data.latitude,datenum(data.time));
+        end
     end
     
-    % Topo
+    % Interpolate topo
     surfData.zHCR=interpn(modelData.topolon',modelData.topolat',modelData.topo',...
         wrapTo360(data.longitude),data.latitude);
+    
+    if size(surfData.zHCR,1)==1
+        surfData.zHCR=surfData.zHCR';
+    end
     
     intFields=fields(int);
     
@@ -229,9 +325,9 @@ for ii=1:size(caseList,1)
             Vq = interp2(X,Y,vq,xq(:,1),xq(:,2));
             modelvar=nan(size(data.range));
             modelvar(keepInds)=Vq;
-%                         %surf(data.time(105000:150000),data.asl(:,105000:150000),modelvar(:,105000:150000),'edgecolor','none');
-%                         surf(data.time,data.asl,modelvar,'edgecolor','none');
-%                         view(2);
+            %                         %surf(data.time(105000:150000),data.asl(:,105000:150000),modelvar(:,105000:150000),'edgecolor','none');
+            %                         surf(data.time,data.asl,modelvar,'edgecolor','none');
+            %                         view(2);
             disp(['Saving ',intFields{ll},' data ...']);
             if strcmp(intFields{ll},'tempHCR')
                 tempHCR=modelvar;
@@ -253,12 +349,14 @@ for ii=1:size(caseList,1)
     timeHCR=data.time;
     save([outdir,whichModel,'.time.',datestr(data.time(1),'YYYYmmDD_HHMMSS'),'_to_',...
         datestr(data.time(end),'YYYYmmDD_HHMMSS'),'.Flight',num2str(ii),'.mat'],'timeHCR');
-    topo=surfData.zHCR;
-    save([outdir,whichModel,'.topo.',datestr(data.time(1),'YYYYmmDD_HHMMSS'),'_to_',...
-        datestr(data.time(end),'YYYYmmDD_HHMMSS'),'.Flight',num2str(ii),'.mat'],'topo');
-    aslHCR=data.asl;
-    save([outdir,whichModel,'.asl.',datestr(data.time(1),'YYYYmmDD_HHMMSS'),'_to_',...
-        datestr(data.time(end),'YYYYmmDD_HHMMSS'),'.Flight',num2str(ii),'.mat'],'aslHCR');
+    if addTopo
+        topo=surfData.zHCR;
+        save([outdir,whichModel,'.topo.',datestr(data.time(1),'YYYYmmDD_HHMMSS'),'_to_',...
+            datestr(data.time(end),'YYYYmmDD_HHMMSS'),'.Flight',num2str(ii),'.mat'],'topo');
+    end
+%     aslHCR=data.asl;
+%     save([outdir,whichModel,'.asl.',datestr(data.time(1),'YYYYmmDD_HHMMSS'),'_to_',...
+%         datestr(data.time(end),'YYYYmmDD_HHMMSS'),'.Flight',num2str(ii),'.mat'],'aslHCR');
     uSurfHCR=surfData.uHCR;
     save([outdir,whichModel,'.uSurf.',datestr(data.time(1),'YYYYmmDD_HHMMSS'),'_to_',...
         datestr(data.time(end),'YYYYmmDD_HHMMSS'),'.Flight',num2str(ii),'.mat'],'uSurfHCR');
