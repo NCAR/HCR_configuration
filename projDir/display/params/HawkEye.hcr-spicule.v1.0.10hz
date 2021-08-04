@@ -426,12 +426,21 @@ fields = {
   }
   ,
   {
+    label = "LDR_MASKED",
+    raw_name = "LDR_MASKED",
+    filtered_name = "",
+    units = "dB",
+    color_map = "ldr.colors",
+    shortcut = "a"
+  }
+  ,
+  {
     label = "SNR",
     raw_name = "SNR",
     filtered_name = "",
     units = "dB",
     color_map = "snr.colors",
-    shortcut = "a"
+    shortcut = "b"
   }
   ,
   {
@@ -440,7 +449,7 @@ fields = {
     filtered_name = "",
     units = "dBm",
     color_map = "dbm.colors",
-    shortcut = "b"
+    shortcut = "c"
   }
   ,
   {
@@ -449,7 +458,7 @@ fields = {
     filtered_name = "",
     units = "dBm",
     color_map = "dbm.colors",
-    shortcut = "c"
+    shortcut = "d"
   }
   ,
   {
@@ -458,7 +467,7 @@ fields = {
     filtered_name = "",
     units = "C",
     color_map = "temp.colors",
-    shortcut = "d"
+    shortcut = "e"
   }
   ,
   {
@@ -467,7 +476,7 @@ fields = {
     filtered_name = "",
     units = "hPa",
     color_map = "pressure_xml.colors",
-    shortcut = "e"
+    shortcut = "f"
   }
   ,
   {
@@ -476,7 +485,7 @@ fields = {
     filtered_name = "",
     units = "%",
     color_map = "rh.colors",
-    shortcut = "f"
+    shortcut = "g"
   }
   ,
   {
@@ -485,7 +494,7 @@ fields = {
     filtered_name = "",
     units = "",
     color_map = "hcr_flag.colors",
-    shortcut = "g"
+    shortcut = "h"
   }
   ,
   {
@@ -494,7 +503,7 @@ fields = {
     filtered_name = "",
     units = "",
     color_map = "melting_layer.colors",
-    shortcut = "h"
+    shortcut = "i"
   }
 };
 
