@@ -25,7 +25,7 @@ caseList = table2array(readtable(infile));
 indir=HCRdir(project,quality,qcVersion,freqData);
 
 %% Go through flights
-for ii=10:size(caseList,1)
+for ii=1:size(caseList,1)
     disp(['Flight ',num2str(ii)]);
     
     startTime=datetime(caseList(ii,1:6));
@@ -294,13 +294,13 @@ for ii=10:size(caseList,1)
     
     % Output coordinates
     timeMatHCR=repmat(datenum(data.time),size(data.range,1),1);
-    xq=[timeMatHCR(:) aslGood(:)];
+    xq=[timeMatHCR(:) double(aslGood(:))];
     nanXq=find(any(isnan(xq),2));
     xq(nanXq,:)=[];
     
     newGrid=(0:10:15000);
     [X Y]=meshgrid(datenum(data.time(timeInd)),newGrid);
-    newTimeGrid=repmat(datenum(data.time(timeInd)),length(newGrid),1);
+    %newTimeGrid=repmat(datenum(data.time(timeInd)),length(newGrid),1);
     
     for ll=1:length(intFields)
         if ~strcmp(intFields{ll},'zHCR')
