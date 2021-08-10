@@ -10,12 +10,12 @@ quality='qc2'; %field, qc1, or qc2
 qcVersion='v2.1';
 freqData='10hz'; % 10hz, 100hz, 2hz, or combined
 
-ylimits=[0 3.5];
+ylimits=[0 5];
 
 whichFilter=0; % 0: no filter, 1: mode filter, 2: coherence filter
 postProcess=0; % 1 if post processing is desired
 
-figdir=['/scr/snow2/rsfdata/projects/socrates/hcr/qc2/cfradial/v2.1/pidPlots/'];
+figdir=['/scr/sci/romatsch/HCR/pid/hcrOnly/',project,'/'];
 
 indir=HCRdir(project,quality,qcVersion,freqData);
 %indir=['/run/media/romatsch/RSF0006/rsf/meltingLayer/',project,'/combined/'];
@@ -29,7 +29,7 @@ caseStart=datetime(caseList.Var1,caseList.Var2,caseList.Var3, ...
 caseEnd=datetime(caseList.Var6,caseList.Var7,caseList.Var8, ...
     caseList.Var9,caseList.Var10,0);
 
-for aa=1:length(caseStart)
+for aa=11:length(caseStart)
     
     disp(['Case ',num2str(aa),' of ',num2str(length(caseStart))]);
     
@@ -40,8 +40,6 @@ for aa=1:length(caseStart)
     
     if ~isempty(fileList)
         %% Load data
-        
-        disp('Loading data');
         
         data=[];
         
@@ -103,7 +101,6 @@ for aa=1:length(caseStart)
         %% Calculate PID with attenuation correction
         
         % HCR
-        disp('Getting PID');
         [pid_hcr]=calc_pid(dBZ_cor,data,postProcess);
         
         if whichFilter==1
@@ -114,19 +111,18 @@ for aa=1:length(caseStart)
         
         
         %% Scales and units
-        cscale_hcr=[1,0,0; 0,1,0; 0,0.7,0; 0,0,1; 1,0,1; 0.5,0,0; 1,1,0; 0,1,1];
+        cscale_hcr=[0,0,1.0; 0,1,0.; 1,0,0; 1,0,1; 0,1,1; 1,1,0; 0.5,0,0];
         
-        units_str_hcr={'Rain','Drizzle','Supercooled Drizzle','Cloud Liquid','Supercooled Cloud Liquid','Mixed Phase','Snow','Ice'};
+        units_str_hcr={'Cloud liquid','Drizzle',...
+            'Rain','SLW','Ice crystals','Snow','Wet snow/rimed ice'};
         
         %% Plot PIDs
         
         timeMat=repmat(data.time,size(data.TEMP,1),1);
         
-        disp('Plotting PID');
-        
         close all
         
-        f1=figure('DefaultAxesFontSize',12,'Position',[0 300 2300 1200],'visible','off');
+        f1=figure('DefaultAxesFontSize',12,'Position',[0 300 2300 1200]);
         
         s1=subplot(4,2,1);
         surf(data.time,data.asl./1000,data.DBZ,'edgecolor','none');
@@ -212,10 +208,10 @@ for aa=1:length(caseStart)
         view(2);
         ylim(ylimits);
         xlim([data.time(1),data.time(end)]);
-        caxis([.5 8.5]);
+        caxis([.5 7.5]);
         colormap(s5,cscale_hcr);
         cb=colorbar;
-        cb.Ticks=1:8;
+        cb.Ticks=1:7;
         cb.TickLabels=units_str_hcr;
         ylabel('Altitude (km)');
         title(['HCR particle ID']);
