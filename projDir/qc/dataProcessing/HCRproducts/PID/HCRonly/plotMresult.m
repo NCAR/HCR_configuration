@@ -1,4 +1,4 @@
-function plotMresult(data,m,result,outname)
+function plotMresult(data,m,result,outname,plotIn)
 %Plot m and result for PID
 close all
 
@@ -12,7 +12,7 @@ timeMat=repmat(data.time,size(data.TEMP,1),1);
 f1=figure('DefaultAxesFontSize',12,'Position',[0 300 2300 1200],'visible','off');
 
 titles={'DBZ','LDR','VEL','WIDTH','TEMP'};
-ylimits=[0 3];
+ylimits=plotIn.ylimits;
 
 colormap jet
 
@@ -40,7 +40,7 @@ ylabel('Altitude (km)');
 title([outname,' weighted']);
 
 set(gcf,'PaperPositionMode','auto')
-print(f1,['/scr/snow2/rsfdata/projects/socrates/hcr/qc2/cfradial/v2.1/pidPlots/debugPlots/socrates_pid_',...
+print(f1,[plotIn.figdir,'debugPlots/pid_',...
 datestr(data.time(1),'yyyymmdd_HHMMSS'),'_to_',datestr(data.time(end),'yyyymmdd_HHMMSS'),'_',outname],'-dpng','-r0')
 
 end

@@ -5,20 +5,24 @@ close all
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-project='socrates'; %socrates, aristo, cset
+project='otrec'; %socrates, aristo, cset
 quality='qc2'; %field, qc1, or qc2
-qcVersion='v2.1';
+qcVersion='v2.2';
 freqData='10hz'; % 10hz, 100hz, 2hz, or combined
 
-ylimits=[0 3.5];
+ylimits=[0 14];
+plotIn.plotMR=1;
+plotIn.plotMax=1;
 
 whichFilter=0; % 0: no filter, 1: mode filter, 2: coherence filter
-postProcess=0; % 1 if post processing is desired
-
-figdir=['/scr/snow2/rsfdata/projects/socrates/hcr/qc2/cfradial/v2.1/pidPlots/'];
+postProcess=1; % 1 if post processing is desired
 
 indir=HCRdir(project,quality,qcVersion,freqData);
-%indir=['/run/media/romatsch/RSF0006/rsf/meltingLayer/',project,'/combined/'];
+
+figdir=[indir(1:end-5),'pidPlots/'];
+
+plotIn.figdir=figdir;
+plotIn.ylimits=ylimits;
 
 % Loop through cases
 casefile=['~/git/HCR_configuration/projDir/qc/dataProcessing/HCRproducts/caseFiles/pid_',project,'.txt'];
@@ -104,7 +108,7 @@ for aa=1:length(caseStart)
         
         % HCR
         disp('Getting PID');
-        [pid_hcr]=calc_pid(dBZ_cor,data,postProcess);
+        [pid_hcr]=calc_pid(dBZ_cor,data,postProcess,plotIn);
         
         if whichFilter==1
             pid_hcr=modeFilter(pid_hcr,7,0.7);
@@ -116,7 +120,7 @@ for aa=1:length(caseStart)
         %% Scales and units
         cscale_hcr=[1,0,0; 0,1,0; 0,0.7,0; 0,0,1; 1,0,1; 0.5,0,0; 1,1,0; 0,1,1];
         
-        units_str_hcr={'Rain','Drizzle','Supercooled Drizzle','Cloud Liquid','Supercooled Cloud Liquid','Mixed Phase','Snow','Ice'};
+        units_str_hcr={'Rain','Drizzle','Supercooled Drizzle','Cloud Liquid','Supercooled Cloud Liquid','Mixed Phase','Large Frozen','Small Frozen'};
         
         %% Plot PIDs
         

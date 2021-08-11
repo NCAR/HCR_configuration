@@ -1,4 +1,4 @@
-function plotResMax(data,result,maxAll)
+function plotResMax(data,result,maxAll,plotIn)
 %Plot m and result for PID
 close all
 disp('Plotting maximum');
@@ -9,8 +9,8 @@ timeMat=repmat(data.time,size(data.TEMP,1),1);
 
 f1=figure('DefaultAxesFontSize',12,'Position',[0 300 2300 1200],'visible','off');
 
-titles={'Rain','Drizzle','Cloud Liquid','Mixed Phase','Snow','Ice'};
-ylimits=[0 3];
+titles={'Rain','Drizzle','Cloud Liquid','Mixed Phase','Large Frozen','Small Frozen'};
+ylimits=plotIn.ylimits;
 
 colormap jet
 
@@ -40,7 +40,7 @@ ylabel('Altitude (km)');
 title(['Maximum']);
 
 set(gcf,'PaperPositionMode','auto')
-print(f1,['/scr/snow2/rsfdata/projects/socrates/hcr/qc2/cfradial/v2.1/pidPlots/debugPlots/socrates_pid_',...
+print(f1,[plotIn.figdir,'debugPlots/pid_',...
 datestr(data.time(1),'yyyymmdd_HHMMSS'),'_to_',datestr(data.time(end),'yyyymmdd_HHMMSS'),'_max'],'-dpng','-r0')
 
 end

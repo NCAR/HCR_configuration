@@ -1,13 +1,10 @@
-function[classOut]=calc_pid(dBZ,data,postProcess)
+function[classOut]=calc_pid(dBZ,data,postProcess,plotIn)
 
 %data.VEL_CORR=abs(data.VEL_CORR);
 data.VEL_CORR(data.elevation>0)=-data.VEL_CORR(data.elevation>0);
 
 %   Membership functions for particle detection
 % 1:Beta  2:Delta
-
-plotMR=1;
-plotMax=1;
 
 w=[40 15 10 10 25];%w=[30 15 15 20 20];
 
@@ -18,8 +15,8 @@ w=[40 15 10 10 25];%w=[30 15 15 20 20];
 %  4 Cloud liquid (3)
 %  5 Supercooled cloud liquid (post processing)
 %  6 Mixed phase (4)
-%  7 Snow (5)
-%  8 Ice (6)
+%  7 Large frozen (5)
+%  8 Small frozen (6)
 
 result=nan(6,size(data.LDR,1),size(data.LDR,2));
 
@@ -34,8 +31,8 @@ m(5,:,:)=smf(data.TEMP,[-1,2]);
 result(1,:,:)=m(1,:,:)*w(1)+m(2,:,:)*w(2)+m(3,:,:)*w(3)...
     +m(4,:,:)*w(4)+m(5,:,:)*w(5);
 
-if plotMR
-    plotMresult(data,m,result(1,:,:),'Rain');
+if plotIn.plotMR
+    plotMresult(data,m,result(1,:,:),'Rain',plotIn);
 end
 
 %  Membership functions for drizzle
@@ -49,8 +46,8 @@ m(5,:,:)=smf(data.TEMP,[-27,-25]);
 result(2,:,:)=m(1,:,:)*w(1)+m(2,:,:)*w(2)+m(3,:,:)*w(3)...
     +m(4,:,:)*w(4)+m(5,:,:)*w(5);
 
-if plotMR
-    plotMresult(data,m,result(2,:,:),'Drizzle');
+if plotIn.plotMR
+    plotMresult(data,m,result(2,:,:),'Drizzle',plotIn);
 end
 
 %  Membership functions for cloud liquid
@@ -64,8 +61,8 @@ m(5,:,:)=smf(data.TEMP,[-2,2]);
 result(3,:,:)=m(1,:,:)*w(1)+m(2,:,:)*w(2)+m(3,:,:)*w(3)...
     +m(4,:,:)*w(4)+m(5,:,:)*w(5);
 
-if plotMR
-    plotMresult(data,m,result(3,:,:),'CloudLiquid');
+if plotIn.plotMR
+    plotMresult(data,m,result(3,:,:),'CloudLiquid',plotIn);
 end
 
 %  Membership functions for mixed phase
@@ -82,13 +79,13 @@ result(4,:,:)=m(1,:,:)*w(1)+m(2,:,:)*w(2)+m(3,:,:)*w(3)...
 inoldr=find(isnan(data.LDR));
 result(4,inoldr)=0;
 
-if plotMR
-    plotMresult(data,m,result(4,:,:),'MixedPhase');
+if plotIn.plotMR
+    plotMresult(data,m,result(4,:,:),'MixedPhase',plotIn);
 end
 
-%  Membership functions for snow
+%  Membership functions for large frozen
 m=nan(5,size(dBZ,1),size(dBZ,2));
-m(1,:,:)=trapmf(dBZ,[10,12,18,20]); % Snow
+m(1,:,:)=trapmf(dBZ,[7,9,18,20]); 
 m(2,:,:)=trapmf(data.LDR,[-22,-18,-16, -14]);
 m(3,:,:)=trapmf(data.VEL_CORR,[0.8,1.0,1.2,1.4]);
 m(4,:,:)=smf(data.WIDTH,[0.2, 0.3]);
@@ -97,23 +94,23 @@ m(5,:,:)=zmf(data.TEMP,[-2,0]);
 result(5,:,:)=m(1,:,:)*w(1)+m(2,:,:)*w(2)+m(3,:,:)*w(3)...
     +m(4,:,:)*w(4)+m(5,:,:)*w(5);
 
-if plotMR
-    plotMresult(data,m,result(5,:,:),'Snow');
+if plotIn.plotMR
+    plotMresult(data,m,result(5,:,:),'LargeFrozen',plotIn);
 end
 
-%  Membership functions for ice
+%  Membership functions for small frozen
 m=nan(5,size(dBZ,1),size(dBZ,2));
-m(1,:,:)=trapmf(dBZ,[-25,-20,5,10]);
+m(1,:,:)=trapmf(dBZ,[-25,-20,9,11]);
 m(2,:,:)=trapmf(data.LDR,[-25, -22,-15,-12]);
 m(3,:,:)=trapmf(data.VEL_CORR,[-1,0,1,4]);
 m(4,:,:)=zmf(data.WIDTH,[0.7,0.9]);
-m(5,:,:)=zmf(data.TEMP,[-2,0]);
+m(5,:,:)=zmf(data.TEMP,[-1,4]);
 
 result(6,:,:)=m(1,:,:)*w(1)+m(2,:,:)*w(2)+m(3,:,:)*w(3)...
     +m(4,:,:)*w(4)+m(5,:,:)*w(5);
 
-if plotMR
-    plotMresult(data,m,result(6,:,:),'Ice');
+if plotIn.plotMR
+    plotMresult(data,m,result(6,:,:),'SmallFrozen',plotIn);
 end
 
 clear m
@@ -132,8 +129,8 @@ for ii=1:6
     classOut(isnan(classOut) & testMat==1)=ii;
 end
 
-if plotMax
-    plotResMax(data,result,max1);
+if plotIn.plotMax
+    plotResMax(data,result,max1,plotIn);
 end
 
 clearvars -except data classOut postProcess
@@ -156,14 +153,10 @@ if postProcess
     meltLayer(~isnan(meltLayer) & meltLayer<20)=10;
     meltLayer(~isnan(meltLayer) & meltLayer>=20)=20;
     
-    % No frozen particles in strong downward motion
-    classOut(meltLayer==10 & data.VEL_CORR>2.5 & ...
-        (classOut==6 | classOut==7 | classOut==8))=1;
-    
-    % No frozen precipitation in warm region
+    % No small frozen in warm region
     replaceMat=zeros(size(classOut));
-    replaceMat(meltLayer==10 & (classOut==7 | classOut==8))=1;
-    
+    replaceMat(meltLayer==10 & classOut==8)=1;
+        
     % Replace with closest warm pixel
     [oldR oldC]=find(~isnan(classOut) & replaceMat==0 & meltLayer==10);
     [addR addC]=find(replaceMat==1);
@@ -171,16 +164,16 @@ if postProcess
     nearest_OldValue = classOut(sub2ind(size(classOut), oldR(idx), oldC(idx)));
     classOut(sub2ind(size(classOut), addR, addC))=nearest_OldValue;
     
-    % Updrafts have no rain, no drizzle, and no snow.
-    replaceMat=zeros(size(classOut));
-    replaceMat(data.VEL_CORR<0 & (classOut==1 | classOut==2 | classOut==3 | classOut==7))=1;
-    
-    % Replace with closest pixel
-    [oldR oldC]=find(~isnan(classOut) & replaceMat==0);
-    [addR addC]=find(replaceMat==1);
-    idx = knnsearch([oldR oldC], [addR addC]);
-    nearest_OldValue = classOut(sub2ind(size(classOut), oldR(idx), oldC(idx)));
-    classOut(sub2ind(size(classOut), addR, addC))=nearest_OldValue;
+%     % Updrafts have no rain, no drizzle, and no snow.
+%     replaceMat=zeros(size(classOut));
+%     replaceMat(data.VEL_CORR<0 & (classOut==1 | classOut==2 | classOut==3 | classOut==7))=1;
+%     
+%     % Replace with closest pixel
+%     [oldR oldC]=find(~isnan(classOut) & replaceMat==0);
+%     [addR addC]=find(replaceMat==1);
+%     idx = knnsearch([oldR oldC], [addR addC]);
+%     nearest_OldValue = classOut(sub2ind(size(classOut), oldR(idx), oldC(idx)));
+%     classOut(sub2ind(size(classOut), addR, addC))=nearest_OldValue;
 end
 %% Remove nans
 classOut(isnan(data.DBZ))=nan;
