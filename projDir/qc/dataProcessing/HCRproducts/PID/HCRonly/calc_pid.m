@@ -10,13 +10,14 @@ w=[40 15 10 10 25];%w=[30 15 15 20 20];
 
 % pid_hcr (number before post processing)
 %  1 Rain (1)
-%  2 Drizzle (2)
-%  3 Supercooled drizzle (post-processing)
-%  4 Cloud liquid (3)
-%  5 Supercooled cloud liquid (post processing)
-%  6 Mixed phase (4)
-%  7 Large frozen (5)
-%  8 Small frozen (6)
+%  2 Supercooled rain (post-processing)
+%  3 Drizzle (2)
+%  4 Supercooled drizzle (post-processing)
+%  5 Cloud liquid (3)
+%  6 Supercooled cloud liquid (post processing)
+%  7 Mixed phase (4)
+%  8 Large frozen (5)
+%  9 Small frozen (6)
 
 result=nan(6,size(data.LDR,1),size(data.LDR,2));
 
@@ -26,7 +27,7 @@ m(1,:,:)=smf(dBZ,[3,5]);  % Rain
 m(2,:,:)=zmf(data.LDR,[-27,-22]);
 m(3,:,:)=trapmf(data.VEL_CORR,[2,3,6,8]);
 m(4,:,:)=smf(data.WIDTH,[0.2,0.3]);
-m(5,:,:)=smf(data.TEMP,[-1,2]);
+m(5,:,:)=smf(data.TEMP,[-2,2]);
 
 result(1,:,:)=m(1,:,:)*w(1)+m(2,:,:)*w(2)+m(3,:,:)*w(3)...
     +m(4,:,:)*w(4)+m(5,:,:)*w(5);
@@ -41,7 +42,7 @@ m(1,:,:)=trapmf(dBZ,[-17,-14,5,8]);
 m(2,:,:)=zmf(data.LDR,[-27,-25]);
 m(3,:,:)=trapmf(data.VEL_CORR,[0,0.5,1,2]);
 m(4,:,:)=zmf(data.WIDTH,[0.1,0.2]);
-m(5,:,:)=smf(data.TEMP,[-27,-25]);
+m(5,:,:)=smf(data.TEMP,[-41,-39]);
 
 result(2,:,:)=m(1,:,:)*w(1)+m(2,:,:)*w(2)+m(3,:,:)*w(3)...
     +m(4,:,:)*w(4)+m(5,:,:)*w(5);
@@ -56,7 +57,7 @@ m(1,:,:)=zmf(dBZ,[-17,-14]);
 m(2,:,:)=zmf(data.LDR,[-27,-25]);
 m(3,:,:)=trapmf(data.VEL_CORR,[-6,-5,1,2]);
 m(4,:,:)=zmf(data.WIDTH,[0.1,0.2]);
-m(5,:,:)=smf(data.TEMP,[-2,2]);
+m(5,:,:)=1;
 
 result(3,:,:)=m(1,:,:)*w(1)+m(2,:,:)*w(2)+m(3,:,:)*w(3)...
     +m(4,:,:)*w(4)+m(5,:,:)*w(5);
@@ -67,11 +68,11 @@ end
 
 %  Membership functions for mixed phase
 m=nan(5,size(dBZ,1),size(dBZ,2));
-m(1,:,:)=trapmf(dBZ,[-3,-1,10,15]);
+m(1,:,:)=trapmf(dBZ,[-3,-1,20,25]);
 m(2,:,:)=trapmf(data.LDR,[-20, -17,-8,-6]);
 m(3,:,:)=trapmf(data.VEL_CORR,[0.5,1.0,3,4]);
 m(4,:,:)=smf(data.WIDTH,[0.2, 0.3]);
-m(5,:,:)=trapmf(data.TEMP,[-5,-3,2,4]);
+m(5,:,:)=trapmf(data.TEMP,[-2,0,3,6]);
 
 result(4,:,:)=m(1,:,:)*w(1)+m(2,:,:)*w(2)+m(3,:,:)*w(3)...
     +m(4,:,:)*w(4)+m(5,:,:)*w(5);
@@ -104,7 +105,7 @@ m(1,:,:)=trapmf(dBZ,[-25,-20,9,11]);
 m(2,:,:)=trapmf(data.LDR,[-25, -22,-15,-12]);
 m(3,:,:)=trapmf(data.VEL_CORR,[-1,0,1,4]);
 m(4,:,:)=zmf(data.WIDTH,[0.7,0.9]);
-m(5,:,:)=zmf(data.TEMP,[-1,4]);
+m(5,:,:)=zmf(data.TEMP,[-1,5]);
 
 result(6,:,:)=m(1,:,:)*w(1)+m(2,:,:)*w(2)+m(3,:,:)*w(3)...
     +m(4,:,:)*w(4)+m(5,:,:)*w(5);
@@ -136,16 +137,20 @@ end
 clearvars -except data classOut postProcess
 
 %% Add supercooled
-classOut(classOut==6)=8;
-classOut(classOut==5)=7;
-classOut(classOut==4)=6;
-classOut(classOut==3)=4;
+classOut(classOut==6)=9;
+classOut(classOut==5)=8;
+classOut(classOut==4)=7;
+classOut(classOut==3)=5;
+classOut(classOut==2)=3;
+
+% Supercooled rain
+classOut(classOut==1 & data.TEMP<0)=2;
 
 % Supercooled drizzle
-classOut(classOut==2 & data.TEMP<0)=3;
+classOut(classOut==3 & data.TEMP<0)=4;
 
 % Supercooled cloud liquid
-classOut(classOut==4 & data.TEMP<0)=5;
+classOut(classOut==5 & data.TEMP<0)=6;
 
 %% Post processing
 if postProcess
@@ -155,7 +160,7 @@ if postProcess
     
     % No small frozen in warm region
     replaceMat=zeros(size(classOut));
-    replaceMat(meltLayer==10 & classOut==8)=1;
+    replaceMat(meltLayer==10 & classOut==9)=1;
         
     % Replace with closest warm pixel
     [oldR oldC]=find(~isnan(classOut) & replaceMat==0 & meltLayer==10);

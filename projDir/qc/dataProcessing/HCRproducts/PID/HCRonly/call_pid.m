@@ -5,14 +5,14 @@ close all
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-project='otrec'; %socrates, aristo, cset
+project='socrates'; %socrates, aristo, cset
 quality='qc2'; %field, qc1, or qc2
-qcVersion='v2.2';
+qcVersion='v2.1';
 freqData='10hz'; % 10hz, 100hz, 2hz, or combined
 
-ylimits=[0 14];
-plotIn.plotMR=1;
-plotIn.plotMax=1;
+ylimits=[0 5];
+plotIn.plotMR=0;
+plotIn.plotMax=0;
 
 whichFilter=0; % 0: no filter, 1: mode filter, 2: coherence filter
 postProcess=1; % 1 if post processing is desired
@@ -33,7 +33,7 @@ caseStart=datetime(caseList.Var1,caseList.Var2,caseList.Var3, ...
 caseEnd=datetime(caseList.Var6,caseList.Var7,caseList.Var8, ...
     caseList.Var9,caseList.Var10,0);
 
-for aa=1:length(caseStart)
+for aa=26:length(caseStart)
     
     disp(['Case ',num2str(aa),' of ',num2str(length(caseStart))]);
     
@@ -118,9 +118,9 @@ for aa=1:length(caseStart)
         
         
         %% Scales and units
-        cscale_hcr=[1,0,0; 0,1,0; 0,0.7,0; 0,0,1; 1,0,1; 0.5,0,0; 1,1,0; 0,1,1];
+        cscale_hcr=[1,0,0; 1,0.6,0.47; 0,1,0; 0,0.7,0; 0,0,1; 1,0,1; 0.5,0,0; 1,1,0; 0,1,1];
         
-        units_str_hcr={'Rain','Drizzle','Supercooled Drizzle','Cloud Liquid','Supercooled Cloud Liquid','Mixed Phase','Large Frozen','Small Frozen'};
+        units_str_hcr={'Rain','Supercooled Rain','Drizzle','Supercooled Drizzle','Cloud Liquid','Supercooled Cloud Liquid','Mixed Phase','Large Frozen','Small Frozen'};
         
         %% Plot PIDs
         
@@ -216,10 +216,10 @@ for aa=1:length(caseStart)
         view(2);
         ylim(ylimits);
         xlim([data.time(1),data.time(end)]);
-        caxis([.5 8.5]);
+        caxis([.5 9.5]);
         colormap(s5,cscale_hcr);
         cb=colorbar;
-        cb.Ticks=1:8;
+        cb.Ticks=1:9;
         cb.TickLabels=units_str_hcr;
         ylabel('Altitude (km)');
         title(['HCR particle ID']);
