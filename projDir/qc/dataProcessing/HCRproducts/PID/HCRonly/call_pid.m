@@ -19,7 +19,7 @@ postProcess=1; % 1 if post processing is desired
 
 indir=HCRdir(project,quality,qcVersion,freqData);
 
-figdir=[indir(1:end-5),'pidPlots/'];
+figdir=[indir(1:end-5),'pidPlots/cases/'];
 
 plotIn.figdir=figdir;
 plotIn.ylimits=ylimits;

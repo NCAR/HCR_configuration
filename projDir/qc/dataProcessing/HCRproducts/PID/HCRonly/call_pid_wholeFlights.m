@@ -5,14 +5,19 @@ close all
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-project='spicule'; %socrates, aristo, cset
-quality='qc0'; %field, qc1, or qc2
-qcVersion='v0.1';
+project='otrec'; %socrates, aristo, cset
+quality='qc2'; %field, qc1, or qc2
+qcVersion='v2.2';
 freqData='10hz'; % 10hz, 100hz, 2hz, or combined
-whichModel='ecmwf';
+whichModel='era5';
+
+saveTime=1;
+
+plotIn.plotMR=0;
+plotIn.plotMax=0;
 
 whichFilter=0; % 0: no filter, 1: mode filter, 2: coherence filter
-postProcess=0; % 1 if post processing is desired
+postProcess=1; % 1 if post processing is desired
 
 indir=HCRdir(project,quality,qcVersion,freqData);
 %indir=['/run/media/romatsch/RSF0006/rsf/meltingLayer/',project,'/combined/'];
@@ -98,7 +103,7 @@ for aa=1:size(caseList,1)
     %% Calculate PID with attenuation correction
         disp('Creating PID ...');
         % HCR
-        [pid_hcr]=calc_pid(dBZ_cor,data,postProcess);
+        [pid_hcr]=calc_pid(dBZ_cor,data,postProcess,plotIn);
         
         if whichFilter==1
             pid_hcr=modeFilter(pid_hcr,7,0.7);
@@ -106,11 +111,17 @@ for aa=1:size(caseList,1)
             pid_hcr=coherenceFilter(pid_hcr,7,0.7);
         end
  
-    %% Save
-    disp('Saving PID ...')
-    
-    pid=pid_hcr;
-    save([outdir,whichModel,'.pid.',datestr(data.time(1),'YYYYmmDD_HHMMSS'),'_to_',...
-        datestr(data.time(end),'YYYYmmDD_HHMMSS'),'.Flight',num2str(aa),'.mat'],'pid');
- 
+        %% Save
+        disp('Saving PID ...')
+        
+        pid=pid_hcr;
+        save([outdir,whichModel,'.pid.',datestr(data.time(1),'YYYYmmDD_HHMMSS'),'_to_',...
+            datestr(data.time(end),'YYYYmmDD_HHMMSS'),'.Flight',num2str(aa),'.mat'],'pid');
+        
+        if saveTime
+            timeHCR=data.time;
+            save([outdir,whichModel,'.time.',datestr(data.time(1),'YYYYmmDD_HHMMSS'),'_to_',...
+                datestr(data.time(end),'YYYYmmDD_HHMMSS'),'.Flight',num2str(aa),'.mat'],'timeHCR');
+        end
+        
 end
