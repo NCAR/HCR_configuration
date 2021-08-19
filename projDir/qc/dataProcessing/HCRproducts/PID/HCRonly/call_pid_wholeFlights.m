@@ -19,12 +19,13 @@ plotIn.plotMax=0;
 whichFilter=0; % 0: no filter, 1: mode filter, 2: coherence filter
 postProcess=1; % 1 if post processing is desired
 
-indir=HCRdir(project,quality,qcVersion,freqData);
-%indir=['/run/media/romatsch/RSF0006/rsf/meltingLayer/',project,'/combined/'];
+if strcmp(project,'otrec')
+    indir='/scr/sleet2/rsfdata/projects/otrec/hcr/qc2/cfradial/development/pid/10hz/';
+elseif strcmp(project,'socrates')
+    indir='/scr/snow2/rsfdata/projects/socrates/hcr/qc2/cfradial/development/pid/10hz/';
+end
 
-[~,directories.modeldir]=modelDir(project,whichModel,freqData);
-outdir=directories.modeldir;
-%outdir='/run/media/romatsch/RSF0006/rsf/pid_hcr/socratesMat/';
+outdir=[indir(1:end-30),'mat/pid/10hz/'];
 
 infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_',project,'_data.txt'];
 

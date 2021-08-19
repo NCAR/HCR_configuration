@@ -7,8 +7,8 @@ close all;
 
 project='otrec'; %socrates, aristo, cset, otrec
 quality='qc2'; %field, qc1, or qc2
-dataFreq='10hz';
-qcVersion='v2.2';
+% dataFreq='10hz';
+% qcVersion='v2.1';
 whichModel='era5';
 
 if strcmp(project,'otrec')
@@ -21,11 +21,15 @@ end
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-dataDir=HCRdir(project,quality,qcVersion,dataFreq);
+if strcmp(project,'otrec')
+    indir='/scr/sleet2/rsfdata/projects/otrec/hcr/qc2/cfradial/development/pid/10hz/';
+elseif strcmp(project,'socrates')
+    indir='/scr/snow2/rsfdata/projects/socrates/hcr/qc2/cfradial/development/pid/10hz/';
+end
 
-[~,modeldir]=modelDir(project,whichModel,dataFreq);
+figdir=[indir(1:end-5),'pidPlots/wholeFlights/'];
 
-figdir=[dataDir(1:end-5),'pidPlots/wholeFlights/'];
+modeldir=[indir(1:end-30),'mat/pid/10hz/'];
 
 infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_',project,'_data.txt'];
 
@@ -45,7 +49,7 @@ for aa=1:size(caseList,1)
     
     %% Get data
     
-    fileList=makeFileList(dataDir,startTime,endTime,'xxxxxx20YYMMDDxhhmmss',1);
+    fileList=makeFileList(indir,startTime,endTime,'xxxxxx20YYMMDDxhhmmss',1);
     
     data=[];
     

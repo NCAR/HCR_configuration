@@ -17,7 +17,11 @@ plotIn.plotMax=0;
 whichFilter=0; % 0: no filter, 1: mode filter, 2: coherence filter
 postProcess=1; % 1 if post processing is desired
 
-indir=HCRdir(project,quality,qcVersion,freqData);
+if strcmp(project,'otrec')
+    indir='/scr/sleet2/rsfdata/projects/otrec/hcr/qc2/cfradial/development/pid/10hz/';
+elseif strcmp(project,'socrates')
+    indir='/scr/snow2/rsfdata/projects/socrates/hcr/qc2/cfradial/development/pid/10hz/';
+end
 
 figdir=[indir(1:end-5),'pidPlots/cases/'];
 
