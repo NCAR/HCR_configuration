@@ -24,9 +24,9 @@ end
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
 if strcmp(project,'otrec')
-    indir='/scr/sleet2/rsfdata/projects/otrec/hcr/qc2/cfradial/development/cloudPuzzleConvStrat/10hz/';
+    indir='/scr/sleet2/rsfdata/projects/otrec/hcr/qc2/cfradial/development/convStrat/10hz/';
 elseif strcmp(project,'socrates')
-    indir='/scr/snow2/rsfdata/projects/socrates/hcr/qc2/cfradial/development/cloudPuzzleConvStrat/10hz/';
+    indir='/scr/snow2/rsfdata/projects/socrates/hcr/qc2/cfradial/development/convStrat/10hz/';
 end
 
 modeldir=[indir(1:end-47),'mat/convStrat/10hz/'];
