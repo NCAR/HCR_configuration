@@ -1,0 +1,26 @@
+<ColorScale id="hcr_pid.colors"
+            gradation="linear"
+            saturation="1.0"
+            labelsSetByValue="true">
+
+  <Range min="0.5" max="1.5"  color="1,0,0" />
+  <Range min="1.5" max="2.5"  color="1,0.6,0.47" />
+  <Range min="2.5" max="3.5"  color="0,1,0" />
+  <Range min="3.5" max="4.5"  color="0,0.7,0" />
+  <Range min="4.5" max="5.5"  color="0,0,1" />
+  <Range min="5.5" max="6.5"  color="1,0,1" />
+  <Range min="6.5" max="7.5"  color="0.5,0,0" />
+  <Range min="7.5" max="8.5"  color="1,1,0" />
+  <Range min="8.5" max="9.5"  color="0,1,1" />
+
+  <Label value="1"       text="Rain warm"      />
+  <Label value="2"       text="Rain cold"      />
+  <Label value="3"       text="Drizzle warm"      />
+  <Label value="4"       text="Drizzle cold"      />
+  <Label value="5"       text="Cloud liquid warm"      />
+  <Label value="6"       text="Cloud liquid cold"      />
+  <Label value="7"       text="Mixed phase"      />
+  <Label value="8"       text="Frozen large"      />
+  <Label value="9"       text="Frozen small"      />
+  
+</ColorScale>

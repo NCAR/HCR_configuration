@@ -1,27 +1,37 @@
-% add model data to cfradial files
+% Add pid data to cfradial files
+
 clear all;
 close all;
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Input variables %%%%%%%%%%%%%%%%%%%%%%%%%%
+
+project='socrates'; %socrates, aristo, cset, otrec
+quality='qc2'; %field, qc1, or qc2
+% dataFreq='10hz';
+% qcVersion='v2.1';
+whichModel='era5';
+
+if strcmp(project,'otrec')
+    ylimUpper=15;
+else
+    ylimUpper=10;
+end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-project='spicule'; %socrates, aristo, cset
-quality='qc0'; %field, qc1, or qc2
-qcVersion='v0.1';
-freqData='10hz'; % 10hz, 100hz, 2hz, or combined
-whichModel='ecmwf';
+if strcmp(project,'otrec')
+    indir='/scr/sleet2/rsfdata/projects/otrec/hcr/qc2/cfradial/development/pid/10hz/';
+elseif strcmp(project,'socrates')
+    indir='/scr/snow2/rsfdata/projects/socrates/hcr/qc2/cfradial/development/pid/10hz/';
+end
 
-formatOut = 'yyyymmdd';
+modeldir=[indir(1:end-30),'mat/pid/10hz/'];
 
 infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_',project,'_data.txt'];
 
 caseList = table2array(readtable(infile));
-
-indir=HCRdir(project,quality,qcVersion,freqData);
-%indir='/run/media/romatsch/RSF0006/rsf/pid_hcr/socrates/';
-
-[~,modeldir]=modelDir(project,whichModel,freqData);
-%modeldir='/run/media/romatsch/RSF0006/rsf/pid_hcr/socratesMat/';
-
 %% Run processing
 
 % Go through flights
@@ -102,8 +112,9 @@ for ii=1:size(caseList,1)
             ncwriteatt(infile,'PID','long_name','particle_id_hcr');
             ncwriteatt(infile,'PID','standard_name','hydrometeor_type');
             ncwriteatt(infile,'PID','units','');
-            ncwriteatt(infile,'PID','flag_values',[1, 2, 3, 4, 5, 6, 7]);
-            ncwriteatt(infile,'PID','flag_meanings','cloud_liquid drizzle rain slw ice_crystals snow wet_snow_rimed_ice');
+            ncwriteatt(infile,'PID','flag_values',[1, 2, 3, 4, 5, 6, 7, 8, 9]);
+            ncwriteatt(infile,'PID','flag_meanings',...
+                'warm_rain supercooled_rain warm_drizzle supercooled_drizzle warm_cloud_liquid supercooled_cloud_liquid mixed_phase large_frozen small_frozen');
             ncwriteatt(infile,'PID','grid_mapping','grid_mapping');
             ncwriteatt(infile,'PID','coordinates','time range');
                                     
