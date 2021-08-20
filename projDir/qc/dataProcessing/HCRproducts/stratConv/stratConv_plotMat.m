@@ -29,7 +29,7 @@ end
 
 figdir=[indir(1:end-5),'convStratPlots/wholeFlights/'];
 
-modeldir=[indir(1:end-47),'mat/convStrat/10hz/'];
+modeldir=[indir(1:end-36),'mat/convStrat/10hz/'];
 
 infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_',project,'_data.txt'];
 

@@ -19,13 +19,13 @@ elseif strcmp(project,'socrates')
     indir='/scr/snow2/rsfdata/projects/socrates/hcr/qc2/cfradial/development/convStrat/10hz/';
 end
 
-outdir=[indir(1:end-47),'mat/convStrat/10hz/'];
+outdir=[indir(1:end-36),'mat/convStrat/10hz/'];
 
 infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_',project,'_data.txt'];
 
 caseList = table2array(readtable(infile));
 
-for aa=7:size(caseList,1)
+for aa=8:size(caseList,1)
     disp(['Flight ',num2str(aa)]);
     disp(['Starting at ',datestr(datetime('now'),'yyyy-mm-dd HH:MM')]);
     disp('Loading data ...');

@@ -29,7 +29,7 @@ elseif strcmp(project,'socrates')
     indir='/scr/snow2/rsfdata/projects/socrates/hcr/qc2/cfradial/development/convStrat/10hz/';
 end
 
-modeldir=[indir(1:end-47),'mat/convStrat/10hz/'];
+modeldir=[indir(1:end-36),'mat/convStrat/10hz/'];
 
 infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_',project,'_data.txt'];
 
