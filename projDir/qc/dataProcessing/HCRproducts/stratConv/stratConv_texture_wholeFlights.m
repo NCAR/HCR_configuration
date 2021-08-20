@@ -25,7 +25,7 @@ infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_
 
 caseList = table2array(readtable(infile));
 
-for aa=1:size(caseList,1)
+for aa=4:size(caseList,1)
     disp(['Flight ',num2str(aa)]);
     disp(['Starting at ',datestr(datetime('now'),'yyyy-mm-dd HH:MM')]);
     disp('Loading data ...');
@@ -87,7 +87,7 @@ for aa=1:size(caseList,1)
     mixedConv=0.5; % Convectivity boundary between mixed and conv.
     
     for jj=1:length(uClouds)
-        disp(['Calculating texture for tethered cloud ',num2str(jj),' of ',num2str(length(uClouds))]);
+        disp(['Calculating texture for cloud ',num2str(jj),' of ',num2str(length(uClouds))]);
         dbzIn=data.DBZ;
         dbzIn(data.FLAG>1)=nan;
         dbzIn(cloudPuzzle~=uClouds(jj))=nan;
@@ -137,6 +137,9 @@ for aa=1:size(caseList,1)
     
     %% Save
     disp('Saving stratConv field ...')
+    
+    save([outdir,whichModel,'.convectivity.',datestr(data.time(1),'YYYYmmDD_HHMMSS'),'_to_',...
+        datestr(data.time(end),'YYYYmmDD_HHMMSS'),'.Flight',num2str(aa),'.mat'],'convectivity');
     
     save([outdir,whichModel,'.convStrat.',datestr(data.time(1),'YYYYmmDD_HHMMSS'),'_to_',...
         datestr(data.time(end),'YYYYmmDD_HHMMSS'),'.Flight',num2str(aa),'.mat'],'convStrat');
