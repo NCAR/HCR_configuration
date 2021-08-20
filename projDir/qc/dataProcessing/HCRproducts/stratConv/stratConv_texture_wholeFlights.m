@@ -5,7 +5,7 @@ close all
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-project='otrec'; %socrates, aristo, cset
+project='socrates'; %socrates, aristo, cset
 % quality='qc2'; %field, qc1, or qc2
 % qcVersion='v2.2';
 % freqData='10hz'; % 10hz, 100hz, 2hz, or combined
@@ -141,7 +141,7 @@ for aa=1:size(caseList,1)
     save([outdir,whichModel,'.convStrat.',datestr(data.time(1),'YYYYmmDD_HHMMSS'),'_to_',...
         datestr(data.time(end),'YYYYmmDD_HHMMSS'),'.Flight',num2str(aa),'.mat'],'convStrat');
     
-    save([outdir,whichModel,'.stratConv1D.',datestr(data.time(1),'YYYYmmDD_HHMMSS'),'_to_',...
+    save([outdir,whichModel,'.convStrat1D.',datestr(data.time(1),'YYYYmmDD_HHMMSS'),'_to_',...
         datestr(data.time(end),'YYYYmmDD_HHMMSS'),'.Flight',num2str(aa),'.mat'],'convStrat1D');
     
     if saveTime
