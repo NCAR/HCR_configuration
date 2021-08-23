@@ -6,9 +6,9 @@ close all
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
 project='otrec'; %socrates, aristo, cset
-quality='qc2'; %field, qc1, or qc2
-qcVersion='v2.2';
-freqData='10hz'; % 10hz, 100hz, 2hz, or combined
+% quality='qc2'; %field, qc1, or qc2
+% qcVersion='v2.1';
+% freqData='10hz'; % 10hz, 100hz, 2hz, or combined
 whichModel='era5';
 
 saveTime=1;
@@ -31,7 +31,7 @@ infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_
 
 caseList = table2array(readtable(infile));
 
-for aa=5:size(caseList,1)
+for aa=1:size(caseList,1)
     disp(['Flight ',num2str(aa)]);
     disp('Loading data ...')
     

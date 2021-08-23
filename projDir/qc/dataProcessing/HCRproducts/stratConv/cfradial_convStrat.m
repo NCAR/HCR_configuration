@@ -7,7 +7,7 @@ close all;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Input variables %%%%%%%%%%%%%%%%%%%%%%%%%%
 
-project='socrates'; %socrates, aristo, cset, otrec
+project='otrec'; %socrates, aristo, cset, otrec
 quality='qc2'; %field, qc1, or qc2
 % dataFreq='10hz';
 % qcVersion='v2.1';
@@ -38,7 +38,7 @@ caseList = table2array(readtable(infile));
 %% Run processing
 
 % Go through flights
-for ii=2:size(caseList,1)
+for ii=1:size(caseList,1)
     
     disp(['Flight ',num2str(ii)]);
     
