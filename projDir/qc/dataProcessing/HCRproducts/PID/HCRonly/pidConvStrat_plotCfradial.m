@@ -5,7 +5,7 @@ close all;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Input variables %%%%%%%%%%%%%%%%%%%%%%%%%%
 
-project='otrec'; %socrates, aristo, cset, otrec
+project='socrates'; %socrates, aristo, cset, otrec
 quality='qc2'; %field, qc1, or qc2
 % dataFreq='10hz';
 % qcVersion='v2.1';
@@ -28,8 +28,6 @@ elseif strcmp(project,'socrates')
 end
 
 figdir=[indir(1:end-5),'pidPlots/pidConvStratFlights/'];
-
-modeldir=[indir(1:end-30),'mat/pid/10hz/'];
 
 infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_',project,'_data.txt'];
 
