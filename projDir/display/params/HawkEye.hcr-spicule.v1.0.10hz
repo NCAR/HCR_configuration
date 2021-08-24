@@ -70,7 +70,7 @@ register_with_procmap = FALSE;
 // Type: string
 //
 
-instance = "hcr-spicule.qc0.10hz";
+instance = "hcr-socrates.qc.final.10hz";
 
 //======================================================================
 //
@@ -190,7 +190,7 @@ begin_in_archive_mode = TRUE;
 // Type: string
 //
 
-archive_start_time = "2021 05 29 19 20 00";
+archive_start_time = "2018 01 16 00 35 00";
 
 ///////////// archive_time_span_secs //////////////////
 //
@@ -202,7 +202,7 @@ archive_start_time = "2021 05 29 19 20 00";
 // Type: double
 //
 
-archive_time_span_secs = 3600;
+archive_time_span_secs = 600;
 
 ///////////// archive_data_url ////////////////////////
 //
@@ -316,7 +316,6 @@ show_status_in_gui = {
 // Type: string
 //
 
-// color_scale_dir = "/opt/local/git/HCR_configuration/projDir/display/color_scales";
 color_scale_dir = "$(PROJ_DIR)/display/color_scales";
 
 ///////////// fields //////////////////////////////////
@@ -359,7 +358,7 @@ fields = {
     filtered_name = "",
     units = "dBZ",
     color_map = "dbz_w.colors",
-    shortcut = "2"
+    shortcut = "0"
   }
   ,
   {
@@ -368,7 +367,7 @@ fields = {
     filtered_name = "",
     units = "m/s",
     color_map = "vel_w_8.colors",
-    shortcut = "3"
+    shortcut = "1"
   }
   ,
   {
@@ -377,7 +376,7 @@ fields = {
     filtered_name = "",
     units = "m/s",
     color_map = "vel_w_8.colors",
-    shortcut = "4"
+    shortcut = "1"
   }
   ,
   {
@@ -386,7 +385,7 @@ fields = {
     filtered_name = "",
     units = "m/s",
     color_map = "vel_w_8.colors",
-    shortcut = "5"
+    shortcut = "2"
   }
   ,
   {
@@ -395,7 +394,7 @@ fields = {
     filtered_name = "",
     units = "m/s",
     color_map = "vel_w_8.colors",
-    shortcut = "6"
+    shortcut = "2"
   }
   ,
   {
@@ -404,7 +403,7 @@ fields = {
     filtered_name = "",
     units = "m/s",
     color_map = "width_w.colors",
-    shortcut = "7"
+    shortcut = "9"
   }
   ,
   {
@@ -413,7 +412,7 @@ fields = {
     filtered_name = "",
     units = "",
     color_map = "ncp.colors",
-    shortcut = "8"
+    shortcut = "e"
   }
   ,
   {
@@ -422,7 +421,7 @@ fields = {
     filtered_name = "",
     units = "dB",
     color_map = "ldr.colors",
-    shortcut = "9"
+    shortcut = "f"
   }
   ,
   {
@@ -431,7 +430,7 @@ fields = {
     filtered_name = "",
     units = "dB",
     color_map = "ldr.colors",
-    shortcut = "a"
+    shortcut = "f"
   }
   ,
   {
@@ -440,7 +439,7 @@ fields = {
     filtered_name = "",
     units = "dB",
     color_map = "snr.colors",
-    shortcut = "b"
+    shortcut = "a"
   }
   ,
   {
@@ -466,8 +465,8 @@ fields = {
     raw_name = "TEMP",
     filtered_name = "",
     units = "C",
-    color_map = "hcr_temp.colors",
-    shortcut = "e"
+    color_map = "hcr_tempC.colors",
+    shortcut = "c"
   }
   ,
   {
@@ -476,7 +475,7 @@ fields = {
     filtered_name = "",
     units = "hPa",
     color_map = "hcr_pressure.colors",
-    shortcut = "f"
+    shortcut = "d"
   }
   ,
   {
@@ -485,7 +484,7 @@ fields = {
     filtered_name = "",
     units = "%",
     color_map = "hcr_rh.colors",
-    shortcut = "g"
+    shortcut = "d"
   }
   ,
   {
@@ -494,7 +493,7 @@ fields = {
     filtered_name = "",
     units = "",
     color_map = "hcr_flag.colors",
-    shortcut = "h"
+    shortcut = "d"
   }
   ,
   {
@@ -503,7 +502,34 @@ fields = {
     filtered_name = "",
     units = "",
     color_map = "hcr_melting_layer.colors",
-    shortcut = "i"
+    shortcut = "d"
+  }
+  ,
+  {
+    label = "CONVECTIVITY",
+    raw_name = "CONVECTIVITY",
+    filtered_name = "",
+    units = "",
+    color_map = "hcr_convectivity.colors",
+    shortcut = "d"
+  }
+  ,
+  {
+    label = "PARTITION",
+    raw_name = "PARTITION_2D",
+    filtered_name = "",
+    units = "",
+    color_map = "hcr_partition.colors",
+    shortcut = "d"
+  }
+  ,
+  {
+    label = "PID",
+    raw_name = "PID",
+    filtered_name = "",
+    units = "",
+    color_map = "hcr_pid.colors",
+    shortcut = "d"
   }
 };
 
@@ -536,23 +562,10 @@ use_field_label_in_title = FALSE;
 
 //======================================================================
 //
-// SET MAX RANGE.
+// INITIAL MAX RANGE.
 //
 //======================================================================
  
-///////////// set_max_range ///////////////////////////
-//
-// Option to set the max range to be used for plotting.
-//
-// If FALSE, the max range of the data will be used. If TRUE, 
-//   max_range_km will override the max range in the data.
-//
-//
-// Type: boolean
-//
-
-set_max_range = FALSE;
-
 ///////////// max_range_km ////////////////////////////
 //
 // Max range for the display (km).
@@ -561,7 +574,7 @@ set_max_range = FALSE;
 // Type: double
 //
 
-max_range_km = 150;
+max_range_km = 15;
 
 //======================================================================
 //
@@ -655,7 +668,7 @@ site_name = "GV";
 // Type: int
 //
 
-main_window_width = 1357;
+main_window_width = 1400;
 
 ///////////// main_window_height //////////////////////
 //
@@ -695,7 +708,7 @@ main_window_start_y = 100;
 // Type: int
 //
 
-color_scale_width = 50;
+color_scale_width = 90;
 
 ///////////// label_font_size /////////////////////////
 //
@@ -707,7 +720,7 @@ color_scale_width = 50;
 // Type: int
 //
 
-label_font_size = 10;
+label_font_size = 12;
 
 ///////////// background_color ////////////////////////
 //
@@ -832,32 +845,6 @@ ppi_azimuth_lines_on_at_startup = TRUE;
 //
 
 ppi_main_legend_pos = LEGEND_TOP_LEFT;
-
-///////////// ppi_override_rendering_beam_width ///////
-//
-// Option to override the azimuth beam width for rendering.
-//
-// Normally HawkEye determines the azimuth rendering beam width 
-//   automatically. You can override this and specifcally set the azimuth 
-//   beam width for rendering.
-//
-//
-// Type: boolean
-//
-
-ppi_override_rendering_beam_width = FALSE;
-
-///////////// ppi_rendering_beam_width ////////////////
-//
-// Rendering beam width, if override is active.
-//
-// See 'ppi_override_rendering_beam_width'.
-//
-//
-// Type: double
-//
-
-ppi_rendering_beam_width = 1;
 
 //======================================================================
 //
@@ -1052,7 +1039,7 @@ rhi_grids_on_at_startup = TRUE;
 // Type: boolean
 //
 
-rhi_range_rings_on_at_startup = FALSE;
+rhi_range_rings_on_at_startup = TRUE;
 
 ///////////// rhi_elevation_lines_on_at_startup ///////
 //
@@ -1093,32 +1080,6 @@ rhi_main_legend_pos = LEGEND_TOP_LEFT;
 
 rhi_beam_queue_size = 360;
 
-///////////// rhi_override_rendering_beam_width ///////
-//
-// Option to override the azimuth beam width for rendering.
-//
-// Normally HawkEye determines the azimuth rendering beam width 
-//   automatically. You can override this and specifcally set the azimuth 
-//   beam width for rendering.
-//
-//
-// Type: boolean
-//
-
-rhi_override_rendering_beam_width = FALSE;
-
-///////////// rhi_rendering_beam_width ////////////////
-//
-// Rendering beam width, if override is active.
-//
-// See 'rhi_override_rendering_beam_width'.
-//
-//
-// Type: double
-//
-
-rhi_rendering_beam_width = 1;
-
 //======================================================================
 //
 // BSCAN TIME LIMITS.
@@ -1136,7 +1097,7 @@ rhi_rendering_beam_width = 1;
 // Type: double
 //
 
-bscan_time_span_secs = 300;
+bscan_time_span_secs = 600;
 
 ///////////// bscan_truncate_start_time ///////////////
 //
@@ -1240,7 +1201,7 @@ bscan_specify_range_limits = TRUE;
 // Type: double
 //
 
-bscan_min_range_km = 0;
+bscan_min_range_km = -0.5;
 
 ///////////// bscan_max_range_km //////////////////////
 //
@@ -1252,7 +1213,7 @@ bscan_min_range_km = 0;
 // Type: double
 //
 
-bscan_max_range_km = 25;
+bscan_max_range_km = 15;
 
 ///////////// bscan_min_altitude_km ///////////////////
 //
@@ -1282,7 +1243,7 @@ bscan_max_altitude_km = $(BSCAN_MAX_ALTITUDE_KM);
 // Type: boolean
 //
 
-bscan_altitude_in_feet = TRUE;
+bscan_altitude_in_feet = FALSE;
 
 ///////////// bscan_range_in_feet /////////////////////
 //
@@ -1312,84 +1273,6 @@ bscan_range_in_feet = FALSE;
 //
 
 bscan_range_axis_mode = RANGE_AXIS_ALTITUDE;
-
-//======================================================================
-//
-// BSCAN ANGLE LIMITS.
-//
-//======================================================================
- 
-///////////// bscan_specify_elevation_limits //////////
-//
-// Specify the min and max elevation angle.
-//
-// If true, only beams within the specified limits will be plotted.
-//
-//
-// Type: boolean
-//
-
-bscan_specify_elevation_limits = FALSE;
-
-///////////// bscan_min_elevation_deg /////////////////
-//
-// Min elevation angle to be plotted (deg).
-//
-// Used if 'bscan_specify_elevation_limits' is true.
-//
-//
-// Type: double
-//
-
-bscan_min_elevation_deg = 89;
-
-///////////// bscan_max_elevation_deg /////////////////
-//
-// Max elevation angle to be plotted (deg).
-//
-// Used if 'bscan_specify_elevation_limits' is true.
-//
-//
-// Type: double
-//
-
-bscan_max_elevation_deg = 91;
-
-///////////// bscan_specify_azimuth_limits ////////////
-//
-// Specify the min and max azimuth angle.
-//
-// If true, only beams within the specified limits will be plotted.
-//
-//
-// Type: boolean
-//
-
-bscan_specify_azimuth_limits = FALSE;
-
-///////////// bscan_min_azimuth_deg ///////////////////
-//
-// Min azimuth angle to be plotted (deg).
-//
-// Used if 'bscan_specify_azimuth_limits' is true.
-//
-//
-// Type: double
-//
-
-bscan_min_azimuth_deg = 89;
-
-///////////// bscan_max_azimuth_deg ///////////////////
-//
-// Max azimuth angle to be plotted (deg).
-//
-// Used if 'bscan_specify_azimuth_limits' is true.
-//
-//
-// Type: double
-//
-
-bscan_max_azimuth_deg = 91;
 
 //======================================================================
 //
@@ -1511,7 +1394,7 @@ bscan_left_margin = 50;
 // Type: int
 //
 
-bscan_right_margin = 40;
+bscan_right_margin = 30;
 
 ///////////// bscan_axis_tick_len /////////////////////
 //
@@ -1567,7 +1450,7 @@ bscan_title_font_size = 12;
 // Type: int
 //
 
-bscan_axis_label_font_size = 8;
+bscan_axis_label_font_size = 10;
 
 ///////////// bscan_axis_values_font_size /////////////
 //
@@ -2112,25 +1995,4 @@ sim_start_range_km = -0.3;
 //
 
 sim_gate_spacing_km = 0.02;
-
-//======================================================================
-//
-// CLICK POINT DATA MESSAGING.
-//
-// Writing the click point location to an FMQ in XML format.
-//
-//======================================================================
- 
-///////////// click_point_fmq_url /////////////////////
-//
-// URL for click point URL.
-//
-// The details of the latest click point are written to an FMQ. The 
-//   format is XML. You can view the FMQ using FmqMon -mode ASCII_PRINT.
-//
-//
-// Type: string
-//
-
-click_point_fmq_url = "/tmp/fmq/click_point";
 
