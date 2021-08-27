@@ -11,14 +11,13 @@ quality='qc2'; %field, qc1, or qc2
 % qcVersion='v2.1';
 whichModel='era5';
 
-if strcmp(project,'otrec')
-    ylimUpper=15;
-else
-    ylimUpper=4;
-end
-
 smallMid=0.14; % Threshold in mm for small to mid particles
 midLarge=0.33;
+
+HCRrangePix=10;
+HCRtimePix=20;
+
+showPlot='off';
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
@@ -65,6 +64,9 @@ caseStart=datetime(caseList.Var1,caseList.Var2,caseList.Var3, ...
 caseEnd=datetime(caseList.Var6,caseList.Var7,caseList.Var8, ...
     caseList.Var9,caseList.Var10,0);
 
+varNames={'numLiqP','numIceP','numAllP','numLiqHCR','numIceHCR','numAllHCR'};
+outTableAll=[];
+
 for aa=1:length(caseStart)
     
     disp(['Case ',num2str(aa),' of ',num2str(length(caseStart))]);
@@ -95,6 +97,8 @@ for aa=1:length(caseStart)
     end
     
     dataVars=dataVars(~cellfun('isempty',dataVars));
+    
+    data.DBZ(data.FLAG>1)=nan;
     
     %% Get particle data
     
@@ -150,17 +154,55 @@ for aa=1:length(caseStart)
     largeIceFrac=largeIce./largeAll;
     
     sumAll=sum(countAll,1);
-    sumAll(sumAll<5)=nan;
+    sumAll(sumAll<10)=nan;
     
     liqFrac=sum(countLiq,1)./sumAll;
     
+    %% Calculate HCR liquid fraction
+    
+    hcrLiqIce=nan(size(data.PID));
+    hcrLiqIce(data.PID<=6)=1;
+    hcrLiqIce(data.PID==7)=2;
+    hcrLiqIce(data.PID>=8)=3;
+    
+    liqFrac_HCR_P=nan(length(ptime),5);
+    goodIndsP=find(~isnan(liqFrac));
+    
+    for jj=1:length(goodIndsP)
+        hcrInd=find(data.time==ptime(goodIndsP(jj)));
+        if hcrInd>HCRtimePix & hcrInd+HCRtimePix<=length(data.time)
+            hcrIndCols=hcrInd-HCRtimePix:hcrInd+HCRtimePix;
+            hcrParts=hcrLiqIce(18:18+HCRrangePix,hcrIndCols);
+            liqNum=sum(sum(hcrParts==1));
+            mixNum=sum(sum(hcrParts==2));
+            iceNum=sum(sum(hcrParts==3));
+            if mixNum>0
+                liqNum=liqNum+ceil(mixNum/2);
+                iceNum=iceNum+floor(mixNum/2);
+            end
+            allNum=sum(sum(~isnan(hcrParts)));
+            if allNum>50
+                addFrac=[liqNum/allNum,liqFrac(goodIndsP(jj)),liqNum,iceNum,allNum];
+                liqFrac_HCR_P((goodIndsP(jj)),:)=addFrac;
+            end
+        end
+    end
+    
+    outTable=timetable(ptime,sum(countLiq,1)',sum(countIce,1)',sumAll',liqFrac_HCR_P(:,3),liqFrac_HCR_P(:,4),liqFrac_HCR_P(:,5),...
+        'VariableNames',varNames);
+    
+    outTable=rmmissing(outTable);
+    
+    outTableAll=cat(1,outTableAll,outTable);
     %% Plot 1
     
     disp('Plotting ...');
     
     close all
     
-    f1 = figure('Position',[200 500 1800 1200],'DefaultAxesFontSize',12,'visible','off');
+    ylims=[max([0,floor(min(data.altitude./1000))]),ceil(max(data.altitude./1000))];
+    
+    f1 = figure('Position',[200 500 1800 1200],'DefaultAxesFontSize',12,'visible',showPlot);
     
     s1=subplot(4,1,1);
     
@@ -171,11 +213,12 @@ for aa=1:length(caseStart)
     view(2);
     ylabel('Altitude (km)');
     caxis([-35 25]);
-    ylim([0 ylimUpper]);
+    ylim(ylims);
     xlim([data.time(1),data.time(end)]);
     colorbar
     grid on
     title('Reflectivity (dBZ)')
+    plot(data.time,data.altitude./1000,'-k','linewidth',2);
     s1pos=s1.Position;
     
     s2=subplot(4,1,2);
@@ -193,7 +236,7 @@ for aa=1:length(caseStart)
     plot(data.time,data.altitude./1000,'-k','linewidth',2);
     
     caxis([.5 9.5]);
-    ylim([0 ylimUpper]);
+    ylim(ylims);
     xlim([data.time(1),data.time(end)]);
     
     grid on
@@ -258,7 +301,7 @@ for aa=1:length(caseStart)
         
     disp('Plotting 2 ...');
    
-    f1 = figure('Position',[200 500 1800 1200],'DefaultAxesFontSize',12,'visible','off');
+    f1 = figure('Position',[200 500 1800 1200],'DefaultAxesFontSize',12,'visible',showPlot);
     
     s1=subplot(3,1,1);
     
@@ -269,11 +312,12 @@ for aa=1:length(caseStart)
     view(2);
     ylabel('Altitude (km)');
     caxis([-35 25]);
-    ylim([0 ylimUpper]);
+    ylim(ylims);
     xlim([data.time(1),data.time(end)]);
     colorbar
     grid on
     title('Reflectivity (dBZ)')
+    plot(data.time,data.altitude./1000,'-k','linewidth',2);
     s1pos=s1.Position;
     
     s2=subplot(3,1,2);
@@ -292,7 +336,7 @@ for aa=1:length(caseStart)
     set(gca,'clim',[0,1]);
     
     caxis([5.5 8.5]);
-    ylim([0 ylimUpper]);
+    ylim(ylims);
     xlim([data.time(1),data.time(end)]);
     
     grid on
@@ -304,15 +348,90 @@ for aa=1:length(caseStart)
     
     hold on
     plot(ptime,liqFrac,'-r','linewidth',2);
+    plot(ptime,liqFrac_HCR_P(:,1),'-b','linewidth',2);
     ylabel('Fraction');
     ylim([0 1]);
     xlim([data.time(1),data.time(end)]);
     grid on
     title('Liquid fraction');
+    legend('UW paricle','HCR');
     s3pos=s3.Position;
     s3.Position=[s3pos(1),s3pos(2),s1pos(3),s3pos(4)];
     
     set(gcf,'PaperPositionMode','auto')
     print(f1,[figdir,project,'_pidUW_liquidIce_',datestr(data.time(1),'yyyymmdd_HHMMSS'),'_to_',datestr(data.time(end),'yyyymmdd_HHMMSS')],'-dpng','-r0')
     
+    %% Plot 3
+    
+    f1 = figure('Position',[200 500 800 700],'DefaultAxesFontSize',12,'visible',showPlot);
+    scatter(liqFrac_HCR_P(:,1),liqFrac_HCR_P(:,2),'filled');
+    xlabel('HCR liquid fraction');
+    xlabel('UW particle liquid fraction');
+    xlim([0 1]);
+    ylim([0 1]);
+    
+    grid on
+    box on
+    
+    set(gcf,'PaperPositionMode','auto')
+    print(f1,[figdir,project,'_pidUW_liqFracScatter_',datestr(data.time(1),'yyyymmdd_HHMMSS'),'_to_',datestr(data.time(end),'yyyymmdd_HHMMSS')],'-dpng','-r0')
+    
 end
+
+%% Scatter plot all
+close all
+
+liqFracPall=outTableAll.numLiqP./outTableAll.numAllP;
+liqFracHCRall=outTableAll.numLiqHCR./outTableAll.numAllHCR;
+
+f1 = figure('Position',[200 500 800 700],'DefaultAxesFontSize',12,'visible','on');
+scatter(liqFracHCRall,liqFracPall,'filled');
+xlabel('HCR liquid fraction');
+ylabel('UW particle liquid fraction');
+xlim([0 1]);
+ylim([0 1]);
+
+grid on
+box on
+
+set(gcf,'PaperPositionMode','auto')
+print(f1,[figdir,project,'_pidUW_liqFracScatter_All.png'],'-dpng','-r0')
+
+%% Hit miss table
+
+lowBound=0.4;
+highBound=0.6;
+
+% HCR first, particles second in name
+iceIce=length(find(liqFracHCRall<lowBound & liqFracPall<lowBound));
+iceMix=length(find(liqFracHCRall<lowBound & liqFracPall>=lowBound & liqFracPall<=highBound));
+iceLiq=length(find(liqFracHCRall<lowBound & liqFracPall>highBound));
+
+mixIce=length(find(liqFracHCRall>=lowBound & liqFracHCRall<=highBound & liqFracPall<lowBound));
+mixMix=length(find(liqFracHCRall>=lowBound & liqFracHCRall<=highBound & liqFracPall>=lowBound & liqFracPall<=highBound));
+mixLiq=length(find(liqFracHCRall>=lowBound & liqFracHCRall<=highBound & liqFracPall>highBound));
+
+liqIce=length(find(liqFracHCRall>highBound & liqFracPall<lowBound));
+liqMix=length(find(liqFracHCRall>highBound & liqFracPall>=lowBound & liqFracPall<=highBound));
+liqLiq=length(find(liqFracHCRall>highBound & liqFracPall>lowBound));
+
+hmTable=[iceIce,mixIce,liqIce;iceMix,mixMix,liqMix;iceLiq,mixLiq,liqLiq];
+
+hmNorm=round(hmTable./sum(sum(hmTable)).*100);
+
+xvalues = {'Ice','Mixed','Liquid'};
+
+f1 = figure('Position',[200 500 800 700],'DefaultAxesFontSize',12,'visible','on');
+
+h=heatmap(xvalues,xvalues,hmNorm);
+ax = gca;
+axp = struct(ax);       %you will get a warning
+axp.Axes.XAxisLocation = 'top';
+h.ColorbarVisible = 'off';
+
+h.XLabel = 'HCR';
+h.YLabel = 'UW particles';
+h.Title = ['Ice-mixed boundary: ',num2str(lowBound),', mixed-liquid boundary: ',num2str(highBound)];
+
+set(gcf,'PaperPositionMode','auto')
+print(f1,[figdir,project,'_stats_All_point',num2str(lowBound*10),'point',num2str(highBound*10),'.png'],'-dpng','-r0')
