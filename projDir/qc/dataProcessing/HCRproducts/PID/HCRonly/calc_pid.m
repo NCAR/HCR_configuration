@@ -38,7 +38,7 @@ end
 
 %  Membership functions for drizzle
 m=nan(5,size(dBZ,1),size(dBZ,2));
-m(1,:,:)=trapmf(dBZ,[-17,-14,5,8]);
+m(1,:,:)=trapmf(dBZ,[-18,-16,5,8]);
 m(2,:,:)=zmf(data.LDR,[-27,-25]);
 m(3,:,:)=trapmf(data.VEL_CORR,[0,0.5,1,2]);
 m(4,:,:)=zmf(data.WIDTH,[0.1,0.2]);
@@ -53,7 +53,7 @@ end
 
 %  Membership functions for cloud liquid
 m=nan(5,size(dBZ,1),size(dBZ,2));
-m(1,:,:)=zmf(dBZ,[-17,-14]);
+m(1,:,:)=zmf(dBZ,[-16,-14]);
 m(2,:,:)=zmf(data.LDR,[-27,-25]);
 m(3,:,:)=trapmf(data.VEL_CORR,[-6,-5,1,2]);
 m(4,:,:)=zmf(data.WIDTH,[0.1,0.2]);
@@ -90,7 +90,8 @@ m(1,:,:)=trapmf(dBZ,[7,9,18,20]);
 m(2,:,:)=trapmf(data.LDR,[-22,-18,-16, -14]);
 m(3,:,:)=trapmf(data.VEL_CORR,[0.8,1.0,1.2,1.4]);
 m(4,:,:)=smf(data.WIDTH,[0.2, 0.3]);
-m(5,:,:)=zmf(data.TEMP,[-2,0]);
+%m(5,:,:)=zmf(data.TEMP,[-2,0]);
+m(5,:,:)=zmf(data.TEMP,[0,6]);
 
 result(5,:,:)=m(1,:,:)*w(1)+m(2,:,:)*w(2)+m(3,:,:)*w(3)...
     +m(4,:,:)*w(4)+m(5,:,:)*w(5);
@@ -169,16 +170,6 @@ if postProcess
     nearest_OldValue = classOut(sub2ind(size(classOut), oldR(idx), oldC(idx)));
     classOut(sub2ind(size(classOut), addR, addC))=nearest_OldValue;
     
-%     % Updrafts have no rain, no drizzle, and no snow.
-%     replaceMat=zeros(size(classOut));
-%     replaceMat(data.VEL_CORR<0 & (classOut==1 | classOut==2 | classOut==3 | classOut==7))=1;
-%     
-%     % Replace with closest pixel
-%     [oldR oldC]=find(~isnan(classOut) & replaceMat==0);
-%     [addR addC]=find(replaceMat==1);
-%     idx = knnsearch([oldR oldC], [addR addC]);
-%     nearest_OldValue = classOut(sub2ind(size(classOut), oldR(idx), oldC(idx)));
-%     classOut(sub2ind(size(classOut), addR, addC))=nearest_OldValue;
 end
 %% Remove nans
 classOut(isnan(data.DBZ))=nan;

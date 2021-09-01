@@ -11,8 +11,8 @@ qcVersion='v2.1';
 freqData='10hz'; % 10hz, 100hz, 2hz, or combined
 
 ylimits=[0 5];
-plotIn.plotMR=0;
-plotIn.plotMax=0;
+plotIn.plotMR=1;
+plotIn.plotMax=1;
 
 whichFilter=0; % 0: no filter, 1: mode filter, 2: coherence filter
 postProcess=1; % 1 if post processing is desired
@@ -23,13 +23,13 @@ elseif strcmp(project,'socrates')
     indir='/scr/snow2/rsfdata/projects/socrates/hcr/qc2/cfradial/development/pid/10hz/';
 end
 
-figdir=[indir(1:end-5),'pidPlots/cases/'];
+figdir=[indir(1:end-5),'pidPlots/liqAsIceCases/'];
 
 plotIn.figdir=figdir;
 plotIn.ylimits=ylimits;
 
 % Loop through cases
-casefile=['~/git/HCR_configuration/projDir/qc/dataProcessing/HCRproducts/caseFiles/pid_',project,'.txt'];
+casefile=['~/git/HCR_configuration/projDir/qc/dataProcessing/HCRproducts/caseFiles/pid_',project,'_liqAsIce.txt'];
 
 caseList=readtable(casefile);
 caseStart=datetime(caseList.Var1,caseList.Var2,caseList.Var3, ...
@@ -37,7 +37,7 @@ caseStart=datetime(caseList.Var1,caseList.Var2,caseList.Var3, ...
 caseEnd=datetime(caseList.Var6,caseList.Var7,caseList.Var8, ...
     caseList.Var9,caseList.Var10,0);
 
-for aa=26:length(caseStart)
+for aa=1:length(caseStart)
     
     disp(['Case ',num2str(aa),' of ',num2str(length(caseStart))]);
     
