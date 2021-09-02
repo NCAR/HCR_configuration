@@ -26,7 +26,7 @@ m=nan(5,size(dBZ,1),size(dBZ,2));
 m(1,:,:)=smf(dBZ,[3,5]);  % Rain
 m(2,:,:)=zmf(data.LDR,[-27,-22]);
 m(3,:,:)=trapmf(data.VEL_CORR,[2,3,6,8]);
-m(4,:,:)=smf(data.WIDTH,[0.2,0.3]);
+m(4,:,:)=smf(data.WIDTH,[0.1,0.2]);
 m(5,:,:)=smf(data.TEMP,[-2,2]);
 
 result(1,:,:)=m(1,:,:)*w(1)+m(2,:,:)*w(2)+m(3,:,:)*w(3)...
@@ -41,7 +41,7 @@ m=nan(5,size(dBZ,1),size(dBZ,2));
 m(1,:,:)=trapmf(dBZ,[-18,-16,5,8]);
 m(2,:,:)=zmf(data.LDR,[-27,-25]);
 m(3,:,:)=trapmf(data.VEL_CORR,[0,0.5,1,2]);
-m(4,:,:)=zmf(data.WIDTH,[0.1,0.2]);
+m(4,:,:)=zmf(data.WIDTH,[0.5,0.6]);
 m(5,:,:)=smf(data.TEMP,[-41,-39]);
 
 result(2,:,:)=m(1,:,:)*w(1)+m(2,:,:)*w(2)+m(3,:,:)*w(3)...
@@ -56,7 +56,7 @@ m=nan(5,size(dBZ,1),size(dBZ,2));
 m(1,:,:)=zmf(dBZ,[-16,-14]);
 m(2,:,:)=zmf(data.LDR,[-27,-25]);
 m(3,:,:)=trapmf(data.VEL_CORR,[-6,-5,1,2]);
-m(4,:,:)=zmf(data.WIDTH,[0.1,0.2]);
+m(4,:,:)=zmf(data.WIDTH,[0.2,0.3]);
 m(5,:,:)=1;
 
 result(3,:,:)=m(1,:,:)*w(1)+m(2,:,:)*w(2)+m(3,:,:)*w(3)...

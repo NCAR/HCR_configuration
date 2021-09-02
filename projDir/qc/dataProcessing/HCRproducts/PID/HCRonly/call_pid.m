@@ -11,8 +11,8 @@ qcVersion='v2.1';
 freqData='10hz'; % 10hz, 100hz, 2hz, or combined
 
 ylimits=[0 5];
-plotIn.plotMR=1;
-plotIn.plotMax=1;
+plotIn.plotMR=0;
+plotIn.plotMax=0;
 
 whichFilter=0; % 0: no filter, 1: mode filter, 2: coherence filter
 postProcess=1; % 1 if post processing is desired
@@ -177,7 +177,7 @@ for aa=1:length(caseStart)
         view(2);
         ylim(ylimits);
         xlim([data.time(1),data.time(end)]);
-        caxis([0 2]);
+        caxis([0 1]);
         colormap(s7,jet);
         colorbar;
         ylabel('Altitude (km)');
