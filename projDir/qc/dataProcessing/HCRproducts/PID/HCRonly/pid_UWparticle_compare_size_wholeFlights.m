@@ -11,8 +11,7 @@ quality='qc2'; %field, qc1, or qc2
 % qcVersion='v2.1';
 whichModel='era5';
 
-smallMid=0.14; % Threshold in mm for small to mid particles
-midLarge=0.33;
+minPixNumUW=5;
 
 HCRrangePix=10;
 HCRtimePix=20;
@@ -57,7 +56,7 @@ units_str_hcr={'Rain','Supercooled Rain','Drizzle','Supercooled Drizzle','Cloud 
 cscale_hcr_2=[1 0 0;0 1 0;0 0 1];
 units_str_hcr_2={'Liquid','Mixed','Frozen'};
 
-varNames={'numLiqHCR','numIceHCR','numAllHCR','numLiqLargestP','numIceLargestP','numAllLargest','sizeLargestP'};
+varNames={'numLiqHCR','numIceHCR','numAllHCR','pidHCR','numLiqLargestP','numIceLargestP','numAllLargestP','sizeLargestP'};
 outTableAll=[];
 
 infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_',project,'_data.txt'];
@@ -118,7 +117,7 @@ for aa=1:14
             startTime=endTime;
             continue
         end
-        
+       
         data=[];
         
         data.DBZ = [];
@@ -147,28 +146,34 @@ for aa=1:14
         data.DBZ(data.FLAG>1)=nan;
         
         %% Find largest
+        countAllFlip=flipud(countAll);
+        cumSumAll=cumsum(countAllFlip);
+        cumSumAllBack=flipud(cumSumAll);
         
         indMat=repmat((1:size(countAll,1))',1,size(countAll,2));
         indMat(countAll==0)=nan;
+        indMat(cumSumAllBack<minPixNumUW)=nan;
         
         rowsGood=max(indMat,[],1,'omitnan');
         colsGood=find(~isnan(rowsGood));
         rowsGood=rowsGood(colsGood);
         
-        goodInds=sub2ind(size(countAll),rowsGood,colsGood);
+        %goodInds=sub2ind(size(countAll),rowsGood,colsGood);
         
         numLiqLargest=nan(1,size(countAll,2));
         numIceLargest=nan(1,size(countAll,2));
         numAllLargest=nan(1,size(countAll,2));
-        
-        numLiqLargest(colsGood)=countLiq(goodInds);
-        numIceLargest(colsGood)=countIce(goodInds);
-        numAllLargest(colsGood)=countAll(goodInds);
-        
-        sizeLarge=sizeMM(rowsGood);
         sizeLargest=nan(1,size(countAll,2));
-        sizeLargest(colsGood)=sizeLarge;
         
+        for jj=1:length(colsGood)
+            numLiqLargest(colsGood(jj))=sum(countLiq(rowsGood(jj):end,colsGood(jj)));
+            numIceLargest(colsGood(jj))=sum(countIce(rowsGood(jj):end,colsGood(jj)));
+            numAllLargest(colsGood(jj))=sum(countAll(rowsGood(jj):end,colsGood(jj)));
+            
+            addSizes=sizeMM(rowsGood(jj):end).*countAll(rowsGood(jj):end,colsGood(jj));
+            sizeLargest(colsGood(jj))=sum(addSizes)./numAllLargest(colsGood(jj));
+        end
+               
         %% Calculate HCR liquid fraction
         
         hcrLiqIce=nan(size(data.PID));
@@ -176,7 +181,7 @@ for aa=1:14
         hcrLiqIce(data.PID==7)=2;
         hcrLiqIce(data.PID>=8)=3;
         
-        liqFrac_HCR_P=nan(length(ptime),5);
+        liqFrac_HCR_P=nan(length(ptime),6);
         goodIndsP=find(~isnan(liqFrac));
         
         for jj=1:length(goodIndsP)
@@ -194,13 +199,15 @@ for aa=1:14
                 allNum=sum(sum(~isnan(hcrParts)));                
                 
                 if allNum>50
-                    addFrac=[liqNum/allNum,liqFrac(goodIndsP(jj)),liqNum,iceNum,allNum];
+                    hcrPID=data.PID(18:18+HCRrangePix,hcrIndCols);
+                    pidOut=mode(reshape(hcrPID,1,[]));
+                    addFrac=[liqNum/allNum,liqFrac(goodIndsP(jj)),liqNum,iceNum,allNum,pidOut];
                     liqFrac_HCR_P((goodIndsP(jj)),:)=addFrac;
                 end
             end
         end
         
-        outTable=timetable(ptime,liqFrac_HCR_P(:,3),liqFrac_HCR_P(:,4),liqFrac_HCR_P(:,5),...
+        outTable=timetable(ptime,liqFrac_HCR_P(:,3),liqFrac_HCR_P(:,4),liqFrac_HCR_P(:,5),liqFrac_HCR_P(:,6),...
             numLiqLargest',numIceLargest',numAllLargest',sizeLargest','VariableNames',varNames);
         
         outTableAll=cat(1,outTableAll,outTable);
@@ -298,12 +305,22 @@ for aa=1:14
             s4=subplot(4,1,4);
             
             hold on
+            plot(ptime,outTable.numLiqLargestP./outTable.numAllLargestP,'-b','linewidth',2);
+            plot(ptime,outTable.numLiqHCR./outTable.numAllHCR,'-g','linewidth',2);
+            ylim([0 1]);
+            yticks(0:0.1:1);
+            ylabel('Liquid fraction')
+            
+            yyaxis right
+            set(gca,'YColor','k');
             plot(ptime,sizeLargest,'-k','linewidth',2);
             ylabel('Size (mm)');
-            ylim([0 max(sizeMM)]);
+            ylim([0 3]);
+            yticks(0:0.3:3);
             xlim([data.time(1),data.time(end)]);
             grid on
-            title('Size of largest particles');
+            title('Liquid fraction and size of largest particles');
+            legend('UW','HCR','Size');
             s4pos=s4.Position;
             s4.Position=[s4pos(1),s4pos(2),s1pos(3),s4pos(4)];
             
@@ -316,12 +333,10 @@ for aa=1:14
     end
 end
 
-liqFracPall=outTableAll.numLiqP./outTableAll.numAllP;
 liqFracHCRall=outTableAll.numLiqHCR./outTableAll.numAllHCR;
 
-liqFracPallL=outTableAll.numLiqLargestP./outTableAll.numAllLargest;
+liqFracPallL=outTableAll.numLiqLargestP./outTableAll.numAllLargestP;
 
-corrCoeff=corrcoef(liqFracPall,liqFracHCRall,'Rows','complete');
 corrCoeffL=corrcoef(liqFracPallL,liqFracHCRall,'Rows','complete');
 
 %% Hit miss table 1
@@ -329,47 +344,13 @@ corrCoeffL=corrcoef(liqFracPallL,liqFracHCRall,'Rows','complete');
 lowBound=0.1:0.1:0.5;
 highBound=fliplr(0.5:0.1:0.9);
 
+xvalues = {'Ice','Mixed','Liquid'};
+
 close all
 
 for ii=1:length(lowBound)
     
-    % HCR first, particles second in name
-    iceIce=length(find(liqFracHCRall<lowBound(ii) & liqFracPall<lowBound(ii)));
-    iceMix=length(find(liqFracHCRall<lowBound(ii) & liqFracPall>=lowBound(ii) & liqFracPall<=highBound(ii)));
-    iceLiq=length(find(liqFracHCRall<lowBound(ii) & liqFracPall>highBound(ii)));
-    
-    mixIce=length(find(liqFracHCRall>=lowBound(ii) & liqFracHCRall<=highBound(ii) & liqFracPall<lowBound(ii)));
-    mixMix=length(find(liqFracHCRall>=lowBound(ii) & liqFracHCRall<=highBound(ii) & liqFracPall>=lowBound(ii) & liqFracPall<=highBound(ii)));
-    mixLiq=length(find(liqFracHCRall>=lowBound(ii) & liqFracHCRall<=highBound(ii) & liqFracPall>highBound(ii)));
-    
-    liqIce=length(find(liqFracHCRall>highBound(ii) & liqFracPall<lowBound(ii)));
-    liqMix=length(find(liqFracHCRall>highBound(ii) & liqFracPall>=lowBound(ii) & liqFracPall<=highBound(ii)));
-    liqLiq=length(find(liqFracHCRall>highBound(ii) & liqFracPall>lowBound(ii)));
-    
-    hmTable=[iceIce,mixIce,liqIce;iceMix,mixMix,liqMix;iceLiq,mixLiq,liqLiq];
-    
-    hmNorm=hmTable./sum(sum(hmTable)).*100;
-    
-    xvalues = {'Ice','Mixed','Liquid'};
-    
-    f1 = figure('Position',[200 500 800 700],'DefaultAxesFontSize',12,'visible','on');
-    
-    h=heatmap(xvalues,xvalues,hmNorm);
-    ax = gca;
-    axp = struct(ax);       %you will get a warning
-    axp.Axes.XAxisLocation = 'top';
-    h.ColorbarVisible = 'off';
-    
-    h.XLabel = 'HCR';
-    h.YLabel = 'UW particles';
-    h.CellLabelFormat = '%.1f';
-    h.Title = ['All. Boundaries: ',num2str(lowBound(ii)),', ',num2str(highBound(ii)),'. Correct: ',...
-        num2str(hmNorm(1,1)+hmNorm(2,2)+hmNorm(3,3),3),'%. Correlation: ',num2str(corrCoeff(2,1),2),'.'];
-    
-    set(gcf,'PaperPositionMode','auto')
-    print(f1,[figdir,project,'_stats_All_point',num2str(lowBound(ii)*10),'point',num2str(highBound(ii)*10),'.png'],'-dpng','-r0')
-    
-    % Hit miss table 2
+    % Hit miss table
     
     % HCR first, particles second in name
     iceIceLinds=find(liqFracHCRall<lowBound(ii) & liqFracPallL<lowBound(ii));
@@ -413,89 +394,38 @@ for ii=1:length(lowBound)
     
     set(gcf,'PaperPositionMode','auto')
     print(f1,[figdir,project,'_stats_Largest_point',num2str(lowBound(ii)*10),'point',num2str(highBound(ii)*10),'.png'],'-dpng','-r0')
-    
-    % Temperature
-    hmTempL=[mean(outTableAll.tempHCR(iceIceLinds),'omitnan'),mean(outTableAll.tempHCR(mixIceLinds),'omitnan'),mean(outTableAll.tempHCR(liqIceLinds),'omitnan');...
-        mean(outTableAll.tempHCR(iceMixLinds),'omitnan'),mean(outTableAll.tempHCR(mixMixLinds),'omitnan'),mean(outTableAll.tempHCR(liqMixLinds),'omitnan');...
-        mean(outTableAll.tempHCR(iceLiqLinds),'omitnan'),mean(outTableAll.tempHCR(mixLiqLinds),'omitnan'),mean(outTableAll.tempHCR(liqLiqLinds),'omitnan')];
-    
-    f1 = figure('Position',[200 500 800 700],'DefaultAxesFontSize',12,'visible','on');
-    
-    h=heatmap(xvalues,xvalues,hmTempL);
-    ax = gca;
-    axp = struct(ax);       %you will get a warning
-    axp.Axes.XAxisLocation = 'top';
-    h.ColorbarVisible = 'off';
-    
-    h.XLabel = 'HCR';
-    h.YLabel = 'UW largest particles';
-    h.CellLabelFormat = '%.1f';
-    h.Title = ['Largest. Boundaries: ',num2str(lowBound(ii)),', ',num2str(highBound(ii)),'. Mean HCR temperature.'];
-    
-    set(gcf,'PaperPositionMode','auto')
-    print(f1,[figdir,project,'_stats_Largest_Temp_point',num2str(lowBound(ii)*10),'point',num2str(highBound(ii)*10),'.png'],'-dpng','-r0')
-    
-    % Reflectivity
-    hmReflL=[mean(outTableAll.reflHCR(iceIceLinds),'omitnan'),mean(outTableAll.reflHCR(mixIceLinds),'omitnan'),mean(outTableAll.reflHCR(liqIceLinds),'omitnan');...
-        mean(outTableAll.reflHCR(iceMixLinds),'omitnan'),mean(outTableAll.reflHCR(mixMixLinds),'omitnan'),mean(outTableAll.reflHCR(liqMixLinds),'omitnan');...
-        mean(outTableAll.reflHCR(iceLiqLinds),'omitnan'),mean(outTableAll.reflHCR(mixLiqLinds),'omitnan'),mean(outTableAll.reflHCR(liqLiqLinds),'omitnan')];
-    
-    f1 = figure('Position',[200 500 800 700],'DefaultAxesFontSize',12,'visible','on');
-    
-    h=heatmap(xvalues,xvalues,hmReflL);
-    ax = gca;
-    axp = struct(ax);       %you will get a warning
-    axp.Axes.XAxisLocation = 'top';
-    h.ColorbarVisible = 'off';
-    
-    h.XLabel = 'HCR';
-    h.YLabel = 'UW largest particles';
-    h.CellLabelFormat = '%.1f';
-    h.Title = ['Largest. Boundaries: ',num2str(lowBound(ii)),', ',num2str(highBound(ii)),'. Mean HCR reflectivity.'];
-    
-    set(gcf,'PaperPositionMode','auto')
-    print(f1,[figdir,project,'_stats_Largest_Refl_point',num2str(lowBound(ii)*10),'point',num2str(highBound(ii)*10),'.png'],'-dpng','-r0')
-    
-    % Std Reflectivity
-    hmStdReflL=[mean(outTableAll.stdReflHCR(iceIceLinds),'omitnan'),mean(outTableAll.stdReflHCR(mixIceLinds),'omitnan'),mean(outTableAll.stdReflHCR(liqIceLinds),'omitnan');...
-        mean(outTableAll.stdReflHCR(iceMixLinds),'omitnan'),mean(outTableAll.stdReflHCR(mixMixLinds),'omitnan'),mean(outTableAll.stdReflHCR(liqMixLinds),'omitnan');...
-        mean(outTableAll.stdReflHCR(iceLiqLinds),'omitnan'),mean(outTableAll.stdReflHCR(mixLiqLinds),'omitnan'),mean(outTableAll.stdReflHCR(liqLiqLinds),'omitnan')];
-    
-    f1 = figure('Position',[200 500 800 700],'DefaultAxesFontSize',12,'visible','on');
-    
-    h=heatmap(xvalues,xvalues,hmStdReflL);
-    ax = gca;
-    axp = struct(ax);       %you will get a warning
-    axp.Axes.XAxisLocation = 'top';
-    h.ColorbarVisible = 'off';
-    
-    h.XLabel = 'HCR';
-    h.YLabel = 'UW largest particles';
-    h.CellLabelFormat = '%.1f';
-    h.Title = ['Largest. Boundaries: ',num2str(lowBound(ii)),', ',num2str(highBound(ii)),'. Mean HCR stddev of reflectivity.'];
-    
-    set(gcf,'PaperPositionMode','auto')
-    print(f1,[figdir,project,'_stats_Largest_ReflStd_point',num2str(lowBound(ii)*10),'point',num2str(highBound(ii)*10),'.png'],'-dpng','-r0')
-    
-    % Gradient Reflectivity
-    hmGradReflL=[mean(outTableAll.gradReflHCR(iceIceLinds),'omitnan'),mean(outTableAll.gradReflHCR(mixIceLinds),'omitnan'),mean(outTableAll.gradReflHCR(liqIceLinds),'omitnan');...
-        mean(outTableAll.gradReflHCR(iceMixLinds),'omitnan'),mean(outTableAll.gradReflHCR(mixMixLinds),'omitnan'),mean(outTableAll.gradReflHCR(liqMixLinds),'omitnan');...
-        mean(outTableAll.gradReflHCR(iceLiqLinds),'omitnan'),mean(outTableAll.gradReflHCR(mixLiqLinds),'omitnan'),mean(outTableAll.gradReflHCR(liqLiqLinds),'omitnan')];
-    
-    f1 = figure('Position',[200 500 800 700],'DefaultAxesFontSize',12,'visible','on');
-    
-    h=heatmap(xvalues,xvalues,hmGradReflL);
-    ax = gca;
-    axp = struct(ax);       %you will get a warning
-    axp.Axes.XAxisLocation = 'top';
-    h.ColorbarVisible = 'off';
-    
-    h.XLabel = 'HCR';
-    h.YLabel = 'UW largest particles';
-    h.CellLabelFormat = '%.1f';
-    h.Title = ['Largest. Boundaries: ',num2str(lowBound(ii)),', ',num2str(highBound(ii)),'. Mean HCR gradient of reflectivity.'];
-    
-    set(gcf,'PaperPositionMode','auto')
-    print(f1,[figdir,project,'_stats_Largest_ReflGrad_point',num2str(lowBound(ii)*10),'point',num2str(highBound(ii)*10),'.png'],'-dpng','-r0')
-    
+
 end
+
+%% Size of different PID classes
+
+pidSize=nan(9,1);
+pidStd=nan(9,1);
+
+for ii=1:9
+    pidTI=find(outTableAll.pidHCR==ii);
+    sizeT=outTableAll.sizeLargestP(pidTI);
+    pidSize(ii)=mean(sizeT,'omitnan');
+    pidStd(ii)=std(sizeT,'omitnan');
+end
+
+close all
+
+f1 = figure('Position',[200 500 800 700],'DefaultAxesFontSize',12,'visible','on','renderer','painters');
+hold on
+
+errorbar(1:9,pidSize.*1000,pidStd.*1000,'sk','MarkerSize',1,'linewidth',1.5,'capsize',15);
+scatter(1:9,pidSize.*1000,150,cscale_hcr,'filled','MarkerEdgeColor','k','linewidth',2);
+%errorbar(1:9,pidSize,pidStd);
+xlim([0 10]);
+xticks(1:9);
+xticklabels(units_str_hcr);
+yticks(0:100:4000);
+set(gca, 'YGrid', 'on', 'XGrid', 'off')
+box on
+
+ylabel('Particle size (\mum)');
+title('Mean particle size');
+
+set(gcf,'PaperPositionMode','auto')
+print([figdir,project,'_meanPartSizePID.png'],'-dpng','-r0');

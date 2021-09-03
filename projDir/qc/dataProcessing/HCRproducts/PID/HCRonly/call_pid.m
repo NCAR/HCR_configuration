@@ -5,12 +5,12 @@ close all
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-project='socrates'; %socrates, aristo, cset
+project='otrec'; %socrates, aristo, cset
 quality='qc2'; %field, qc1, or qc2
 qcVersion='v2.1';
 freqData='10hz'; % 10hz, 100hz, 2hz, or combined
 
-ylimits=[0 5];
+ylimits=[0 15];
 plotIn.plotMR=0;
 plotIn.plotMax=0;
 
@@ -23,13 +23,13 @@ elseif strcmp(project,'socrates')
     indir='/scr/snow2/rsfdata/projects/socrates/hcr/qc2/cfradial/development/pid/10hz/';
 end
 
-figdir=[indir(1:end-5),'pidPlots/liqAsIceCases/'];
+figdir=[indir(1:end-5),'pidPlots/cases/'];
 
 plotIn.figdir=figdir;
 plotIn.ylimits=ylimits;
 
 % Loop through cases
-casefile=['~/git/HCR_configuration/projDir/qc/dataProcessing/HCRproducts/caseFiles/pid_',project,'_liqAsIce.txt'];
+casefile=['~/git/HCR_configuration/projDir/qc/dataProcessing/HCRproducts/caseFiles/pid_',project,'.txt'];
 
 caseList=readtable(casefile);
 caseStart=datetime(caseList.Var1,caseList.Var2,caseList.Var3, ...
