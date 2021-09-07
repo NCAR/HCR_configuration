@@ -69,7 +69,7 @@ end
 %  Membership functions for mixed phase
 m=nan(5,size(dBZ,1),size(dBZ,2));
 m(1,:,:)=trapmf(dBZ,[-3,-1,20,25]);
-m(2,:,:)=trapmf(data.LDR,[-20, -17,-8,-6]);
+m(2,:,:)=trapmf(data.LDR,[-20,-17,-8,-6]);
 m(3,:,:)=trapmf(data.VEL_CORR,[0.5,1,3,4]);
 m(4,:,:)=smf(data.WIDTH,[0.2, 0.3]);
 m(5,:,:)=trapmf(data.TEMP,[-2,0,3,6]);
@@ -87,7 +87,7 @@ end
 %  Membership functions for large frozen
 m=nan(5,size(dBZ,1),size(dBZ,2));
 m(1,:,:)=trapmf(dBZ,[7,9,18,20]); 
-m(2,:,:)=trapmf(data.LDR,[-22,-20,-16, -14]);
+m(2,:,:)=trapmf(data.LDR,[-22,-20,-16,-14]);
 m(3,:,:)=trapmf(data.VEL_CORR,[0.8,1,2.5,3.5]);
 m(4,:,:)=smf(data.WIDTH,[0.2, 0.3]);
 m(5,:,:)=zmf(data.TEMP,[0,6]);
