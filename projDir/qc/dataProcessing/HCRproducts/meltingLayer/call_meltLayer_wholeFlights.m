@@ -4,18 +4,20 @@ clear all;
 close all;
 
 project='spicule'; %socrates, otrec, cset
-quality='qc0'; %field, qc1, or qc2
-qcVersion='v0.1';
+quality='qc1'; %field, qc1, or qc2
+qcVersion='v1.0';
 freqData='10hz'; % 10hz, 100hz
-whichModel='ecmwf';
+whichModel='era5';
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-figdir=['/scr/sleet2/rsfdata/projects/spicule/hcr/qc0/cfradial/v0.1/meltLayerPlots/'];
+figdir=['/scr/sleet2/rsfdata/projects/spicule/hcr/',quality,'/cfradial/',qcVersion,'/meltLayerPlots/'];
 %figdir=['/home/romatsch/plots/HCR/meltingLayer/flights/',project,'/10hz/'];
 
-saveOffset=0;
-offsetIn=-100;
+saveTime=0;
+saveOffset=1;
+
+offsetIn=-800;
 % If no data is found within one flight, take mean of previous flight (0)
 % or mean over all flights (1) which is given as offsetIn above.
 prevOrTotOffset=0;
@@ -24,7 +26,7 @@ if ~exist(figdir, 'dir')
     mkdir(figdir)
 end
 
-ylimits=[-0.2 8];
+ylimits=[-0.2 13];
 
 indir=HCRdir(project,quality,qcVersion,freqData);
 %indir=HCRdirWFH(project,quality,freqData);
@@ -45,7 +47,7 @@ for aa=1:size(caseList,1)
     disp(['Starting at ',datestr(datetime('now'),'yyyy-mm-dd HH:MM')]);
     
     clearvars -except project quality freqData whichModel figdir ...
-        ylimits indir outdir caseList zeroAdjust zeroAdjustIn aa saveOffset prevOrTotOffset
+        ylimits indir outdir caseList zeroAdjust zeroAdjustIn aa saveOffset prevOrTotOffset saveTime
     
     if aa==1
         OffsetM=nan(size(caseList,1),1);
@@ -256,9 +258,11 @@ for aa=1:size(caseList,1)
     save([outdir,whichModel,'.meltLayer.',datestr(data.time(1),'YYYYmmDD_HHMMSS'),'_to_',...
         datestr(data.time(end),'YYYYmmDD_HHMMSS'),'.Flight',num2str(aa),'.mat'],'meltLayer');
     
-    timeHCR=data.time;
-    save([outdir,whichModel,'.time.',datestr(data.time(1),'YYYYmmDD_HHMMSS'),'_to_',...
-        datestr(data.time(end),'YYYYmmDD_HHMMSS'),'.Flight',num2str(aa),'.mat'],'timeHCR');
+    if saveTime
+        timeHCR=data.time;
+        save([outdir,whichModel,'.time.',datestr(data.time(1),'YYYYmmDD_HHMMSS'),'_to_',...
+            datestr(data.time(end),'YYYYmmDD_HHMMSS'),'.Flight',num2str(aa),'.mat'],'timeHCR');
+    end
     
     save([outdir,whichModel,'.iceLevel.',datestr(data.time(1),'YYYYmmDD_HHMMSS'),'_to_',...
         datestr(data.time(end),'YYYYmmDD_HHMMSS'),'.Flight',num2str(aa),'.mat'],'iceLayer');

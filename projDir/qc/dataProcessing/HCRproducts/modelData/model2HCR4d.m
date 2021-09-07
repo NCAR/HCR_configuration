@@ -8,7 +8,7 @@ project='spicule'; % socrates, cset, aristo, otrec
 quality='qc1'; % field, qc0, qc1, qc2
 qcVersion='v1.0';
 freqData='10hz'; % 10hz, 100hz, or 2hz
-whichModel='narr'; % ecmwf or era5 or narr
+whichModel='era5'; % ecmwf or era5 or narr
 
 addTopo=0; % Set to 1 if topo data should be added and hasn't been added in separate script.
 
@@ -73,7 +73,7 @@ for ii=1:size(caseList,1)
     %% Model data
     disp('Getting model data ...');
     if strcmp(whichModel,'era5')
-        modelData=read_era5(modeldir,data.time(1),data.time(end),1);
+        modelData=read_era5(modeldir,data.time(1),data.time(end),0);
     elseif strcmp(whichModel,'ecmwf')
         modelData=read_ecmwf(modeldir,data.time(1),data.time(end),1);
     elseif strcmp(whichModel,'narr')

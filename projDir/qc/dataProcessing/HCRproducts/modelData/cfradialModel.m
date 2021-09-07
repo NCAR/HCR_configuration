@@ -8,7 +8,7 @@ project='spicule'; % socrates, cset, aristo, otrec
 quality='qc1'; % field, qc1, qc2
 qcVersion='v1.0';
 freqData='10hz';
-whichModel='narr';
+whichModel='era5';
 
 addTOPO=0;
 addSST=0;
@@ -26,7 +26,7 @@ indir=HCRdir(project,quality,qcVersion,freqData);
 %% Run processing
 
 % Go through flights
-for ii=1:size(caseList,1)
+for ii=2:size(caseList,1)
     
     disp(['Flight ',num2str(ii)]);
     
