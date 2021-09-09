@@ -8,8 +8,8 @@ quality='qc1'; %field, qc1, or qc2
 qcVersion='v1.0';
 freqData='10hz'; % 10hz, 100hz, or 2hz
 
-unfoldVelocity=1;
-offsetIn=-800;
+%unfoldVelocity=1;
+offsetIn=-300;
 
 thresholds.LDRlimits=[-16,-7]; % SOCRATES, OTREC, CSET default: [-16,-7]
 thresholds.LDRspeclePix=50; % SOCRATES, OTREC, CSET default: [] (not used)
@@ -21,9 +21,11 @@ thresholds.LDRaltDiff=100; % SOCRATES, OTREC, CSET default: 50
 thresholds.VELsearchPix=80; % SOCRATES, OTREC, CSET default: 50
 thresholds.VELstd=70; % SOCRATES, OTREC, CSET default: 35
 thresholds.VELaltDiff=100; % SOCRATES, OTREC, CSET default: 100
-thresholds.VEL_LDRdiff=200; % SOCRATES, OTREC, CSET default: 200
+thresholds.VELudDiff=-0.7; % SOCRATES, OTREC, CSET default: -0.7
+thresholds.VEL_LDRdiff=600; % SOCRATES, OTREC, CSET default: 200
 
-thresholds.outlier=250; % SOCRATES, OTREC, CSET default: 50
+thresholds.outlier=350; % SOCRATES, OTREC, CSET default: 50
+thresholds.length=10; % SOCRATES, OTREC, CSET default: 20
 
 % Determines plot zoom.
 if strcmp(project,'otrec')
@@ -57,7 +59,7 @@ caseStart=datetime(caseList.Var1,caseList.Var2,caseList.Var3, ...
 caseEnd=datetime(caseList.Var6,caseList.Var7,caseList.Var8, ...
     caseList.Var9,caseList.Var10,0);
 
-for aa=10:length(caseStart)
+for aa=24:length(caseStart)
     
     disp(['Case ',num2str(aa),' of ',num2str(length(caseStart))]);
     
@@ -172,7 +174,7 @@ for aa=10:length(caseStart)
     newFindMelt=meltLayer(:,newInds);
     newTime=data.time(newInds);
     
-    fig1=figure('DefaultAxesFontSize',11,'position',[100,1300,1500,1200]);
+    fig1=figure('DefaultAxesFontSize',11,'position',[100,1300,1500,1200],'visible','off');
     
     ax1=subplot(4,1,1);
     hold on;

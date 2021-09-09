@@ -253,7 +253,7 @@ for kk=1:size(layerAltsAdj,1)
         zeroMask=zeros(size(zeroDist));
         zeroMask(~isnan(zeroDist))=1;
         
-        zeroMask=bwareaopen(zeroMask,5);
+        zeroMask=bwareaopen(zeroMask,5);%5
         zeroDist(zeroMask==0)=nan;
         
         zeroDistSmooth=movmean(zeroDist,3000,'omitnan');
@@ -350,7 +350,7 @@ for kk=1:size(layerAltsAdj,1)
         
         VELaltRaw(movmean(udS1(1,:),50,'omitnan')>0)=nan;
         VELaltRaw(movmean(udS1(2,:),50,'omitnan')>0)=nan;
-        VELaltRaw(movmean(diffS1,50,'omitnan')>-0.7)=nan;
+        VELaltRaw(movmean(diffS1,50,'omitnan')>thresholds.VELudDiff)=nan;
         
         % Compare with zero degree layer
         VELzeroDiff=VELaltRaw-layerAltsTemp;
@@ -416,7 +416,7 @@ for kk=1:size(layerAltsAdj,1)
         end
         
         % Keep data that has only a few nan
-        zeroCut=20;
+        zeroCut=thresholds.length;
         CC = bwconncomp(BBmask);
         
         for ii=1:CC.NumObjects

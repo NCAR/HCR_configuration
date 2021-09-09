@@ -11,16 +11,34 @@ whichModel='era5';
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-figdir=['/scr/sleet2/rsfdata/projects/spicule/hcr/',quality,'/cfradial/',qcVersion,'/meltLayerPlots/'];
+figdir=['/scr/sleet2/rsfdata/projects/spicule/hcr/',quality,'/cfradial/',qcVersion,'/meltLayerPlots/process/'];
 %figdir=['/home/romatsch/plots/HCR/meltingLayer/flights/',project,'/10hz/'];
 
 saveTime=0;
-saveOffset=1;
+saveOffset=0;
 
-offsetIn=-800;
+offsetIn=-450;
 % If no data is found within one flight, take mean of previous flight (0)
 % or mean over all flights (1) which is given as offsetIn above.
 prevOrTotOffset=0;
+adjustOffset=0; % Set to zero if constant offset should be used (e.g. when running flight by flight)
+
+% Adjust thresholds
+thresholds.LDRlimits=[-16,-7]; % SOCRATES, OTREC, CSET default: [-16,-7]
+thresholds.LDRspeclePix=50; % SOCRATES, OTREC, CSET default: [] (not used)
+thresholds.LDRsolidity=0.5; % SOCRATES, OTREC, CSET default: [] (not used)
+thresholds.LDRsearchPix=25; % SOCRATES, OTREC, CSET default: 18
+thresholds.LDRstd=150; % SOCRATES, OTREC, CSET default: 100
+thresholds.LDRaltDiff=100; % SOCRATES, OTREC, CSET default: 50
+
+thresholds.VELsearchPix=80; % SOCRATES, OTREC, CSET default: 50
+thresholds.VELstd=70; % SOCRATES, OTREC, CSET default: 35
+thresholds.VELaltDiff=100; % SOCRATES, OTREC, CSET default: 100
+thresholds.VELudDiff=-0.7; % SOCRATES, OTREC, CSET default: -0.7
+thresholds.VEL_LDRdiff=600; % SOCRATES, OTREC, CSET default: 200
+
+thresholds.outlier=350; % SOCRATES, OTREC, CSET default: 50
+thresholds.length=10; % SOCRATES, OTREC, CSET default: 20
 
 if ~exist(figdir, 'dir')
     mkdir(figdir)
@@ -41,27 +59,30 @@ caseList = table2array(readtable(infile));
 
 zeroAdjust=offsetIn;
 
-for aa=1:size(caseList,1)
+for aa=8:size(caseList,1)
     disp(['Flight ',num2str(aa)]);
     disp('Loading HCR data.')
     disp(['Starting at ',datestr(datetime('now'),'yyyy-mm-dd HH:MM')]);
     
     clearvars -except project quality freqData whichModel figdir ...
-        ylimits indir outdir caseList zeroAdjust zeroAdjustIn aa saveOffset prevOrTotOffset saveTime
+        ylimits indir outdir caseList zeroAdjust zeroAdjustIn aa ...
+        saveOffset prevOrTotOffset saveTime adjustOffset thresholds
     
-    if aa==1
-        OffsetM=nan(size(caseList,1),1);
-        FlightNames=table('Size',[size(caseList,1) 1],'VariableTypes',"string");
-        for ii=1:size(caseList,1)
-            FlightNames.Var1(ii)=['Flight ',num2str(ii)];
-        end
-        offsetIn=array2table(OffsetM);
-        offset=cat(2,FlightNames,offsetIn);
-        offset.Properties.VariableNames{'Var1'}='Flight';
-    else
-        offset=readtable([outdir,whichModel,'.offset.',project,'.txt']);
-        if ~isnan(offset.OffsetM(aa-1)) & prevOrTotOffset==0
-            zeroAdjust=offset.OffsetM(aa-1);
+    if adjustOffset
+        if aa==1
+            OffsetM=nan(size(caseList,1),1);
+            FlightNames=table('Size',[size(caseList,1) 1],'VariableTypes',"string");
+            for ii=1:size(caseList,1)
+                FlightNames.Var1(ii)=['Flight ',num2str(ii)];
+            end
+            offsetIn=array2table(OffsetM);
+            offset=cat(2,FlightNames,offsetIn);
+            offset.Properties.VariableNames{'Var1'}='Flight';
+        else
+            offset=readtable([outdir,whichModel,'.offset.',project,'.txt']);
+            if ~isnan(offset.OffsetM(aa-1)) & prevOrTotOffset==0
+                zeroAdjust=offset.OffsetM(aa-1);
+            end
         end
     end
     
@@ -75,7 +96,6 @@ for aa=1:size(caseList,1)
     %% Load data
         
     data.DBZ=[];
-    data.LDR=[];
     data.TEMP=[];
     data.WIDTH=[];
     data.FLAG=[];
@@ -92,6 +112,14 @@ for aa=1:size(caseList,1)
         data.VEL_MASKED=[];
     catch
         data.VEL_CORR=[];
+    end
+    
+    % Check if LDR_MASKED is available
+    try
+        velTest=ncread(fileList{1},'LDR_MASKED');
+        data.LDR_MASKED=[];
+    catch
+        data.LDR=[];
     end
     
     if length(fileList)==0
@@ -120,11 +148,16 @@ for aa=1:size(caseList,1)
         data=rmfield(data,'VEL_MASKED');
     end
     
+    if isfield(data,'LDR_MASKED')
+        data.LDR=data.LDR_MASKED;
+        data=rmfield(data,'LDR_MASKED');
+    end
+    
     %% Find melting layer
     
-    [meltLayer iceLayer offset.OffsetM(aa)]=f_meltLayer(data,zeroAdjust);
+    [meltLayer iceLayer offset.OffsetM(aa)]=f_meltLayer(data,zeroAdjust,thresholds);
     
-    if ~isnan(offset.OffsetM(aa)) & prevOrTotOffset==0
+    if ~isnan(offset.OffsetM(aa)) & prevOrTotOffset==0 & adjustOffset==1
         zeroAdjust=offset.OffsetM(aa);
     end        
     
