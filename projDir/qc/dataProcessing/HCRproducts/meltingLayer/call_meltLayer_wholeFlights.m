@@ -76,7 +76,6 @@ for aa=1:size(caseList,1)
         
     data.DBZ=[];
     data.LDR=[];
-    data.VEL_CORR=[];
     data.TEMP=[];
     data.WIDTH=[];
     data.FLAG=[];
@@ -86,6 +85,14 @@ for aa=1:size(caseList,1)
     
     % Make list of files within the specified time frame
     fileList=makeFileList(indir,startTime,endTime,'xxxxxx20YYMMDDxhhmmss',1);
+    
+    % Check if VEL_MASKED is available
+    try
+        velTest=ncread(fileList{1},'VEL_MASKED');
+        data.VEL_MASKED=[];
+    catch
+        data.VEL_CORR=[];
+    end
     
     if length(fileList)==0
         disp('No data files found.');
@@ -106,6 +113,11 @@ for aa=1:size(caseList,1)
     
     if isempty(data.DBZ)
         continue
+    end
+    
+    if isfield(data,'VEL_MASKED')
+        data.VEL_CORR=data.VEL_MASKED;
+        data=rmfield(data,'VEL_MASKED');
     end
     
     %% Find melting layer

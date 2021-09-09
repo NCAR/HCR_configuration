@@ -3,7 +3,7 @@
 % 1=melting layer detected
 % 2=melting layer interpolated
 % 3=melting layer defined as zero degree altitude
-function [BBfinishedOut iceLevAsl offset]= f_meltLayer(data,zeroAdjustMeters)
+function [BBfinishedOut iceLevAsl offset]= f_meltLayer(data,zeroAdjustMeters,thresholds)
 
 debugFig=0;
 
@@ -15,7 +15,6 @@ oneGate=data.range(2)-data.range(1);
 zeroAdjustGates=round(zeroAdjustMeters/oneGate);
 
 tempTemp=data.TEMP;
-%tempTemp(1:16,:)=nan;
 oddAngles=find(data.elevation>-70 & data.elevation<70);
 tempTemp(:,oddAngles)=nan;
 signTemp=sign(tempTemp);
@@ -42,19 +41,6 @@ disp('Connecting zero degree layers ...');
 
 % Find how many melting layers there are and connect the right ones
 zeroTemp=zeroDeg;
-
-% % Remove contiguous layers that are too small
-% if length(data.time)>9000
-%     zeroCut=3000;
-%     CC = bwconncomp(zeroTemp);
-%
-%     for ii=1:CC.NumObjects
-%         area=CC.PixelIdxList{ii};
-%         if length(area)<=zeroCut
-%             zeroTemp(area)=nan;
-%         end
-%     end
-% end
 
 numZero=sum(zeroTemp,1,'omitnan');
 
@@ -132,13 +118,34 @@ end
 %% Remove data that is not suitable
 LDRdata=data.LDR(:,tempDataY);
 tempFlag=data.FLAG(:,tempDataY);
-%data=rmfield(data,'FLAG');
 LDRdata(tempFlag>1)=nan;
-LDRdata(LDRdata<-16 | LDRdata>-7)=nan;
+LDRdata(LDRdata<thresholds.LDRlimits(1) | LDRdata>thresholds.LDRlimits(2))=nan;
 LDRdata(1:20,:)=nan;
 
+
+% Remove LDR specle
+if ~isnan(thresholds.LDRspeclePix)
+    maskLDRtemp=~isnan(LDRdata);
+    maskLDRtemp2=bwareaopen(maskLDRtemp,thresholds.LDRspeclePix);
+    
+    LDRdata(maskLDRtemp==1 & maskLDRtemp2==0)=nan;
+end
+
+if ~isnan(thresholds.LDRsolidity)
+    maskLDRtemp=~isnan(LDRdata);
+    
+    stats = regionprops('table',maskLDRtemp2,'Solidity','PixelIdxList');
+    
+    for ll=1:size(stats,1)
+        if stats.Solidity(ll)<thresholds.LDRsolidity
+            maskLDRtemp(stats.PixelIdxList{ll})=0;
+        end
+    end    
+    LDRdata(~isnan(LDRdata) & maskLDRtemp==0)=nan;
+end
+
 VELdata=data.VEL_CORR(:,tempDataY);
-VELdata(tempFlag>1)=nan;
+VELdata(tempFlag~=1)=nan;
 VELdata(1:20,:)=nan;
 
 clear tempFlag
@@ -154,7 +161,6 @@ blMask(tempDBZ<-18 & tempWIDTH>1)=1;
 clear tempWIDTH tempDBZ
 
 % Remove small areas
-%blMask(:,find(elevTemp<0))=1;
 blMask=bwareaopen(blMask,10);
 
 % Fill holes
@@ -203,8 +209,8 @@ for kk=1:size(layerAltsAdj,1)
     maxLevelLDR=nan(size(rowInds));
     for ii=1:length(rowInds)
         vertColLDR=LDRdata(:,timeInds(ii));
-        vertColLDR(rowInds(ii)+18:end)=nan;
-        vertColLDR(1:max([rowInds(ii)-18,1]))=nan;
+        vertColLDR(rowInds(ii)+thresholds.LDRsearchPix:end)=nan;
+        vertColLDR(1:max([rowInds(ii)-thresholds.LDRsearchPix,1]))=nan;
         
         % Check if all nan
         if min(isnan(vertColLDR))==0
@@ -233,12 +239,12 @@ for kk=1:size(layerAltsAdj,1)
         LDRaltS=movstd(LDRaltRaw,300,'omitnan');
         LDRaltS(isnan(LDRaltRaw))=nan;
         % Remove data with too much std
-        LDRaltRaw(LDRaltS>100)=nan;
+        LDRaltRaw(LDRaltS>thresholds.LDRstd)=nan;
         % Distance between raw and mean altitude
         LDRloc=abs(LDRaltRaw-LDRalt);
         
         % Remove data where distance is more than 50 m
-        LDRaltRaw(LDRloc>50)=nan;
+        LDRaltRaw(LDRloc>thresholds.LDRaltDiff)=nan;
         
         % Adjust zero degree layer
         zeroDist=LDRaltRaw-layerAltsTemp;
@@ -272,8 +278,8 @@ for kk=1:size(layerAltsAdj,1)
     
     velTime=velMasked(:,timeInds);
     for ii=1:length(rowInds)
-        velTime(rowInds(ii)+50:end,ii)=nan;
-        velTime(1:max([rowInds(ii)-50,1]),ii)=nan;
+        velTime(rowInds(ii)+thresholds.VELsearchPix:end,ii)=nan;
+        velTime(1:max([rowInds(ii)-thresholds.VELsearchPix,1]),ii)=nan;
     end
     
     % Find discontinuity in vel field
@@ -348,7 +354,7 @@ for kk=1:size(layerAltsAdj,1)
         
         % Compare with zero degree layer
         VELzeroDiff=VELaltRaw-layerAltsTemp;
-        VELaltRaw(abs(VELzeroDiff)>200)=nan;
+        VELaltRaw(abs(VELzeroDiff)>thresholds.VEL_LDRdiff)=nan;
         
         % Mean altitude of meltig layer
         VELalt=movmedian(VELaltRaw,1000,'omitnan');
@@ -357,13 +363,13 @@ for kk=1:size(layerAltsAdj,1)
         % Distance between raw and mean altitude
         VELloc=abs(VELaltRaw-VELalt);
         % Remove data where distance is more than 100 m
-        VELaltRaw(VELloc>100)=nan;
+        VELaltRaw(VELloc>thresholds.VELaltDiff)=nan;
         
         % Standard deviation
         VELaltS=movstd(VELaltRaw,300,'omitnan');
         VELaltS(isnan(VELaltRaw))=nan;
         % Remove data with too much std
-        VELaltRaw(VELaltS>35)=nan;
+        VELaltRaw(VELaltS>thresholds.VELstd)=nan;
         
         if debugFig & ~isempty(maxLevelVEL)
             subplot(4,1,3:4)
@@ -391,7 +397,7 @@ for kk=1:size(layerAltsAdj,1)
         BBaltRawTest=fillmissing(BBaltRawTest,'nearest');
         
         BBrawMinusTest=abs(BBaltRawTest-BBaltRaw);
-        BBaltRaw(BBrawMinusTest>50)=nan;
+        BBaltRaw(BBrawMinusTest>thresholds.outlier)=nan;
         
         % Remove data that is too short
         BBmask=zeros(size(BBaltRaw));

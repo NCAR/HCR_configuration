@@ -4,9 +4,26 @@ clear all;
 close all;
 
 project='spicule'; %socrates, aristo, cset
-quality='qc0'; %field, qc1, or qc2
-qcVersion='v0.1';
+quality='qc1'; %field, qc1, or qc2
+qcVersion='v1.0';
 freqData='10hz'; % 10hz, 100hz, or 2hz
+
+unfoldVelocity=1;
+offsetIn=-800;
+
+thresholds.LDRlimits=[-16,-7]; % SOCRATES, OTREC, CSET default: [-16,-7]
+thresholds.LDRspeclePix=50; % SOCRATES, OTREC, CSET default: [] (not used)
+thresholds.LDRsolidity=0.5; % SOCRATES, OTREC, CSET default: [] (not used)
+thresholds.LDRsearchPix=25; % SOCRATES, OTREC, CSET default: 18
+thresholds.LDRstd=150; % SOCRATES, OTREC, CSET default: 100
+thresholds.LDRaltDiff=100; % SOCRATES, OTREC, CSET default: 50
+
+thresholds.VELsearchPix=80; % SOCRATES, OTREC, CSET default: 50
+thresholds.VELstd=70; % SOCRATES, OTREC, CSET default: 35
+thresholds.VELaltDiff=100; % SOCRATES, OTREC, CSET default: 100
+thresholds.VEL_LDRdiff=200; % SOCRATES, OTREC, CSET default: 200
+
+thresholds.outlier=250; % SOCRATES, OTREC, CSET default: 50
 
 % Determines plot zoom.
 if strcmp(project,'otrec')
@@ -14,14 +31,14 @@ if strcmp(project,'otrec')
 elseif strcmp(project,'socrates')
     ylimits=[-0.2 5];
 elseif strcmp(project,'spicule')
-    ylimits=[-0.2 9];
+    ylimits=[-0.2 13];
 elseif strcmp(project,'cset')
     ylimits=[-0.2 9];
 end
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-figdir=['/scr/sci/romatsch/HCR/meltLayer/',project,'/cases/'];
+figdir=['/scr/sleet2/rsfdata/projects/spicule/hcr/',quality,'/cfradial/',qcVersion,'/meltLayerPlots/cases/'];
 
 if ~exist(figdir, 'dir')
     mkdir(figdir)
@@ -40,7 +57,7 @@ caseStart=datetime(caseList.Var1,caseList.Var2,caseList.Var3, ...
 caseEnd=datetime(caseList.Var6,caseList.Var7,caseList.Var8, ...
     caseList.Var9,caseList.Var10,0);
 
-for aa=1:length(caseStart)
+for aa=10:length(caseStart)
     
     disp(['Case ',num2str(aa),' of ',num2str(length(caseStart))]);
     
@@ -54,8 +71,6 @@ for aa=1:length(caseStart)
     data=[];
     
     data.DBZ=[];
-    data.LDR=[];
-    data.VEL_CORR=[];
     data.TEMP=[];
     data.WIDTH=[];
     data.FLAG=[];
@@ -71,6 +86,22 @@ for aa=1:length(caseStart)
         return
     end
     
+    % Check if VEL_MASKED is available
+    try
+        velTest=ncread(fileList{1},'VEL_MASKED');
+        data.VEL_MASKED=[];
+    catch
+        data.VEL_CORR=[];
+    end
+    
+    % Check if LDR_MASKED is available
+    try
+        velTest=ncread(fileList{1},'LDR_MASKED');
+        data.LDR_MASKED=[];
+    catch
+        data.LDR=[];
+    end
+    
     % Load data
     data=read_HCR(fileList,data,startTime,endTime);
     
@@ -83,11 +114,27 @@ for aa=1:length(caseStart)
     
     dataVars=dataVars(~cellfun('isempty',dataVars));
     
+    if isfield(data,'VEL_MASKED')
+        data.VEL_CORR=data.VEL_MASKED;
+        data=rmfield(data,'VEL_MASKED');
+    end
+    
+    if isfield(data,'LDR_MASKED')
+        data.LDR=data.LDR_MASKED;
+        data=rmfield(data,'LDR_MASKED');
+    end
+    
+%     %% Correct velocity folding
+%     
+%     if unfoldVelocity
+%         data.VEL_CORR=unfoldVel(data.VEL_CORR,data.FLAG,data.elevation);
+%     end
+    
     %% Find melting layer
     data.dbzMasked=data.DBZ;
     data.dbzMasked(data.FLAG>1)=nan;
     
-    [meltLayer iceLayer offset]=f_meltLayer(data,-500);
+    [meltLayer iceLayer offset]=f_meltLayer(data,offsetIn,thresholds);
     elevenInds=find(meltLayer==11);
     twelveInds=find(meltLayer==12);
     thirteenInds=find(meltLayer==13);
@@ -125,7 +172,7 @@ for aa=1:length(caseStart)
     newFindMelt=meltLayer(:,newInds);
     newTime=data.time(newInds);
     
-    fig1=figure('DefaultAxesFontSize',11,'position',[100,1300,1200,920]);
+    fig1=figure('DefaultAxesFontSize',11,'position',[100,1300,1500,1200]);
     
     ax1=subplot(4,1,1);
     hold on;
@@ -197,7 +244,7 @@ for aa=1:length(caseStart)
     hold on;
     sub3=surf(newTime,newASL./1000,newVEL,'edgecolor','none');
     view(2);
-    caxis([-5 5]);
+    caxis([-8 8]);
     colorbar
     ylim(ylimits);
     ylabel('Altitude (km)');
