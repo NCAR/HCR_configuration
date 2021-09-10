@@ -48,13 +48,13 @@ for ii=1:size(caseList,1)
             end                
                         
             % Create masked VEL field
-            vel=ncread(infile,'VEL')';
+            vel=ncread(infile,'VEL_CORR')';
             maskFlag=ncread(infile,'FLAG')';
             maskAnt=ncread(infile,'ANTFLAG')';
             
             velMasked=vel;
             velMasked(maskAnt>2,:)=nan;
-            velMasked(maskFlag>1)=nan;
+            velMasked(maskFlag~=1)=nan;
             velMasked=velMasked';
             
             % Write output

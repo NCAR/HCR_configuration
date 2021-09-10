@@ -17,7 +17,7 @@ figdir=['/scr/sleet2/rsfdata/projects/spicule/hcr/',quality,'/cfradial/',qcVersi
 saveTime=0;
 saveOffset=0;
 
-offsetIn=-300;
+offsetIn=-500;
 % If no data is found within one flight, take mean of previous flight (0)
 % or mean over all flights (1) which is given as offsetIn above.
 prevOrTotOffset=0;
@@ -59,7 +59,7 @@ caseList = table2array(readtable(infile));
 
 zeroAdjust=offsetIn;
 
-for aa=10:size(caseList,1)
+for aa=1:size(caseList,1)
     disp(['Flight ',num2str(aa)]);
     disp('Loading HCR data.')
     disp(['Starting at ',datestr(datetime('now'),'yyyy-mm-dd HH:MM')]);

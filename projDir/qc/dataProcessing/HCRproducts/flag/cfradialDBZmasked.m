@@ -52,7 +52,7 @@ for ii=1:size(caseList,1)
             mask=ncread(infile,'FLAG')';
             
             dbzMasked=dbz;
-            dbzMasked(mask>1)=nan;
+            dbzMasked(mask~=1)=nan;
             dbzMasked=dbzMasked';
             
             % Write output

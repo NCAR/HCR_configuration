@@ -5,17 +5,11 @@ close all;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Input variables %%%%%%%%%%%%%%%%%%%%%%%%%%
 
-project='socrates'; %socrates, aristo, cset, otrec
+project='otrec'; %socrates, aristo, cset, otrec
 quality='qc2'; %field, qc1, or qc2
 % dataFreq='10hz';
 % qcVersion='v2.1';
 whichModel='era5';
-
-if strcmp(project,'otrec')
-    ylimUpper=15;
-else
-    ylimUpper=10;
-end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
