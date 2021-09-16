@@ -26,7 +26,7 @@ caseStart=datetime(caseList.Var1,caseList.Var2,caseList.Var3, ...
 caseEnd=datetime(caseList.Var6,caseList.Var7,caseList.Var8, ...
     caseList.Var9,caseList.Var10,0);
 
-for aa=2:length(caseStart)
+for aa=3:length(caseStart)
     
     disp(['Case ',num2str(aa),' of ',num2str(length(caseStart))]);
     
@@ -65,9 +65,9 @@ for aa=2:length(caseStart)
     
     %% Correct velocity folding
     
-    data.VEL_CORR=dealiasArea(data.VEL_MASKED,data.elevation);
-    
-    
+    disp('De-aliasing ...');
+    velDeAliased1=dealiasAreaPos(data.VEL_MASKED,data.elevation);   
+    velDeAliased=dealiasAreaNeg(velDeAliased1,data.elevation);   
     
     %% Plot
     
@@ -75,9 +75,9 @@ for aa=2:length(caseStart)
     
     close all
     
-    f1=figure('DefaultAxesFontSize',12,'Position',[0 300 1000 1200],'visible','on');
+    f1=figure('DefaultAxesFontSize',12,'Position',[0 300 1700 1200],'visible','on');
     
-    s1=subplot(2,1,1);
+    s1=subplot(3,1,1);
     surf(data.time,data.asl./1000,data.VEL_MASKED,'edgecolor','none');
     view(2);
     ylim(ylimits);
@@ -89,86 +89,32 @@ for aa=2:length(caseStart)
     title(['HCR radial velocity (m s^{-1})']);
     grid on
     
-    %         s3=subplot(4,2,3);
-    %         surf(data.time,data.asl./1000,data.VEL_CORR,'edgecolor','none');
-    %         view(2);
-    %         ylim(ylimits);
-    %         xlim([data.time(1),data.time(end)]);
-    %         caxis([-5 5]);
-    %         colormap(s3,jet);
-    %         colorbar;
-    %         ylabel('Altitude (km)');
-    %         title(['HCR radial velocity (m s^{-1})']);
-    %         grid on
-    %
-    %         s5=subplot(4,2,5);
-    %         surf(data.time,data.asl./1000,data.LDR,'edgecolor','none');
-    %         view(2);
-    %         ylim(ylimits);
-    %         xlim([data.time(1),data.time(end)]);
-    %         caxis([-30 -5]);
-    %         colormap(s5,jet);
-    %         colorbar;
-    %         ylabel('Altitude (km)');
-    %         title(['HCR linear depolarization ratio (dB)']);
-    %         grid on
-    %
-    %         s7=subplot(4,2,7);
-    %         surf(data.time,data.asl./1000,data.WIDTH,'edgecolor','none');
-    %         view(2);
-    %         ylim(ylimits);
-    %         xlim([data.time(1),data.time(end)]);
-    %         caxis([0 1]);
-    %         colormap(s7,jet);
-    %         colorbar;
-    %         ylabel('Altitude (km)');
-    %         title(['HCR spectrum width (m s^{-1})']);
-    %         grid on
-    %
-    %         s2=subplot(4,2,2);
-    %         plotMelt=data.MELTING_LAYER;
-    %         plotMelt(~isnan(plotMelt) & plotMelt<20)=10;
-    %         plotMelt(~isnan(plotMelt) & plotMelt>=20)=20;
-    %         surf(data.time,data.asl./1000,plotMelt,'edgecolor','none');
-    %         view(2);
-    %         ylim(ylimits);
-    %         xlim([data.time(1),data.time(end)]);
-    %         %caxis([0 2]);
-    %         colormap(s2,[1 0 1;1 1 0]);
-    %         c=colorbar;
-    %         c.Visible='off';
-    %         ylabel('Altitude (km)');
-    %         title(['Melting Layer']);
-    %         grid on
-    %
-    %         s4=subplot(4,2,4);
-    %         jetIn=jet;
-    %         jetTemp=cat(1,jetIn(1:size(jetIn,1)/2,:),repmat([0 0 0],3,1),...
-    %             jetIn(size(jetIn,1)/2+1:end,:));
-    %         surf(data.time,data.asl./1000,data.TEMP,'edgecolor','none');
-    %         view(2);
-    %         ylim(ylimits);
-    %         xlim([data.time(1),data.time(end)]);
-    %         caxis([-15 15]);
-    %         colormap(s4,jetTemp);
-    %         colorbar;
-    %         ylabel('Altitude (km)');
-    %         title(['Temperature (C)']);
-    %         grid on
-    %
-    %         s5=subplot(4,2,6);
-    %         surf(data.time,data.asl./1000,pid_hcr,'edgecolor','none');
-    %         view(2);
-    %         ylim(ylimits);
-    %         xlim([data.time(1),data.time(end)]);
-    %         caxis([.5 9.5]);
-    %         colormap(s5,cscale_hcr);
-    %         cb=colorbar;
-    %         cb.Ticks=1:9;
-    %         cb.TickLabels=units_str_hcr;
-    %         ylabel('Altitude (km)');
-    %         title(['HCR particle ID']);
-    %
+    s2=subplot(3,1,2);
+    surf(data.time,data.asl./1000,velDeAliased1,'edgecolor','none');
+    view(2);
+    ylim(ylimits);
+    xlim([data.time(1),data.time(end)]);
+    caxis([-15 15]);
+    colormap(s2,jet);
+    colorbar;
+    ylabel('Altitude (km)');
+    title(['HCR radial velocity (m s^{-1})']);
+    grid on
+    
+    s3=subplot(3,1,3);
+    surf(data.time,data.asl./1000,velDeAliased,'edgecolor','none');
+    view(2);
+    ylim(ylimits);
+    xlim([data.time(1),data.time(end)]);
+    caxis([-15 15]);
+    colormap(s3,jet);
+    colorbar;
+    ylabel('Altitude (km)');
+    title(['HCR radial velocity (m s^{-1})']);
+    grid on
+    
+    linkaxes([s1 s2 s3],'xy');
+    
     set(gcf,'PaperPositionMode','auto')
     print(f1,[figdir,project,'_velDeAlias_',...
         datestr(data.time(1),'yyyymmdd_HHMMSS'),'_to_',datestr(data.time(end),'yyyymmdd_HHMMSS')],'-dpng','-r0')

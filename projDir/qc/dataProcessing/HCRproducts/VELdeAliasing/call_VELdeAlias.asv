@@ -10,13 +10,11 @@ quality='qc1'; %field, qc1, or qc2
 qcVersion='v1.0';
 freqData='10hz'; % 10hz, 100hz, 2hz, or combined
 
-figdir=['/scr/sleet2/rsfdata/projects/spicule/hcr/',quality,'/cfradial/',qcVersion,'/meltLayerPlots/cases/'];
+figdir=['/scr/sleet2/rsfdata/projects/spicule/hcr/',quality,'/cfradial/',qcVersion,'/deAliasVEL/'];
 
-if ~exist(figdir, 'dir')
-    mkdir(figdir)
-end
+ylimits=[0 13];
 
-casefile=['~/git/HCR_configuration/projDir/qc/dataProcessing/HCRproducts/caseFiles/meltLayer_',project,'.txt'];
+casefile=['~/git/HCR_configuration/projDir/qc/dataProcessing/HCRproducts/caseFiles/velDeAlias_',project,'.txt'];
 
 indir=HCRdir(project,quality,qcVersion,freqData);
 
@@ -28,7 +26,7 @@ caseStart=datetime(caseList.Var1,caseList.Var2,caseList.Var3, ...
 caseEnd=datetime(caseList.Var6,caseList.Var7,caseList.Var8, ...
     caseList.Var9,caseList.Var10,0);
 
-for aa=24:length(caseStart)
+for aa=2:length(caseStart)
     
     disp(['Case ',num2str(aa),' of ',num2str(length(caseStart))]);
     
@@ -40,7 +38,7 @@ for aa=24:length(caseStart)
     disp('Loading data ...');
     
     data=[];
-        
+    
     % Make list of files within the specified time frame
     fileList=makeFileList(indir,startTime,endTime,'xxxxxx20YYMMDDxhhmmss',1);
     
@@ -56,44 +54,53 @@ for aa=24:length(caseStart)
     catch
         data.VEL_CORR=[];
     end
-        
+    
     % Load data
     data=read_HCR(fileList,data,startTime,endTime);
-        
-    if isfield(data,'VEL_MASK')
-        data.VEL_CORR=data.VEL_MASKED;
-        data=rmfield(data,'VEL_MASKED');
+    
+    if isfield(data,'VEL_CORR')
+        data.VEL_MASKED=data.VEL_CORR;
+        data=rmfield(data,'VEL_CORR');
     end
     
-        %% Correct velocity folding
+    %% Correct velocity folding
     
-        if unfoldVelocity
-            data.VEL_CORR=unfoldVel(data.VEL_CORR,data.FLAG,data.elevation);
-        end
+    velDeAliased=dealiasArea(data.VEL_MASKED,data.elevation);
     
     
-        %% Plot
-    %
-    %         timeMat=repmat(data.time,size(data.TEMP,1),1);
-    %
-    %         disp('Plotting PID');
-    %
-    %         close all
-    %
-    %         f1=figure('DefaultAxesFontSize',12,'Position',[0 300 2300 1200],'visible','off');
-    %
-    %         s1=subplot(4,2,1);
-    %         surf(data.time,data.asl./1000,data.DBZ,'edgecolor','none');
-    %         view(2);
-    %         ylim(ylimits);
-    %         xlim([data.time(1),data.time(end)]);
-    %         caxis([-40 20]);
-    %         colormap(s1,jet);
-    %         colorbar;
-    %         ylabel('Altitude (km)');
-    %         title(['HCR reflectivity (dBZ)']);
-    %         grid on
-    %
+    
+    %% Plot
+    
+    disp('Plotting ...');
+    
+    close all
+    
+    f1=figure('DefaultAxesFontSize',12,'Position',[0 300 1000 1200],'visible','on');
+    
+    s1=subplot(2,1,1);
+    surf(data.time,data.asl./1000,data.VEL_MASKED,'edgecolor','none');
+    view(2);
+    ylim(ylimits);
+    xlim([data.time(1),data.time(end)]);
+    caxis([-8 8]);
+    colormap(s1,jet);
+    colorbar;
+    ylabel('Altitude (km)');
+    title(['HCR radial velocity (m s^{-1})']);
+    grid on
+    
+    s1=subplot(2,1,1);
+    surf(data.time,data.asl./1000,data.VEL_MASKED,'edgecolor','none');
+    view(2);
+    ylim(ylimits);
+    xlim([data.time(1),data.time(end)]);
+    caxis([-8 8]);
+    colormap(s1,jet);
+    colorbar;
+    ylabel('Altitude (km)');
+    title(['HCR radial velocity (m s^{-1})']);
+    grid on
+    
     %         s3=subplot(4,2,3);
     %         surf(data.time,data.asl./1000,data.VEL_CORR,'edgecolor','none');
     %         view(2);
@@ -174,10 +181,10 @@ for aa=24:length(caseStart)
     %         ylabel('Altitude (km)');
     %         title(['HCR particle ID']);
     %
-    %         set(gcf,'PaperPositionMode','auto')
-    %         print(f1,[figdir,project,'_pid_',...
-    %             datestr(data.time(1),'yyyymmdd_HHMMSS'),'_to_',datestr(data.time(end),'yyyymmdd_HHMMSS')],'-dpng','-r0')
-    %
-    %
+    set(gcf,'PaperPositionMode','auto')
+    print(f1,[figdir,project,'_velDeAlias_',...
+        datestr(data.time(1),'yyyymmdd_HHMMSS'),'_to_',datestr(data.time(end),'yyyymmdd_HHMMSS')],'-dpng','-r0')
+    
+    
     
 end
