@@ -1,4 +1,4 @@
-function velUnfold=unfoldVel(velFolded,flag,elev)
+function velUnfold=dealiasRay(velFolded,flag,elev)
 % Unfold velocities
 
 foldThresh=7.8311;

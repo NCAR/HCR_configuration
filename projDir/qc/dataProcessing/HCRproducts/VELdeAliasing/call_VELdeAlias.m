@@ -26,7 +26,7 @@ caseStart=datetime(caseList.Var1,caseList.Var2,caseList.Var3, ...
 caseEnd=datetime(caseList.Var6,caseList.Var7,caseList.Var8, ...
     caseList.Var9,caseList.Var10,0);
 
-for aa=1:length(caseStart)
+for aa=2:length(caseStart)
     
     disp(['Case ',num2str(aa),' of ',num2str(length(caseStart))]);
     
@@ -65,7 +65,7 @@ for aa=1:length(caseStart)
     
     %% Correct velocity folding
     
-    %data.VEL_CORR=unfoldVel(data.VEL_CORR,data.FLAG,data.elevation);
+    data.VEL_CORR=dealiasArea(data.VEL_MASKED,data.elevation);
     
     
     
