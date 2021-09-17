@@ -3,8 +3,6 @@
 clear all
 close all
 
-savefig=0;
-
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
 project='spicule'; % socrates, cset, aristo, otrec
