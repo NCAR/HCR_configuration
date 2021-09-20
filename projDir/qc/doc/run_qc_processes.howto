@@ -178,17 +178,17 @@ cd ~/git/HCR_configuration/projDir/qc/scripts
 # Modify and run $PROJ_DIR/qc/dataProcessing/altitudeCorr/plotAltDiff.m
   
 #################################################################
-# Output fields
-# Make data copy with selected fields. Run
-$PROJ_DIR/qc/scripts/run_RadxConvert.qc.select_fields.socrates
+# Trimm down times
+# Make data copy with selected fieldsonly times we want in the final dataset. Run
+$PROJ_DIR/qc/scripts/run_RadxConvert.qc.select_times.spicule
 
-# This will put the selected fields in
-# $DATA_DIR/QC_VERSION/cfradial/selected_fields
+# This will put the selected timess in
+# $DATA_DIR/QC_VERSION/cfradial/selected_times
 
-# We make another copy of selected_fields to
-# $DATA_DIR/QC_VERSION/cfradial/final
+# We make another copy of selected_times to
+# $DATA_DIR/QC_VERSION/cfradial/v1.0_full
 # Where the model data, flag field, etc. will be added
-# selected_fields is a backup which can be copied to final
+# selected_times is a backup which can be copied to v1.0
 # again if something goes wrong during the addition of the
 # additional fields.
 
@@ -219,7 +219,7 @@ $PROJ_DIR/qc/dataProcessing/HCRproducts/velCorr/plotVelCorr_findPoly.m
 $PROJ_DIR/qc/dataProcessing/HCRproducts/velCorr/cfradialVelCorr.m
 
 #################################################################
-# FLAG field, DBZ_masked, and VEL_masked
+# FLAG field and DBZ_masked
 # To create the flag field, run
 $PROJ_DIR/qc/dataProcessing/HCRproducts/flag/makeFlagField_wholeFlights.m
 
@@ -228,9 +228,6 @@ $PROJ_DIR/qc/dataProcessing/HCRproducts/flag/cfradialFlagfield.m
 
 # To add a DBZ field that has only cloud data, run
 $PROJ_DIR/qc/dataProcessing/HCRproducts/flag/cfradialDBZmasked.m
-
-# To add a VEL field that has only cloud data and up and down pointing times, run
-$PROJ_DIR/qc/dataProcessing/HCRproducts/flag/cfradialVELmasked.m
 
 #################################################################
 # Interpolate forecast or reanalysis data
@@ -260,7 +257,47 @@ cd ../model/era5interp/10hz
 $PROJ_DIR/qc/dataProcessing/HCRproducts/modelData/cfradialModel.m
 
 #################################################################
+# Correct corrupted LDR
+# In SPICULE we had a problem with the H channel which corrupted
+# LDR. To correct this problem, run
+$PROJ_DIR/qc/dataProcessing/other/filterHX/filterHX.m
 
+# To created corrected and masked LDR field, run
+$PROJ_DIR/qc/dataProcessing/other/filterHX/cfradialLDRmasked.m
+
+#################################################################
+# De-alias velocity
+
+# To de-alias velocity, mask out non-vertical angles and non-cloud
+# data run
+
+$PROJ_DIR/qc/dataProcessing/HCRproducts/VELdeAliasing/call_VELdeAlias_wholeFlights.m
+
+# To add it to the dataset run
+$PROJ_DIR/qc/dataProcessing/HCRproducts/VELdeAliasing/cfradialVELfinal.m
+
+#################################################################
+# Add melting layer
+
+# Adjust and run
+$PROJ_DIR/qc/dataProcessing/HCRproducts/meltingLayer/call_meltLayer_wholeFlights.m
+
+# To add id to the dataset run
+$PROJ_DIR/qc/dataProcessing/HCRproducts/meltingLayer/cfradialMeltLayer.m
+
+#################################################################
+# Create final subset
+
+# Once all fields have been added we create a dataset version that
+# has only fields that are useful to the users. Run
+
+$PROJ_DIR/qc/scripts/run_RadxConvert.qc.select_fields.spicule
+
+# This will put the selected timess in
+# $DATA_DIR/QC_VERSION/cfradial/selected_fields
+# which can then be renamed to e.g. v1.0
+
+################################################################
 # Sea Surface Cal
 
 # To check the sea surface calfor ssCal events, run

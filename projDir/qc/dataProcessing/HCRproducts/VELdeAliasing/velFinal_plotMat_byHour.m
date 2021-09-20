@@ -25,7 +25,7 @@ indir=HCRdir(project,quality,qcVersion,freqData);
 
 figdir=[indir(1:end-5),'deAliasVEL/wholeFlights/'];
 
-for aa=2:size(caseList,1)
+for aa=1:size(caseList,1)
 
     disp(['Flight ',num2str(aa)]);
     disp('Loading HCR data.')

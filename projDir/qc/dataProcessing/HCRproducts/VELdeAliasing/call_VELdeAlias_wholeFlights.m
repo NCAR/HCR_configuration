@@ -34,6 +34,9 @@ for kk=1:size(caseList,1)
     if ~isempty(fileList)
         data=[];
         data.nyquist_velocity=[];
+        data.VEL_CORR=[];
+        data.FLAG=[];
+        data.ANTFLAG=[];
         
         % Make list of files within the specified time frame
         fileList=makeFileList(indir,startTime,endTime,'xxxxxx20YYMMDDxhhmmss',1);
@@ -43,26 +46,17 @@ for kk=1:size(caseList,1)
             return
         end
         
-        % Check if VEL_MASKED is available
-        try
-            velTest=ncread(fileList{1},'VEL_MASKED');
-            data.VEL_MASKED=[];
-        catch
-            data.VEL_CORR=[];
-        end
-        
         % Load data
         data=read_HCR(fileList,data,startTime,endTime);
         
-        if isfield(data,'VEL_CORR')
-            data.VEL_MASKED=data.VEL_CORR;
-            data=rmfield(data,'VEL_CORR');
-        end
+        velMasked=data.VEL_CORR;
+        velMasked(:,data.ANTFLAG>2)=nan;
+        velMasked(data.FLAG~=1)=nan;
         
         %% Correct velocity folding
         
         disp('De-aliasing ...');
-        velDeAliased=dealiasArea(data.VEL_MASKED,data.elevation,data.nyquist_velocity);
+        velDeAliased=dealiasArea(velMasked,data.elevation,data.nyquist_velocity);
         
         %% Save
         disp('Saving velFinal field.')

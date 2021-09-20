@@ -26,7 +26,7 @@ caseStart=datetime(caseList.Var1,caseList.Var2,caseList.Var3, ...
 caseEnd=datetime(caseList.Var6,caseList.Var7,caseList.Var8, ...
     caseList.Var9,caseList.Var10,0);
 
-for aa=1:length(caseStart)
+for aa=5:length(caseStart)
     
     disp(['Case ',num2str(aa),' of ',num2str(length(caseStart))]);
     
@@ -39,7 +39,10 @@ for aa=1:length(caseStart)
     
     data=[];
     data.nyquist_velocity=[];
-    
+    data.VEL_CORR=[];
+    data.FLAG=[];
+    data.ANTFLAG=[];
+               
     % Make list of files within the specified time frame
     fileList=makeFileList(indir,startTime,endTime,'xxxxxx20YYMMDDxhhmmss',1);
     
@@ -48,26 +51,17 @@ for aa=1:length(caseStart)
         return
     end
     
-    % Check if VEL_MASKED is available
-    try
-        velTest=ncread(fileList{1},'VEL_MASKED');
-        data.VEL_MASKED=[];
-    catch
-        data.VEL_CORR=[];
-    end
-    
     % Load data
     data=read_HCR(fileList,data,startTime,endTime);
     
-    if isfield(data,'VEL_CORR')
-        data.VEL_MASKED=data.VEL_CORR;
-        data=rmfield(data,'VEL_CORR');
-    end
-    
+    velMasked=data.VEL_CORR;
+    velMasked(:,data.ANTFLAG>2)=nan;
+    velMasked(data.FLAG~=1)=nan;
+      
     %% Correct velocity folding
     
     disp('De-aliasing ...');
-    velDeAliased=dealiasArea(data.VEL_MASKED,data.elevation,data.nyquist_velocity);   
+    velDeAliased=dealiasArea(velMasked,data.elevation,data.nyquist_velocity);
        
     %% Plot
     
@@ -78,7 +72,7 @@ for aa=1:length(caseStart)
     f1=figure('DefaultAxesFontSize',12,'Position',[0 300 1700 1200],'visible','on');
     
     s1=subplot(2,1,1);
-    surf(data.time,data.asl./1000,data.VEL_MASKED,'edgecolor','none');
+    surf(data.time,data.asl./1000,velMasked,'edgecolor','none');
     view(2);
     ylim(ylimits);
     xlim([data.time(1),data.time(end)]);
