@@ -214,7 +214,7 @@ archive_time_span_secs = 600;
 // Type: string
 //
 
-archive_data_url = "/scr/sleet2/rsfdata/projects/spicule/hcr/qc1/cfradial/v1.0/10hz";
+archive_data_url = "/scr/sleet2/rsfdata/projects/spicule/hcr/qc1/cfradial/v1.0_full/10hz";
 
 //======================================================================
 //
@@ -389,11 +389,11 @@ fields = {
   }
   ,
   {
-    label = "VEL_MASKED",
-    raw_name = "VEL_MASKED",
+    label = "VEL_FINAL",
+    raw_name = "VEL_FINAL",
     filtered_name = "",
     units = "m/s",
-    color_map = "vel_w_8.colors",
+    color_map = "vel_w_12.colors",
     shortcut = "2"
   }
   ,
