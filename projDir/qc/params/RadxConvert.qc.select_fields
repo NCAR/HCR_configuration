@@ -1525,6 +1525,7 @@ excluded_fields = {
  "DBZHC",
  "DBZVC",
  "VEL_VERT",
+ "VEL_CORR",
  "SNRHC",
  "SNRVC",
  "SNRHX",
