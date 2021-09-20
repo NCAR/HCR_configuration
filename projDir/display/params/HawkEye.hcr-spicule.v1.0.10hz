@@ -366,7 +366,7 @@ fields = {
     raw_name = "VEL_RAW",
     filtered_name = "",
     units = "m/s",
-    color_map = "vel_w_8.colors",
+    color_map = "hcr_vel12.colors",
     shortcut = "1"
   }
   ,
@@ -375,7 +375,7 @@ fields = {
     raw_name = "VEL",
     filtered_name = "",
     units = "m/s",
-    color_map = "vel_w_8.colors",
+    color_map = "hcr_vel12.colors",
     shortcut = "1"
   }
   ,
@@ -384,7 +384,7 @@ fields = {
     raw_name = "VEL_CORR",
     filtered_name = "",
     units = "m/s",
-    color_map = "vel_w_8.colors",
+    color_map = "hcr_vel12.colors",
     shortcut = "2"
   }
   ,
@@ -393,7 +393,7 @@ fields = {
     raw_name = "VEL_FINAL",
     filtered_name = "",
     units = "m/s",
-    color_map = "vel_w_12.colors",
+    color_map = "hcr_vel12.colors",
     shortcut = "2"
   }
   ,
