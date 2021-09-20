@@ -268,13 +268,21 @@ $PROJ_DIR/qc/dataProcessing/other/filterHX/cfradialLDRmasked.m
 #################################################################
 # De-alias velocity
 
-# To de-alias velocity, mask out non-vertical angles and non-cloud
+# To de-alias velocity and mask out and non-cloud
 # data run
 
 $PROJ_DIR/qc/dataProcessing/HCRproducts/VELdeAliasing/call_VELdeAlias_wholeFlights.m
 
 # To add it to the dataset run
-$PROJ_DIR/qc/dataProcessing/HCRproducts/VELdeAliasing/cfradialVELfinal.m
+$PROJ_DIR/qc/dataProcessing/HCRproducts/VELdeAliasing/cfradialVELunfolded.m
+
+#################################################################
+# Mask out non vertical angles in VEL
+
+# Velocity is not of much use when the pointing angle is not vertical.
+# To mask out non-vertical data run
+
+$PROJ_DIR/qc/dataProcessing/HCRproducts/flag/cfradialVELmasked.m
 
 #################################################################
 # Add melting layer

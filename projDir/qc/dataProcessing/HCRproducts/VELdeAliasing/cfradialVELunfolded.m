@@ -1,4 +1,4 @@
-% add VEL_FINAL data to cfradial files
+% add VEL_UNFOLDED data to cfradial files
 clear all;
 close all;
 
@@ -35,7 +35,7 @@ for ii=1:size(caseList,1)
     if ~isempty(fileList)
         
         % Get model data
-        model.velFinal=[];
+        model.velUnfolded=[];
         
         model=read_model(model,modeldir,startTime,endTime);
         timeModelNum=datenum(model.time);
@@ -85,22 +85,22 @@ for ii=1:size(caseList,1)
             
             % Define variables
             netcdf.reDef(ncid);
-            varidVEL = netcdf.defVar(ncid,'VEL_FINAL','NC_FLOAT',[dimrange dimtime]);
+            varidVEL = netcdf.defVar(ncid,'VEL_UNFOLDED','NC_FLOAT',[dimrange dimtime]);
             netcdf.defVarFill(ncid,varidVEL,false,fillVal);
             netcdf.endDef(ncid);
             
             % Write variables
-            netcdf.putVar(ncid,varidVEL,modOut.velFinal);
+            netcdf.putVar(ncid,varidVEL,modOut.velUnfolded);
                        
             netcdf.close(ncid);
             
             % Write attributes
-            ncwriteatt(infile,'VEL_FINAL','long_name','doppler_velocity_masked_de-aliased');
-            ncwriteatt(infile,'VEL_FINAL','standard_name','radial_velocity_of_scatterers_away_from_instrument');
-            ncwriteatt(infile,'VEL_FINAL','units','m/s');
-            ncwriteatt(infile,'VEL_FINAL','comment','This field is computed by de-aliasing velocigy, and masking non-vertical pointing and non-cloud data.');
-            ncwriteatt(infile,'VEL_FINAL','grid_mapping','grid_mapping');
-            ncwriteatt(infile,'VEL_FINAL','coordinates','time range');
+            ncwriteatt(infile,'VEL_UNFOLDED','long_name','doppler_velocity_unfolded');
+            ncwriteatt(infile,'VEL_UNFOLDED','standard_name','radial_velocity_of_scatterers_away_from_instrument');
+            ncwriteatt(infile,'VEL_UNFOLDED','units','m/s');
+            ncwriteatt(infile,'VEL_UNFOLDED','comment','This field is computed by de-aliasing velocity.');
+            ncwriteatt(infile,'VEL_UNFOLDED','grid_mapping','grid_mapping');
+            ncwriteatt(infile,'VEL_UNFOLDED','coordinates','time range');
                         
         end
     end

@@ -36,8 +36,7 @@ for kk=1:size(caseList,1)
         data.nyquist_velocity=[];
         data.VEL_CORR=[];
         data.FLAG=[];
-        data.ANTFLAG=[];
-        
+               
         % Make list of files within the specified time frame
         fileList=makeFileList(indir,startTime,endTime,'xxxxxx20YYMMDDxhhmmss',1);
         
@@ -50,7 +49,6 @@ for kk=1:size(caseList,1)
         data=read_HCR(fileList,data,startTime,endTime);
         
         velMasked=data.VEL_CORR;
-        velMasked(:,data.ANTFLAG>2)=nan;
         velMasked(data.FLAG~=1)=nan;
         
         %% Correct velocity folding

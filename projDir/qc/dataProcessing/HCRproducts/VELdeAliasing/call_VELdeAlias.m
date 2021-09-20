@@ -26,7 +26,7 @@ caseStart=datetime(caseList.Var1,caseList.Var2,caseList.Var3, ...
 caseEnd=datetime(caseList.Var6,caseList.Var7,caseList.Var8, ...
     caseList.Var9,caseList.Var10,0);
 
-for aa=5:length(caseStart)
+for aa=6:length(caseStart)
     
     disp(['Case ',num2str(aa),' of ',num2str(length(caseStart))]);
     
@@ -41,8 +41,7 @@ for aa=5:length(caseStart)
     data.nyquist_velocity=[];
     data.VEL_CORR=[];
     data.FLAG=[];
-    data.ANTFLAG=[];
-               
+                   
     % Make list of files within the specified time frame
     fileList=makeFileList(indir,startTime,endTime,'xxxxxx20YYMMDDxhhmmss',1);
     
@@ -55,24 +54,23 @@ for aa=5:length(caseStart)
     data=read_HCR(fileList,data,startTime,endTime);
     
     velMasked=data.VEL_CORR;
-    velMasked(:,data.ANTFLAG>2)=nan;
     velMasked(data.FLAG~=1)=nan;
-      
+          
     %% Correct velocity folding
     
     disp('De-aliasing ...');
     velDeAliased=dealiasArea(velMasked,data.elevation,data.nyquist_velocity);
-       
+           
     %% Plot
     
     disp('Plotting ...');
     
     close all
     
-    f1=figure('DefaultAxesFontSize',12,'Position',[0 300 1700 1200],'visible','on');
+    f1=figure('DefaultAxesFontSize',12,'Position',[0 300 1700 1200],'visible','off');
     
     s1=subplot(2,1,1);
-    surf(data.time,data.asl./1000,velMasked,'edgecolor','none');
+    surf(data.time,data.asl./1000,data.VEL_CORR,'edgecolor','none');
     view(2);
     ylim(ylimits);
     xlim([data.time(1),data.time(end)]);

@@ -48,13 +48,13 @@ for ii=1:size(caseList,1)
             end                
                         
             % Create masked VEL field
-            vel=ncread(infile,'VEL_CORR')';
-            maskFlag=ncread(infile,'FLAG')';
+            vel=ncread(infile,'VEL_UNFOLDED')';
+            % maskFlag=ncread(infile,'FLAG')';
             maskAnt=ncread(infile,'ANTFLAG')';
             
             velMasked=vel;
             velMasked(maskAnt>2,:)=nan;
-            velMasked(maskFlag~=1)=nan;
+            % velMasked(maskFlag~=1)=nan;
             velMasked=velMasked';
             
             % Write output
@@ -83,7 +83,7 @@ for ii=1:size(caseList,1)
             ncwriteatt(infile,'VEL_MASKED','long_name','doppler_velocity');
             ncwriteatt(infile,'VEL_MASKED','standard_name','radial_velocity_of_scatterers_away_from_instrument');
             ncwriteatt(infile,'VEL_MASKED','units','m/s');
-            ncwriteatt(infile,'VEL_MASKED','comment','This field is computed by applying VEL_CORR(FLAG>1)=NAN and VEL_CORR(ANTFLAG>2)=NAN');
+            ncwriteatt(infile,'VEL_MASKED','comment','This field is computed by applying VEL_UNFOLDED(ANTFLAG>2)=NAN');
             ncwriteatt(infile,'VEL_MASKED','grid_mapping','grid_mapping');
             ncwriteatt(infile,'VEL_MASKED','coordinates','time range');
             
