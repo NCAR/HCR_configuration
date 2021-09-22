@@ -11,34 +11,54 @@ whichModel='era5';
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-figdir=['/scr/sleet2/rsfdata/projects/spicule/hcr/',quality,'/cfradial/',qcVersion,'/meltLayerPlots/process/'];
+figdir=['/scr/sleet2/rsfdata/projects/spicule/hcr/',quality,'/cfradial/',qcVersion,'_full/meltLayerPlots/process/'];
 %figdir=['/home/romatsch/plots/HCR/meltingLayer/flights/',project,'/10hz/'];
 
 saveTime=0;
 saveOffset=0;
 
-offsetIn=-500;
-% If no data is found within one flight, take mean of previous flight (0)
-% or mean over all flights (1) which is given as offsetIn above.
-prevOrTotOffset=0;
-adjustOffset=0; % Set to zero if constant offset should be used (e.g. when running flight by flight)
+% Default params
+params.offsetIn=-200;
 
-% Adjust thresholds
-thresholds.LDRlimits=[-16,-7]; % SOCRATES, OTREC, CSET default: [-16,-7]
-thresholds.LDRspeclePix=50; % SOCRATES, OTREC, CSET default: [] (not used)
-thresholds.LDRsolidity=0.5; % SOCRATES, OTREC, CSET default: [] (not used)
-thresholds.LDRsearchPix=25; % SOCRATES, OTREC, CSET default: 18
-thresholds.LDRstd=150; % SOCRATES, OTREC, CSET default: 100
-thresholds.LDRaltDiff=100; % SOCRATES, OTREC, CSET default: 50
+% Fixed offset
+adjustOffset=0; % Set to zero if constant offset should be used
+fixedOffsetFlight=1; % If offset should be constant but changed for each flight, set to 1.
 
-thresholds.VELsearchPix=80; % SOCRATES, OTREC, CSET default: 50
-thresholds.VELstd=70; % SOCRATES, OTREC, CSET default: 35
-thresholds.VELaltDiff=100; % SOCRATES, OTREC, CSET default: 100
-thresholds.VELudDiff=-0.7; % SOCRATES, OTREC, CSET default: -0.7
-thresholds.VEL_LDRdiff=600; % SOCRATES, OTREC, CSET default: 200
+% Adjust offset (not used when adjustOffset=1 above)
+% If no data is found within one flight, take mean of previous flight (0) or
+% a fixed offset, e.g. mean over all flights (1) which is given as offsetIn
+% in params above.
+prevFixed=0;
 
-thresholds.outlier=350; % SOCRATES, OTREC, CSET default: 50
-thresholds.length=10; % SOCRATES, OTREC, CSET default: 20
+
+
+params.LDRlimits=[-16,-7]; % SOCRATES, OTREC, CSET default: [-16,-7]
+params.LDRspeclePix=[]; % SOCRATES, OTREC, CSET default: [] (not used)
+params.LDRsolidity=[]; % SOCRATES, OTREC, CSET default: [] (not used)
+params.LDRsearchPix=18; % SOCRATES, OTREC, CSET default: 18
+params.LDRstd=100; % SOCRATES, OTREC, CSET default: 100
+params.LDRaltDiff=50; % SOCRATES, OTREC, CSET default: 50
+
+params.VELsearchPix=50; % SOCRATES, OTREC, CSET default: 50
+params.VELstd=35; % SOCRATES, OTREC, CSET default: 35
+params.VELaltDiff=100; % SOCRATES, OTREC, CSET default: 100
+params.VELudDiff=-0.7; % SOCRATES, OTREC, CSET default: -0.7
+params.VEL_LDRdiff=200; % SOCRATES, OTREC, CSET default: 200
+
+params.outlier=50; % SOCRATES, OTREC, CSET default: 50
+params.length=20; % SOCRATES, OTREC, CSET default: 20
+
+% Read params file
+try
+    run([project,'_params.m']);
+    paramFields=fields(paramsIn);
+    
+    for ii=1:length(paramFields)
+        params.(paramFields{ii})=paramsIn.(paramFields{ii});
+    end
+catch
+    warning('No parameter file found. Using defaults.');
+end
 
 if ~exist(figdir, 'dir')
     mkdir(figdir)
@@ -66,7 +86,7 @@ for aa=1:size(caseList,1)
     
     clearvars -except project quality freqData whichModel figdir ...
         ylimits indir outdir caseList zeroAdjust zeroAdjustIn aa ...
-        saveOffset prevOrTotOffset saveTime adjustOffset thresholds
+        saveOffset prevOrTotOffset saveTime adjustOffset params
     
     if adjustOffset
         if aa==1
@@ -80,7 +100,7 @@ for aa=1:size(caseList,1)
             offset.Properties.VariableNames{'Var1'}='Flight';
         else
             offset=readtable([outdir,whichModel,'.offset.',project,'.txt']);
-            if ~isnan(offset.OffsetM(aa-1)) & prevOrTotOffset==0
+            if ~isnan(offset.OffsetM(aa-1)) & prevFixed==0
                 zeroAdjust=offset.OffsetM(aa-1);
             end
         end
@@ -106,10 +126,10 @@ for aa=1:size(caseList,1)
     % Make list of files within the specified time frame
     fileList=makeFileList(indir,startTime,endTime,'xxxxxx20YYMMDDxhhmmss',1);
     
-    % Check if VEL_MASKED is available
+    % Check if VEL_UNFOLDED is available
     try
-        velTest=ncread(fileList{1},'VEL_MASKED');
-        data.VEL_MASKED=[];
+        velTest=ncread(fileList{1},'VEL_UNFOLDED');
+        data.VEL_UNFOLDED=[];
     catch
         data.VEL_CORR=[];
     end
@@ -143,9 +163,9 @@ for aa=1:size(caseList,1)
         continue
     end
     
-    if isfield(data,'VEL_MASKED')
-        data.VEL_CORR=data.VEL_MASKED;
-        data=rmfield(data,'VEL_MASKED');
+    if isfield(data,'VEL_UNFOLDED')
+        data.VEL_CORR=data.VEL_UNFOLDED;
+        data=rmfield(data,'VEL_UNFOLDED');
     end
     
     if isfield(data,'LDR_MASKED')
@@ -155,9 +175,9 @@ for aa=1:size(caseList,1)
     
     %% Find melting layer
     
-    [meltLayer iceLayer offset.OffsetM(aa)]=f_meltLayer(data,zeroAdjust,thresholds);
+    [meltLayer iceLayer offset.OffsetM(aa)]=f_meltLayer(data,zeroAdjust,params);
     
-    if ~isnan(offset.OffsetM(aa)) & prevOrTotOffset==0 & adjustOffset==1
+    if ~isnan(offset.OffsetM(aa)) & prevFixed==0 & adjustOffset==1
         zeroAdjust=offset.OffsetM(aa);
     end        
     

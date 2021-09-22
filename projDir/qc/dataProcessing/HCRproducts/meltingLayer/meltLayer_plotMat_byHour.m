@@ -26,7 +26,7 @@ indir=HCRdir(project,quality,qcVersion,dataFreq);
 [~,directories.modeldir]=modelDir(project,whichModel,dataFreq);
 modeldir=directories.modeldir;
 
-figdir=['/scr/sleet2/rsfdata/projects/spicule/hcr/',quality,'/cfradial/',qcVersion,'/meltLayerPlots/testMat/'];
+figdir=['/scr/sleet2/rsfdata/projects/spicule/hcr/',quality,'/cfradial/',qcVersion,'_full/meltLayerPlots/testMat/'];
 
 infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_',project,'.txt'];
 
@@ -48,7 +48,7 @@ for aa=1:size(caseList,1)
     
     data.DBZ = [];
     data.LDR=[];
-    data.VEL_CORR=[];
+    data.VEL_UNFOLDED=[];
     data.FLAG=[];
     
     dataVars=fieldnames(data);
@@ -121,7 +121,7 @@ for aa=1:size(caseList,1)
             dbzMasked(data.FLAG(:,timeInds)>1)=nan;
             ldrMasked=data.LDR(:,timeInds);
             ldrMasked(data.FLAG(:,timeInds)>1)=nan;
-            velMasked=data.VEL_CORR(:,timeInds);
+            velMasked=data.VEL_UNFOLDED(:,timeInds);
             velMasked(data.FLAG(:,timeInds)>1)=nan;
             timeMasked=data.time(timeInds);
             aslMasked=data.asl(:,timeInds);
