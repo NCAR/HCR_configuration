@@ -8,7 +8,7 @@ project='spicule'; % socrates, cset, aristo, otrec
 quality='qc1'; % field, qc0, qc1, qc2
 qcVersion='v1.0';
 freqData='10hz'; % 10hz, 100hz, or 2hz
-whichModel='narr'; % ecmwf or era5
+whichModel='era5'; % ecmwf or era5
 
 formatOut = 'yyyymmdd_HHMM';
 

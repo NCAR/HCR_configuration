@@ -83,7 +83,7 @@ for ii=1:size(caseList,1)
             ncwriteatt(infile,'VEL_MASKED','long_name','doppler_velocity');
             ncwriteatt(infile,'VEL_MASKED','standard_name','radial_velocity_of_scatterers_away_from_instrument');
             ncwriteatt(infile,'VEL_MASKED','units','m/s');
-            ncwriteatt(infile,'VEL_MASKED','comment','This field is computed by applying VEL_UNFOLDED(ANTFLAG>2)=NAN');
+            ncwriteatt(infile,'VEL_MASKED','comment','This field is created by applying VEL_UNFOLDED(ANTFLAG>2)=NAN');
             ncwriteatt(infile,'VEL_MASKED','grid_mapping','grid_mapping');
             ncwriteatt(infile,'VEL_MASKED','coordinates','time range');
             

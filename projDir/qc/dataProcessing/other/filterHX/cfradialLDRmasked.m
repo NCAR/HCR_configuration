@@ -45,9 +45,7 @@ for ii=1:size(caseList,1)
             if ~isempty(testField)
                 warning('Field already exists. Skipping file.')
                 continue
-            end
-            
-            
+            end            
             
             data.DBMHX=ncread(infile,'DBMHX');
             data.LDR=ncread(infile,'LDR');
@@ -88,19 +86,7 @@ for ii=1:size(caseList,1)
             else
                 LDR_masked=data.LDR;
             end
-            
-            
-            %
-            %             % Create masked VEL field
-            %             vel=ncread(infile,'VEL')';
-            %             maskFlag=ncread(infile,'FLAG')';
-            %             maskAnt=ncread(infile,'ANTFLAG')';
-            %
-            %             velMasked=vel;
-            %             velMasked(maskAnt>2,:)=nan;
-            %             velMasked(maskFlag>1)=nan;
-            %             velMasked=velMasked';
-            
+                       
             % Write output
             fillVal=-9999;
             

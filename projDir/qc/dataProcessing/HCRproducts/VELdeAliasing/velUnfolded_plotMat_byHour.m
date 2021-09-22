@@ -57,11 +57,11 @@ for aa=1:size(caseList,1)
     dataVars=dataVars(~cellfun('isempty',dataVars));
     
     %% Load vel final
-    disp('Loading VEL FINAL.');
+    disp('Loading VEL UNFOLDED.');
     
-    fileIn1=dir([modeldir,whichModel,'.velFinal.*.Flight',num2str(aa),'.mat']);
+    fileIn1=dir([modeldir,whichModel,'.velUnfolded.*.Flight',num2str(aa),'.mat']);
     vel2D=load([modeldir,fileIn1.name]);    
-    velFinal=vel2D.velFinal;
+    velUnfolded=vel2D.velUnfolded;
         
     fileIn2=dir([modeldir,whichModel,'.time.*.Flight',num2str(aa),'.mat']);
     velTime=load([modeldir,fileIn2.name]);
@@ -86,9 +86,9 @@ for aa=1:size(caseList,1)
         if sum(sum(~isnan(velPlot)))~=0
             aslPlot=data.asl(:,timeInds);
             
-            timeIndsPID=find(timeVEL>=startPlot & timeVEL<=endPlot);
+            timeIndsPID=find(timeVEL>=timePlot(1) & timeVEL<=timePlot(end));
             
-            velFinalPlot=velFinal(:,timeIndsPID);
+            velFinalPlot=velUnfolded(:,timeIndsPID);
             
             if sum(sum(~isnan(velFinalPlot)))~=0
                 
@@ -117,7 +117,7 @@ for aa=1:size(caseList,1)
                 surf(timePlot,aslPlot./1000,velFinalPlot,'edgecolor','none');
                 view(2);
                 ylabel('Altitude (km)');
-                title(['VEL FINAL']);
+                title(['VEL UNFOLDED']);
                 caxis([-13 13]);
                 ylim([0 ylimUpper]);
                 xlim([timePlot(1),timePlot(end)]);

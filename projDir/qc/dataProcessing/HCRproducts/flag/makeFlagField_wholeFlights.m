@@ -9,7 +9,7 @@ project='spicule'; %socrates, aristo, cset
 quality='qc1'; %field, qc1, or qc2
 freqData='10hz'; % 10hz, 100hz, or 2hz
 qcVersion='v1.0';
-whichModel='narr';
+whichModel='era5';
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 

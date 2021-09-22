@@ -21,7 +21,7 @@ caseList = table2array(readtable(infile));
 
 indir=HCRdir(project,quality,qcVersion,freqData);
 
-for kk=1:size(caseList,1)
+for kk=9:size(caseList,1)
     
     disp(['Flight ',num2str(kk)]);
     disp('Loading HCR data.')
@@ -59,10 +59,10 @@ for kk=1:size(caseList,1)
         %% Save
         disp('Saving velFinal field.')
         
-        velFinal=velDeAliased;
+        velUnfolded=velDeAliased;
         
-        save([outdir,whichModel,'.velFinal.',datestr(data.time(1),'YYYYmmDD_HHMMSS'),'_to_',...
-            datestr(data.time(end),'YYYYmmDD_HHMMSS'),'.Flight',num2str(kk),'.mat'],'velFinal');
+        save([outdir,whichModel,'.velUnfolded.',datestr(data.time(1),'YYYYmmDD_HHMMSS'),'_to_',...
+            datestr(data.time(end),'YYYYmmDD_HHMMSS'),'.Flight',num2str(kk),'.mat'],'velUnfolded');
         
     end
 end
