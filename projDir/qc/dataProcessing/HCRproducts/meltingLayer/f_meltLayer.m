@@ -119,19 +119,27 @@ end
 LDRdata=data.LDR(:,tempDataY);
 tempFlag=data.FLAG(:,tempDataY);
 LDRdata(tempFlag>1)=nan;
+
+% Remove small areas
+if ~isempty(thresholds.LDRareaPix)
+    maskLDRtemp=~isnan(LDRdata);
+    maskLDRtemp2=bwareaopen(maskLDRtemp,thresholds.LDRareaPix);
+    
+    LDRdata(maskLDRtemp==1 & maskLDRtemp2==0)=nan;
+end
+
 LDRdata(LDRdata<thresholds.LDRlimits(1) | LDRdata>thresholds.LDRlimits(2))=nan;
 LDRdata(1:20,:)=nan;
 
-
 % Remove LDR specle
-if ~isnan(thresholds.LDRspeclePix)
+if ~isempty(thresholds.LDRspeclePix)
     maskLDRtemp=~isnan(LDRdata);
     maskLDRtemp2=bwareaopen(maskLDRtemp,thresholds.LDRspeclePix);
     
     LDRdata(maskLDRtemp==1 & maskLDRtemp2==0)=nan;
 end
 
-if ~isnan(thresholds.LDRsolidity)
+if ~isempty(thresholds.LDRsolidity)
     maskLDRtemp=~isnan(LDRdata);
     
     stats = regionprops('table',maskLDRtemp2,'Solidity','PixelIdxList');

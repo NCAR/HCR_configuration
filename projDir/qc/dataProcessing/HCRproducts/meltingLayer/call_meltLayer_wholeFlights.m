@@ -15,24 +15,22 @@ figdir=['/scr/sleet2/rsfdata/projects/spicule/hcr/',quality,'/cfradial/',qcVersi
 %figdir=['/home/romatsch/plots/HCR/meltingLayer/flights/',project,'/10hz/'];
 
 saveTime=0;
-saveOffset=0;
+saveOffset=1;
 
 % Default params
-params.offsetIn=-200;
+% !!! DO NOT CHANGE !!!
+params.fixedOffsetFlight=0; % If fixed offset in should be changed for each flight, set to 1. Will need input file with offsets.
+params.offsetIn=-200; % Not needed if fixedOffsetFlight=1
 
 % Fixed offset
-adjustOffset=0; % Set to zero if constant offset should be used
-fixedOffsetFlight=1; % If offset should be constant but changed for each flight, set to 1.
+params.adjustOffset=0; % Set to zero if fixed offset should be used and not from previous flight.
 
-% Adjust offset (not used when adjustOffset=1 above)
-% If no data is found within one flight, take mean of previous flight (0) or
-% a fixed offset, e.g. mean over all flights (1) which is given as offsetIn
-% in params above.
-prevFixed=0;
-
-
+% If no data is found within one flight, take mean of previous flight (0)
+% or fixed offset
+params.prevFixed=0; % Only needed if adjustOffset=1
 
 params.LDRlimits=[-16,-7]; % SOCRATES, OTREC, CSET default: [-16,-7]
+paramsIn.LDRareaPix=[];
 params.LDRspeclePix=[]; % SOCRATES, OTREC, CSET default: [] (not used)
 params.LDRsolidity=[]; % SOCRATES, OTREC, CSET default: [] (not used)
 params.LDRsearchPix=18; % SOCRATES, OTREC, CSET default: 18
@@ -77,35 +75,48 @@ infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_
 
 caseList = table2array(readtable(infile));
 
-zeroAdjust=offsetIn;
+% Get fixed offset
+if params.fixedOffsetFlight
+    offsetFixed=readtable(['~/git/HCR_configuration/projDir/qc/dataProcessing/HCRproducts/meltingLayer/paramsFiles/',project,'_offsetsIn.txt']);
+else
+    offsetFixed=params.offsetIn;
+end
 
-for aa=1:size(caseList,1)
+for aa=8:size(caseList,1)
     disp(['Flight ',num2str(aa)]);
     disp('Loading HCR data.')
     disp(['Starting at ',datestr(datetime('now'),'yyyy-mm-dd HH:MM')]);
     
     clearvars -except project quality freqData whichModel figdir ...
-        ylimits indir outdir caseList zeroAdjust zeroAdjustIn aa ...
-        saveOffset prevOrTotOffset saveTime adjustOffset params
+        ylimits indir outdir caseList offsetFixed zeroAdjust aa ...
+        saveOffset saveTime params
     
-    if adjustOffset
-        if aa==1
-            OffsetM=nan(size(caseList,1),1);
-            FlightNames=table('Size',[size(caseList,1) 1],'VariableTypes',"string");
-            for ii=1:size(caseList,1)
-                FlightNames.Var1(ii)=['Flight ',num2str(ii)];
-            end
-            offsetIn=array2table(OffsetM);
-            offset=cat(2,FlightNames,offsetIn);
-            offset.Properties.VariableNames{'Var1'}='Flight';
-        else
-            offset=readtable([outdir,whichModel,'.offset.',project,'.txt']);
-            if ~isnan(offset.OffsetM(aa-1)) & prevFixed==0
-                zeroAdjust=offset.OffsetM(aa-1);
-            end
+    % Take care of fixed offset
+    if size(offsetFixed,1)>1
+        thisFixed=offsetFixed.Var2(aa);
+    else
+        thisFixed=offsetFixed;
+    end
+        
+    if aa==1
+        OffsetM=nan(size(caseList,1),1);
+        FlightNames=table('Size',[size(caseList,1) 1],'VariableTypes',"string");
+        for ii=1:size(caseList,1)
+            FlightNames.Var1(ii)=['Flight ',num2str(ii)];
+        end
+        offsetIn1=array2table(OffsetM);
+        offset=cat(2,FlightNames,offsetIn1);
+        offset.Properties.VariableNames{'Var1'}='Flight';
+        zeroAdjust=thisFixed;
+    else
+        offset=readtable([outdir,whichModel,'.offset.',project,'.txt']);
+        if params.adjustOffset==0
+            zeroAdjust=thisFixed;
+        elseif isnan(offset.OffsetM(aa-1)) & params.prevFixed==1
+            zeroAdjust=thisFixed;
         end
     end
-    
+        
     startTime=datetime(caseList(aa,1:6));
     endTime=datetime(caseList(aa,7:12));
     
@@ -177,7 +188,7 @@ for aa=1:size(caseList,1)
     
     [meltLayer iceLayer offset.OffsetM(aa)]=f_meltLayer(data,zeroAdjust,params);
     
-    if ~isnan(offset.OffsetM(aa)) & prevFixed==0 & adjustOffset==1
+    if ~isnan(offset.OffsetM(aa))
         zeroAdjust=offset.OffsetM(aa);
     end        
     
