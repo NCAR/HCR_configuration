@@ -214,7 +214,7 @@ archive_time_span_secs = 600;
 // Type: string
 //
 
-archive_data_url = "/scr/sleet2/rsfdata/projects/spicule/hcr/qc1/cfradial/v1.0/10hz";
+archive_data_url = "/scr/sleet2/rsfdata/projects/spicule/hcr/qc1/cfradial/v1.0_full/10hz";
 
 //======================================================================
 //
@@ -359,6 +359,15 @@ fields = {
     units = "dBZ",
     color_map = "dbz_w.colors",
     shortcut = "0"
+  }
+  ,
+  {
+    label = "VEL_RAW",
+    raw_name = "VEL_RAW",
+    filtered_name = "",
+    units = "m/s",
+    color_map = "vel_w_8.colors",
+    shortcut = "1"
   }
   ,
   {
@@ -511,6 +520,33 @@ fields = {
     filtered_name = "",
     units = "",
     color_map = "hcr_melting_layer.colors",
+    shortcut = "d"
+  }
+  ,
+  {
+    label = "CONVECTIVITY",
+    raw_name = "CONVECTIVITY",
+    filtered_name = "",
+    units = "",
+    color_map = "hcr_convectivity.colors",
+    shortcut = "d"
+  }
+  ,
+  {
+    label = "PARTITION",
+    raw_name = "PARTITION_2D",
+    filtered_name = "",
+    units = "",
+    color_map = "hcr_partition.colors",
+    shortcut = "d"
+  }
+  ,
+  {
+    label = "PID",
+    raw_name = "PID",
+    filtered_name = "",
+    units = "",
+    color_map = "hcr_pid.colors",
     shortcut = "d"
   }
 };

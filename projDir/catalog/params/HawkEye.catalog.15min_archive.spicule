@@ -1,12 +1,12 @@
 /**********************************************************************
- * TDRP params for HawkEye
+ * Tdrp params for HawkEye
  **********************************************************************/
 
 //======================================================================
 //
 // HawkEye is the engineering display for the HAWK moments data.
 //
-// This is a C++ application using the QT GUI toolkit.
+// This is a C++ application using the QT4 GUI toolkit.
 //
 //======================================================================
  
@@ -33,19 +33,6 @@
 
 debug = DEBUG_OFF;
 
-///////////// check_ray_alloc /////////////////////////
-//
-// Print out checks on ray memory allocation.
-//
-// If TRUE, the app will keep track of the number of rays allocated and 
-//   freed, and print out that information every 100 rays.
-//
-//
-// Type: boolean
-//
-
-check_ray_alloc = FALSE;
-
 ///////////// register_with_procmap ///////////////////
 //
 // Option to register this process with the process mapper (procmap).
@@ -58,7 +45,7 @@ check_ray_alloc = FALSE;
 // Type: boolean
 //
 
-register_with_procmap = FALSE;
+register_with_procmap = TRUE;
 
 ///////////// instance ////////////////////////////////
 //
@@ -70,7 +57,7 @@ register_with_procmap = FALSE;
 // Type: string
 //
 
-instance = "hcr-socrates.qc.final.10hz";
+instance = "catalog";
 
 //======================================================================
 //
@@ -85,6 +72,8 @@ instance = "hcr-socrates.qc.final.10hz";
 // 	IWRF_FMQ_INPUT: read IWRF moments from an FMQ.
 // 	IWRF_TCP_INPUT: read an IWRF moments stream from a TCP socket.
 // 	SIMULATED_INPUT: internally-generated test pattern data.
+// 	SIMULATED_RHI_INPUT: internally-generated test pattern data for 
+//   RHIs.
 // 	DSR_FMQ_INPUT: deprecated.
 //
 //
@@ -93,6 +82,7 @@ instance = "hcr-socrates.qc.final.10hz";
 //     IWRF_FMQ_INPUT
 //     IWRF_TCP_INPUT
 //     SIMULATED_INPUT
+//     SIMULATED_RHI_INPUT
 //     DSR_FMQ_INPUT
 //
 
@@ -110,7 +100,7 @@ input_mode = IWRF_FMQ_INPUT;
 // Type: string
 //
 
-input_fmq_url = "fmqp:://localhost::fmq/moments/10hz/shmem_20010";
+input_fmq_url = "fmqp:://localhost::fmq/moments/10hz/shmem_20020";
 
 ///////////// seek_to_start_of_fmq ////////////////////
 //
@@ -184,25 +174,13 @@ begin_in_archive_mode = TRUE;
 //
 // Start time for archive mode.
 //
-// In archive mode, data retrieval starts at this time.
+// If this is set to 1 Jan 1970, the app will initialize at 'now'.
 //
 //
 // Type: string
 //
 
-archive_start_time = "2021 06 20 23 25 00";
-
-///////////// archive_time_span_secs //////////////////
-//
-// Time span in ARCHIVE mode (secs).
-//
-// Archive end time = archive_start_time + archive_time_span.
-//
-//
-// Type: double
-//
-
-archive_time_span_secs = 600;
+archive_start_time = "2021 05 29 15 15 00";
 
 ///////////// archive_data_url ////////////////////////
 //
@@ -290,8 +268,8 @@ show_status_in_gui = {
     altitude_rate = TRUE,
     sun_elevation = TRUE,
     sun_azimuth = TRUE,
-    speed = FALSE,
-    heading = FALSE,
+    speed = TRUE,
+    heading = TRUE,
     track = FALSE
 };
 
@@ -305,18 +283,11 @@ show_status_in_gui = {
 //
 // Directory for color scales.
 //
-// You can set this in 2 ways:
-//
-// (a) Set to the absolute path
-//
-// (b)Set as a path relative to the location of the application binary 
-//   executable.
-//
 //
 // Type: string
 //
 
-color_scale_dir = "$(PROJ_DIR)/display/color_scales";
+color_scale_dir = "$(HOME)/git/HCR_configuration/projDir/display/color_scales";
 
 ///////////// fields //////////////////////////////////
 //
@@ -366,21 +337,12 @@ fields = {
     raw_name = "VEL",
     filtered_name = "",
     units = "m/s",
-    color_map = "vel_w_8.colors",
+    color_map = "hcr_vel12.colors",
     shortcut = "1"
   }
   ,
   {
     label = "VEL_CORR",
-    raw_name = "VEL_CORR",
-    filtered_name = "",
-    units = "m/s",
-    color_map = "vel_w_8.colors",
-    shortcut = "2"
-  }
-  ,
-  {
-    label = "VEL_CORR_JET",
     raw_name = "VEL_CORR",
     filtered_name = "",
     units = "m/s",
@@ -556,7 +518,7 @@ use_field_label_in_title = FALSE;
 // Type: double
 //
 
-max_range_km = 15;
+max_range_km = 150;
 
 //======================================================================
 //
@@ -604,7 +566,7 @@ override_radar_name = TRUE;
 // Type: string
 //
 
-radar_name = "HCR-10hz";
+radar_name = "HCR";
 
 ///////////// display_site_name ///////////////////////
 //
@@ -650,7 +612,7 @@ site_name = "GV";
 // Type: int
 //
 
-main_window_width = 1400;
+main_window_width = 1500;
 
 ///////////// main_window_height //////////////////////
 //
@@ -660,7 +622,7 @@ main_window_width = 1400;
 // Type: int
 //
 
-main_window_height = 700;
+main_window_height = 800;
 
 ///////////// main_window_start_x /////////////////////
 //
@@ -670,7 +632,7 @@ main_window_height = 700;
 // Type: int
 //
 
-main_window_start_x = 300;
+main_window_start_x = 0;
 
 ///////////// main_window_start_y /////////////////////
 //
@@ -680,7 +642,7 @@ main_window_start_x = 300;
 // Type: int
 //
 
-main_window_start_y = 100;
+main_window_start_y = 0;
 
 ///////////// color_scale_width ///////////////////////
 //
@@ -690,7 +652,7 @@ main_window_start_y = 100;
 // Type: int
 //
 
-color_scale_width = 90;
+color_scale_width = 50;
 
 ///////////// label_font_size /////////////////////////
 //
@@ -781,53 +743,6 @@ ppi_display_type = PPI_FULL;
 
 ppi_aspect_ratio = 1;
 
-///////////// ppi_grids_on_at_startup /////////////////
-//
-// Set PPI grids overlay on at startup.
-//
-//
-// Type: boolean
-//
-
-ppi_grids_on_at_startup = FALSE;
-
-///////////// ppi_range_rings_on_at_startup ///////////
-//
-// Set PPI range rings overlay on at startup.
-//
-//
-// Type: boolean
-//
-
-ppi_range_rings_on_at_startup = TRUE;
-
-///////////// ppi_azimuth_lines_on_at_startup /////////
-//
-// Set PPI azimuth lines overlay on at startup.
-//
-//
-// Type: boolean
-//
-
-ppi_azimuth_lines_on_at_startup = TRUE;
-
-///////////// ppi_main_legend_pos /////////////////////
-//
-// Position of main legend in the PPI plot window.
-//
-// This include time, field name and elevation angle.
-//
-//
-// Type: enum
-// Options:
-//     LEGEND_TOP_LEFT
-//     LEGEND_TOP_RIGHT
-//     LEGEND_BOTTOM_LEFT
-//     LEGEND_BOTTOM_RIGHT
-//
-
-ppi_main_legend_pos = LEGEND_TOP_LEFT;
-
 //======================================================================
 //
 // RHI MODE DISPLAY.
@@ -874,94 +789,6 @@ rhi_window_start_x = 1000;
 
 rhi_window_start_y = 0;
 
-///////////// rhi_top_margin //////////////////////////
-//
-// Height of top margin in RHI mode (pixels).
-//
-// Titles go in the top margin.
-//
-//
-// Type: int
-//
-
-rhi_top_margin = 20;
-
-///////////// rhi_bottom_margin ///////////////////////
-//
-// Height of bottom margin in RHI mode (pixels).
-//
-// Time scale goes in the bottom margin.
-//
-//
-// Type: int
-//
-
-rhi_bottom_margin = 20;
-
-///////////// rhi_left_margin /////////////////////////
-//
-// Width of left margin in RHI mode (pixels).
-//
-// Height scale goes in the left margin.
-//
-//
-// Type: int
-//
-
-rhi_left_margin = 20;
-
-///////////// rhi_right_margin ////////////////////////
-//
-// Width of right margin in RHI mode (pixels).
-//
-// Height scale goes in the right margin.
-//
-//
-// Type: int
-//
-
-rhi_right_margin = 20;
-
-///////////// rhi_label_font_size /////////////////////
-//
-// Font size for labels on range rings (pixels).
-//
-//
-// Type: int
-//
-
-rhi_label_font_size = 8;
-
-///////////// rhi_axis_tick_len ///////////////////////
-//
-// Length of ticks on axes (pixels).
-//
-//
-// Type: int
-//
-
-rhi_axis_tick_len = 7;
-
-///////////// rhi_n_ticks_ideal ///////////////////////
-//
-// Ideal number of ticks on axes.
-//
-//
-// Type: int
-//
-
-rhi_n_ticks_ideal = 7;
-
-///////////// rhi_text_margin /////////////////////////
-//
-// Margin around some text (pixels).
-//
-//
-// Type: int
-//
-
-rhi_text_margin = 5;
-
 ///////////// rhi_display_180_degrees /////////////////
 //
 // Flag indicating to display full 180 degrees in RHI window. If set to 
@@ -975,92 +802,13 @@ rhi_display_180_degrees = FALSE;
 
 ///////////// rhi_aspect_ratio ////////////////////////
 //
-// Aspect ratio (width/height) of RHI window.
+// Aspect ratio (width/height) of PPI window.
 //
 //
 // Type: double
 //
 
 rhi_aspect_ratio = 1;
-
-///////////// rhi_max_height_km ///////////////////////
-//
-// Max height of data in RHI window (km).
-//
-//
-// Type: double
-//
-
-rhi_max_height_km = 25;
-
-///////////// rhi_color_scale_width ///////////////////
-//
-// Width of color scale for RHI window (pixels).
-//
-//
-// Type: int
-//
-
-rhi_color_scale_width = 40;
-
-///////////// rhi_grids_on_at_startup /////////////////
-//
-// Set RHI grids overlay on at startup.
-//
-//
-// Type: boolean
-//
-
-rhi_grids_on_at_startup = TRUE;
-
-///////////// rhi_range_rings_on_at_startup ///////////
-//
-// Set RHI range rings overlay on at startup.
-//
-//
-// Type: boolean
-//
-
-rhi_range_rings_on_at_startup = TRUE;
-
-///////////// rhi_elevation_lines_on_at_startup ///////
-//
-// Set RHI elevation lines overlay on at startup.
-//
-//
-// Type: boolean
-//
-
-rhi_elevation_lines_on_at_startup = FALSE;
-
-///////////// rhi_main_legend_pos /////////////////////
-//
-// Position of main legend in the RHI plot window.
-//
-// This include time, field name and elevation angle.
-//
-//
-// Type: enum
-// Options:
-//     LEGEND_TOP_LEFT
-//     LEGEND_TOP_RIGHT
-//     LEGEND_BOTTOM_LEFT
-//     LEGEND_BOTTOM_RIGHT
-//
-
-rhi_main_legend_pos = LEGEND_TOP_LEFT;
-
-///////////// rhi_beam_queue_size /////////////////////
-//
-// Size of the queue for RHI beams.
-//
-// After the queue reaches this size, older beams are discarded.
-//
-//
-// Type: int
-//
-
-rhi_beam_queue_size = 360;
 
 //======================================================================
 //
@@ -1079,7 +827,7 @@ rhi_beam_queue_size = 360;
 // Type: double
 //
 
-bscan_time_span_secs = 600;
+bscan_time_span_secs = 900;
 
 ///////////// bscan_truncate_start_time ///////////////
 //
@@ -1091,7 +839,7 @@ bscan_time_span_secs = 600;
 // Type: boolean
 //
 
-bscan_truncate_start_time = FALSE;
+bscan_truncate_start_time = TRUE;
 
 ///////////// bscan_subsec_precision //////////////////
 //
@@ -1183,7 +931,7 @@ bscan_specify_range_limits = TRUE;
 // Type: double
 //
 
-bscan_min_range_km = -0.5;
+bscan_min_range_km = -1;
 
 ///////////// bscan_max_range_km //////////////////////
 //
@@ -1195,7 +943,7 @@ bscan_min_range_km = -0.5;
 // Type: double
 //
 
-bscan_max_range_km = 15;
+bscan_max_range_km = 13;
 
 ///////////// bscan_min_altitude_km ///////////////////
 //
@@ -1205,7 +953,7 @@ bscan_max_range_km = 15;
 // Type: double
 //
 
-bscan_min_altitude_km = $(BSCAN_MIN_ALTITUDE_KM);
+bscan_min_altitude_km = -0.5;
 
 ///////////// bscan_max_altitude_km ///////////////////
 //
@@ -1215,7 +963,7 @@ bscan_min_altitude_km = $(BSCAN_MIN_ALTITUDE_KM);
 // Type: double
 //
 
-bscan_max_altitude_km = $(BSCAN_MAX_ALTITUDE_KM);
+bscan_max_altitude_km = 13.0;
 
 ///////////// bscan_altitude_in_feet //////////////////
 //
@@ -1376,7 +1124,7 @@ bscan_left_margin = 50;
 // Type: int
 //
 
-bscan_right_margin = 30;
+bscan_right_margin = 40;
 
 ///////////// bscan_axis_tick_len /////////////////////
 //
@@ -1488,6 +1236,7 @@ bscan_draw_time_grid_lines = TRUE;
 //
 // Option to draw grid lines across plot at regular range intervals.
 //
+
 //
 // Type: boolean
 //
@@ -1546,7 +1295,7 @@ bscan_add_distance_to_time_axis = TRUE;
 // Type: int
 //
 
-bscan_n_segments_for_computing_distance = 50;
+bscan_n_segments_for_computing_distance = 100;
 
 //======================================================================
 //
@@ -1632,7 +1381,7 @@ bscan_mean_track_and_speed_legend_pos = LEGEND_TOP_RIGHT;
 // Type: boolean
 //
 
-bscan_archive_dwell_auto = TRUE;
+bscan_archive_dwell_auto = FALSE;
 
 ///////////// bscan_archive_dwell_secs ////////////////
 //
@@ -1661,7 +1410,7 @@ bscan_archive_dwell_secs = 0.1;
 //     DWELL_STATS_MIDDLE
 //
 
-bscan_dwell_stats = DWELL_STATS_MIDDLE;
+bscan_dwell_stats = DWELL_STATS_MEAN;
 
 //======================================================================
 //
@@ -1685,7 +1434,7 @@ bscan_dwell_stats = DWELL_STATS_MIDDLE;
 // Type: string
 //
 
-images_output_dir = "/tmp/images/HawkEye";
+images_output_dir = "/scr/sleet2/rsfdata/projects/spicule/hcr/qc1/images/catalog15min";
 
 ///////////// images_write_to_day_dir /////////////////
 //
@@ -1806,7 +1555,7 @@ images_write_latest_data_info = TRUE;
 // Type: boolean
 //
 
-images_auto_create = FALSE;
+images_auto_create = TRUE;
 
 ///////////// images_creation_mode ////////////////////
 //
@@ -1834,7 +1583,7 @@ images_auto_create = FALSE;
 //     CREATE_IMAGES_ON_ARCHIVE_SCHEDULE
 //
 
-images_creation_mode = CREATE_IMAGES_THEN_EXIT;
+images_creation_mode = CREATE_IMAGES_ON_ARCHIVE_SCHEDULE;
 
 ///////////// images_schedule_interval_secs ///////////
 //
@@ -1847,7 +1596,7 @@ images_creation_mode = CREATE_IMAGES_THEN_EXIT;
 // Type: int
 //
 
-images_schedule_interval_secs = 60;
+images_schedule_interval_secs = 900;
 
 ///////////// images_schedule_delay_secs //////////////
 //
@@ -1861,75 +1610,7 @@ images_schedule_interval_secs = 60;
 // Type: int
 //
 
-images_schedule_delay_secs = 10;
-
-///////////// images_archive_start_time ///////////////
-//
-// Start time for image generation in archive mode.
-//
-// Image generation starts with a seach at this time, and the proceeds 
-//   at increments of images_schedule_interval_secs.
-//
-//
-// Type: string
-//
-
-images_archive_start_time = "1970 01 01 00 00 00";
-
-///////////// images_archive_end_time /////////////////
-//
-// End time for image generation in archive mode.
-//
-// Image generation is terminated when the search time exceeds this end 
-//   time.
-//
-//
-// Type: string
-//
-
-images_archive_end_time = "1970 01 01 00 00 00";
-
-///////////// images_scan_interval_secs ///////////////
-//
-// Time between scans in archive mode (secs).
-//
-// Only applies to POLAR (PPI/RHI) mode, not BSCAN mode.
-//
-//
-// Type: int
-//
-
-images_scan_interval_secs = 300;
-
-///////////// images_set_sweep_index_list /////////////
-//
-// Option to specify the sweep indexes for the image generation.
-//
-// If TRUE, only the specified sweeps will be processed.
-//
-//
-// Type: boolean
-//
-
-images_set_sweep_index_list = FALSE;
-
-///////////// images_sweep_index_list /////////////////
-//
-// List of valid sweep indexes for image generation.
-//
-// See 'images_set_sweep_index_list'. Images will only be generated for 
-//   the specified sweep indexes.
-//
-//
-// Type: int
-// 1D array - variable length.
-//
-
-images_sweep_index_list = {
- 0,
- 1,
- 2
-};
+images_schedule_delay_secs = 0;
 
 //======================================================================
 //

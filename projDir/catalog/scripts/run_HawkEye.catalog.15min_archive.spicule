@@ -1,0 +1,18 @@
+#! /bin/csh -f
+
+# HCR QC processing for SPICULE
+
+source ~/git/HCR_configuration/projDir/system/params/project_info.spicule
+
+cd $PROJ_DIR/catalog/params
+
+HawkEye -params HawkEye.catalog.15min_archive.spicule -debug -images_start_time "2021 05 29 15 15 00" -images_end_time "2021 05 29 19 59 00"
+HawkEye -params HawkEye.catalog.15min_archive.spicule -debug -images_start_time "2021 06 01 16 45 00" -images_end_time "2021 06 01 21 29 00"
+HawkEye -params HawkEye.catalog.15min_archive.spicule -debug -images_start_time "2021 06 02 20 45 00" -images_end_time "2021 06 03 01 29 00"
+HawkEye -params HawkEye.catalog.15min_archive.spicule -debug -images_start_time "2021 06 05 13 45 00" -images_end_time "2021 06 05 21 59 00"
+HawkEye -params HawkEye.catalog.15min_archive.spicule -debug -images_start_time "2021 06 09 19 45 00" -images_end_time "2021 06 09 23 44 00"
+HawkEye -params HawkEye.catalog.15min_archive.spicule -debug -images_start_time "2021 06 11 17 45 00" -images_end_time "2021 06 12 00 14 00"
+HawkEye -params HawkEye.catalog.15min_archive.spicule -debug -images_start_time "2021 06 17 18 15 00" -images_end_time "2021 06 18 00 44 00"
+HawkEye -params HawkEye.catalog.15min_archive.spicule -debug -images_start_time "2021 06 20 18 45 00" -images_end_time "2021 06 21 03 59 00"
+HawkEye -params HawkEye.catalog.15min_archive.spicule -debug -images_start_time "2021 06 24 19 45 00" -images_end_time "2021 06 24 23 59 00"
+HawkEye -params HawkEye.catalog.15min_archive.spicule -debug -images_start_time "2021 06 25 18 45 00" -images_end_time "2021 06 25 22 59 00"
