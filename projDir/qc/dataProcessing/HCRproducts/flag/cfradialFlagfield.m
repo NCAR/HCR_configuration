@@ -102,6 +102,7 @@ for ii=1:size(caseList,1)
             ncwriteatt(infile,'FLAG','flag_values',[1,2,3,4,5,6,7,8,9,10,11]);
             ncwriteatt(infile,'FLAG','flag_meanings',...
                 'cloud speckle extinct backlobe out_of_range transmitter_pulse water_surface land_surface below_surface noise_source_cal missing');
+            ncwriteatt(infile,'FLAG','is_discrete','true');
             ncwriteatt(infile,'FLAG','grid_mapping','grid_mapping');
             ncwriteatt(infile,'FLAG','coordinates','time range');
                         
@@ -111,6 +112,7 @@ for ii=1:size(caseList,1)
             ncwriteatt(infile,'ANTFLAG','flag_values',[1,2,3,4,5,6]);
             ncwriteatt(infile,'ANTFLAG','flag_meanings',...
                 'down up pointing scanning transition failure');
+            ncwriteatt(infile,'ANTFLAG','is_discrete','true');
             ncwriteatt(infile,'ANTFLAG','coordinates','time');
             
         end

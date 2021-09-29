@@ -105,6 +105,7 @@ for ii=1:size(caseList,1)
             ncwriteatt(infile,'MELTING_LAYER','flag_values',[10, 11, 12, 13, 14, 20, 21, 22, 23, 24]);
             ncwriteatt(infile,'MELTING_LAYER','flag_meanings',...
                 'below_iceLev ERA5_zeroDeg_below_iceLev meltLayer_detected_below/at_iceLev meltLayer_interpolated_below/at_iceLev meltLayer_estimated_below/at_iceLev above_iceLev ERA5_zeroDeg_above_iceLev meltLayer_detected_above_iceLev meltLayer_interpolated_above_iceLev meltLayer_estimated_above_iceLev');
+            ncwriteatt(infile,'MELTING_LAYER','is_discrete','true');
             ncwriteatt(infile,'MELTING_LAYER','grid_mapping','grid_mapping');
             ncwriteatt(infile,'MELTING_LAYER','coordinates','time range');
                         
