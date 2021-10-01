@@ -14,6 +14,7 @@ setenv DATA_DIR  /scr/snow2/rsfdata/projects/cset/hcr
 setenv LOG_DIR $HOME/logs
 
 setenv QC_VERSION qc2
+setenv QC_SUB_VERSION v2.1
 
 # make sure the output dirs exist
 
