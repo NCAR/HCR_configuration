@@ -16,7 +16,7 @@ minPixNumUW=5;
 HCRrangePix=10;
 HCRtimePix=20;
 
-plotOn=1;
+plotOn=0;
 showPlot='off';
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
