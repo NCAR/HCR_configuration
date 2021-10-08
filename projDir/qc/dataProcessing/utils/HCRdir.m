@@ -20,7 +20,14 @@ if strcmp(project,'socrates')
         if strcmp(freq,'2hz') | strcmp(freq,'10hz')
             indir=['/scr/snow2/rsfdata/projects/socrates/hcr/',qc,'/cfradial/',qcVersion,'/',freq,'/'];
         elseif strcmp(freq,'2hzMerged')
-            indir=['/scr/snow2/rsfdata/projects/socrates/hcr/',qc2,'/cfradial/hcr_hsrl_merge/',qcVersion,'/2hz/'];
+            indir=['/scr/snow2/rsfdata/projects/socrates/hcr/',qc,'/cfradial/hcr_hsrl_merge/',qcVersion,'/2hz/'];
+        else
+            disp('The requested data does not exist.');
+            return
+        end
+    elseif strcmp(qc,'qc3')
+        if strcmp(freq,'10hz')
+            indir=['/scr/snow2/rsfdata/projects/socrates/hcr/',qc,'/cfradial/',qcVersion,'_full/',freq,'/'];
         else
             disp('The requested data does not exist.');
             return

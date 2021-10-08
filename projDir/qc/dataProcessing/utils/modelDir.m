@@ -1,4 +1,4 @@
-function [rawDir interp] = modelDir(project,model,freq)
+function [rawDir interp] = modelDir(project,model,qc,qcVersion,freq)
 % Find model directory
 if strcmp(project,'socrates')
     baseDir='/scr/snow2/rsfdata/projects/socrates/';
@@ -11,5 +11,5 @@ elseif strcmp(project,'spicule')
 end
 
 rawDir=[baseDir,'model/',model,'/'];
-interp=[baseDir,'model/',model,'interp/',freq,'/'];
+interp=[baseDir,'hcr/',qc,'/',model,'interp/',qcVersion,'/',freq,'/'];
 end
