@@ -5,13 +5,13 @@ close all
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-project='spicule'; % socrates, cset, aristo, otrec
-quality='qc1'; % field, qc1, qc2
-qcVersion='v1.0';
+project='socrates'; % socrates, cset, aristo, otrec
+quality='qc3'; % field, qc1, qc2
+qcVersion='v3.0';
 freqData='10hz'; % 10hz, 100hz, or 2hz
 whichModel='era5';
 
-[~,directories.modeldir]=modelDir(project,whichModel,freqData);
+[~,directories.modeldir]=modelDir(project,whichModel,quality,qcVersion,freqData);
 
 outdir=directories.modeldir;
 
@@ -21,7 +21,7 @@ caseList = table2array(readtable(infile));
 
 indir=HCRdir(project,quality,qcVersion,freqData);
 
-for kk=9:size(caseList,1)
+for kk=1:size(caseList,1)
     
     disp(['Flight ',num2str(kk)]);
     disp('Loading HCR data.')
