@@ -88,8 +88,7 @@ instance = "qc";
 // Type: string
 //
 
-input_spdb_url = "$(DATA_DIR)/spdb/monitor/hcr";
-// input_spdb_url = "$(HOME)/local_data/spdb/monitor/hcr";
+input_spdb_url = "$(DATA_DIR)/$(QC_VERSION)/spdb/monitor/hcr";
 
 ///////////// realtime_wait_interval_secs /////////////
 //
