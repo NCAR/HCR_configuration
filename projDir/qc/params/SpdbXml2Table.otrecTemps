@@ -53,7 +53,7 @@ debug = DEBUG_OFF;
 // Type: string
 //
 
-input_url = "/scr/snow1/rsfdata/projects/otrec/hcr/qc2/spdb/monitor";
+input_url = "$(DATA_DIR)/$(QC_VERSION)/spdb/monitor";
 
 ///////////// start_time //////////////////////////////
 //
