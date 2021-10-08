@@ -214,7 +214,7 @@ archive_time_span_secs = 600;
 // Type: string
 //
 
-archive_data_url = "$(DATA_DIR)/$(QC_VERSION)/cfradial/$(QC_SUB_VERSION)/10hz";
+archive_data_url = "$(DATA_DIR)/$(QC_VERSION)/cfradial/$(QC_SUB_VERSION)_full/10hz";
 
 //======================================================================
 //
@@ -362,8 +362,8 @@ fields = {
   }
   ,
   {
-    label = "VEL_CORR",
-    raw_name = "VEL_CORR",
+    label = "VEL_RAW",
+    raw_name = "VEL_RAW",
     filtered_name = "",
     units = "m/s",
     color_map = "vel_w_8.colors",
@@ -380,8 +380,8 @@ fields = {
   }
   ,
   {
-    label = "VEL_RAW",
-    raw_name = "VEL_RAW",
+    label = "VEL_CORR",
+    raw_name = "VEL_CORR",
     filtered_name = "",
     units = "m/s",
     color_map = "vel_w_8.colors",
@@ -389,17 +389,35 @@ fields = {
   }
   ,
   {
-    label = "WIDTH",
-    raw_name = "WIDTH",
+    label = "VEL_CORR_JET",
+    raw_name = "VEL_CORR",
     filtered_name = "",
     units = "m/s",
-    color_map = "width_w.colors",
-    shortcut = "8"
+    color_map = "hcr_vel12.colors",
+    shortcut = "2"
   }
   ,
   {
-    label = "WIDTH_RAW",
-    raw_name = "WIDTH_RAW",
+    label = "VEL_UNFOLDED",
+    raw_name = "VEL_UNFOLDED",
+    filtered_name = "",
+    units = "m/s",
+    color_map = "hcr_vel12.colors",
+    shortcut = "2"
+  }
+  ,
+  {
+    label = "VEL_MASKED",
+    raw_name = "VEL_MASKED",
+    filtered_name = "",
+    units = "m/s",
+    color_map = "hcr_vel12.colors",
+    shortcut = "2"
+  }
+  ,
+  {
+    label = "WIDTH",
+    raw_name = "WIDTH",
     filtered_name = "",
     units = "m/s",
     color_map = "width_w.colors",
@@ -456,7 +474,7 @@ fields = {
     raw_name = "TEMP",
     filtered_name = "",
     units = "C",
-    color_map = "tempC_jet.colors",
+    color_map = "hcr_tempC.colors",
     shortcut = "c"
   }
   ,
@@ -465,7 +483,7 @@ fields = {
     raw_name = "PRESS",
     filtered_name = "",
     units = "hPa",
-    color_map = "pressure_jet.colors",
+    color_map = "hcr_pressure.colors",
     shortcut = "d"
   }
   ,
@@ -474,7 +492,7 @@ fields = {
     raw_name = "RH",
     filtered_name = "",
     units = "%",
-    color_map = "rh_jet.colors",
+    color_map = "hcr_rh.colors",
     shortcut = "d"
   }
   ,
@@ -484,6 +502,42 @@ fields = {
     filtered_name = "",
     units = "",
     color_map = "hcr_flag.colors",
+    shortcut = "d"
+  }
+  ,
+  {
+    label = "MELTING_LAYER",
+    raw_name = "MELTING_LAYER",
+    filtered_name = "",
+    units = "",
+    color_map = "hcr_melting_layer.colors",
+    shortcut = "d"
+  }
+  ,
+  {
+    label = "CONVECTIVITY",
+    raw_name = "CONVECTIVITY",
+    filtered_name = "",
+    units = "",
+    color_map = "hcr_convectivity.colors",
+    shortcut = "d"
+  }
+  ,
+  {
+    label = "PARTITION",
+    raw_name = "PARTITION_2D",
+    filtered_name = "",
+    units = "",
+    color_map = "hcr_partition.colors",
+    shortcut = "d"
+  }
+  ,
+  {
+    label = "PID",
+    raw_name = "PID",
+    filtered_name = "",
+    units = "",
+    color_map = "hcr_pid.colors",
     shortcut = "d"
   }
 };
@@ -1052,7 +1106,7 @@ rhi_beam_queue_size = 360;
 // Type: double
 //
 
-bscan_time_span_secs = 3600;
+bscan_time_span_secs = 600;
 
 ///////////// bscan_truncate_start_time ///////////////
 //
