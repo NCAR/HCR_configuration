@@ -5,7 +5,7 @@ close all;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Input variables %%%%%%%%%%%%%%%%%%%%%%%%%%
 
-project='cset'; %socrates, aristo, cset, otrec
+project='socrates'; %socrates, aristo, cset, otrec
 quality='qc3'; %field, qc1, or qc2
 dataFreq='10hz';
 qcVersion='v3.0';
@@ -23,7 +23,7 @@ addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
 indir=HCRdir(project,quality,qcVersion,dataFreq);
 
-[~,directories.modeldir]=modelDir(project,whichModel,dataFreq);
+[~,directories.modeldir]=modelDir(project,whichModel,quality,qcVersion,dataFreq);
 modeldir=directories.modeldir;
 
 figdir=[indir(1:end-5),'meltLayerPlots/testMat/'];
