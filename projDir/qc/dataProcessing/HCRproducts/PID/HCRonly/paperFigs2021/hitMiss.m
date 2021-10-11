@@ -39,7 +39,7 @@ h.CellLabelFormat = '%.1f';
 h.FontSize=11;
 h.Position=[0.17 0.06 0.8 0.84];
 axes('visible','off')
-text(0.1,-0.1,['Correct: ',num2str(hmNormL(1,1)+hmNormL(2,2)+hmNormL(3,3),3),'%. Correlation coefficient: 0.65.'],...
+text(0.07,-0.1,['Correct: ',num2str(hmNormL(1,1)+hmNormL(2,2)+hmNormL(3,3),3),'%.'],...
     'fontsize',11);
 
 set(gcf,'PaperPositionMode','auto')

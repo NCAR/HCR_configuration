@@ -5,13 +5,13 @@ close all
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-project='otrec'; %socrates, aristo, cset
-% quality='qc2'; %field, qc1, or qc2
-% qcVersion='v2.1';
-% freqData='10hz'; % 10hz, 100hz, 2hz, or combined
+project='socrates'; %socrates, aristo, cset
+quality='qc3'; %field, qc1, or qc2
+qcVersion='v3.0';
+freqData='10hz'; % 10hz, 100hz, 2hz, or combined
 whichModel='era5';
 
-saveTime=1;
+saveTime=0;
 
 plotIn.plotMR=0;
 plotIn.plotMax=0;
@@ -19,13 +19,18 @@ plotIn.plotMax=0;
 whichFilter=0; % 0: no filter, 1: mode filter, 2: coherence filter
 postProcess=1; % 1 if post processing is desired
 
-if strcmp(project,'otrec')
-    indir='/scr/sleet2/rsfdata/projects/otrec/hcr/qc2/cfradial/development/pid/10hz/';
-elseif strcmp(project,'socrates')
-    indir='/scr/snow2/rsfdata/projects/socrates/hcr/qc2/cfradial/development/pid/10hz/';
-end
+indir=HCRdir(project,quality,qcVersion,freqData);
 
-outdir=[indir(1:end-30),'mat/pid/10hz/'];
+[~,directories.modeldir]=modelDir(project,whichModel,quality,qcVersion,freqData);
+outdir=directories.modeldir;
+
+% if strcmp(project,'otrec')
+%     indir='/scr/sleet2/rsfdata/projects/otrec/hcr/qc2/cfradial/development/pid/10hz/';
+% elseif strcmp(project,'socrates')
+%     indir='/scr/snow2/rsfdata/projects/socrates/hcr/qc2/cfradial/development/pid/10hz/';
+% end
+% 
+% outdir=[indir(1:end-30),'mat/pid/10hz/'];
 
 infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_',project,'_data.txt'];
 

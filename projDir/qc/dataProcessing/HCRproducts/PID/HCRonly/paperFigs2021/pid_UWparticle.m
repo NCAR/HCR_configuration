@@ -40,7 +40,7 @@ cscale_hcr=[1,0,0; 1,0.6,0.47; 0,1,0; 0,0.7,0; 0,0,1; 1,0,1; 0.5,0,0; 1,1,0; 0,1
 units_str_hcr={'Rain','SC rain','Drizzle','SC drizzle','Cloud liquid','SC cloud liquid','Mixed phase','Large frozen','Small frozen'};
 
 cscale_hcr_2=[1 0 0;0 1 0;0 0 1];
-units_str_hcr_2={'Liquid','Mixed','Frozen'};
+units_str_hcr_2={'Frozen','Mixed','Liquid'};
 
 varNames={'numLiqHCR','numIceHCR','numAllHCR','pidHCR','numLiqLargestP','numIceLargestP','numAllLargestP','sizeLargestP'};
 
@@ -172,7 +172,9 @@ outTable=timetable(ptime,liqFrac_HCR_P(:,3),liqFrac_HCR_P(:,4),liqFrac_HCR_P(:,5
     numLiqLargest',numIceLargest',numAllLargest',sizeLargest','VariableNames',varNames);
 
 %% Plot 1
-
+pidSimp=nan(size(hcrLiqIce));
+pidSimp(hcrLiqIce==1)=3;
+pidSimp(hcrLiqIce==3)=1;
 
 disp('Plotting ...');
 
@@ -268,11 +270,11 @@ s4.Position=[5 0.451 0.79 0.13];
 s3=subplot(3,1,3);
 
 hold on
-surf(data.time,data.asl./1000,data.PID,'edgecolor','none');
+surf(data.time,data.asl./1000,pidSimp,'edgecolor','none');
 view(2);
-colormap(s3,cscale_hcr_2);
+colormap(s3,flipud(cscale_hcr_2));
 cb3=colorbar;
-cb3.Ticks=6:8;
+cb3.Ticks=1:3;
 cb3.TickLabels=units_str_hcr_2;
 cb3.Title.String=' PID';
 ylabel('Altitude (km)');
@@ -283,7 +285,7 @@ text(startTime+seconds(60),ylims(2)-0.11,'(c) Simplified PID and UWILD liquid fr
 scatter(ptime,ttSync.Var1./1000,20,col1DL,'filled');
 set(gca,'clim',[0,1]);
 
-caxis([5.5 8.5]);
+caxis([0.5 3.5]);
 ylim(ylims);
 xlim([data.time(1),data.time(end)]);
 
