@@ -3,16 +3,22 @@
 clear all;
 close all;
 
-project='spicule'; %socrates, otrec, cset
-quality='qc1'; %field, qc1, or qc2
-qcVersion='v1.0';
+project='socrates'; %socrates, otrec, cset
+quality='qc3'; %field, qc1, or qc2
+qcVersion='v3.0';
 freqData='10hz'; % 10hz, 100hz
 whichModel='era5';
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-figdir=['/scr/sleet2/rsfdata/projects/spicule/hcr/',quality,'/cfradial/',qcVersion,'_full/meltLayerPlots/process/'];
-%figdir=['/home/romatsch/plots/HCR/meltingLayer/flights/',project,'/10hz/'];
+ylimits=[-0.2 10];
+
+indir=HCRdir(project,quality,qcVersion,freqData);
+
+[~,directories.modeldir]=modelDir(project,whichModel,quality,qcVersion,freqData);
+outdir=directories.modeldir;
+
+figdir=[indir(1:end-5),'meltLayerPlots/process/'];
 
 saveTime=0;
 saveOffset=1;
@@ -62,15 +68,6 @@ if ~exist(figdir, 'dir')
     mkdir(figdir)
 end
 
-ylimits=[-0.2 13];
-
-indir=HCRdir(project,quality,qcVersion,freqData);
-%indir=HCRdirWFH(project,quality,freqData);
-
-[~,directories.modeldir]=modelDir(project,whichModel,freqData);
-outdir=directories.modeldir;
-%outdir=['/run/media/romatsch/RSF0006/rsf/meltingLayer/',project,'Mat/'];
-
 infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_',project,'_data.txt'];
 
 caseList = table2array(readtable(infile));
@@ -82,7 +79,7 @@ else
     offsetFixed=params.offsetIn;
 end
 
-for aa=8:size(caseList,1)
+for aa=1:size(caseList,1)
     disp(['Flight ',num2str(aa)]);
     disp('Loading HCR data.')
     disp(['Starting at ',datestr(datetime('now'),'yyyy-mm-dd HH:MM')]);
