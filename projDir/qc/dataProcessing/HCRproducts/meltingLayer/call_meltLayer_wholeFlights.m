@@ -3,7 +3,7 @@
 clear all;
 close all;
 
-project='socrates'; %socrates, otrec, cset
+project='cset'; %socrates, otrec, cset
 quality='qc3'; %field, qc1, or qc2
 qcVersion='v3.0';
 freqData='10hz'; % 10hz, 100hz
@@ -36,7 +36,7 @@ params.adjustOffset=0; % Set to zero if fixed offset should be used and not from
 params.prevFixed=0; % Only needed if adjustOffset=1
 
 params.LDRlimits=[-16,-7]; % SOCRATES, OTREC, CSET default: [-16,-7]
-paramsIn.LDRareaPix=[];
+params.LDRareaPix=[];
 params.LDRspeclePix=[]; % SOCRATES, OTREC, CSET default: [] (not used)
 params.LDRsolidity=[]; % SOCRATES, OTREC, CSET default: [] (not used)
 params.LDRsearchPix=18; % SOCRATES, OTREC, CSET default: 18
