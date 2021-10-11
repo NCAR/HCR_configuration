@@ -1,5 +1,5 @@
-params.fixedOffsetFlight=1;
-params.adjustOffset=0;
+paramsIn.fixedOffsetFlight=1;
+paramsIn.adjustOffset=0;
 
 %paramsIn.LDRlimits=[-16,-7];
 paramsIn.LDRareaPix=5000;

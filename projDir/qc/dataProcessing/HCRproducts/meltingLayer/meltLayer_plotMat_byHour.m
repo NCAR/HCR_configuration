@@ -5,16 +5,16 @@ close all;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Input variables %%%%%%%%%%%%%%%%%%%%%%%%%%
 
-project='spicule'; %socrates, aristo, cset, otrec
-quality='qc1'; %field, qc1, or qc2
+project='cset'; %socrates, aristo, cset, otrec
+quality='qc3'; %field, qc1, or qc2
 dataFreq='10hz';
-qcVersion='v1.0';
+qcVersion='v3.0';
 whichModel='era5';
 
 if strcmp(project,'otrec')
     ylimits=[0 15];
 else
-    ylimits=[0 13];
+    ylimits=[0 10];
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -26,13 +26,13 @@ indir=HCRdir(project,quality,qcVersion,dataFreq);
 [~,directories.modeldir]=modelDir(project,whichModel,dataFreq);
 modeldir=directories.modeldir;
 
-figdir=['/scr/sleet2/rsfdata/projects/spicule/hcr/',quality,'/cfradial/',qcVersion,'_full/meltLayerPlots/testMat/'];
+figdir=[indir(1:end-5),'meltLayerPlots/testMat/'];
 
 infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_',project,'.txt'];
 
 caseList = table2array(readtable(infile));
 
-for aa=8:size(caseList,1)
+for aa=1:size(caseList,1)
     disp(['Flight ',num2str(aa)]);
     disp('Loading HCR data.')
     disp(['Starting at ',datestr(datetime('now'),'yyyy-mm-dd HH:MM')]);

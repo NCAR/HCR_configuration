@@ -3,7 +3,7 @@
 clear all;
 close all;
 
-project='socrates'; %socrates, otrec, cset
+project='cset'; %socrates, otrec, cset
 quality='qc3'; %field, qc1, or qc2
 qcVersion='v3.0';
 freqData='10hz'; % 10hz, 100hz

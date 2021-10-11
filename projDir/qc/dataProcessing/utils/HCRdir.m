@@ -61,6 +61,13 @@ elseif strcmp(project,'cset')
             disp('The requested data does not exist.');
             return
         end
+    elseif strcmp(qc,'qc3')
+        if strcmp(freq,'10hz')
+            indir=['/scr/snow2/rsfdata/projects/cset/hcr/',qc,'/cfradial/',qcVersion,'_full/',freq,'/'];
+        else
+            disp('The requested data does not exist.');
+            return
+        end
     end
     
     %% ARISTO

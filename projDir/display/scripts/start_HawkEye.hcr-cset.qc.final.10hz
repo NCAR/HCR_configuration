@@ -2,18 +2,20 @@
 
 # basic setup
 
-source /opt/local/git/HCR_configuration/projDir/system/params/project_info.cset
+#$source /opt/local/git/HCR_configuration/projDir/system/params/project_info.cset
 
 # override proj dir
 
-setenv PROJ_DIR /opt/local/git/HCR_configuration/projDir
+#setenv PROJ_DIR /opt/local/git/HCR_configuration/projDir
 
-echo "PROJ_DIR: ${PROJ_DIR}"
+#echo "PROJ_DIR: ${PROJ_DIR}"
 
-cd ${PROJ_DIR}/display/params
+setenv PROJ_DIR $HOME/git/HCR_configuration/projDir
+source $PROJ_DIR/system/params/project_info.cset
+cd $PROJ_DIR/display/params
 
-set HAWKEYE = /opt/local/lrose/bin/HawkEye
-#set HAWKEYE = HawkEye
+# set HAWKEYE = /opt/local/lrose/bin/HawkEye
+set HAWKEYE = HawkEye
 
 if ($#argv < 6) then
   $HAWKEYE -params HawkEye.hcr-cset.qc.final.10hz -start_time "2015 07 01 17 30 00" >& /dev/null &
