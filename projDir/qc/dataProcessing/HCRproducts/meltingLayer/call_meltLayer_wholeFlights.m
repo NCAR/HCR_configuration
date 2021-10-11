@@ -36,7 +36,7 @@ params.adjustOffset=0; % Set to zero if fixed offset should be used and not from
 params.prevFixed=0; % Only needed if adjustOffset=1
 
 params.LDRlimits=[-16,-7]; % SOCRATES, OTREC, CSET default: [-16,-7]
-paramsIn.LDRareaPix=[];
+params.LDRareaPix=[];
 params.LDRspeclePix=[]; % SOCRATES, OTREC, CSET default: [] (not used)
 params.LDRsolidity=[]; % SOCRATES, OTREC, CSET default: [] (not used)
 params.LDRsearchPix=18; % SOCRATES, OTREC, CSET default: 18
