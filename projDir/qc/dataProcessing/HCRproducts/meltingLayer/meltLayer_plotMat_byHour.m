@@ -23,7 +23,7 @@ addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
 indir=HCRdir(project,quality,qcVersion,dataFreq);
 
-[~,directories.modeldir]=modelDir(project,whichModel,dataFreq);
+[~,directories.modeldir]=modelDir(project,whichModel,quality,qcVersion,dataFreq);
 modeldir=directories.modeldir;
 
 figdir=[indir(1:end-5),'meltLayerPlots/testMat/'];
