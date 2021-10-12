@@ -170,5 +170,5 @@ if postProcess
     
 end
 %% Remove nans
-classOut(isnan(data.DBZ))=nan;
+classOut(isnan(data.DBZ_MASKED))=nan;
 end
