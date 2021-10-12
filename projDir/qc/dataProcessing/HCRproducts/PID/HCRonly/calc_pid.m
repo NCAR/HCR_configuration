@@ -1,7 +1,6 @@
 function[classOut]=calc_pid(dBZ,data,postProcess,plotIn)
 
-%data.VEL_CORR=abs(data.VEL_CORR);
-data.VEL_CORR(data.elevation>0)=-data.VEL_CORR(data.elevation>0);
+data.VEL_MASKED(data.elevation>0)=-data.VEL_MASKED(data.elevation>0);
 
 %   Membership functions for particle detection
 % 1:Beta  2:Delta
@@ -25,7 +24,7 @@ result=nan(6,size(data.LDR,1),size(data.LDR,2));
 m=nan(5,size(dBZ,1),size(dBZ,2));
 m(1,:,:)=smf(dBZ,[3,5]);  % Rain
 m(2,:,:)=zmf(data.LDR,[-27,-22]);
-m(3,:,:)=smf(data.VEL_CORR,[2,3]);
+m(3,:,:)=smf(data.VEL_MASKED,[2,3]);
 m(4,:,:)=smf(data.WIDTH,[0.1,0.2]);
 m(5,:,:)=smf(data.TEMP,[-2,2]);
 
@@ -40,7 +39,7 @@ end
 m=nan(5,size(dBZ,1),size(dBZ,2));
 m(1,:,:)=trapmf(dBZ,[-18,-16,5,8]);
 m(2,:,:)=zmf(data.LDR,[-27,-25]);
-m(3,:,:)=trapmf(data.VEL_CORR,[0,0.5,1,2]);
+m(3,:,:)=trapmf(data.VEL_MASKED,[0,0.5,1,2]);
 m(4,:,:)=zmf(data.WIDTH,[0.2,0.3]);
 m(5,:,:)=smf(data.TEMP,[-50,-39]);
 
@@ -55,7 +54,7 @@ end
 m=nan(5,size(dBZ,1),size(dBZ,2));
 m(1,:,:)=zmf(dBZ,[-16,-14]);
 m(2,:,:)=zmf(data.LDR,[-27,-25]);
-m(3,:,:)=zmf(data.VEL_CORR,[1,2]);
+m(3,:,:)=zmf(data.VEL_MASKED,[1,2]);
 m(4,:,:)=zmf(data.WIDTH,[0.1,0.2]);
 m(5,:,:)=1;
 
@@ -70,7 +69,7 @@ end
 m=nan(5,size(dBZ,1),size(dBZ,2));
 m(1,:,:)=trapmf(dBZ,[-3,-1,20,25]);
 m(2,:,:)=trapmf(data.LDR,[-20,-17,-8,-6]);
-m(3,:,:)=trapmf(data.VEL_CORR,[0.5,1,3,4]);
+m(3,:,:)=trapmf(data.VEL_MASKED,[0.5,1,3,4]);
 m(4,:,:)=smf(data.WIDTH,[0.2, 0.3]);
 m(5,:,:)=trapmf(data.TEMP,[-2,0,3,6]);
 
@@ -88,7 +87,7 @@ end
 m=nan(5,size(dBZ,1),size(dBZ,2));
 m(1,:,:)=trapmf(dBZ,[7,9,18,20]); 
 m(2,:,:)=trapmf(data.LDR,[-22,-20,-16,-14]);
-m(3,:,:)=trapmf(data.VEL_CORR,[0.8,1,2.5,3.5]);
+m(3,:,:)=trapmf(data.VEL_MASKED,[0.8,1,2.5,3.5]);
 m(4,:,:)=smf(data.WIDTH,[0.2, 0.3]);
 m(5,:,:)=zmf(data.TEMP,[0,6]);
 
@@ -103,7 +102,7 @@ end
 m=nan(5,size(dBZ,1),size(dBZ,2));
 m(1,:,:)=trapmf(dBZ,[-25,-20,9,11]);
 m(2,:,:)=trapmf(data.LDR,[-26, -24,-15,-12]);
-m(3,:,:)=trapmf(data.VEL_CORR,[-1,0,1,2]);
+m(3,:,:)=trapmf(data.VEL_MASKED,[-1,0,1,2]);
 m(4,:,:)=zmf(data.WIDTH,[0.7,0.9]);
 m(5,:,:)=zmf(data.TEMP,[-1,5]);
 

@@ -52,8 +52,8 @@ for aa=1:size(caseList,1)
     data=[];
     
     %HCR data
-    data.DBZ=[];
-    data.VEL_CORR=[];
+    data.DBZ_MASKED=[];
+    data.VEL_MASKED=[];
     data.WIDTH=[];
     data.LDR=[];
     data.TEMP=[];
@@ -73,8 +73,6 @@ for aa=1:size(caseList,1)
     end
     
     % Mask with FLAG
-    data.DBZ(data.FLAG>1)=nan;
-    data.VEL_CORR(data.FLAG>1)=nan;
     data.WIDTH(data.FLAG>1)=nan;
     data.LDR(data.FLAG>1)=nan;
     data.TEMP(data.FLAG>1)=nan;
@@ -82,28 +80,28 @@ for aa=1:size(caseList,1)
     
     %% Correct for attenuation
     
-    Z_lin=10.^(data.DBZ*0.1);
+    Z_lin=10.^(data.DBZ_MASKED*0.1);
     
     % Mask out non liquid data
     liqMeltInds=find(data.MELTING_LAYER<20);
     Z_lin(~liqMeltInds)=nan;
     
-    wt_coef=nan(size(data.DBZ));
-    wt_exp=nan(size(data.DBZ));
+    wt_coef=nan(size(data.DBZ_MASKED));
+    wt_exp=nan(size(data.DBZ_MASKED));
     
-    wt_coef(data.DBZ < - 20)=20.;
-    wt_exp(data.DBZ < - 20)=0.52;
-    wt_coef(-20 <data.DBZ <-15 )=1.73;
-    wt_exp(-20 <data.DBZ < -15 )=0.15;
-    wt_coef(data.DBZ > -15)=0.22;
-    wt_exp(data.DBZ > -15)=0.68;
+    wt_coef(data.DBZ_MASKED < - 20)=20.;
+    wt_exp(data.DBZ_MASKED < - 20)=0.52;
+    wt_coef(-20 <data.DBZ_MASKED <-15 )=1.73;
+    wt_exp(-20 <data.DBZ_MASKED < -15 )=0.15;
+    wt_coef(data.DBZ_MASKED > -15)=0.22;
+    wt_exp(data.DBZ_MASKED > -15)=0.68;
     
     att_cumul=2.*0.0192*cumsum((wt_coef.*Z_lin.^wt_exp),1,'omitnan');
-    dBZ_cor_all=data.DBZ+att_cumul;
+    dBZ_cor_all=data.DBZ_MASKED+att_cumul;
     
     % Replace dBZ values with attenuation corrected values in liquid and
     % melting regions
-    dBZ_cor=data.DBZ;
+    dBZ_cor=data.DBZ_MASKED;
     dBZ_cor(liqMeltInds)=dBZ_cor_all(liqMeltInds);
     
     %% Calculate PID with attenuation correction
