@@ -4,8 +4,9 @@ close all;
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-project='cset'; % socrates, cset, aristo, otrec
-quality='qc2'; % field, qc1, qc2
+project='socrates'; % socrates, cset, aristo, otrec
+quality='qc3'; % field, qc1, qc2
+qcVersion='v3.0';
 freqData='10hz';
 whichModel='era5';
 
@@ -15,11 +16,8 @@ infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_
 
 caseList = table2array(readtable(infile));
 
-%indir=HCRdir(project,quality,freqData);
-indir=['/run/media/romatsch/RSF0006/rsf/cloudPuzzle/',project,'/10hz/'];
-
-%[~,modeldir]=modelDir(project,whichModel,freqData);
-modeldir=['/run/media/romatsch/RSF0006/rsf/cloudPuzzle/',project,'Mat/'];
+indir=HCRdir(project,quality,qcVersion,freqData);
+[~,modeldir]=modelDir(project,whichModel,quality,qcVersion,freqData);
 
 %% Run processing
 

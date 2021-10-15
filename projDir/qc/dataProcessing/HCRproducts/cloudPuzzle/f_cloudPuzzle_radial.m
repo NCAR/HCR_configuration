@@ -1,10 +1,9 @@
 function cloudPuzzle=f_cloudPuzzle_radial(data)
 % Create cloud puzzle
 
-cloudPuzzleOut=nan(size(data.DBZ));
+cloudPuzzleOut=nan(size(data.DBZ_MASKED));
 
-refl=data.DBZ;
-refl(data.FLAG>1)=nan;
+refl=data.DBZ_MASKED;
 
 %% Handle missing and NS cal
 
@@ -22,7 +21,7 @@ reflMask(~isnan(refl))=1;
 pixCut=3000;
 CC = bwconncomp(reflMask);
 
-cloudNumOrig=nan(size(data.DBZ));
+cloudNumOrig=nan(size(data.DBZ_MASKED));
 countCloud=1;
 
 for ii=1:CC.NumObjects
@@ -180,5 +179,5 @@ for jj=1:cloudCount-1
         end
     end
 end
-cloudPuzzle(isnan(data.DBZ) | data.FLAG>1)=nan;
+cloudPuzzle(isnan(data.DBZ_MASKED))=nan;
 end

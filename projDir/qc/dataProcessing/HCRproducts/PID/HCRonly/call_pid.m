@@ -6,30 +6,28 @@ close all
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
 project='socrates'; %socrates, aristo, cset
-quality='qc2'; %field, qc1, or qc2
-qcVersion='v2.1';
+quality='qc3'; %field, qc1, or qc2
+qcVersion='v3.0';
 freqData='10hz'; % 10hz, 100hz, 2hz, or combined
 
-ylimits=[0 2];
 plotIn.plotMR=0;
 plotIn.plotMax=0;
 
 whichFilter=0; % 0: no filter, 1: mode filter, 2: coherence filter
 postProcess=1; % 1 if post processing is desired
 
-if strcmp(project,'otrec')
-    indir='/scr/sleet2/rsfdata/projects/otrec/hcr/qc2/cfradial/development/pid/10hz/';
-elseif strcmp(project,'socrates')
-    indir='/scr/snow2/rsfdata/projects/socrates/hcr/qc2/cfradial/development/pid/10hz/';
-end
+indir=HCRdir(project,quality,qcVersion,freqData);
 
-figdir=[indir(1:end-5),'pidPlots/casesPaper/'];
+% if strcmp(project,'otrec')
+%     indir='/scr/sleet2/rsfdata/projects/otrec/hcr/qc2/cfradial/development/pid/10hz/';
+% elseif strcmp(project,'socrates')
+%     indir='/scr/snow2/rsfdata/projects/socrates/hcr/qc2/cfradial/development/pid/10hz/';
+% end
 
-plotIn.figdir=figdir;
-plotIn.ylimits=ylimits;
+figdir=[indir(1:end-5),'pidPlots/cases/'];
 
 % Loop through cases
-casefile=['~/git/HCR_configuration/projDir/qc/dataProcessing/HCRproducts/caseFiles/pid_',project,'_paper.txt'];
+casefile=['~/git/HCR_configuration/projDir/qc/dataProcessing/HCRproducts/caseFiles/pid_',project,'.txt'];
 
 caseList=readtable(casefile);
 caseStart=datetime(caseList.Var1,caseList.Var2,caseList.Var3, ...
@@ -37,7 +35,7 @@ caseStart=datetime(caseList.Var1,caseList.Var2,caseList.Var3, ...
 caseEnd=datetime(caseList.Var6,caseList.Var7,caseList.Var8, ...
     caseList.Var9,caseList.Var10,0);
 
-for aa=2:length(caseStart)
+for aa=1:length(caseStart)
     
     disp(['Case ',num2str(aa),' of ',num2str(length(caseStart))]);
     
@@ -54,14 +52,15 @@ for aa=2:length(caseStart)
         data=[];
         
         %HCR data
-        data.DBZ=[];
-        data.VEL_CORR=[];
+        data.DBZ_MASKED=[];
+        data.VEL_MASKED=[];
         data.WIDTH=[];
         data.LDR=[];
         data.TEMP=[];
         data.MELTING_LAYER=[];
         data.FLAG=[];
-        
+        data.SNR=[];
+                
         dataVars=fieldnames(data);
         
         % Load data
@@ -75,39 +74,44 @@ for aa=2:length(caseStart)
         end
         
         % Mask with FLAG
-        data.DBZ(data.FLAG>1)=nan;
-        data.VEL_CORR(data.FLAG>1)=nan;
         data.WIDTH(data.FLAG>1)=nan;
         data.LDR(data.FLAG>1)=nan;
         data.TEMP(data.FLAG>1)=nan;
         data.MELTING_LAYER(data.FLAG>1)=nan;
-        
+
+        ylimits=[0 (max(data.asl(~isnan(data.DBZ_MASKED)))./1000)+0.5];
+        plotIn.figdir=figdir;
+        plotIn.ylimits=ylimits;
+
         %% Correct for attenuation
         
-        Z_lin=10.^(data.DBZ*0.1);
+        Z_lin=10.^(data.DBZ_MASKED*0.1);
         
         % Mask out non liquid data
         liqMeltInds=find(data.MELTING_LAYER<20);
         Z_lin(~liqMeltInds)=nan;
         
-        wt_coef=nan(size(data.DBZ));
-        wt_exp=nan(size(data.DBZ));
+        wt_coef=nan(size(data.DBZ_MASKED));
+        wt_exp=nan(size(data.DBZ_MASKED));
         
-        wt_coef(data.DBZ < - 20)=20.;
-        wt_exp(data.DBZ < - 20)=0.52;
-        wt_coef(-20 <data.DBZ <-15 )=1.73;
-        wt_exp(-20 <data.DBZ < -15 )=0.15;
-        wt_coef(data.DBZ > -15)=0.22;
-        wt_exp(data.DBZ > -15)=0.68;
+        wt_coef(data.DBZ_MASKED < - 20)=20.;
+        wt_exp(data.DBZ_MASKED < - 20)=0.52;
+        wt_coef(-20 <data.DBZ_MASKED <-15 )=1.73;
+        wt_exp(-20 <data.DBZ_MASKED < -15 )=0.15;
+        wt_coef(data.DBZ_MASKED > -15)=0.22;
+        wt_exp(data.DBZ_MASKED > -15)=0.68;
         
         att_cumul=2.*0.0192*cumsum((wt_coef.*Z_lin.^wt_exp),1,'omitnan');
-        dBZ_cor_all=data.DBZ+att_cumul;
+        dBZ_cor_all=data.DBZ_MASKED+att_cumul;
         
         % Replace dBZ values with attenuation corrected values in liquid and
         % melting regions
-        dBZ_cor=data.DBZ;
+        dBZ_cor=data.DBZ_MASKED;
         dBZ_cor(liqMeltInds)=dBZ_cor_all(liqMeltInds);
         
+        %% Censor spectrum width
+        data.WIDTH(data.SNR<5)=nan;
+
         %% Calculate PID with attenuation correction
         
         % HCR
@@ -131,13 +135,13 @@ for aa=2:length(caseStart)
         timeMat=repmat(data.time,size(data.TEMP,1),1);
         
         disp('Plotting PID');
-        
+
         close all
         
         f1=figure('DefaultAxesFontSize',12,'Position',[0 300 2300 1200],'visible','off');
         
         s1=subplot(4,2,1);
-        surf(data.time,data.asl./1000,data.DBZ,'edgecolor','none');
+        surf(data.time,data.asl./1000,data.DBZ_MASKED,'edgecolor','none');
         view(2);
         ylim(ylimits);
         xlim([data.time(1),data.time(end)]);
@@ -149,7 +153,7 @@ for aa=2:length(caseStart)
         grid on
         
         s3=subplot(4,2,3);
-        surf(data.time,data.asl./1000,data.VEL_CORR,'edgecolor','none');
+        surf(data.time,data.asl./1000,data.VEL_MASKED,'edgecolor','none');
         view(2);
         ylim(ylimits);
         xlim([data.time(1),data.time(end)]);

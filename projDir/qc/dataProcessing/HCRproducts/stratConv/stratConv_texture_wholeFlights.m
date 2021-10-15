@@ -5,27 +5,31 @@ close all
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-project='otrec'; %socrates, aristo, cset
-% quality='qc2'; %field, qc1, or qc2
-% qcVersion='v2.2';
-% freqData='10hz'; % 10hz, 100hz, 2hz, or combined
+project='socrates'; %socrates, aristo, cset
+quality='qc3'; %field, qc1, or qc2
+qcVersion='v3.0';
+freqData='10hz'; % 10hz, 100hz, 2hz, or combined
 whichModel='era5';
 
-saveTime=1;
+saveTime=0;
 
-if strcmp(project,'otrec')
-    indir='/scr/sleet2/rsfdata/projects/otrec/hcr/qc2/cfradial/development/convStrat/10hz/';
-elseif strcmp(project,'socrates')
-    indir='/scr/snow2/rsfdata/projects/socrates/hcr/qc2/cfradial/development/convStrat/10hz/';
-end
+indir=HCRdir(project,quality,qcVersion,freqData);
 
-outdir=[indir(1:end-36),'mat/convStrat/10hz/'];
+[~,outdir]=modelDir(project,whichModel,quality,qcVersion,freqData);
+
+% if strcmp(project,'otrec')
+%     indir='/scr/sleet2/rsfdata/projects/otrec/hcr/qc2/cfradial/development/convStrat/10hz/';
+% elseif strcmp(project,'socrates')
+%     indir='/scr/snow2/rsfdata/projects/socrates/hcr/qc2/cfradial/development/convStrat/10hz/';
+% end
+% 
+% outdir=[indir(1:end-36),'mat/convStrat/10hz/'];
 
 infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_',project,'_data.txt'];
 
 caseList = table2array(readtable(infile));
 
-for aa=8:size(caseList,1)
+for aa=1:size(caseList,1)
     disp(['Flight ',num2str(aa)]);
     disp(['Starting at ',datestr(datetime('now'),'yyyy-mm-dd HH:MM')]);
     disp('Loading data ...');
@@ -39,8 +43,7 @@ for aa=8:size(caseList,1)
        
     data=[];
     
-    data.DBZ = [];
-    data.FLAG=[];
+    data.DBZ_MASKED = [];
     data.TOPO=[];
     data.CLOUD_PUZZLE=[];
     data.TEMP=[];
@@ -74,10 +77,10 @@ for aa=8:size(caseList,1)
     %% Calculate reflectivity texture and convectivity
     %stratConvNearSurf=nan(size(data.DBZ));
     
-    dbzText=nan(size(data.DBZ));
-    convectivity=nan(size(data.DBZ));
-    classBasic=nan(size(data.DBZ));
-    classSub=nan(size(data.DBZ));
+    dbzText=nan(size(data.DBZ_MASKED));
+    convectivity=nan(size(data.DBZ_MASKED));
+    classBasic=nan(size(data.DBZ_MASKED));
+    classSub=nan(size(data.DBZ_MASKED));
         
     pixRad=50; % Radius over which texture is calculated in pixels. Default is 50.
     dbzBase=-10; % Reflectivity base value which is subtracted from DBZ.
@@ -88,8 +91,7 @@ for aa=8:size(caseList,1)
     
     for jj=1:length(uClouds)
         disp(['Calculating texture for cloud ',num2str(jj),' of ',num2str(length(uClouds))]);
-        dbzIn=data.DBZ;
-        dbzIn(data.FLAG>1)=nan;
+        dbzIn=data.DBZ_MASKED;
         dbzIn(cloudPuzzle~=uClouds(jj))=nan;
         
         % Shrink to good data area
