@@ -5,7 +5,7 @@ close all
 disp(['Plotting ',outname]);
 
 m(m==0)=nan;
-result(isnan(data.DBZ))=nan;
+result(isnan(data.DBZ_MASKED))=nan;
 
 timeMat=repmat(data.time,size(data.TEMP,1),1);
 

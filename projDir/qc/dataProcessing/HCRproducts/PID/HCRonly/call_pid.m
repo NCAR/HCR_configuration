@@ -58,7 +58,7 @@ for aa=1:length(caseStart)
         data.LDR=[];
         data.TEMP=[];
         data.MELTING_LAYER=[];
-        data.FLAG=[];
+        data.CONVECTIVITY=[];
         data.SNR=[];
                 
         dataVars=fieldnames(data);
@@ -74,10 +74,10 @@ for aa=1:length(caseStart)
         end
         
         % Mask with FLAG
-        data.WIDTH(data.FLAG>1)=nan;
-        data.LDR(data.FLAG>1)=nan;
-        data.TEMP(data.FLAG>1)=nan;
-        data.MELTING_LAYER(data.FLAG>1)=nan;
+        data.WIDTH(isnan(data.DBZ_MASKED))=nan;
+        data.LDR(isnan(data.DBZ_MASKED))=nan;
+        data.TEMP(isnan(data.DBZ_MASKED))=nan;
+        data.MELTING_LAYER(isnan(data.DBZ_MASKED))=nan;
 
         ylimits=[0 (max(data.asl(~isnan(data.DBZ_MASKED)))./1000)+0.5];
         plotIn.figdir=figdir;
@@ -112,12 +112,30 @@ for aa=1:length(caseStart)
         %% Censor spectrum width
         data.WIDTH(data.SNR<5)=nan;
 
-        %% Calculate PID with attenuation correction
-        
+        %% Calculate PID with LDR and below the melting layer
+
         % HCR
-        disp('Getting PID');
-        [pid_hcr]=calc_pid(dBZ_cor,data,postProcess,plotIn);
-        
+        disp('Getting PID LDR/BELOW_MELT ...');
+
+        data.MELTING_LAYER(~isnan(data.MELTING_LAYER) & data.MELTING_LAYER<20)=10;
+        data.MELTING_LAYER(~isnan(data.MELTING_LAYER) & data.MELTING_LAYER>=20)=20;
+
+        ldrBelowMelt=find(data.MELTING_LAYER==10 | ~isnan(data.LDR));
+
+        dataLM=[];
+        for ii=1:length(dataVars)
+            dataLM.(dataVars{ii})=nan(size(data.DBZ_MASKED));
+            dataLM.(dataVars{ii})(ldrBelowMelt)=data.(dataVars{ii})(ldrBelowMelt);
+        end
+
+        DBZLM=nan(size(data.DBZ_MASKED));
+        DBZLM(ldrBelowMelt)=dBZ_cor(ldrBelowMelt);
+        dataLM.elevation=data.elevation;
+        dataLM.time=data.time;
+        dataLM.asl=data.asl;
+
+        [pid_hcr]=calc_pid_ldr(DBZLM,dataLM,postProcess,plotIn);
+
         if whichFilter==1
             pid_hcr=modeFilter(pid_hcr,7,0.7);
         elseif whichFilter==2
@@ -169,7 +187,7 @@ for aa=1:length(caseStart)
         view(2);
         ylim(ylimits);
         xlim([data.time(1),data.time(end)]);
-        caxis([-30 -5]);
+        caxis([-30 -20]);
         colormap(s5,jet);
         colorbar;
         ylabel('Altitude (km)');

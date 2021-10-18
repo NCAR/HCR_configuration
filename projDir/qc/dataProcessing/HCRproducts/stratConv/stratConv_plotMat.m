@@ -6,9 +6,9 @@ close all;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Input variables %%%%%%%%%%%%%%%%%%%%%%%%%%
 
 project='socrates'; %socrates, aristo, cset, otrec
-quality='qc2'; %field, qc1, or qc2
-% dataFreq='10hz';
-% qcVersion='v2.1';
+quality='qc3'; %field, qc1, or qc2
+freqData='10hz';
+qcVersion='v3.0';
 whichModel='era5';
 
 if strcmp(project,'otrec')
@@ -21,15 +21,19 @@ end
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-if strcmp(project,'otrec')
-    indir='/scr/sleet2/rsfdata/projects/otrec/hcr/qc2/cfradial/development/convStrat/10hz/';
-elseif strcmp(project,'socrates')
-    indir='/scr/snow2/rsfdata/projects/socrates/hcr/qc2/cfradial/development/convStrat/10hz/';
-end
+indir=HCRdir(project,quality,qcVersion,freqData);
+
+[~,modeldir]=modelDir(project,whichModel,quality,qcVersion,freqData);
 
 figdir=[indir(1:end-5),'convStratPlots/wholeFlights/'];
 
-modeldir=[indir(1:end-36),'mat/convStrat/10hz/'];
+% if strcmp(project,'otrec')
+%     indir='/scr/sleet2/rsfdata/projects/otrec/hcr/qc2/cfradial/development/convStrat/10hz/';
+% elseif strcmp(project,'socrates')
+%     indir='/scr/snow2/rsfdata/projects/socrates/hcr/qc2/cfradial/development/convStrat/10hz/';
+% end
+% 
+% modeldir=[indir(1:end-36),'mat/convStrat/10hz/'];
 
 infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_',project,'_data.txt'];
 
@@ -45,7 +49,7 @@ colmapSC=[0,0.1,0.6;
     0.99,0.77,0.22;
     0.7,0,0];
 
-for aa=2:size(caseList,1)
+for aa=1:size(caseList,1)
     disp(['Flight ',num2str(aa)]);
     disp('Loading HCR data.')
     disp(['Starting at ',datestr(datetime('now'),'yyyy-mm-dd HH:MM')]);

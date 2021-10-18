@@ -3,7 +3,7 @@ function plotResMax(data,result,maxAll,plotIn)
 close all
 disp('Plotting maximum');
 
-maxAll(isnan(data.DBZ))=nan;
+maxAll(isnan(data.DBZ_MASKED))=nan;
 
 timeMat=repmat(data.time,size(data.TEMP,1),1);
 
@@ -17,7 +17,7 @@ colormap jet
 for ii=1:6
     subplot(4,2,ii);
     resPlot=squeeze(result(ii,:,:));
-    resPlot(isnan(data.DBZ))=nan;
+    resPlot(isnan(data.DBZ_MASKED))=nan;
     surf(data.time,data.asl./1000,resPlot,'edgecolor','none');
     view(2);
     ylim(ylimits);

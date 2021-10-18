@@ -7,29 +7,27 @@ close all;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Input variables %%%%%%%%%%%%%%%%%%%%%%%%%%
 
-project='otrec'; %socrates, aristo, cset, otrec
-quality='qc2'; %field, qc1, or qc2
-% dataFreq='10hz';
-% qcVersion='v2.1';
+project='socrates'; %socrates, aristo, cset, otrec
+quality='qc3'; %field, qc1, or qc2
+freqData='10hz';
+qcVersion='v3.0';
 whichModel='era5';
-
-if strcmp(project,'otrec')
-    ylimUpper=15;
-else
-    ylimUpper=10;
-end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-if strcmp(project,'otrec')
-    indir='/scr/sleet2/rsfdata/projects/otrec/hcr/qc2/cfradial/development/convStrat/10hz/';
-elseif strcmp(project,'socrates')
-    indir='/scr/snow2/rsfdata/projects/socrates/hcr/qc2/cfradial/development/convStrat/10hz/';
-end
+indir=HCRdir(project,quality,qcVersion,freqData);
 
-modeldir=[indir(1:end-36),'mat/convStrat/10hz/'];
+[~,modeldir]=modelDir(project,whichModel,quality,qcVersion,freqData);
+
+% if strcmp(project,'otrec')
+%     indir='/scr/sleet2/rsfdata/projects/otrec/hcr/qc2/cfradial/development/convStrat/10hz/';
+% elseif strcmp(project,'socrates')
+%     indir='/scr/snow2/rsfdata/projects/socrates/hcr/qc2/cfradial/development/convStrat/10hz/';
+% end
+% 
+% modeldir=[indir(1:end-36),'mat/convStrat/10hz/'];
 
 infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_',project,'_data.txt'];
 
