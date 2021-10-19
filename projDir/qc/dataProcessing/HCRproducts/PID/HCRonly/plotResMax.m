@@ -40,7 +40,7 @@ ylabel('Altitude (km)');
 title(['Maximum']);
 
 set(gcf,'PaperPositionMode','auto')
-print(f1,[plotIn.figdir,'debugPlots/pid_',...
+print(f1,[plotIn.figdir,'pid_',...
 datestr(data.time(1),'yyyymmdd_HHMMSS'),'_to_',datestr(data.time(end),'yyyymmdd_HHMMSS'),'_max'],'-dpng','-r0')
 
 end

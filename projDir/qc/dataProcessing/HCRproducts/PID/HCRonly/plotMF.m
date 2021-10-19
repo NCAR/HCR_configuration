@@ -26,8 +26,8 @@ figdir=[indir(1:end-5),'pidPlots/'];
 dbz1.rain=[-100,0;dbz.rain(1),0;dbz.rain(2),1;100,1];
 dbz1.drizzle=[-100,0;dbz.drizzle(1),0;dbz.drizzle(2),1;dbz.drizzle(3),1;dbz.drizzle(4),0;100,0];
 dbz1.cloud=[-100,1;dbz.cloud(1),1;dbz.cloud(2),0;100,0];
-dbz1.mixed=[-100,0;dbz.mixed(1),0;dbz.mixed(2),1;dbz.mixed(3),1;dbz.mixed(4),0;100,0];
-dbz1.lfrozen=[-100,0;dbz.lfrozen(1),0;dbz.lfrozen(2),1;dbz.lfrozen(3),1;dbz.lfrozen(4),0;100,0];
+dbz1.mixed=[-100,0;dbz.mixed(1),0;dbz.mixed(2),1;100,1];
+dbz1.lfrozen=[-100,0;dbz.lfrozen(1),0;dbz.lfrozen(2),1;100,1];
 dbz1.sfrozen=[-100,1;dbz.sfrozen(1),1;dbz.sfrozen(2),0;100,0];
 
 ldr1.rain=[-100,1;ldr.rain(1),1;ldr.rain(2),0;100,0];
@@ -40,19 +40,19 @@ ldr1.sfrozen=[-100,0;ldr.sfrozen(1),0;ldr.sfrozen(2),1;ldr.sfrozen(3),1;ldr.sfro
 vel1.rain=[-100,0;vel.rain(1),0;vel.rain(2),1;100,1];
 vel1.drizzle=[-100,0;vel.drizzle(1),0;vel.drizzle(2),1;vel.drizzle(3),1;vel.drizzle(4),0;100,0];
 vel1.cloud=[-100,1;vel.cloud(1),1;vel.cloud(2),0;100,0];
-vel1.mixed=[-100,0;vel.mixed(1),0;vel.mixed(2),1;vel.mixed(3),1;vel.mixed(4),0;100,0];
+vel1.mixed=[-100,0;vel.mixed(1),0;vel.mixed(2),1;100,1];
 vel1.lfrozen=[-100,0;vel.lfrozen(1),0;vel.lfrozen(2),1;100,1];
 vel1.sfrozen=[-100,0;vel.sfrozen(1),0;vel.sfrozen(2),1;vel.sfrozen(3),1;vel.sfrozen(4),0;100,0];
 
 width1.rain=[-100,0;width.rain(1),0;width.rain(2),1;100,1];
-width1.drizzle=[-100,1;width.drizzle(1),1;width.drizzle(2),0;100,0];
-width1.cloud=[-100,1;width.cloud(1),1;width.cloud(2),0;100,0];
-width1.mixed=[-100,0;width.mixed(1),0;width.mixed(2),1;100,1];
-width1.lfrozen=[-100,0;width.lfrozen(1),0;width.lfrozen(2),1;100,1];
+width1.drizzle=[-100,0;width.drizzle(1),0;width.drizzle(2),1;100,1];
+width1.cloud=[-100,0;width.cloud(1),0;width.cloud(2),1;100,1];
+width1.mixed=[-100,0;100,0];
+width1.lfrozen=[-100,1;width.lfrozen(1),1;width.lfrozen(2),0;100,0];
 width1.sfrozen=[-100,1;width.sfrozen(1),1;width.sfrozen(2),0;100,0];
 
-temp1.rain=[-100,0;temp.rain(1),0;temp.rain(2),1;100,1];
-temp1.drizzle=[-100,0;temp.drizzle(1),0;temp.drizzle(2),1;100,1];
+temp1.rain=[-100,1;100,1];
+temp1.drizzle=[-100,1;100,1];
 temp1.cloud=[-100,1;100,1];
 temp1.mixed=[-100,0;temp.mixed(1),0;temp.mixed(2),1;temp.mixed(3),1;temp.mixed(4),0;100,0];
 temp1.lfrozen=[-100,1;temp.lfrozen(1),1;temp.lfrozen(2),0;100,0];
@@ -167,4 +167,4 @@ grid on
 box on
 
 set(gcf,'PaperPositionMode','auto')
-print(f1,[figdir,project,'_pid_membershipCoeffs.png'],'-dpng','-r0')
+print(f1,[figdir,project,'_pid_membershipCoeffs_LDR.png'],'-dpng','-r0')

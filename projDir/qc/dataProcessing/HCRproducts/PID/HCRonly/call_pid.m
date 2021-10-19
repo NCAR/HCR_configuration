@@ -14,7 +14,7 @@ plotIn.plotMR=0;
 plotIn.plotMax=0;
 
 whichFilter=0; % 0: no filter, 1: mode filter, 2: coherence filter
-postProcess=1; % 1 if post processing is desired
+postProcess=0; % 1 if post processing is desired
 
 indir=HCRdir(project,quality,qcVersion,freqData);
 
@@ -80,7 +80,6 @@ for aa=1:length(caseStart)
         data.MELTING_LAYER(isnan(data.DBZ_MASKED))=nan;
 
         ylimits=[0 (max(data.asl(~isnan(data.DBZ_MASKED)))./1000)+0.5];
-        plotIn.figdir=figdir;
         plotIn.ylimits=ylimits;
 
         %% Correct for attenuation
@@ -112,6 +111,9 @@ for aa=1:length(caseStart)
         %% Censor spectrum width
         data.WIDTH(data.SNR<5)=nan;
 
+        %Reverse up pointing vel
+        data.VEL_MASKED(data.elevation>0)=-data.VEL_MASKED(data.elevation>0);
+
         %% Calculate PID with LDR and below the melting layer
 
         % HCR
@@ -134,19 +136,67 @@ for aa=1:length(caseStart)
         dataLM.time=data.time;
         dataLM.asl=data.asl;
 
-        [pid_hcr]=calc_pid_ldr(DBZLM,dataLM,postProcess,plotIn);
+        plotIn.figdir=[figdir,'debugPlotsLDR/'];
+
+        [pid_hcr_ldr]=calc_pid_ldr(DBZLM,dataLM,plotIn);
+
+        %% Convective, no LDR, above melting layer
+
+        pid_hcr=pid_hcr_ldr;
+        pid_hcr(data.MELTING_LAYER==20 & isnan(data.LDR) & data.CONVECTIVITY>0.4 & data.DBZ_MASKED>-5)=10; % Large
+        pid_hcr(data.MELTING_LAYER==20 & isnan(data.LDR) & data.CONVECTIVITY>0.4 & data.DBZ_MASKED<=-5)=11; % Small
+
+        %% Stratiform, no LDR, no WIDTH, above melting layer
+        pid_hcr(data.MELTING_LAYER==20 & isnan(data.LDR) & isnan(data.WIDTH) & data.CONVECTIVITY<=0.4 & data.DBZ_MASKED>-5)=10; % Large
+        pid_hcr(data.MELTING_LAYER==20 & isnan(data.LDR) & isnan(data.WIDTH) & data.CONVECTIVITY<=0.4 & data.DBZ_MASKED<=-5)=11; % Small
+
+        %% Calculate PID without LDR and above melting layer
+
+        disp('Getting PID withoug LDR/ABOVE_MELT ...');
+
+        noldrAboveMelt=find(data.MELTING_LAYER==20 & isnan(data.LDR) & data.CONVECTIVITY<=0.4 & ~isnan(data.DBZ_MASKED));
+
+        dataNoL=[];
+        for ii=1:length(dataVars)
+            dataNoL.(dataVars{ii})=nan(size(data.DBZ_MASKED));
+            dataNoL.(dataVars{ii})(noldrAboveMelt)=data.(dataVars{ii})(noldrAboveMelt);
+        end
+
+        DBZNoL=nan(size(data.DBZ_MASKED));
+        DBZNoL(noldrAboveMelt)=dBZ_cor(noldrAboveMelt);
+        dataNoL.elevation=data.elevation;
+        dataNoL.time=data.time;
+        dataNoL.asl=data.asl;
+
+        plotIn.figdir=[figdir,'debugPlotsNoLDR/'];
+
+        [pid_hcr_noldr]=calc_pid_noldr(DBZNoL,dataNoL,plotIn);
+
+        pid_hcr(~isnan(pid_hcr_noldr) & isnan(pid_hcr))=pid_hcr_noldr(~isnan(pid_hcr_noldr) & isnan(pid_hcr));
+
+        %% Add supercooled
+
+        pid_hcr=addSupercooled(pid_hcr,data);
+
+        %% Post process
+
+        if postProcess
+            pid_hcr=postProcessPID(pid_hcr,data);
+        end
+
+        %% Filter
 
         if whichFilter==1
             pid_hcr=modeFilter(pid_hcr,7,0.7);
         elseif whichFilter==2
             pid_hcr=coherenceFilter(pid_hcr,7,0.7);
         end
-        
-        
+
         %% Scales and units
-        cscale_hcr=[1,0,0; 1,0.6,0.47; 0,1,0; 0,0.7,0; 0,0,1; 1,0,1; 0.5,0,0; 1,1,0; 0,1,1];
+        cscale_hcr=[1,0,0; 1,0.6,0.47; 0,1,0; 0,0.7,0; 0,0,1; 1,0,1; 0.5,0,0; 1,1,0; 0,1,1; 0,0,0; 0.5,0.5,0.5];
         
-        units_str_hcr={'Rain','Supercooled Rain','Drizzle','Supercooled Drizzle','Cloud Liquid','Supercooled Cloud Liquid','Mixed Phase','Large Frozen','Small Frozen'};
+        units_str_hcr={'Rain','Supercooled Rain','Drizzle','Supercooled Drizzle','Cloud Liquid','Supercooled Cloud Liquid',...
+            'Mixed Phase','Large Frozen','Small Frozen','Large','Small'};
         
         %% Plot PIDs
         
@@ -156,7 +206,7 @@ for aa=1:length(caseStart)
 
         close all
         
-        f1=figure('DefaultAxesFontSize',12,'Position',[0 300 2300 1200],'visible','off');
+        f1=figure('DefaultAxesFontSize',12,'Position',[0 300 2300 1200],'visible','on');
         
         s1=subplot(4,2,1);
         surf(data.time,data.asl./1000,data.DBZ_MASKED,'edgecolor','none');
@@ -182,13 +232,13 @@ for aa=1:length(caseStart)
         title(['HCR radial velocity (m s^{-1})']);
         grid on
         
-        s5=subplot(4,2,5);
+        s8=subplot(4,2,5);
         surf(data.time,data.asl./1000,data.LDR,'edgecolor','none');
         view(2);
         ylim(ylimits);
         xlim([data.time(1),data.time(end)]);
         caxis([-30 -20]);
-        colormap(s5,jet);
+        colormap(s8,jet);
         colorbar;
         ylabel('Altitude (km)');
         title(['HCR linear depolarization ratio (dB)']);
@@ -237,15 +287,27 @@ for aa=1:length(caseStart)
         title(['Temperature (C)']);
         grid on
         
-        s5=subplot(4,2,6);
+        s6=subplot(4,2,6);
+        surf(data.time,data.asl./1000,data.CONVECTIVITY,'edgecolor','none');
+        view(2);
+        ylim(ylimits);
+        xlim([data.time(1),data.time(end)]);
+        caxis([0 1]);
+        colormap(s6,jet);
+        colorbar;
+        ylabel('Altitude (km)');
+        title(['HCR convectivity']);
+        grid on
+
+        s8=subplot(4,2,8);
         surf(data.time,data.asl./1000,pid_hcr,'edgecolor','none');
         view(2);
         ylim(ylimits);
         xlim([data.time(1),data.time(end)]);
-        caxis([.5 9.5]);
-        colormap(s5,cscale_hcr);
+        caxis([.5 11.5]);
+        colormap(s8,cscale_hcr);
         cb=colorbar;
-        cb.Ticks=1:9;
+        cb.Ticks=1:11;
         cb.TickLabels=units_str_hcr;
         ylabel('Altitude (km)');
         title(['HCR particle ID']);

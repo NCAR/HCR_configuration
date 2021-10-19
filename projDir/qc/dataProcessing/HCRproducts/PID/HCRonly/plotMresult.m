@@ -40,7 +40,7 @@ ylabel('Altitude (km)');
 title([outname,' weighted']);
 
 set(gcf,'PaperPositionMode','auto')
-print(f1,[plotIn.figdir,'debugPlots/pid_',...
+print(f1,[plotIn.figdir,'pid_',...
 datestr(data.time(1),'yyyymmdd_HHMMSS'),'_to_',datestr(data.time(end),'yyyymmdd_HHMMSS'),'_',outname],'-dpng','-r0')
 
 end
