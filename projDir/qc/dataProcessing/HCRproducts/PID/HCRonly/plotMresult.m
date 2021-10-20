@@ -11,12 +11,17 @@ timeMat=repmat(data.time,size(data.TEMP,1),1);
 
 f1=figure('DefaultAxesFontSize',12,'Position',[0 300 2300 1200],'visible','off');
 
-titles={'DBZ','LDR','VEL','WIDTH','TEMP'};
+if size(m,1)==5
+    titles={'DBZ','LDR','VEL','WIDTH','TEMP'};
+elseif size(m,1)==4
+    titles={'DBZ','VEL','WIDTH','TEMP'};
+end
+
 ylimits=plotIn.ylimits;
 
 colormap jet
 
-for ii=1:5
+for ii=1:size(m,1)
     subplot(3,2,ii);
     surf(data.time,data.asl./1000,squeeze(m(ii,:,:)),'edgecolor','none');
     view(2);

@@ -47,11 +47,11 @@ vel1.sfrozen=[-100,0;vel.sfrozen(1),0;vel.sfrozen(2),1;vel.sfrozen(3),1;vel.sfro
 width1.rain=[-100,0;width.rain(1),0;width.rain(2),1;100,1];
 width1.drizzle=[-100,0;width.drizzle(1),0;width.drizzle(2),1;100,1];
 width1.cloud=[-100,0;width.cloud(1),0;width.cloud(2),1;100,1];
-width1.mixed=[-100,0;100,0];
+width1.mixed=[-100,1;width.mixed(1),1;width.mixed(2),0;100,0];
 width1.lfrozen=[-100,1;width.lfrozen(1),1;width.lfrozen(2),0;100,0];
 width1.sfrozen=[-100,1;width.sfrozen(1),1;width.sfrozen(2),0;100,0];
 
-temp1.rain=[-100,1;100,1];
+temp1.rain=[-100,0;temp.rain(1),0;temp.rain(2),1;100,1];
 temp1.drizzle=[-100,1;100,1];
 temp1.cloud=[-100,1;100,1];
 temp1.mixed=[-100,0;temp.mixed(1),0;temp.mixed(2),1;temp.mixed(3),1;temp.mixed(4),0;100,0];

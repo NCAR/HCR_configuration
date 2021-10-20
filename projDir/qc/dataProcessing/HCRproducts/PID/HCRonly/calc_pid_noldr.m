@@ -1,9 +1,13 @@
-function[classOut]=calc_pid_noldr(DBZ,data,plotIn)
+function[classOut]=calc_pid_noldr(DBZ,data,plotIn,convThresh)
 
 %   Membership functions for particle detection
 
 % Remove vel in low refl areas
 data.VEL_MASKED(data.DBZ_MASKED<-5)=nan;
+
+% Remove data with too much convectivity
+data.VEL_MASKED(data.CONVECTIVITY>convThresh)=nan;
+data.WIDTH(data.CONVECTIVITY>convThresh & data.WIDTH>0.4)=nan;
 
 memCoeffs
 
@@ -25,7 +29,7 @@ m=nan(4,size(DBZ,1),size(DBZ,2));
 m(1,:,:)=smf(DBZ,[dbz.rain(1),dbz.rain(2)]);  % Rain
 m(2,:,:)=smf(data.VEL_MASKED,[vel.rain(1),vel.rain(2)]); % Beard and Pruppacher 1969
 m(3,:,:)=smf(data.WIDTH,[width.rain(1),width.rain(2)]);
-m(4,:,:)=1;
+m(4,:,:)=smf(data.TEMP,[temp.rain(1),temp.rain(2)]);
 
 result(1,:,:)=sum(m.*w',1);
 
@@ -84,7 +88,7 @@ end
 m=nan(4,size(DBZ,1),size(DBZ,2));
 m(1,:,:)=smf(DBZ,[dbz.mixed(1),dbz.mixed(2)]);
 m(2,:,:)=smf(data.VEL_MASKED,[vel.mixed(1),vel.mixed(2)]);
-m(3,:,:)=0;
+m(3,:,:)=zmf(data.WIDTH,[width.mixed(1),width.mixed(2)]);
 m(4,:,:)=trapmf(data.TEMP,[temp.mixed(1),temp.mixed(2),temp.mixed(3),temp.mixed(4)]);
 
 result(4,:,:)=sum(m.*w',1);
@@ -132,7 +136,7 @@ classOut=squeeze(classOut);
 classOut(isnan(data.DBZ_MASKED))=nan;
 
 if plotIn.plotMax
-    plotResMaxNoLDR(data,result,maxAll,plotIn);
+    plotResMax(data,result,maxAll,plotIn);
 end
 
 end

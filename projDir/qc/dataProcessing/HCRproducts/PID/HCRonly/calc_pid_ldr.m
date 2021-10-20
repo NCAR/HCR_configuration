@@ -1,15 +1,19 @@
-function[classOut]=calc_pid_ldr(DBZ,data,plotIn)
+function[classOut]=calc_pid_ldr(DBZ,data,plotIn,convThresh)
+% Sometimes there are artefacts in the first two gates of LDR
+thirdLDR=find(isnan(data.LDR(20,:)));
+data.LDR(19,thirdLDR)=nan;
+data.LDR(18,thirdLDR)=nan;
 
 % Remove data with too much convectivity
-data.VEL_MASKED(data.CONVECTIVITY>0.4)=nan;
-data.WIDTH(data.CONVECTIVITY>0.4)=nan;
+data.VEL_MASKED(data.CONVECTIVITY>convThresh)=nan;
+data.WIDTH(data.CONVECTIVITY>convThresh & data.WIDTH>0.4)=nan;
 
 %   Membership functions for particle detection
 % 1:Beta  2:Delta
 
 memCoeffs
 % DBZ, LDR, VEL, WIDTH, TEMP
-w=[30 15 15 15 25];%w=[30 15 15 20 20];
+w=[30 20 20 10 20];%w=[30 15 15 20 20];
 
 % pid_hcr (number before post processing)
 %  1 Rain (1)
@@ -30,7 +34,7 @@ m(1,:,:)=smf(DBZ,[dbz.rain(1),dbz.rain(2)]);  % Rain
 m(2,:,:)=zmf(data.LDR,[ldr.rain(1),ldr.rain(2)]);
 m(3,:,:)=smf(data.VEL_MASKED,[vel.rain(1),vel.rain(2)]); % Beard and Pruppacher 1969
 m(4,:,:)=smf(data.WIDTH,[width.rain(1),width.rain(2)]);
-m(5,:,:)=1;
+m(5,:,:)=smf(data.TEMP,[temp.rain(1),temp.rain(2)]);
 
 result(1,:,:)=sum(m.*w',1);
 
@@ -92,7 +96,7 @@ m=nan(5,size(DBZ,1),size(DBZ,2));
 m(1,:,:)=smf(DBZ,[dbz.mixed(1),dbz.mixed(2)]);
 m(2,:,:)=trapmf(data.LDR,[ldr.mixed(1),ldr.mixed(2),ldr.mixed(3),ldr.mixed(4)]);
 m(3,:,:)=smf(data.VEL_MASKED,[vel.mixed(1),vel.mixed(2)]);
-m(4,:,:)=0;
+m(4,:,:)=zmf(data.WIDTH,[width.mixed(1),width.mixed(2)]);
 m(5,:,:)=trapmf(data.TEMP,[temp.mixed(1),temp.mixed(2),temp.mixed(3),temp.mixed(4)]);
 
 result(4,:,:)=sum(m.*w',1);

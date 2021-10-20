@@ -13,16 +13,16 @@ freqData='10hz'; % 10hz, 100hz, 2hz, or combined
 plotIn.plotMR=0;
 plotIn.plotMax=0;
 
+convThresh=0.1;
+
 whichFilter=0; % 0: no filter, 1: mode filter, 2: coherence filter
-postProcess=0; % 1 if post processing is desired
+postProcess=1; % 1 if post processing is desired
 
-indir=HCRdir(project,quality,qcVersion,freqData);
-
-% if strcmp(project,'otrec')
-%     indir='/scr/sleet2/rsfdata/projects/otrec/hcr/qc2/cfradial/development/pid/10hz/';
-% elseif strcmp(project,'socrates')
-%     indir='/scr/snow2/rsfdata/projects/socrates/hcr/qc2/cfradial/development/pid/10hz/';
-% end
+if strcmp(project,'otrec')
+    indir='/scr/sleet2/rsfdata/projects/otrec/hcr/qc2/cfradial/development/pid/10hz/';
+elseif strcmp(project,'socrates')
+    indir=HCRdir(project,quality,qcVersion,freqData);
+end
 
 figdir=[indir(1:end-5),'pidPlots/cases/'];
 
@@ -138,23 +138,23 @@ for aa=1:length(caseStart)
 
         plotIn.figdir=[figdir,'debugPlotsLDR/'];
 
-        [pid_hcr_ldr]=calc_pid_ldr(DBZLM,dataLM,plotIn);
+        [pid_hcr_ldr]=calc_pid_ldr(DBZLM,dataLM,plotIn,convThresh);
 
         %% Convective, no LDR, above melting layer
 
         pid_hcr=pid_hcr_ldr;
-        pid_hcr(data.MELTING_LAYER==20 & isnan(data.LDR) & data.CONVECTIVITY>0.4 & data.DBZ_MASKED>-5)=10; % Large
-        pid_hcr(data.MELTING_LAYER==20 & isnan(data.LDR) & data.CONVECTIVITY>0.4 & data.DBZ_MASKED<=-5)=11; % Small
+        pid_hcr(data.MELTING_LAYER==20 & isnan(data.LDR) & data.CONVECTIVITY>convThresh & data.DBZ_MASKED>-5)=10; % Large
+        pid_hcr(data.MELTING_LAYER==20 & isnan(data.LDR) & data.CONVECTIVITY>convThresh & data.DBZ_MASKED<=-5)=11; % Small
 
         %% Stratiform, no LDR, no WIDTH, above melting layer
-        pid_hcr(data.MELTING_LAYER==20 & isnan(data.LDR) & isnan(data.WIDTH) & data.CONVECTIVITY<=0.4 & data.DBZ_MASKED>-5)=10; % Large
-        pid_hcr(data.MELTING_LAYER==20 & isnan(data.LDR) & isnan(data.WIDTH) & data.CONVECTIVITY<=0.4 & data.DBZ_MASKED<=-5)=11; % Small
+        pid_hcr(data.MELTING_LAYER==20 & isnan(data.LDR) & isnan(data.WIDTH) & (data.CONVECTIVITY<=convThresh | isnan(data.CONVECTIVITY)) & data.DBZ_MASKED>-5)=10; % Large
+        pid_hcr(data.MELTING_LAYER==20 & isnan(data.LDR) & isnan(data.WIDTH) & (data.CONVECTIVITY<=convThresh | isnan(data.CONVECTIVITY)) & data.DBZ_MASKED<=-5)=11; % Small
 
         %% Calculate PID without LDR and above melting layer
 
-        disp('Getting PID withoug LDR/ABOVE_MELT ...');
+        disp('Getting PID without LDR/ABOVE_MELT ...');
 
-        noldrAboveMelt=find(data.MELTING_LAYER==20 & isnan(data.LDR) & data.CONVECTIVITY<=0.4 & ~isnan(data.DBZ_MASKED));
+        noldrAboveMelt=find(data.MELTING_LAYER==20 & isnan(data.LDR) & ~isnan(data.DBZ_MASKED));
 
         dataNoL=[];
         for ii=1:length(dataVars)
@@ -170,17 +170,19 @@ for aa=1:length(caseStart)
 
         plotIn.figdir=[figdir,'debugPlotsNoLDR/'];
 
-        [pid_hcr_noldr]=calc_pid_noldr(DBZNoL,dataNoL,plotIn);
+        [pid_hcr_noldr]=calc_pid_noldr(DBZNoL,dataNoL,plotIn,convThresh);
 
         pid_hcr(~isnan(pid_hcr_noldr) & isnan(pid_hcr))=pid_hcr_noldr(~isnan(pid_hcr_noldr) & isnan(pid_hcr));
 
         %% Add supercooled
 
+        disp('Adding supercooled ...')
         pid_hcr=addSupercooled(pid_hcr,data);
 
         %% Post process
 
         if postProcess
+            disp('Post processing ...');
             pid_hcr=postProcessPID(pid_hcr,data);
         end
 
@@ -206,7 +208,7 @@ for aa=1:length(caseStart)
 
         close all
         
-        f1=figure('DefaultAxesFontSize',12,'Position',[0 300 2300 1200],'visible','on');
+        f1=figure('DefaultAxesFontSize',12,'Position',[0 300 2300 1200],'visible','off');
         
         s1=subplot(4,2,1);
         surf(data.time,data.asl./1000,data.DBZ_MASKED,'edgecolor','none');
