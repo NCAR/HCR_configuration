@@ -19,7 +19,7 @@ cd $PROJ_DIR/qc/params
 # run 1 day at a time, as separate processes
 
 foreach day ( 20190807 20190811 20190812 20190816 20190817 20190818 20190822 20190823 20190825 20190903 20190904 20190909 20190917 20190921 20190922 20190924 20190925 20190927 20190928 20190930 20191001 20191002 )
-  RadxCalUpdate -params RadxCalUpdate.qc.100hz -debug -f ${DATA_DIR}/cfradial/moments/100hz/${day}/cfrad*.nc >& $LOG_DIR/RadxCalUpdate.qc.100hz.otrec.${day}.log &
+  RadxCalUpdate -params RadxCalUpdate.qc.100hz.otrec -debug -f ${DATA_DIR}/field/cfradial/moments/100hz/${day}/cfrad*.nc >& $LOG_DIR/RadxCalUpdate.qc.100hz.otrec.${day}.log &
 end
 
 

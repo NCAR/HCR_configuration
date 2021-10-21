@@ -3,11 +3,9 @@
 clear all;
 close all;
 
-project='spicule';
+project='otrec';
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
-
-figdir=['/h/eol/romatsch/hcrCalib/nsCal/figs/qc1/' project '/checkQC/'];
 
 if strcmp(project,'socrates')
     indir='/scr/snow2/rsfdata/projects/socrates/hcr/qc2/cfradial/moments/100hz/'; %socrates
@@ -19,8 +17,8 @@ elseif strcmp(project,'aristo')
     indir='/scr/snow2/rsfdata/projects/aristo-17/hcr/cfradial/moments/10hz/'; %aristo raw
     highResTempDir='/h/eol/romatsch/data/hcrCalib/temps/';
 elseif strcmp(project,'otrec')
-    indir='/scr/snow1/rsfdata/projects/otrec/hcr/qc1/cfradial/moments/100hz/'; % otrec
-    highResTempDir='/scr/snow1/rsfdata/projects/otrec/hcr/txt/';
+    indir='/scr/sleet2/rsfdata/projects/otrec/hcr/qc3/cfradial/moments/100hz/'; % otrec
+    highResTempDir='/scr/sleet2/rsfdata/projects/otrec/hcr/txt/';
 elseif strcmp(project,'spicule')
     indir='/scr/sleet2/rsfdata/projects/spicule/hcr/qc1/cfradial/moments/100hz/'; % spicule field
     highResTempDir='/scr/sleet2/rsfdata/projects/spicule/hcr/qc0/txt/';
@@ -28,6 +26,8 @@ else
     disp('Project name not valid.')
     return
 end
+
+figdir=[indir(1:end-6),'nsCalCheckPlots/'];
 
 filedir='~/git/HCR_configuration/projDir/qc/dataProcessing/nsCal/inFiles/';
 infile=['cal_' project '.dat'];
