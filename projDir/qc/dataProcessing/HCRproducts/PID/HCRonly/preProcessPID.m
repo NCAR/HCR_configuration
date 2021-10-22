@@ -5,7 +5,7 @@ function data = preProcessPID(data,convThresh,widthThresh)
 data.WIDTH(data.SNR<5)=nan;
 
 %Reverse up pointing vel
-data.VEL_MASKED(data.elevation>0)=-data.VEL_MASKED(data.elevation>0);
+data.VEL_MASKED(:,data.elevation>0)=-data.VEL_MASKED(:,data.elevation>0);
 
 % Fix melting layer
 data.MELTING_LAYER(~isnan(data.MELTING_LAYER) & data.MELTING_LAYER<20)=10;

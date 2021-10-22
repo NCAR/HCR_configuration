@@ -6,25 +6,22 @@ close all;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Input variables %%%%%%%%%%%%%%%%%%%%%%%%%%
 
 project='socrates'; %socrates, aristo, cset, otrec
-% quality='qc2'; %field, qc1, or qc2
-% dataFreq='10hz';
-if strcmp(project,'otrec')
-%     qcVersion='v2.2';
-    ylimUpper=15;
-else
-%     qcVersion='v2.1';
-    ylimUpper=10;
-end
+quality='qc3'; %field, qc1, or qc2
+freqData='10hz';
+qcVersion='v3.0';
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-if strcmp(project,'otrec')
-    dataDir='/scr/sleet2/rsfdata/projects/otrec/hcr/qc2/cfradial/development/convStrat/10hz/';
-elseif strcmp(project,'socrates')
-    dataDir='/scr/snow2/rsfdata/projects/socrates/hcr/qc2/cfradial/development/convStrat/10hz/';
-end
+dataDir=HCRdir(project,quality,qcVersion,freqData);
+
+% if strcmp(project,'otrec')
+%     dataDir='/scr/sleet2/rsfdata/projects/otrec/hcr/qc2/cfradial/development/convStrat/10hz/';
+% elseif strcmp(project,'socrates')
+%     dataDir='/scr/snow2/rsfdata/projects/socrates/hcr/qc2/cfradial/development/convStrat/10hz/';
+% end
+
 figdir=[dataDir(1:end-5),'convStratPlots/cases/'];
 
 casefile=['~/git/HCR_configuration/projDir/qc/dataProcessing/HCRproducts/caseFiles/stratConv_',project,'.txt'];
@@ -49,8 +46,7 @@ for aa=1:length(caseStart)
     
     data=[];
     
-    data.DBZ = [];
-    data.FLAG=[];
+    data.DBZ_MASKED = [];
     data.TOPO=[];
     data.CLOUD_PUZZLE=[];
     data.TEMP=[];
@@ -61,8 +57,6 @@ for aa=1:length(caseStart)
     % Load data
     data=read_HCR(fileList,data,startTime,endTime);
     
-    %frq=ncread(fileList{1},'frequency');
-    
     % Check if all variables were found
     for ii=1:length(dataVars)
         if ~isfield(data,dataVars{ii})
@@ -72,6 +66,8 @@ for aa=1:length(caseStart)
     
     dataVars=dataVars(~cellfun('isempty',dataVars));
     
+    ylimUpper=(max(data.asl(~isnan(data.DBZ_MASKED)))./1000)+0.5;
+
     %% Cloud puzzle
     %disp('Making cloud puzzle');
     
@@ -79,15 +75,13 @@ for aa=1:length(caseStart)
     cloudPuzzle=data.CLOUD_PUZZLE;
     uClouds=unique(cloudPuzzle(~isnan(cloudPuzzle)));
     uClouds(uClouds==0)=[];
-    %cloudCount=length(uClouds);
-    
+       
     %% Calculate reflectivity texture and convectivity
-    %stratConvNearSurf=nan(size(data.DBZ));
-    
-    dbzText=nan(size(data.DBZ));
-    convectivity=nan(size(data.DBZ));
-    classBasic=nan(size(data.DBZ));
-    classSub=nan(size(data.DBZ));
+        
+    dbzText=nan(size(data.DBZ_MASKED));
+    convectivity=nan(size(data.DBZ_MASKED));
+    classBasic=nan(size(data.DBZ_MASKED));
+    classSub=nan(size(data.DBZ_MASKED));
         
     pixRad=50; % Radius over which texture is calculated in pixels. Default is 50.
     dbzBase=-10; % Reflectivity base value which is subtracted from DBZ.
@@ -97,9 +91,8 @@ for aa=1:length(caseStart)
     mixedConv=0.5; % Convectivity boundary between mixed and conv.
     
     for jj=1:length(uClouds)
-        disp(['Calculating texture for tethered cloud ',num2str(jj),' of ',num2str(length(uClouds))]);
-        dbzIn=data.DBZ;
-        dbzIn(data.FLAG>1)=nan;
+        disp(['Calculating texture for cloud ',num2str(jj),' of ',num2str(length(uClouds))]);
+        dbzIn=data.DBZ_MASKED;
         dbzIn(cloudPuzzle~=uClouds(jj))=nan;
         
         % Shrink to good data area
@@ -186,7 +179,7 @@ for aa=1:length(caseStart)
     colormap jet
     
     hold on
-    surf(data.time,data.asl./1000,data.DBZ,'edgecolor','none');
+    surf(data.time,data.asl./1000,data.DBZ_MASKED,'edgecolor','none');
     view(2);
     ylabel('Altitude (km)');
     caxis([-35 25]);
