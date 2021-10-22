@@ -19,7 +19,7 @@ vel.drizzle=[0,0.5,3.5,4];
 vel.cloud=[0.5,1];
 vel.mixed=[0.5,1];
 vel.lfrozen=[0.5,1];
-vel.sfrozen=[-1,0,1,2];
+vel.sfrozen=[1,2];
 
 width.rain=[0.2,0.4];
 width.drizzle=[0.2,0.4];
