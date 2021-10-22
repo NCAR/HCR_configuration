@@ -5,7 +5,7 @@ close all;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Input variables %%%%%%%%%%%%%%%%%%%%%%%%%%
 
-project='cset'; %socrates, aristo, cset
+project='otrec'; %socrates, aristo, cset
 quality='qc3'; %field, qc1, or qc2
 freqData='10hz'; % 10hz, 100hz, or 2hz
 qcVersion='v3.0';

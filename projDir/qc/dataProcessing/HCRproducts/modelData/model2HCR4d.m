@@ -4,17 +4,18 @@ close all;
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-project='spicule'; % socrates, cset, aristo, otrec
-quality='qc1'; % field, qc0, qc1, qc2
-qcVersion='v1.0';
+project='otrec'; % socrates, cset, aristo, otrec
+quality='qc3'; % field, qc0, qc1, qc2
+qcVersion='v3.0';
 freqData='10hz'; % 10hz, 100hz, or 2hz
 whichModel='era5'; % ecmwf or era5 or narr
 
 addTopo=0; % Set to 1 if topo data should be added and hasn't been added in separate script.
+getSST=1;
 
 formatOut = 'yyyymmdd_HHMM';
 
-[modeldir outdir]=modelDir(project,whichModel,freqData);
+[modeldir outdir]=modelDir(project,whichModel,quality,qcVersion,freqData);
 
 topodir=topoDir(project);
 
@@ -73,11 +74,11 @@ for ii=1:size(caseList,1)
     %% Model data
     disp('Getting model data ...');
     if strcmp(whichModel,'era5')
-        modelData=read_era5(modeldir,data.time(1),data.time(end),0);
+        modelData=read_era5(modeldir,data.time(1),data.time(end),getSST);
     elseif strcmp(whichModel,'ecmwf')
-        modelData=read_ecmwf(modeldir,data.time(1),data.time(end),1);
+        modelData=read_ecmwf(modeldir,data.time(1),data.time(end),getSST);
     elseif strcmp(whichModel,'narr')
-        modelData=read_narr(modeldir,data.time(1),data.time(end),0);
+        modelData=read_narr(modeldir,data.time(1),data.time(end),getSST);
     end
     
     %% Topo data

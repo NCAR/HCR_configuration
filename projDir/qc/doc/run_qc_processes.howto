@@ -243,15 +243,7 @@ $PROJ_DIR/qc/dataProcessing/HCRproducts/flag/cfradialDBZmasked.m
 cd $DATA_DIR
 cd ../model/era5
 
-# Output is in .mat files in
-
-cd $DATA_DIR
-cd ../model/era5interp/10hz
-
-#################################################################
-# Add model data
-# Add model data to cfradial files in
-# $DATA_DIR/QC_VERSION/cfradial/final
+# Add model data to cfradial files
 
 # Run
 $PROJ_DIR/qc/dataProcessing/HCRproducts/modelData/cfradialModel.m

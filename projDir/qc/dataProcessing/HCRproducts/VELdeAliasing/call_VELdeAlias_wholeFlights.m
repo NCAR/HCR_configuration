@@ -5,15 +5,13 @@ close all
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-project='cset'; % socrates, cset, aristo, otrec
+project='otrec'; % socrates, cset, aristo, otrec
 quality='qc3'; % field, qc1, qc2
 qcVersion='v3.0';
 freqData='10hz'; % 10hz, 100hz, or 2hz
 whichModel='era5';
 
-[~,directories.modeldir]=modelDir(project,whichModel,quality,qcVersion,freqData);
-
-outdir=directories.modeldir;
+[~,outdir]=modelDir(project,whichModel,quality,qcVersion,freqData);
 
 infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_',project,'_data.txt'];
 
