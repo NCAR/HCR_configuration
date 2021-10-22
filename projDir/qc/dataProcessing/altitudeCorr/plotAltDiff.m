@@ -4,12 +4,11 @@ close all;
 
 addpath(genpath('/h/eol/romatsch/gitPriv/utils/'));
 
-project='spicule'; % socrates, cset, aristo, otrec
-quality='qc1'; % field, qc1, qc2
+project='otrec'; % socrates, cset, aristo, otrec
+quality='qc3'; % field, qc1, qc2
 freqData='10hz';
-qcVersion='v1.0';
+qcVersion='moments';
 
-figdir=['/h/eol/romatsch/hcrCalib/latVSalt/altCorr/',project,'/',quality,'/'];
 formatOut = 'yyyymmdd_HHMM';
 
 infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_',project,'.txt'];
@@ -17,11 +16,8 @@ infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_
 if strcmp(project,'socrates')
     gvfiles=dir('/scr/snow2/rsfdata/projects/socrates/GV/RF*.nc');
 elseif strcmp(project,'otrec')
-    gvfiles=dir('/scr/snow1/rsfdata/projects/otrec/GV/OTRECrf*.nc');
-    
-    %gvfiles1=dir('/scr/snow2/rsfdata/projects/otrec/GV/OTRECtf*.nc');
-    %gvfiles2=dir('/scr/snow2/rsfdata/projects/otrec/GV/OTRECff*.nc');
-    %gvfiles=cat(1,gvfiles1,gvfiles2);
+    gvfiles=dir('/scr/sleet2/rsfdata/projects/otrec/GV/LRT/RF*.nc');
+    indir='/scr/sleet2/rsfdata/projects/otrec/hcr/qc3/cfradial/moments/10hz/';
 elseif strcmp(project,'cset')
     gvfiles=dir('/scr/snow2/rsfdata/projects/cset/GV/RF*.nc');
 elseif strcmp(project,'spicule')
@@ -32,7 +28,9 @@ end
 
 caseList = table2array(readtable(infile));
 
-indir=HCRdir(project,quality,qcVersion,freqData);
+%indir=HCRdir(project,quality,qcVersion,freqData);
+
+figdir=[indir(1:end-5),'checkAltCorr/'];
 
 for ii=1:size(caseList,1)
     

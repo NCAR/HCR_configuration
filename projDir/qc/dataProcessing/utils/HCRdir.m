@@ -106,8 +106,15 @@ elseif strcmp(project,'otrec')
             disp('The requested data does not exist.');
             return
         end
+    elseif strcmp(qc,'qc3')
+        if strcmp(freq,'10hz')
+            indir=['/scr/sleet2/rsfdata/projects/otrec/hcr/',qc,'/cfradial/',qcVersion,'_full/',freq,'/'];
+        else
+            disp('The requested data does not exist.');
+            return
+        end
     end
-    
+
     %% SPICULE
 elseif strcmp(project,'spicule')
     if strcmp(qc,'field')

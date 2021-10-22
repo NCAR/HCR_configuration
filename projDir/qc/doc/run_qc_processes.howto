@@ -179,7 +179,7 @@ cd ~/git/HCR_configuration/projDir/qc/scripts
   
 #################################################################
 # Trimm down times
-# Make data copy with selected fieldsonly times we want in the final dataset. Run
+# Make data copy with selected times we want in the final dataset. Run
 $PROJ_DIR/qc/scripts/run_RadxConvert.qc.select_times.spicule
 
 # This will put the selected timess in

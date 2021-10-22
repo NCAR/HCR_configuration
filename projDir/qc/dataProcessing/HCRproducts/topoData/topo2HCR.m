@@ -4,15 +4,15 @@ close all;
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-project='spicule'; % socrates, cset, aristo, otrec
-quality='qc1'; % field, qc0, qc1, qc2
-qcVersion='v1.0';
+project='otrec'; % socrates, cset, aristo, otrec
+quality='qc3'; % field, qc0, qc1, qc2
+qcVersion='v3.0';
 freqData='10hz'; % 10hz, 100hz, or 2hz
 whichModel='era5'; % ecmwf or era5
 
 formatOut = 'yyyymmdd_HHMM';
 
-[modeldir outdir]=modelDir(project,whichModel,freqData);
+[modeldir outdir]=modelDir(project,whichModel,quality,qcVersion,freqData);
 
 topodir=topoDir(project);
 
