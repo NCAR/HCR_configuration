@@ -32,7 +32,7 @@ caseList = table2array(readtable(infile));
 
 figdir=[indir(1:end-5),'checkAltCorr/'];
 
-for ii=4:size(caseList,1)
+for ii=1:size(caseList,1)
     
     startTime=datetime(caseList(ii,1:6));
     endTime=datetime(caseList(ii,7:12));
