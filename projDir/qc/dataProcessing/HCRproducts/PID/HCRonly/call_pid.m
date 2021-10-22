@@ -14,6 +14,7 @@ plotIn.plotMR=0;
 plotIn.plotMax=0;
 
 convThresh=0.1;
+widthThresh=0.4;
 
 whichFilter=0; % 0: no filter, 1: mode filter, 2: coherence filter
 postProcess=1; % 1 if post processing is desired
@@ -107,72 +108,29 @@ for aa=1:length(caseStart)
         % melting regions
         dBZ_cor=data.DBZ_MASKED;
         dBZ_cor(liqMeltInds)=dBZ_cor_all(liqMeltInds);
-        
-        %% Censor spectrum width
-        data.WIDTH(data.SNR<5)=nan;
 
-        %Reverse up pointing vel
-        data.VEL_MASKED(data.elevation>0)=-data.VEL_MASKED(data.elevation>0);
+        %% Pre process
 
-        %% Calculate PID with LDR and below the melting layer
+        disp('Pre processing ...');
+        data=preProcessPID(data,convThresh,widthThresh);
+
+        %% Calculate PID
 
         % HCR
-        disp('Getting PID LDR/BELOW_MELT ...');
+        disp('Getting PID ...');
 
-        data.MELTING_LAYER(~isnan(data.MELTING_LAYER) & data.MELTING_LAYER<20)=10;
-        data.MELTING_LAYER(~isnan(data.MELTING_LAYER) & data.MELTING_LAYER>=20)=20;
+        plotIn.figdir=[figdir,'debugPlots/'];
 
-        ldrBelowMelt=find(data.MELTING_LAYER==10 | ~isnan(data.LDR));
+        pid_hcr=calc_pid(dBZ_cor,data,plotIn);
 
-        dataLM=[];
-        for ii=1:length(dataVars)
-            dataLM.(dataVars{ii})=nan(size(data.DBZ_MASKED));
-            dataLM.(dataVars{ii})(ldrBelowMelt)=data.(dataVars{ii})(ldrBelowMelt);
-        end
+        %% Set areas above melting layer with no WIDTH and no LDR to cloud or precip
 
-        DBZLM=nan(size(data.DBZ_MASKED));
-        DBZLM(ldrBelowMelt)=dBZ_cor(ldrBelowMelt);
-        dataLM.elevation=data.elevation;
-        dataLM.time=data.time;
-        dataLM.asl=data.asl;
+        smallInds=find(data.MELTING_LAYER==20 & isnan(data.LDR) & isnan(data.WIDTH) & (pid_hcr==3 | pid_hcr==6));
+        pid_hcr(smallInds)=11;
 
-        plotIn.figdir=[figdir,'debugPlotsLDR/'];
-
-        [pid_hcr_ldr]=calc_pid_ldr(DBZLM,dataLM,plotIn,convThresh);
-
-        %% Convective, no LDR, above melting layer
-
-        pid_hcr=pid_hcr_ldr;
-        pid_hcr(data.MELTING_LAYER==20 & isnan(data.LDR) & data.CONVECTIVITY>convThresh & data.DBZ_MASKED>-5)=10; % Large
-        pid_hcr(data.MELTING_LAYER==20 & isnan(data.LDR) & data.CONVECTIVITY>convThresh & data.DBZ_MASKED<=-5)=11; % Small
-
-        %% Stratiform, no LDR, no WIDTH, above melting layer
-        pid_hcr(data.MELTING_LAYER==20 & isnan(data.LDR) & isnan(data.WIDTH) & (data.CONVECTIVITY<=convThresh | isnan(data.CONVECTIVITY)) & data.DBZ_MASKED>-5)=10; % Large
-        pid_hcr(data.MELTING_LAYER==20 & isnan(data.LDR) & isnan(data.WIDTH) & (data.CONVECTIVITY<=convThresh | isnan(data.CONVECTIVITY)) & data.DBZ_MASKED<=-5)=11; % Small
-
-        %% Calculate PID without LDR and above melting layer
-
-        disp('Getting PID without LDR/ABOVE_MELT ...');
-
-        noldrAboveMelt=find(data.MELTING_LAYER==20 & isnan(data.LDR) & ~isnan(data.DBZ_MASKED));
-
-        dataNoL=[];
-        for ii=1:length(dataVars)
-            dataNoL.(dataVars{ii})=nan(size(data.DBZ_MASKED));
-            dataNoL.(dataVars{ii})(noldrAboveMelt)=data.(dataVars{ii})(noldrAboveMelt);
-        end
-
-        DBZNoL=nan(size(data.DBZ_MASKED));
-        DBZNoL(noldrAboveMelt)=dBZ_cor(noldrAboveMelt);
-        dataNoL.elevation=data.elevation;
-        dataNoL.time=data.time;
-        dataNoL.asl=data.asl;
-
-        plotIn.figdir=[figdir,'debugPlotsNoLDR/'];
-
-        [pid_hcr_noldr]=calc_pid_noldr(DBZNoL,dataNoL,plotIn,convThresh);
-
-        pid_hcr(~isnan(pid_hcr_noldr) & isnan(pid_hcr))=pid_hcr_noldr(~isnan(pid_hcr_noldr) & isnan(pid_hcr));
+        largeInds=find(data.MELTING_LAYER==20 & isnan(data.LDR) & isnan(data.VEL_MASKED) & ...
+            (pid_hcr==1 | pid_hcr==2 | pid_hcr==4 | pid_hcr==5));
+        pid_hcr(largeInds)=10;
 
         %% Add supercooled
 
@@ -198,7 +156,7 @@ for aa=1:length(caseStart)
         cscale_hcr=[1,0,0; 1,0.6,0.47; 0,1,0; 0,0.7,0; 0,0,1; 1,0,1; 0.5,0,0; 1,1,0; 0,1,1; 0,0,0; 0.5,0.5,0.5];
         
         units_str_hcr={'Rain','Supercooled Rain','Drizzle','Supercooled Drizzle','Cloud Liquid','Supercooled Cloud Liquid',...
-            'Mixed Phase','Large Frozen','Small Frozen','Large','Small'};
+            'Mixed Phase','Large Frozen','Small Frozen','Precip','Cloud'};
         
         %% Plot PIDs
         

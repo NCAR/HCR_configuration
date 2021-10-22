@@ -1,30 +1,17 @@
 function[classOut]=calc_pid(DBZ,data,plotIn,convThresh)
-% Sometimes there are artefacts in the first two gates of LDR
-thirdLDR=find(isnan(data.LDR(20,:)));
-data.LDR(19,thirdLDR)=nan;
-data.LDR(18,thirdLDR)=nan;
-
-% Remove data with too much convectivity
-data.VEL_MASKED(data.CONVECTIVITY>convThresh)=nan;
-data.WIDTH(data.CONVECTIVITY>convThresh & data.WIDTH>0.4)=nan;
-
 %   Membership functions for particle detection
-% 1:Beta  2:Delta
 
 memCoeffs
 % DBZ, LDR, VEL, WIDTH, TEMP
-w=[30 20 20 10 20];%w=[30 15 15 20 20];
+w=[30 20 20 10 20];
 
 % pid_hcr (number before post processing)
-%  1 Rain (1)
-%  2 Supercooled rain (post-processing)
-%  3 Drizzle (2)
-%  4 Supercooled drizzle (post-processing)
-%  5 Cloud liquid (3)
-%  6 Supercooled cloud liquid (post processing)
-%  7 Mixed phase (4)
-%  8 Large frozen (5)
-%  9 Small frozen (6)
+%  1 Rain
+%  2 Drizzle
+%  3 Cloud liquid
+%  4 Mixed phase
+%  5 Large frozen
+%  6 Small frozen
 
 result=nan(6,size(data.LDR,1),size(data.LDR,2));
 
@@ -126,7 +113,7 @@ end
 m=nan(5,size(DBZ,1),size(DBZ,2));
 m(1,:,:)=zmf(DBZ,[dbz.sfrozen(1),dbz.sfrozen(2)]);
 m(2,:,:)=trapmf(data.LDR,[ldr.sfrozen(1),ldr.sfrozen(2),ldr.sfrozen(3),ldr.sfrozen(4)]);
-m(3,:,:)=trapmf(data.VEL_MASKED,[vel.sfrozen(1),vel.sfrozen(2),vel.sfrozen(3),vel.sfrozen(4)]);
+m(3,:,:)=zmf(data.VEL_MASKED,[vel.sfrozen(1),vel.sfrozen(2)]);
 m(4,:,:)=zmf(data.WIDTH,[width.sfrozen(1),width.sfrozen(2)]);
 m(5,:,:)=zmf(data.TEMP,[temp.sfrozen(1),temp.sfrozen(2)]);
 
