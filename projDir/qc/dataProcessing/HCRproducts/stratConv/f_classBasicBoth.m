@@ -4,16 +4,20 @@ classBasic=nan(size(conv));
 
 %% Handle mixed
 % Make mixed+conv mask
-maskMixed=conv>=stratMixed;
+maskMixedOrig=conv>=stratMixed;
 
 % Check if all stratiform
-if max(max(maskMixed))==0;
+if max(max(maskMixedOrig))==0;
     classBasic(~isnan(conv))=1;
     return
 end
 
 % Remove areas that are small
-maskMixed=bwareaopen(maskMixed,500);
+maskMixed=bwareaopen(maskMixedOrig,500);
+
+% Remove data from within too small areas so the convective mask won't pick
+% them up
+conv(maskMixed==0 & maskMixedOrig==1)=0;
 
 % Check if most of region is below melting layer and below large
 % stratiform, i.e., check if it is in rain
@@ -36,7 +40,7 @@ for ii=1:mixedAreas.NumObjects
         checkCols=nan(size(meltCols));
         for jj=1:length(ucols);
             meltCol=meltCols(:,jj);
-            checkCol=checkCols(:,jj);
+            checkCol=convCols(:,jj);
             meltCol(1:min(find(~isnan(meltCol))))=10;
             firstInd=min(find(meltCol>=20));
             checkCol(1:firstInd)=1;
@@ -50,10 +54,16 @@ for ii=1:mixedAreas.NumObjects
 
         if stratPerc>0.8
             maskMixed(pixInds)=0;
+            conv(pixInds)=0;
+        elseif median(elev)<=0 % If pointing down and closest pixel to plane is stratiform
+            closest=checkCol(753,:);
+            nonStrat=length(find(closest>=stratMixed));
+            if nonStrat==0
+                maskMixed(pixInds)=0;
+                conv(pixInds)=0;
+            end
         end
     end
-
-
 end
 
 % Set up check
@@ -89,7 +99,7 @@ mixedLarge=imdilate(mixedLarge,strel('disk', 3));
 maskConv=conv>=mixedConv;
 
 % Remove areas that are small
-maskConv=bwareaopen(maskConv,100);
+%maskConv=bwareaopen(maskConv,100);
 
 % Set up check
 horLarge2=imdilate(maskConv, strel('line', 100,0));
@@ -124,42 +134,5 @@ classBasic(isnan(classBasic) & mixedLarge)=2; % Mixed
 classBasic(isnan(classBasic))=1; % Stratiform
 classBasic(isnan(conv))=nan;
 
-% % If 80% of total cloud is convective, the whole cloud is convective
-% if sum(sum(convLarge))>sum(sum(~isnan(conv)))*0.8
-%     classBasic(~isnan(conv))=3;
-%     return
-% end
-% 
-% % If 70% of total cloud is convective or mixed, stratiform areas become
-% % mixed
-% if sum(sum(mixedLarge))>sum(sum(~isnan(conv)))*0.7
-%     classBasic(classBasic==1)=2;
-% end
-% 
-% % Unconnected stratiform areas that are small are set to mixed
-% stratOnly=classBasic==1;
-% percMin=0.2;
-% 
-% stratAreaThresh=round(sum(sum(~isnan(conv)))*percMin);
-% stratCleaned=bwareaopen(stratOnly,stratAreaThresh);
-% 
-% classBasic(classBasic==1 & stratCleaned==0)=2; % Mixed
-% 
-% % Take care of mixed borders
-% maskMixedEnd=classBasic==2;
-% maskMixedEnd=imdilate(maskMixedEnd, strel('disk', 1));
-% 
-% mixedAreas=bwconncomp(maskMixedEnd);
-% 
-% % If it has no neighboring stratiform but neighboring convective and is
-% % small: set to convective
-% for ii=1:mixedAreas.NumObjects
-%     classFeat=classBasic(mixedAreas.PixelIdxList{ii});
-%     if ~any(classFeat==1) & any(classFeat==3) & length(mixedAreas.PixelIdxList{ii})<sum(sum(~isnan(conv)))*0.2
-%         classBasic(mixedAreas.PixelIdxList{ii})=3;
-%     end
-% end
-
-classBasic(isnan(conv))=nan;
 end
 

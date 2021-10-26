@@ -1,4 +1,4 @@
-% Calculate liquid water content from HCR ocean return
+% Calculate convectivity and convective/stratiform partitioning
 
 clear all
 close all

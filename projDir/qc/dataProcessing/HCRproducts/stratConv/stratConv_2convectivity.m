@@ -10,6 +10,8 @@ quality='qc3'; %field, qc1, or qc2
 freqData='10hz';
 qcVersion='v3.0';
 
+showPlot='off';
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
@@ -34,7 +36,7 @@ caseStart=datetime(caseList.Var1,caseList.Var2,caseList.Var3, ...
 caseEnd=datetime(caseList.Var6,caseList.Var7,caseList.Var8, ...
     caseList.Var9,caseList.Var10,0);
 
-for aa=3:length(caseStart)
+for aa=1:length(caseStart)
     
     disp(['Case ',num2str(aa),' of ',num2str(length(caseStart))]);
     
@@ -42,6 +44,8 @@ for aa=3:length(caseStart)
     endTime=caseEnd(aa);
     %% Get data
     
+    disp("Getting data ...");
+
     fileList=makeFileList(dataDir,startTime,endTime,'xxxxxx20YYMMDDxhhmmss',1);
     
     data=[];
@@ -49,7 +53,6 @@ for aa=3:length(caseStart)
     data.DBZ_MASKED=[];
     data.VEL_MASKED=[];
     data.TOPO=[];
-%     data.CLOUD_PUZZLE=[];
     data.TEMP=[];
     data.MELTING_LAYER=[];
     data.SNR=[];
@@ -73,22 +76,21 @@ for aa=3:length(caseStart)
     % Take care of up pointing VEL
     data.VEL_MASKED(:,data.elevation>0)=-data.VEL_MASKED(:,data.elevation>0);
 
-%     % Censor VEL based on SNR
-%     data.VEL_MASKED(data.SNR<0)=nan;
-
     %% Texture from reflectivity and velocity
+
+    disp('Calculating reflectivity texture ...');
 
     pixRadDBZ=50; % Radius over which texture is calculated in pixels. Default is 50.
     dbzBase=-10; % Reflectivity base value which is subtracted from DBZ.
 
     dbzText=f_reflTexture(data.DBZ_MASKED,pixRadDBZ,dbzBase);
 
+    disp('Calculating velocity texture ...');
+
     pixRadVEL=50;
     velBase=-20; % VEL base value which is subtracted from DBZ.
 
     velText=f_velTexture(data.VEL_MASKED,data.elevation,pixRadVEL,velBase);
-
-    %velStdText=f_velStdTexture(data.VEL_MASKED,data.elevation,pixRadVEL,velBase);
 
     %% Convectivity
 
@@ -103,6 +105,9 @@ for aa=3:length(caseStart)
     convBoth(isnan(convBoth))=convDBZ(isnan(convBoth));
 
     %% Basic classification
+
+    disp('Basic classification ...');
+
     stratMixed=0.4; % Convectivity boundary between strat and mixed.
     mixedConv=0.5; % Convectivity boundary between mixed and conv.
 
@@ -110,76 +115,10 @@ for aa=3:length(caseStart)
 
     %% Sub classification
 
-    classSub=f_classSubBoth(classBasic,data.asl,data.TOPO,data.MELTING_LAYER,data.TEMP,data.elevation);
+    disp('Sub classification ...');
 
-    %     %% Cloud puzzle
-    %     %disp('Making cloud puzzle');
-%     
-%     %cloudPuzzle=f_cloudPuzzle_radial(data);
-%     cloudPuzzle=data.CLOUD_PUZZLE;
-%     uClouds=unique(cloudPuzzle(~isnan(cloudPuzzle)));
-%     uClouds(uClouds==0)=[];
+    classSub=f_classSubBoth(classBasic,data.asl,data.TOPO,data.MELTING_LAYER,data.TEMP,data.elevation);
        
-%     %% Calculate reflectivity texture and convectivity
-%         
-%     dbzText=nan(size(data.DBZ_MASKED));
-%     convectivity=nan(size(data.DBZ_MASKED));
-%     classBasic=nan(size(data.DBZ_MASKED));
-%     classSub=nan(size(data.DBZ_MASKED));
-%         
-%     pixRad=50; % Radius over which texture is calculated in pixels. Default is 50.
-%     dbzBase=-10; % Reflectivity base value which is subtracted from DBZ.
-%     
-%     upperLim=14; % Upper limit for convectivity mapping. Texture above that will be set to 1.
-%     stratMixed=0.4; % Convectivity boundary between strat and mixed.
-%     mixedConv=0.5; % Convectivity boundary between mixed and conv.
-%     
-%     for jj=1:length(uClouds)
-%         disp(['Calculating texture for cloud ',num2str(jj),' of ',num2str(length(uClouds))]);
-%         dbzIn=data.DBZ_MASKED;
-%         dbzIn(cloudPuzzle~=uClouds(jj))=nan;
-%         
-%         % Shrink to good data area
-%         nonNanCols=find(any(~isnan(dbzIn),1));
-%         dbzIn=dbzIn(:,nonNanCols);
-%         
-%         dbzTextOne=f_reflTexture(dbzIn,pixRad,dbzBase);
-%                 
-%         % Convectivity        
-%         convOne=1/upperLim.*dbzTextOne;
-%         
-%         % Basic classification       
-%         classBasicOne=f_classBasic(convOne,stratMixed,mixedConv);
-%                         
-%         % Fill into large matrix
-%         dbzTextLarge=nan(size(dbzText));
-%         dbzTextLarge(:,nonNanCols)=dbzTextOne;
-%         dbzText(~isnan(dbzTextLarge))=dbzTextLarge(~isnan(dbzTextLarge));
-%         
-%         convLarge=nan(size(convectivity));
-%         convLarge(:,nonNanCols)=convOne;
-%         convectivity(~isnan(convLarge))=convLarge(~isnan(convLarge));
-%         
-%         classBasicLarge=nan(size(classBasic));
-%         classBasicLarge(:,nonNanCols)=classBasicOne;
-%         classBasic(~isnan(classBasicLarge))=classBasicLarge(~isnan(classBasicLarge));
-%         
-%         % Prepare asl and topo and temperature
-%         topoIn=data.TOPO(nonNanCols);
-%         aslIn=data.asl(:,nonNanCols);
-%         aslIn(isnan(dbzIn))=nan;
-%         tempIn=data.TEMP(:,nonNanCols);
-%         meltIn=data.MELTING_LAYER(:,nonNanCols);
-%         elevIn=data.elevation(nonNanCols);
-%         
-%         classSubOne=f_classSub(classBasicOne,aslIn,topoIn,meltIn,tempIn,elevIn);
-%         
-%         classSubLarge=nan(size(classSub));
-%         classSubLarge(:,nonNanCols)=classSubOne;
-%         classSub(~isnan(classSubLarge))=classSubLarge(~isnan(classSubLarge));
-%     end
-%     
-        
     %% Plot strat conv
     
     disp('Plotting conv/strat ...');
@@ -216,7 +155,7 @@ for aa=3:length(caseStart)
         
     close all
     
-    f1 = figure('Position',[200 500 1500 1100],'DefaultAxesFontSize',12,'visible','on');
+    f1 = figure('Position',[200 500 1500 1100],'DefaultAxesFontSize',12,'visible',showPlot);
     
     s1=subplot(5,1,1);
     
@@ -322,7 +261,7 @@ for aa=3:length(caseStart)
     
     disp('Plotting convectivities ...');
     
-    f1 = figure('Position',[200 500 1500 1200],'DefaultAxesFontSize',12,'visible','on');
+    f1 = figure('Position',[200 500 1500 1200],'DefaultAxesFontSize',12,'visible',showPlot);
     
     s1=subplot(5,1,1);
     
