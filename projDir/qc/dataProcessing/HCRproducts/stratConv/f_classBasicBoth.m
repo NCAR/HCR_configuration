@@ -33,7 +33,7 @@ for ii=1:mixedAreas.NumObjects
         ucols=unique(c);
         convCols=conv(:,ucols);
         meltCols=melt(:,ucols);
-        if elev<=0 % We treat all as up pointing
+        if median(elev(ucols))<=0 % We treat all as up pointing
             convCols=flipud(convCols);
             meltCols=flipud(meltCols);
         end
@@ -52,15 +52,19 @@ for ii=1:mixedAreas.NumObjects
         end
         stratPerc=length(find(checkCols<stratMixed))/length(find(~isnan(checkCols)));
 
-        if stratPerc>0.8
+        medThick=median(sum(~isnan(checkCols),1)); % Median thickness of above melting layer area
+
+        if stratPerc>0.8 & medThick>20
             maskMixed(pixInds)=0;
             conv(pixInds)=0;
-        elseif median(elev)<=0 % If pointing down and closest pixel to plane is stratiform
-            closest=checkCol(753,:);
-            nonStrat=length(find(closest>=stratMixed));
-            if nonStrat==0
-                maskMixed(pixInds)=0;
-                conv(pixInds)=0;
+        elseif median(elev(ucols))<=0 % If pointing down and closest pixel to plane is stratiform
+            closest=checkCols(753,:);
+            if sum(~isnan(closest))~=0
+                nonStrat=length(find(closest>=stratMixed));
+                if nonStrat==0
+                    maskMixed(pixInds)=0;
+                    conv(pixInds)=0;
+                end
             end
         end
     end

@@ -48,8 +48,8 @@ for aa=1:size(caseList,1)
     data.TOPO=[];
     data.TEMP=[];
     data.MELTING_LAYER=[];
-    data.SNR=[];
-    
+    data.FLAG=[];
+        
     dataVars=fieldnames(data);
     
     % Load data
@@ -88,10 +88,10 @@ for aa=1:size(caseList,1)
     %% Convectivity
 
     % Convectivity
-    upperLimDBZ=14;
+    upperLimDBZ=12;
     convDBZ=1/upperLimDBZ.*dbzText;
 
-    upperLimVEL=6;
+    upperLimVEL=5;
     convVEL=1/upperLimVEL.*velText;
 
     convectivity=convDBZ.*convVEL;
@@ -110,7 +110,7 @@ for aa=1:size(caseList,1)
 
     disp('Sub classification ...');
 
-    classSub=f_classSubBoth(classBasic,data.asl,data.TOPO,data.MELTING_LAYER,data.TEMP,data.elevation);
+    classSub=f_classSubBoth(classBasic,data.asl,data.TOPO,data.MELTING_LAYER,data.TEMP,data.elevation,data.FLAG);
           
     %% Save
     disp('Saving stratConv field ...')

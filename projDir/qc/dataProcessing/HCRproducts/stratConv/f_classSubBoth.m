@@ -1,4 +1,4 @@
-function classSub=f_classSubBoth(classIn,asl,topo,melt,temp,elev)
+function classSub=f_classSubBoth(classIn,asl,topo,melt,temp,elev,flag)
 
 % 14 strat low
 % 16 strat mid
@@ -25,24 +25,27 @@ nearSurf=zeros(size(classIn));
 
 for ii=1:convAreas.NumObjects
     % Check if next to aircraft
-    
+
     [row1 col1]=ind2sub(size(classIn),convAreas.PixelIdxList{ii});
     planePix=sum(row1==18); % Number of next to plane pixels
-    
-%     if planePix>10 & minTemp>=-25 % If next to aircraft and below divergence level set to convective
-%         classSub(convAreas.PixelIdxList{ii})=30;
-%         continue
-%     elseif planePix>10 & minTemp<-25 & median(elev)>0 % If next to aircraft and above divergence level but pointing up set to convective
-%         classSub(convAreas.PixelIdxList{ii})=30;
-%         continue
-%     end
-    
+
+    % Check if in vicinity of extinct
+    extinctY=0;
+    thisMask=zeros(size(classIn));
+    thisMask(convAreas.PixelIdxList{ii})=1;
+
+    thisMask=imdilate(thisMask,strel('disk',10));
+    thisFlag=flag(thisMask==1);
+    if any(thisFlag==3);
+        extinctY=1;
+    end
+
     % Check if near surface
     aslArea=asl(convAreas.PixelIdxList{ii});
     nearSurfPix=sum(aslArea<500);
-    if nearSurfPix==0 % Not near surface: elevated
+    if nearSurfPix==0 & ~extinctY % Not near surface: elevated
         % Near plane check
-        if planePix>10 & median(elev)>0
+        if planePix>10 & median(elev(col1))>0
             classSub(convAreas.PixelIdxList{ii})=30;
         else
             classSub(convAreas.PixelIdxList{ii})=32;
@@ -68,7 +71,7 @@ for ii=1:convAreas.NumObjects
                 end
             else % Deep
                 % Near plane check
-                if planePix>10 & median(elev)>0
+                if planePix>10 & median(elev(col1))>0
                     classSub(convAreas.PixelIdxList{ii})=30;
                 else
                     classSub(convAreas.PixelIdxList{ii})=38;

@@ -63,9 +63,9 @@ for aa=1:size(caseList,1)
     
     data=[];
     
-    data.DBZ = [];
-    data.FLAG=[];
-        
+    data.DBZ_MASKED=[];
+    data.VEL_MASKED=[];
+           
     dataVars=fieldnames(data);
     
     % Load data
@@ -105,9 +105,7 @@ for aa=1:size(caseList,1)
     disp('Plotting ...');
     
     startPlot=startTime;
-    
-    data.DBZ(data.FLAG>1)=nan;
-    
+       
     while startPlot<endTime
         
         close all
@@ -116,7 +114,7 @@ for aa=1:size(caseList,1)
         timeInds=find(data.time>=startPlot & data.time<=endPlot);
         
         timePlot=data.time(timeInds);
-        dbzPlot=data.DBZ(:,timeInds);
+        dbzPlot=data.DBZ_MASKED(:,timeInds);
         
         if sum(sum(~isnan(dbzPlot)))==0
             startPlot=endPlot;
@@ -124,6 +122,7 @@ for aa=1:size(caseList,1)
         end
         
         aslPlot=data.asl(:,timeInds);
+        velPlot=data.VEL_MASKED(:,timeInds);
         
         timeIndsSC=find(timeSC>=startPlot & timeSC<=endPlot);
         sc1D=stratConv1D(timeIndsSC);
@@ -161,7 +160,7 @@ for aa=1:size(caseList,1)
         
         f1 = figure('Position',[200 500 1500 1100],'DefaultAxesFontSize',12,'visible','off');
         
-        s1=subplot(3,1,1);
+        s1=subplot(4,1,1);
         
         colormap jet
         
@@ -176,8 +175,26 @@ for aa=1:size(caseList,1)
         grid on
         title('Reflectivity (dBZ)')
         s1pos=s1.Position;
+        s1.Position=[s1pos(1),s1pos(2),s1pos(3),s1pos(4)];
+
+        s2=subplot(4,1,2);
         
-        s2=subplot(3,1,2);
+        colormap jet
+        
+        hold on
+        surf(timePlot,aslPlot./1000,velPlot,'edgecolor','none');
+        view(2);
+        ylabel('Altitude (km)');
+        caxis([-5 5]);
+        ylim([0 ylimUpper]);
+        xlim([timePlot(1),timePlot(end)]);
+        colorbar
+        grid on
+        title('Velocity (m s^{-1})')
+        s2pos=s2.Position;
+        s2.Position=[s2pos(1),s2pos(2),s1pos(3),s2pos(4)];
+        
+        s3=subplot(4,1,3);
         
         colormap jet
         
@@ -191,21 +208,21 @@ for aa=1:size(caseList,1)
         colorbar
         grid on
         title('Convectivity');
-        s2pos=s2.Position;
-        s2.Position=[s2pos(1),s2pos(2),s1pos(3),s2pos(4)];
+        s3pos=s3.Position;
+        s3.Position=[s3pos(1),s3pos(2),s1pos(3),s3pos(4)];
         
-        s4=subplot(30,1,30);
+        s5=subplot(30,1,30);
         
         hold on
         scat1=scatter(time1D,ones(size(time1D)),10,col1D,'filled');
         %set(gca,'clim',[0,1]);
         set(gca,'YTickLabel',[]);
-        s4.Colormap=colmapSC;
+        s5.Colormap=colmapSC;
         xlim([timePlot(1),timePlot(end)]);
-        s4pos=s4.Position;
-        s4.Position=[s4pos(1),s4pos(2)-0.023,s1pos(3),s4pos(4)];
+        s5pos=s5.Position;
+        s5.Position=[s5pos(1),s5pos(2)-0.023,s1pos(3),s5pos(4)];
         
-        s3=subplot(3,1,3);
+        s4=subplot(4,1,4);
         
         hold on
         surf(timePlot,aslPlot./1000,stratConvPlot,'edgecolor','none');
@@ -214,7 +231,7 @@ for aa=1:size(caseList,1)
         caxis([0 10]);
         ylim([0 ylimUpper]);
         xlim([timePlot(1),timePlot(end)]);
-        s3.Colormap=colmapSC;
+        s4.Colormap=colmapSC;
         caxis([0.5 9.5]);
         cb=colorbar;
         cb.Ticks=1:9;
@@ -223,8 +240,8 @@ for aa=1:size(caseList,1)
         set(gca,'XTickLabel',[]);
         grid on
         title('Stratiform/convective partitioning')
-        s3pos=s3.Position;
-        s3.Position=[s3pos(1),s3pos(2),s1pos(3),s3pos(4)];
+        s4pos=s4.Position;
+        s4.Position=[s4pos(1),s4pos(2),s1pos(3),s4pos(4)];
         
         set(gcf,'PaperPositionMode','auto')
         print(f1,[figdir,project,'_Flight',num2str(aa),'_convStrat_',datestr(timePlot(1),'yyyymmdd_HHMMSS'),'_to_',datestr(timePlot(end),'yyyymmdd_HHMMSS')],'-dpng','-r0')
