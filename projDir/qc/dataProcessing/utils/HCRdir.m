@@ -32,6 +32,8 @@ if strcmp(project,'socrates')
             disp('The requested data does not exist.');
             return
         end
+    elseif strcmp(qc,'ts')
+        indir='/scr/snow2/rsfdata/projects/socrates/hcr/time_series_netcdf/';
     end
     
     %% CSET
