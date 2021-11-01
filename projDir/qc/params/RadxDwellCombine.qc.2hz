@@ -108,7 +108,7 @@ mode = ARCHIVE;
 // Type: string
 //
 
-input_dir = "$(DATA_DIR)/$(QC_VERSION)/cfradial/final/10hz";
+input_dir = "$(DATA_DIR)/$(QC_VERSION)/cfradial/$(QC_SUB_VERSION)_full/10hz";
 
 ///////////// max_realtime_data_age_secs //////////////
 //
@@ -810,7 +810,7 @@ output_fields = {
 // Type: boolean
 //
 
-exclude_specified_fields = FALSE;
+exclude_specified_fields = TRUE;
 
 ///////////// excluded_fields /////////////////////////
 //
@@ -824,8 +824,8 @@ exclude_specified_fields = FALSE;
 //
 
 excluded_fields = {
- "DBZ",
- "VEL"
+ "MELTING_LAYER",
+ "ICING_LEVEL"
 };
 
 //======================================================================
@@ -1032,7 +1032,7 @@ compression_level = 4;
 // Type: string
 //
 
-output_dir = "$(DATA_DIR)/$(QC_VERSION)/cfradial/final/2hz";
+output_dir = "$(DATA_DIR)/$(QC_VERSION)/cfradial/$(QC_SUB_VERSION)_full/2hz";
 
 ///////////// output_filename_mode ////////////////////
 //

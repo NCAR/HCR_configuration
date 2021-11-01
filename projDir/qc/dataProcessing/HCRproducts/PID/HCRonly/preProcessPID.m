@@ -16,8 +16,15 @@ thirdLDR=find(isnan(data.LDR(20,:)));
 data.LDR(19,thirdLDR)=nan;
 data.LDR(18,thirdLDR)=nan;
 
-% Remove data with too much convectivity
-data.VEL_MASKED(data.CONVECTIVITY>convThresh | isnan(data.CONVECTIVITY))=nan;
-data.WIDTH((data.CONVECTIVITY>convThresh | isnan(data.CONVECTIVITY)) & data.WIDTH>widthThresh)=nan;
+% Sometimes there are artefacts in the first gate of WIDTH
+secondWIDTH=data.WIDTH(19,:);
+firstWIDTH=data.WIDTH(18,:);
+
+outWIDTH=find((firstWIDTH>0.5 & firstWIDTH-secondWIDTH>0.4) | isnan(secondWIDTH));
+data.WIDTH(18,outWIDTH)=nan;
+
+% Remove data with too much VELTEXT below above layer
+data.VEL_MASKED((data.VELTEXT>convThresh | isnan(data.VELTEXT)) & data.MELTING_LAYER==20)=nan;
+data.WIDTH((data.VELTEXT>convThresh | isnan(data.VELTEXT)) & data.WIDTH>widthThresh & data.MELTING_LAYER==20)=nan;
 
 end

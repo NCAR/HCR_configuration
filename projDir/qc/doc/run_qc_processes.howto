@@ -347,7 +347,7 @@ run_Hsrl2Radx.qc.2hz.socrates
 #################################################################
 # Merge 2Hz HCR final moments with 2Hz HSRL moments
 #
-# Run MergeHcrAndHsr to merge HCR and HSRL 2 Hz moments
+# Run MergeHcrAndHsrl to merge HCR and HSRL 2 Hz moments
 #
 # We preserve the model-based fields from HCR.
 # And only use the HSRL moments from the HSRL files, ignoring

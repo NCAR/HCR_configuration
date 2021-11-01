@@ -13,7 +13,7 @@ freqData='10hz'; % 10hz, 100hz, 2hz, or combined
 plotIn.plotMR=0;
 plotIn.plotMax=0;
 
-convThresh=0.1;
+convThresh=4;
 widthThresh=0.4;
 
 whichFilter=0; % 0: no filter, 1: mode filter, 2: coherence filter
@@ -59,7 +59,6 @@ for aa=1:length(caseStart)
         data.LDR=[];
         data.TEMP=[];
         data.MELTING_LAYER=[];
-        data.CONVECTIVITY=[];
         data.SNR=[];
                 
         dataVars=fieldnames(data);
@@ -109,6 +108,13 @@ for aa=1:length(caseStart)
         dBZ_cor=data.DBZ_MASKED;
         dBZ_cor(liqMeltInds)=dBZ_cor_all(liqMeltInds);
 
+        %% Calculate velocity texture
+
+        pixRadVEL=50;
+        velBase=-20;
+
+        data.VELTEXT=f_velTexture(data.VEL_MASKED,data.elevation,pixRadVEL,velBase);
+
         %% Pre process
 
         disp('Pre processing ...');
@@ -128,7 +134,7 @@ for aa=1:length(caseStart)
         smallInds=find(data.MELTING_LAYER==20 & isnan(data.LDR) & isnan(data.WIDTH) & (pid_hcr==3 | pid_hcr==6));
         pid_hcr(smallInds)=11;
 
-        largeInds=find(data.MELTING_LAYER==20 & isnan(data.LDR) & isnan(data.VEL_MASKED) & ...
+        largeInds=find(data.MELTING_LAYER==20 & isnan(data.LDR) & isnan(data.WIDTH) & ...
             (pid_hcr==1 | pid_hcr==2 | pid_hcr==4 | pid_hcr==5));
         pid_hcr(largeInds)=10;
 
@@ -248,15 +254,15 @@ for aa=1:length(caseStart)
         grid on
         
         s6=subplot(4,2,6);
-        surf(data.time,data.asl./1000,data.CONVECTIVITY,'edgecolor','none');
+        surf(data.time,data.asl./1000,data.VELTEXT,'edgecolor','none');
         view(2);
         ylim(ylimits);
         xlim([data.time(1),data.time(end)]);
-        caxis([0 1]);
+        caxis([0 5]);
         colormap(s6,jet);
         colorbar;
         ylabel('Altitude (km)');
-        title(['HCR convectivity']);
+        title(['HCR velocity texture']);
         grid on
 
         s8=subplot(4,2,8);

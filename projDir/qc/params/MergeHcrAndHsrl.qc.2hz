@@ -104,7 +104,7 @@ max_realtime_data_age_secs = 300;
 // Type: string
 //
 
-hcr_data_dir = "$(DATA_DIR)/$(QC_VERSION)/cfradial/final/2hz";
+hcr_data_dir = "$(DATA_DIR)/$(QC_VERSION)/cfradial/$(QC_SUB_VERSION)_full/2hz";
 
 ///////////// hsrl_data_dir ///////////////////////////
 //
