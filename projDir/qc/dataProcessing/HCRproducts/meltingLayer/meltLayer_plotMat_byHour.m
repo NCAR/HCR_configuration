@@ -5,7 +5,7 @@ close all;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Input variables %%%%%%%%%%%%%%%%%%%%%%%%%%
 
-project='socrates'; %socrates, aristo, cset, otrec
+project='otrec'; %socrates, aristo, cset, otrec
 quality='qc3'; %field, qc1, or qc2
 dataFreq='10hz';
 qcVersion='v3.0';
@@ -46,11 +46,10 @@ for aa=1:size(caseList,1)
     
     data=[];
     
-    data.DBZ = [];
+    data.DBZ_MASKED = [];
     data.LDR=[];
     data.VEL_UNFOLDED=[];
-    data.FLAG=[];
-    
+        
     dataVars=fieldnames(data);
     
     % Load data
@@ -93,7 +92,7 @@ for aa=1:size(caseList,1)
         endPlot=startPlot+minutes(30);
         timeInds=find(data.time>=startPlot & data.time<=endPlot);
         
-        dbzPlot=data.DBZ(:,timeInds);
+        dbzPlot=data.DBZ_MASKED(:,timeInds);
         
         if sum(sum(~isnan(dbzPlot)))~=0
                         
@@ -117,12 +116,9 @@ for aa=1:size(caseList,1)
             %% Plot
             
             timeMat=repmat(data.time(:,timeInds),size(data.LDR(:,timeInds),1),1);
-            dbzMasked=data.DBZ(:,timeInds);
-            dbzMasked(data.FLAG(:,timeInds)>1)=nan;
+            dbzMasked=data.DBZ_MASKED(:,timeInds);
             ldrMasked=data.LDR(:,timeInds);
-            ldrMasked(data.FLAG(:,timeInds)>1)=nan;
             velMasked=data.VEL_UNFOLDED(:,timeInds);
-            velMasked(data.FLAG(:,timeInds)>1)=nan;
             timeMasked=data.time(timeInds);
             aslMasked=data.asl(:,timeInds);
             

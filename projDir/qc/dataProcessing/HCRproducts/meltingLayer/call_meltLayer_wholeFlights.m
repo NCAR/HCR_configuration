@@ -15,8 +15,7 @@ ylimits=[-0.2 10];
 
 indir=HCRdir(project,quality,qcVersion,freqData);
 
-[~,directories.modeldir]=modelDir(project,whichModel,quality,qcVersion,freqData);
-outdir=directories.modeldir;
+[~,outdir]=modelDir(project,whichModel,quality,qcVersion,freqData);
 
 figdir=[indir(1:end-5),'meltLayerPlots/process/'];
 
@@ -79,7 +78,7 @@ else
     offsetFixed=params.offsetIn;
 end
 
-for aa=1:size(caseList,1)
+for aa=7:size(caseList,1)
     disp(['Flight ',num2str(aa)]);
     disp('Loading HCR data.')
     disp(['Starting at ',datestr(datetime('now'),'yyyy-mm-dd HH:MM')]);
