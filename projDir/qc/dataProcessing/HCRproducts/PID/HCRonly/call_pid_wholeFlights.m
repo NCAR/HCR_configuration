@@ -17,7 +17,6 @@ plotIn.plotMR=0;
 plotIn.plotMax=0;
 
 convThresh=4;
-widthThresh=0.4;
 
 whichFilter=0; % 0: no filter, 1: mode filter, 2: coherence filter
 postProcess=1; % 1 if post processing is desired
@@ -56,7 +55,6 @@ for aa=1:size(caseList,1)
     %HCR data
     data.DBZ_MASKED=[];
     data.VEL_MASKED=[];
-    data.WIDTH=[];
     data.LDR=[];
     data.TEMP=[];
     data.MELTING_LAYER=[];
@@ -75,39 +73,10 @@ for aa=1:size(caseList,1)
     end
 
     % Mask with FLAG
-    data.WIDTH(isnan(data.DBZ_MASKED))=nan;
     data.LDR(isnan(data.DBZ_MASKED))=nan;
-    data.TEMP(isnan(data.DBZ_MASKED))=nan;
-    data.MELTING_LAYER(isnan(data.DBZ_MASKED))=nan;
-
+    
     ylimits=[0 (max(data.asl(~isnan(data.DBZ_MASKED)))./1000)+0.5];
     plotIn.ylimits=ylimits;
-
-    %% Correct for attenuation
-
-    Z_lin=10.^(data.DBZ_MASKED*0.1);
-
-    % Mask out non liquid data
-    liqMeltInds=find(data.MELTING_LAYER<20);
-    Z_lin(~liqMeltInds)=nan;
-
-    wt_coef=nan(size(data.DBZ_MASKED));
-    wt_exp=nan(size(data.DBZ_MASKED));
-
-    wt_coef(data.DBZ_MASKED < - 20)=20.;
-    wt_exp(data.DBZ_MASKED < - 20)=0.52;
-    wt_coef(-20 <data.DBZ_MASKED <-15 )=1.73;
-    wt_exp(-20 <data.DBZ_MASKED < -15 )=0.15;
-    wt_coef(data.DBZ_MASKED > -15)=0.22;
-    wt_exp(data.DBZ_MASKED > -15)=0.68;
-
-    att_cumul=2.*0.0192*cumsum((wt_coef.*Z_lin.^wt_exp),1,'omitnan');
-    dBZ_cor_all=data.DBZ_MASKED+att_cumul;
-
-    % Replace dBZ values with attenuation corrected values in liquid and
-    % melting regions
-    dBZ_cor=data.DBZ_MASKED;
-    dBZ_cor(liqMeltInds)=dBZ_cor_all(liqMeltInds);
 
     %% Calculate velocity texture
 
@@ -119,23 +88,20 @@ for aa=1:size(caseList,1)
     %% Pre process
 
     disp('Pre processing ...');
-    data=preProcessPID(data,convThresh,widthThresh);
+    data=preProcessPID(data,convThresh);
 
     %% Calculate PID
 
     % HCR
     disp('Getting PID ...');
-
-    %plotIn.figdir=[figdir,'debugPlots/'];
-
-    pid_hcr=calc_pid(dBZ_cor,data,plotIn);
+    pid_hcr=calc_pid(data,plotIn);
 
     %% Set areas above melting layer with no WIDTH and no LDR to cloud or precip
 
-    smallInds=find(data.MELTING_LAYER==20 & isnan(data.LDR) & isnan(data.WIDTH) & (pid_hcr==3 | pid_hcr==6));
+    smallInds=find(data.MELTING_LAYER==20 & isnan(data.LDR) & (pid_hcr==3 | pid_hcr==6));
     pid_hcr(smallInds)=11;
 
-    largeInds=find(data.MELTING_LAYER==20 & isnan(data.LDR) & isnan(data.WIDTH) & ...
+    largeInds=find(data.MELTING_LAYER==20 & isnan(data.LDR) & ...
         (pid_hcr==1 | pid_hcr==2 | pid_hcr==4 | pid_hcr==5));
     pid_hcr(largeInds)=10;
 
