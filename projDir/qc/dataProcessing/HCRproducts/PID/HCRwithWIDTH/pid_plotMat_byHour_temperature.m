@@ -6,9 +6,9 @@ close all;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Input variables %%%%%%%%%%%%%%%%%%%%%%%%%%
 
 project='socrates'; %socrates, aristo, cset, otrec
-quality='qc3'; %field, qc1, or qc2
-freqData='10hz';
-qcVersion='v3.0';
+quality='qc2'; %field, qc1, or qc2
+% dataFreq='10hz';
+% qcVersion='v2.1';
 whichModel='era5';
 
 if strcmp(project,'otrec')
@@ -21,30 +21,25 @@ end
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-indir=HCRdir(project,quality,qcVersion,freqData);
+if strcmp(project,'otrec')
+    indir='/scr/sleet2/rsfdata/projects/otrec/hcr/qc2/cfradial/development/pid/10hz/';
+elseif strcmp(project,'socrates')
+    indir='/scr/snow2/rsfdata/projects/socrates/hcr/qc2/cfradial/development/pid/10hz/';
+end
 
-[~,modeldir]=modelDir(project,whichModel,quality,qcVersion,freqData);
+figdir=[indir(1:end-5),'pidPlots/wholeFlights/temperatures/'];
 
-% if strcmp(project,'otrec')
-%     indir='/scr/sleet2/rsfdata/projects/otrec/hcr/qc2/cfradial/development/pid/10hz/';
-% elseif strcmp(project,'socrates')
-%     indir='/scr/snow2/rsfdata/projects/socrates/hcr/qc2/cfradial/development/pid/10hz/';
-% end
-% 
-% modeldir=[indir(1:end-30),'mat/pid/10hz/'];
-
-figdir=[indir(1:end-5),'pidPlots/wholeFlights/'];
+modeldir=[indir(1:end-30),'mat/pid/10hz/'];
 
 infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_',project,'_data.txt'];
 
 caseList = table2array(readtable(infile));
 
-cscale_hcr=[1,0,0; 1,0.6,0.47; 0,1,0; 0,0.7,0; 0,0,1; 1,0,1; 0.5,0,0; 1,1,0; 0,1,1; 0,0,0; 0.5,0.5,0.5];
+cscale_hcr=[1,0,0; 1,0.6,0.47; 0,1,0; 0,0.7,0; 0,0,1; 1,0,1; 0.5,0,0; 1,1,0; 0,1,1];
+units_str_hcr={'Rain','Supercooled Rain','Drizzle','Supercooled Drizzle','Cloud Liquid','Supercooled Cloud Liquid','Mixed Phase','Large Frozen','Small Frozen'};
+        
 
-units_str_hcr={'Rain','Supercooled Rain','Drizzle','Supercooled Drizzle','Cloud Liquid','Supercooled Cloud Liquid',...
-    'Mixed Phase','Large Frozen','Small Frozen','Precip','Cloud'};
-
-for aa=1:size(caseList,1)
+for aa=2:size(caseList,1)
     disp(['Flight ',num2str(aa)]);
     disp('Loading HCR data.')
     disp(['Starting at ',datestr(datetime('now'),'yyyy-mm-dd HH:MM')]);
@@ -58,7 +53,7 @@ for aa=1:size(caseList,1)
     
     data=[];
     
-    data.DBZ = [];
+    data.TEMP = [];
     data.FLAG=[];
         
     dataVars=fieldnames(data);
@@ -91,9 +86,7 @@ for aa=1:size(caseList,1)
     disp('Plotting ...');
     
     startPlot=startTime;
-       
-    data.DBZ(data.FLAG>1)=nan;
-    
+           
     while startPlot<endTime
         
         close all
@@ -102,9 +95,9 @@ for aa=1:size(caseList,1)
         timeInds=find(data.time>=startPlot & data.time<=endPlot);
         
         timePlot=data.time(timeInds);
-        dbzPlot=data.DBZ(:,timeInds);
+        tempPlot=data.TEMP(1,timeInds);
         
-        if sum(sum(~isnan(dbzPlot)))~=0
+        if sum(sum(~isnan(tempPlot)))~=0
             aslPlot=data.asl(:,timeInds);
             
             timeIndsPID=find(timePID>=startPlot & timePID<=endPlot);
@@ -119,16 +112,14 @@ for aa=1:size(caseList,1)
             colormap jet
             
             hold on
-            surf(timePlot,aslPlot./1000,dbzPlot,'edgecolor','none');
-            view(2);
-            ylabel('Altitude (km)');
+            plot(timePlot,tempPlot,'-k','linewidth',2);
+            ylabel('Temperature (C)');
             caxis([-35 25]);
-            ylim([0 ylimUpper]);
+            ylim([-70 40]);
             xlim([timePlot(1),timePlot(end)]);
-            colorbar
             grid on
             box on
-            title('Reflectivity (dBZ)')
+            title('Temperature')
             s1pos=s1.Position;
             
             s2=subplot(2,1,2);
@@ -138,11 +129,11 @@ for aa=1:size(caseList,1)
             view(2);
             colormap(s2,cscale_hcr);
             cb=colorbar;
-            cb.Ticks=1:11;
+            cb.Ticks=1:9;
             cb.TickLabels=units_str_hcr;
             ylabel('Altitude (km)');
             title(['HCR particle ID']);
-            caxis([.5 11.5]);
+            caxis([.5 9.5]);
             ylim([0 ylimUpper]);
             xlim([timePlot(1),timePlot(end)]);
             
@@ -152,7 +143,7 @@ for aa=1:size(caseList,1)
             s2.Position=[s2pos(1),s2pos(2),s1pos(3),s2pos(4)];
             
             set(gcf,'PaperPositionMode','auto')
-            print(f1,[figdir,project,'_Flight',num2str(aa),'_pid_',datestr(timePlot(1),'yyyymmdd_HHMMSS'),'_to_',datestr(timePlot(end),'yyyymmdd_HHMMSS')],'-dpng','-r0')
+            print(f1,[figdir,project,'_Flight',num2str(aa),'_pidTemperature_',datestr(timePlot(1),'yyyymmdd_HHMMSS'),'_to_',datestr(timePlot(end),'yyyymmdd_HHMMSS')],'-dpng','-r0')
         end
         startPlot=endPlot;
     end

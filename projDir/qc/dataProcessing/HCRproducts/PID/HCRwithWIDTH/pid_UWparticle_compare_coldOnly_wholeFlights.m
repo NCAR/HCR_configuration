@@ -6,15 +6,14 @@ close all;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Input variables %%%%%%%%%%%%%%%%%%%%%%%%%%
 
 project='socrates'; %socrates, aristo, cset, otrec
-quality='qc3'; %field, qc1, or qc2
-freqData='10hz';
-qcVersion='v3.0';
+quality='qc2'; %field, qc1, or qc2
+% dataFreq='10hz';
+% qcVersion='v2.1';
 whichModel='era5';
 
 minPixNumUW=5;
-largeUW=0; % Set to 1 when we want to use only larges particles
 
-HCRrangePix=5;
+HCRrangePix=10;
 HCRtimePix=20;
 
 plotOn=1;
@@ -23,13 +22,11 @@ showPlot='off';
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-indir=HCRdir(project,quality,qcVersion,freqData);
-
-% if strcmp(project,'otrec')
-%     indir='/scr/sleet2/rsfdata/projects/otrec/hcr/qc2/cfradial/development/pid/10hz/';
-% elseif strcmp(project,'socrates')
-%     indir='/scr/snow2/rsfdata/projects/socrates/hcr/qc2/cfradial/development/pid/10hz/';
-% end
+if strcmp(project,'otrec')
+    indir='/scr/sleet2/rsfdata/projects/otrec/hcr/qc2/cfradial/development/pid/10hz/';
+elseif strcmp(project,'socrates')
+    indir='/scr/snow2/rsfdata/projects/socrates/hcr/qc2/cfradial/development/pid/10hz/';
+end
 
 %% Get times of UW data
 
@@ -51,11 +48,10 @@ end
 
 %% HCR data
 
-figdir=[indir(1:end-5),'pidPlots/comparePID_UW_wholeFlights/'];
+figdir=[indir(1:end-5),'pidPlots/comparePID_UW_wholeFlights_coldOnly/'];
 
-cscale_hcr=[1,0,0; 1,0.6,0.47; 0,1,0; 0,0.7,0; 0,0,1; 1,0,1; 0.5,0,0; 1,1,0; 0,1,1; 0,0,0; 0.5,0.5,0.5];
-units_str_hcr={'Rain','Supercooled Rain','Drizzle','Supercooled Drizzle','Cloud Liquid','Supercooled Cloud Liquid',...
-    'Mixed Phase','Large Frozen','Small Frozen','Precip','Cloud'};
+cscale_hcr=[1,0,0; 1,0.6,0.47; 0,1,0; 0,0.7,0; 0,0,1; 1,0,1; 0.5,0,0; 1,1,0; 0,1,1];
+units_str_hcr={'Rain','Supercooled Rain','Drizzle','Supercooled Drizzle','Cloud Liquid','Supercooled Cloud Liquid','Mixed Phase','Large Frozen','Small Frozen'};
 
 cscale_hcr_2=[1 0 0;0 1 0;0 0 1];
 units_str_hcr_2={'Liquid','Mixed','Frozen'};
@@ -124,8 +120,10 @@ for aa=1:14
        
         data=[];
         
-        data.DBZ_MASKED = [];
+        data.DBZ = [];
+        data.FLAG=[];
         data.PID=[];
+        data.MELTING_LAYER=[];
                 
         dataVars=fieldnames(data);
                 
@@ -146,6 +144,8 @@ for aa=1:14
             continue
         end
         
+        data.DBZ(data.FLAG>1)=nan;
+        data.PID(data.MELTING_LAYER<20)=nan;
         
         %% Find largest
         countAllFlip=flipud(countAll);
@@ -155,14 +155,8 @@ for aa=1:14
         indMat=repmat((1:size(countAll,1))',1,size(countAll,2));
         indMat(countAll==0)=nan;
         indMat(cumSumAllBack<minPixNumUW)=nan;
-
-        if largeUW
-            rowsGood=max(indMat,[],1,'omitnan');
-        else
-            rowsGood=ones(1,size(indMat,2));
-            rowsGood(sumAll==0)=nan;
-        end
-
+        
+        rowsGood=max(indMat,[],1,'omitnan');
         colsGood=find(~isnan(rowsGood));
         rowsGood=rowsGood(colsGood);
         
@@ -187,7 +181,7 @@ for aa=1:14
         hcrLiqIce=nan(size(data.PID));
         hcrLiqIce(data.PID<=6)=1;
         hcrLiqIce(data.PID==7)=2;
-        hcrLiqIce(data.PID>=8 & data.PID<10)=3;
+        hcrLiqIce(data.PID>=8)=3;
         
         liqFrac_HCR_P=nan(length(ptime),6);
         goodIndsP=find(~isnan(liqFrac));
@@ -251,7 +245,7 @@ for aa=1:14
             colormap jet
             
             hold on
-            surf(data.time,data.asl./1000,data.DBZ_MASKED,'edgecolor','none');
+            surf(data.time,data.asl./1000,data.DBZ,'edgecolor','none');
             view(2);
             ylabel('Altitude (km)');
             caxis([-35 25]);
@@ -262,7 +256,6 @@ for aa=1:14
             title('Reflectivity (dBZ)')
             plot(data.time,data.altitude./1000,'-k','linewidth',2);
             s1pos=s1.Position;
-            s1.Position=[s1pos(1),s1pos(2),s1pos(3),s1pos(4)];
             
             s2=subplot(4,1,2);
             
@@ -271,14 +264,14 @@ for aa=1:14
             view(2);
             colormap(s2,cscale_hcr);
             cb=colorbar;
-            cb.Ticks=1:11;
+            cb.Ticks=1:9;
             cb.TickLabels=units_str_hcr;
             ylabel('Altitude (km)');
             title(['HCR particle ID']);
             
             plot(data.time,data.altitude./1000,'-k','linewidth',2);
             
-            caxis([.5 11.5]);
+            caxis([.5 9.5]);
             ylim(ylims);
             xlim([data.time(1),data.time(end)]);
             
@@ -404,9 +397,6 @@ for ii=1:length(lowBound)
     set(gcf,'PaperPositionMode','auto')
     print(f1,[figdir,project,'_stats_Largest_point',num2str(lowBound(ii)*10),'point',num2str(highBound(ii)*10),'.png'],'-dpng','-r0')
 
-    if ii==3
-        save([figdir,'hitMissTable.mat'],'hmTableL');
-    end
 end
 
 %% Size of different PID classes
@@ -427,7 +417,7 @@ f1 = figure('Position',[200 500 800 700],'DefaultAxesFontSize',12,'visible','on'
 hold on
 
 errorbar(1:9,pidSize.*1000,pidStd.*1000,'sk','MarkerSize',1,'linewidth',1.5,'capsize',15);
-scatter(1:9,pidSize.*1000,150,cscale_hcr(1:9,:),'filled','MarkerEdgeColor','k','linewidth',2);
+scatter(1:9,pidSize.*1000,150,cscale_hcr,'filled','MarkerEdgeColor','k','linewidth',2);
 %errorbar(1:9,pidSize,pidStd);
 xlim([0 10]);
 xticks(1:9);
@@ -441,61 +431,3 @@ title('Mean particle size');
 
 set(gcf,'PaperPositionMode','auto')
 print([figdir,project,'_meanPartSizePID.png'],'-dpng','-r0');
-
-save([figdir,'sizes.mat'],'pidSize','pidStd');
-
-%% Save table
-
-save([figdir,'compTable.mat'],'outTableAll');
-
-%% Scatter plot
-centers={0.05:0.1:0.95 0.05:0.1:0.95};
-cm=jet(230);
-
-close all
-f1 = figure('Position',[200 200 1400 1000],'DefaultAxesFontSize',12,'visible','on','renderer','painters');
-colormap(cm(30:200,:));
-
-for ii=1:9
-    pidTI=find(outTableAll.pidHCR==ii);
-    
-    lfU=outTableAll.numLiqHCR(pidTI)./outTableAll.numAllHCR(pidTI);
-    lfH=outTableAll.numLiqLargestP(pidTI)./outTableAll.numAllLargestP(pidTI);
-    
-    lfUH=cat(2,lfU,lfH);
-    lfUH(any(isnan(lfUH),2),:)=[];
-    
-    subplot(3,3,ii)
-    hist3(lfUH,'Ctrs',centers,'CdataMode','auto','edgecolor','none');
-    view(2)
-    xlim([0 1])
-    ylim([0 1])
-    colorbar
-    
-    title([units_str_hcr{ii},' (',num2str(size(lfUH,1)),')']);
-    
-    xlabel('HCR')
-    ylabel('UWILD')
-end
-
-set(gcf,'PaperPositionMode','auto')
-print([figdir,project,'_heatMapCats.png'],'-dpng','-r0');
-
-f1 = figure('Position',[200 200 600 500],'DefaultAxesFontSize',12,'visible','on','renderer','painters');
-colormap(cm(30:200,:));
-
-liqFracUW_HCR=cat(2,liqFracPallL,liqFracHCRall);
-liqFracUW_HCR(any(isnan(liqFracUW_HCR),2),:)=[];
-
-hist3(liqFracUW_HCR,'Ctrs',centers,'CdataMode','auto');
-view(2)
-xlim([0 1])
-ylim([0 1])
-colorbar
-title(['All (',num2str(size(liqFracUW_HCR,1)),')']);
-
-xlabel('HCR')
-ylabel('UWILD')
-
-set(gcf,'PaperPositionMode','auto')
-print([figdir,project,'_heatMapAll.png'],'-dpng','-r0');

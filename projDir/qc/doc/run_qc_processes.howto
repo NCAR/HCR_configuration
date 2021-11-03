@@ -310,6 +310,20 @@ $PROJ_DIR/qc/dataProcessing/biasInFiles/cal_socrates_era5file.txt
 $PROJ_DIR/qc/dataProcessing/determine_bias_nadir.m
 
 #################################################################
+#################################################################
+
+# 2Hz and merge with HSRL
+
+#################################################################
+#################################################################
+# Create 2hz HCR data
+
+# Run RadxDwellCombine on 10hz data
+$PROJ_DIR/qc/scripts/run_RadxDwellCombine.qc.2hz.socrates
+# which runs with the params file
+$PROJ_DIR/qc/params/RadxDwellCombine.qc.2hz
+
+#################################################################
 # Copy HSRL moments data into HCR QC data area - 2Hz data
 #
 # The HSRL moments are computed using pythons scripts in the
