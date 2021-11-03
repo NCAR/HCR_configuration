@@ -475,6 +475,21 @@ stats_method_fields = {
     field_name = "FLAG",
     stats_method = DWELL_STATS_DISCRETE_MODE
   }
+  ,
+  {
+    field_name = "PARTITION_2D",
+    stats_method = DWELL_STATS_DISCRETE_MODE
+  }
+  ,
+  {
+    field_name = "PARTITION_1D",
+    stats_method = DWELL_STATS_DISCRETE_MODE
+  }
+  ,
+  {
+    field_name = "PID",
+    stats_method = DWELL_STATS_DISCRETE_MODE
+  }
 };
 
 //======================================================================
