@@ -45,3 +45,9 @@ projDir/control/proc_list
 
 # Eclipse-generated files
 .project
+
+# matlab-generated ? dirs
+
+?
+*.asv
+
