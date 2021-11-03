@@ -391,7 +391,9 @@ center_dwell_on_time = TRUE;
 //
 // Method for computing stats on the dwell.
 //
-// MIDDLE refers to the middle ray in the dwell sequence.
+// MIDDLE refers to the middle ray in the dwell sequence. The 
+//   DISCRETE_MODE computes applies only to discrete (integer) fields, and 
+//   returns the most common entry in a discrete data set.
 //
 //
 // Type: enum
@@ -401,6 +403,7 @@ center_dwell_on_time = TRUE;
 //     DWELL_STATS_MAXIMUM
 //     DWELL_STATS_MINIMUM
 //     DWELL_STATS_MIDDLE
+//     DWELL_STATS_DISCRETE_MODE
 //
 
 dwell_stats_method = DWELL_STATS_MEDIAN;
@@ -461,6 +464,7 @@ set_stats_method_for_individual_fields = TRUE;
 //          DWELL_STATS_MAXIMUM
 //          DWELL_STATS_MINIMUM
 //          DWELL_STATS_MIDDLE
+//          DWELL_STATS_DISCRETE_MODE
 //   }
 //
 // 1D array - variable length.
@@ -469,7 +473,7 @@ set_stats_method_for_individual_fields = TRUE;
 stats_method_fields = {
   {
     field_name = "FLAG",
-    stats_method = DWELL_STATS_MEDIAN
+    stats_method = DWELL_STATS_DISCRETE_MODE
   }
 };
 
