@@ -1,8 +1,5 @@
-function data = preProcessPID(data,convThresh,widthThresh)
+function data = preProcessPID(data,convThresh)
 % Remove fields where they are not suitable
-
-% Censor spectrum width
-data.WIDTH(data.SNR<5)=nan;
 
 %Reverse up pointing vel
 data.VEL_MASKED(:,data.elevation>0)=-data.VEL_MASKED(:,data.elevation>0);
@@ -16,15 +13,10 @@ thirdLDR=find(isnan(data.LDR(20,:)));
 data.LDR(19,thirdLDR)=nan;
 data.LDR(18,thirdLDR)=nan;
 
-% Sometimes there are artefacts in the first gate of WIDTH
-secondWIDTH=data.WIDTH(19,:);
-firstWIDTH=data.WIDTH(18,:);
+% Remove LDR below melting layer
+data.LDR(data.MELTING_LAYER==10 & data.LDR<-8)=nan;
 
-outWIDTH=find((firstWIDTH>0.5 & firstWIDTH-secondWIDTH>0.4) | isnan(secondWIDTH));
-data.WIDTH(18,outWIDTH)=nan;
-
-% Remove data with too much VELTEXT below above layer
+% Remove data with too much VELTEXT above melting layer
 data.VEL_MASKED((data.VELTEXT>convThresh | isnan(data.VELTEXT)) & data.MELTING_LAYER==20)=nan;
-data.WIDTH((data.VELTEXT>convThresh | isnan(data.VELTEXT)) & data.WIDTH>widthThresh & data.MELTING_LAYER==20)=nan;
 
 end

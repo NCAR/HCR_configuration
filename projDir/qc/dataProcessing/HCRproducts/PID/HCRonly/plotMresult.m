@@ -11,11 +11,7 @@ timeMat=repmat(data.time,size(data.TEMP,1),1);
 
 f1=figure('DefaultAxesFontSize',12,'Position',[0 300 2300 1200],'visible','off');
 
-if size(m,1)==5
-    titles={'DBZ','LDR','VEL','WIDTH','TEMP'};
-elseif size(m,1)==4
-    titles={'DBZ','VEL','WIDTH','TEMP'};
-end
+titles={'DBZ','LDR','VEL','TEMP'};
 
 ylimits=plotIn.ylimits;
 

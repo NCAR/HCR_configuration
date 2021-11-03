@@ -44,13 +44,6 @@ vel1.mixed=[-100,0;vel.mixed(1),0;vel.mixed(2),1;100,1];
 vel1.lfrozen=[-100,0;vel.lfrozen(1),0;vel.lfrozen(2),1;100,1];
 vel1.sfrozen=[-100,1;vel.sfrozen(1),1;vel.sfrozen(2),0;100,0];
 
-width1.rain=[-100,0;width.rain(1),0;width.rain(2),1;100,1];
-width1.drizzle=[-100,0;width.drizzle(1),0;width.drizzle(2),1;100,1];
-width1.cloud=[-100,0;width.cloud(1),0;width.cloud(2),1;100,1];
-width1.mixed=[-100,1;width.mixed(1),1;width.mixed(2),0;100,0];
-width1.lfrozen=[-100,1;width.lfrozen(1),1;width.lfrozen(2),0;100,0];
-width1.sfrozen=[-100,1;width.sfrozen(1),1;width.sfrozen(2),0;100,0];
-
 temp1.rain=[-100,0;temp.rain(1),0;temp.rain(2),1;100,1];
 temp1.drizzle=[-100,1;100,1];
 temp1.cloud=[-100,1;100,1];
@@ -71,7 +64,7 @@ f1=figure('DefaultAxesFontSize',12,'Position',[0 300 1200 1200],'visible','on','
 offset=0:0.05:0.25;
 
 % DBZ
-s1=subplot(5,1,1);
+s1=subplot(4,1,1);
 hold on
 for ii=1:length(fieldsIn)
     plot(dbz1.(fieldsIn{ii})(:,1),dbz1.(fieldsIn{ii})(:,2)+offset(ii),'-','color',colorsPlot(ii,:),'linewidth',2);
@@ -95,7 +88,7 @@ s1.Position=s1pos;
 
 
 % LDR
-s2=subplot(5,1,2);
+s2=subplot(4,1,2);
 hold on
 for ii=1:length(fieldsIn)
     plot(ldr1.(fieldsIn{ii})(:,1),ldr1.(fieldsIn{ii})(:,2)+offset(ii),'-','color',colorsPlot(ii,:),'linewidth',2);
@@ -113,7 +106,7 @@ grid on
 box on
 
 % VEL
-s3=subplot(5,1,3);
+s3=subplot(4,1,3);
 hold on
 for ii=1:length(fieldsIn)
     plot(vel1.(fieldsIn{ii})(:,1),vel1.(fieldsIn{ii})(:,2)+offset(ii),'-','color',colorsPlot(ii,:),'linewidth',2);
@@ -130,41 +123,23 @@ s3.XTick=-10:0.5:10;
 grid on
 box on
 
-% WIDTH
-s4=subplot(5,1,4);
-hold on
-for ii=1:length(fieldsIn)
-    plot(width1.(fieldsIn{ii})(:,1),width1.(fieldsIn{ii})(:,2)+offset(ii),'-','color',colorsPlot(ii,:),'linewidth',2);
-end
-ylim([-0.25,1.5]);
-s4.YTick=[0,0.25,1,1.25];
-s4.YTickLabel={'0','0','1','1'};
-
-xlim([-0.5,1]);
-title('WIDTH');
-xlabel('Spectrum width (m s^{-1})');
-
-s4.XTick=-1:0.1:1;
-grid on
-box on
-
 % TEMP
-s5=subplot(5,1,5);
+s4=subplot(4,1,4);
 hold on
 for ii=1:length(fieldsIn)
     plot(temp1.(fieldsIn{ii})(:,1),temp1.(fieldsIn{ii})(:,2)+offset(ii),'-','color',colorsPlot(ii,:),'linewidth',2);
 end
 ylim([-0.25,1.5]);
-s5.YTick=[0,0.25,1,1.25];
-s5.YTickLabel={'0','0','1','1'};
+s4.YTick=[0,0.25,1,1.25];
+s4.YTickLabel={'0','0','1','1'};
 
 xlim([-60,20]);
 title('TEMP');
 xlabel('Temperature (C)');
 
-s5.XTick=-60:5:20;
+s4.XTick=-60:5:20;
 grid on
 box on
 
 set(gcf,'PaperPositionMode','auto')
-print(f1,[figdir,project,'_pid_membershipCoeffs_LDR.png'],'-dpng','-r0')
+print(f1,[figdir,project,'_pid_membershipCoeffs.png'],'-dpng','-r0')
