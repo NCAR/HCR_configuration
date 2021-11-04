@@ -11,8 +11,8 @@ freqData='10hz';
 qcVersion='v3.0';
 whichModel='era5';
 
+largeUW=1; % Set to 1 when we want to use only larges particles up to minPixNumUW
 minPixNumUW=5;
-largeUW=0; % Set to 1 when we want to use only larges particles
 
 HCRrangePix=5;
 HCRtimePix=20;
@@ -51,7 +51,11 @@ end
 
 %% HCR data
 
-figdir=[indir(1:end-5),'pidPlots/comparePID_UW_wholeFlights/'];
+if largeUW
+    figdir=[indir(1:end-5),'pidPlots/comparePID_UW_largest/'];
+else
+    figdir=[indir(1:end-5),'pidPlots/comparePID_UW_all/'];
+end
 
 cscale_hcr=[1,0,0; 1,0.6,0.47; 0,1,0; 0,0.7,0; 0,0,1; 1,0,1; 0.5,0,0; 1,1,0; 0,1,1; 0,0,0; 0.5,0.5,0.5];
 units_str_hcr={'Rain','Supercooled Rain','Drizzle','Supercooled Drizzle','Cloud Liquid','Supercooled Cloud Liquid',...
@@ -148,18 +152,18 @@ for aa=1:14
         
         
         %% Find largest
-        countAllFlip=flipud(countAll);
-        cumSumAll=cumsum(countAllFlip);
-        cumSumAllBack=flipud(cumSumAll);
-        
-        indMat=repmat((1:size(countAll,1))',1,size(countAll,2));
-        indMat(countAll==0)=nan;
-        indMat(cumSumAllBack<minPixNumUW)=nan;
-
         if largeUW
+            countAllFlip=flipud(countAll);
+            cumSumAll=cumsum(countAllFlip);
+            cumSumAllBack=flipud(cumSumAll);
+
+            indMat=repmat((1:size(countAll,1))',1,size(countAll,2));
+            indMat(countAll==0)=nan;
+            indMat(cumSumAllBack<minPixNumUW)=nan;
+
             rowsGood=max(indMat,[],1,'omitnan');
         else
-            rowsGood=ones(1,size(indMat,2));
+            rowsGood=ones(1,size(countAll,2));
             rowsGood(sumAll==0)=nan;
         end
 
@@ -242,7 +246,8 @@ for aa=1:14
             
             close all
             
-            ylims=[max([0,floor(min(data.altitude./1000))]),ceil(max(data.altitude./1000))];
+            %ylims=[max([0,floor(min(data.altitude./1000))]),ceil(max(data.altitude./1000))];
+            ylims=[0,ceil(max(data.altitude./1000))];
             
             f1 = figure('Position',[200 500 1800 1200],'DefaultAxesFontSize',12,'visible',showPlot);
             
@@ -290,11 +295,11 @@ for aa=1:14
             s3=subplot(4,1,3);
             
             hold on
-            surf(data.time,data.asl./1000,data.PID,'edgecolor','none');
+            surf(data.time,data.asl./1000,hcrLiqIce,'edgecolor','none');
             view(2);
             colormap(s3,cscale_hcr_2);
             cb=colorbar;
-            cb.Ticks=6:8;
+            cb.Ticks=1:3;
             cb.TickLabels=units_str_hcr_2;
             ylabel('Altitude (km)');
             title(['HCR particle ID']);
@@ -302,7 +307,7 @@ for aa=1:14
             scatter(ptime,ttSync.Var1./1000,20,col1DL,'filled');
             set(gca,'clim',[0,1]);
             
-            caxis([5.5 8.5]);
+            caxis([0.5 3.5]);
             ylim(ylims);
             xlim([data.time(1),data.time(end)]);
             
@@ -328,7 +333,11 @@ for aa=1:14
             yticks(0:0.3:3);
             xlim([data.time(1),data.time(end)]);
             grid on
-            title('Liquid fraction and size of largest particles');
+            if largeUW
+                title('Liquid fraction and size of largest particles');
+            else
+                title('Liquid fraction and size of particles');
+            end
             legend('UW','HCR','Size');
             s4pos=s4.Position;
             s4.Position=[s4pos(1),s4pos(2),s1pos(3),s4pos(4)];
@@ -394,15 +403,27 @@ for ii=1:length(lowBound)
     axp = struct(ax);       %you will get a warning
     axp.Axes.XAxisLocation = 'top';
     h.ColorbarVisible = 'off';
-    
+
     h.XLabel = 'HCR';
-    h.YLabel = 'UW largest particles';
+    if largeUW
+        h.YLabel = 'UW largest particles';
+    else
+        h.YLabel = 'UW particles';
+    end
     h.CellLabelFormat = '%.1f';
-    h.Title = ['Largest. Boundaries: ',num2str(lowBound(ii)),', ',num2str(highBound(ii)),'. Correct: ',...
-        num2str(hmNormL(1,1)+hmNormL(2,2)+hmNormL(3,3),3),'%. Correlation: ',num2str(corrCoeffL(2,1),2),'.'];
-    
-    set(gcf,'PaperPositionMode','auto')
-    print(f1,[figdir,project,'_stats_Largest_point',num2str(lowBound(ii)*10),'point',num2str(highBound(ii)*10),'.png'],'-dpng','-r0')
+    if largeUW
+        h.Title = ['Largest. Boundaries: ',num2str(lowBound(ii)),', ',num2str(highBound(ii)),'. Correct: ',...
+            num2str(hmNormL(1,1)+hmNormL(2,2)+hmNormL(3,3),3),'%. Correlation: ',num2str(corrCoeffL(2,1),2),'.'];
+
+        set(gcf,'PaperPositionMode','auto')
+        print(f1,[figdir,project,'_stats_Largest_point',num2str(lowBound(ii)*10),'point',num2str(highBound(ii)*10),'.png'],'-dpng','-r0')
+    else
+        h.Title = ['Boundaries: ',num2str(lowBound(ii)),', ',num2str(highBound(ii)),'. Correct: ',...
+            num2str(hmNormL(1,1)+hmNormL(2,2)+hmNormL(3,3),3),'%. Correlation: ',num2str(corrCoeffL(2,1),2),'.'];
+
+        set(gcf,'PaperPositionMode','auto')
+        print(f1,[figdir,project,'_stats_point',num2str(lowBound(ii)*10),'point',num2str(highBound(ii)*10),'.png'],'-dpng','-r0')
+    end
 
     if ii==3
         save([figdir,'hitMissTable.mat'],'hmTableL');
