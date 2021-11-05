@@ -29,13 +29,17 @@ for ii=1:mixedAreas.NumObjects
     meltArea=melt(pixInds);
     belowFrac=sum(meltArea<20)./length(pixInds);
     if belowFrac>0.8
+        thisMat=zeros(size(conv));
+        thisMat(pixInds)=1;
         [r c]=ind2sub(size(conv),pixInds);
         ucols=unique(c);
         convCols=conv(:,ucols);
         meltCols=melt(:,ucols);
+        thisCols=thisMat(:,ucols);
         if median(elev(ucols))<=0 % We treat all as up pointing
             convCols=flipud(convCols);
             meltCols=flipud(meltCols);
+            thisCols=flipud(thisCols);
         end
         checkCols=nan(size(meltCols));
         for jj=1:length(ucols);
@@ -48,7 +52,15 @@ for ii=1:mixedAreas.NumObjects
             if isempty(lastInd)
                 lastInd=length(meltCol);
             end
-            checkCols(firstInd:lastInd,jj)=convCols(firstInd:lastInd,jj);
+            % Remove not connected
+            lastMixed=max(find(thisCols(:,jj)==1));
+            testConv=convCols(:,jj);
+            testConv(1:lastMixed)=1;
+            firstNan=min(find(isnan(testConv)));
+            if lastInd>firstNan
+                lastInd=max([firstInd,firstNan]);
+            end
+            checkCols(firstInd:lastInd,jj)=convCols(firstInd:lastInd,jj);            
         end
         stratPerc=length(find(checkCols<stratMixed))/length(find(~isnan(checkCols)));
 
@@ -57,11 +69,11 @@ for ii=1:mixedAreas.NumObjects
         if stratPerc>0.8 & medThick>20
             maskMixed(pixInds)=0;
             conv(pixInds)=0;
-        elseif median(elev(ucols))<=0 % If pointing down and closest pixel to plane is stratiform
+        elseif median(elev(ucols))<=0 % If pointing down and closest pixel to plane is stratiform and there are a significant number of near plane pixels
             closest=checkCols(753,:);
             if sum(~isnan(closest))~=0
                 nonStrat=length(find(closest>=stratMixed));
-                if nonStrat==0
+                if nonStrat==0 & sum(~isnan(closest))./length(ucols)>0.1
                     maskMixed(pixInds)=0;
                     conv(pixInds)=0;
                 end

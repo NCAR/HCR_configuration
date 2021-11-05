@@ -36,7 +36,7 @@ for ii=1:convAreas.NumObjects
 
     thisMask=imdilate(thisMask,strel('disk',10));
     thisFlag=flag(thisMask==1);
-    if any(thisFlag==3);
+    if any(thisFlag==3) & min(min(asl(convAreas.PixelIdxList{ii})))<5000
         extinctY=1;
     end
 
