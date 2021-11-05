@@ -41,9 +41,33 @@ for ii=1:size(belowMelt,2)
 end
 
 % Replace with closest warm pixel
-[oldR2 oldC2]=find(~isnan(classOut) & replaceMat==0 & data.MELTING_LAYER==10 & classOut~=7 & classOut~=8 & classOut~=9);
+[oldR2 oldC2]=find(~isnan(classOut) & replaceMat2==0 & data.MELTING_LAYER==10 & classOut~=7 & classOut~=8 & classOut~=9);
 [addR2 addC2]=find(replaceMat2==1);
 idx = knnsearch([oldR2 oldC2], [addR2 addC2]);
 nearest_OldValue2 = classOut(sub2ind(size(classOut), oldR2(idx), oldC2(idx)));
 classOut(sub2ind(size(classOut), addR2, addC2))=nearest_OldValue2;
+
+% Remove frozen from clouds that are completely below the melting layer
+pidMask=~isnan(classOut);
+maskAreas=bwconncomp(pidMask);
+
+replaceMat3=zeros(size(classOut));
+
+for ii=1:maskAreas.NumObjects
+    pixArea=maskAreas.PixelIdxList{ii};
+    belowFrac=length(find(data.MELTING_LAYER(pixArea)==10))./length(pixArea);
+    if belowFrac>0.9
+        pidArea=nan(size(classOut));
+        pidArea(pixArea)=classOut(pixArea);
+        replaceMat3(pidArea>=7 & pidArea<=9)=1;
+    end
+end
+
+% Replace with closest warm pixel
+[oldR3 oldC3]=find(~isnan(classOut) & replaceMat3==0 & data.MELTING_LAYER==10 & classOut~=7 & classOut~=8 & classOut~=9);
+[addR3 addC3]=find(replaceMat3==1);
+idx = knnsearch([oldR3 oldC3], [addR3 addC3]);
+nearest_OldValue3 = classOut(sub2ind(size(classOut), oldR3(idx), oldC3(idx)));
+classOut(sub2ind(size(classOut), addR3, addC3))=nearest_OldValue3;
+
 end

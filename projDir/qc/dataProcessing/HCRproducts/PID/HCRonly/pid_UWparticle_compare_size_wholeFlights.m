@@ -12,7 +12,9 @@ qcVersion='v3.0';
 whichModel='era5';
 
 largeUW=1; % Set to 1 when we want to use only larges particles up to minPixNumUW
-minPixNumUW=5;
+minPixNumUW=20;
+
+coldOnly=1; % Set to 1 when only cold region is desired
 
 HCRrangePix=5;
 HCRtimePix=20;
@@ -51,12 +53,19 @@ end
 
 %% HCR data
 
-if largeUW
-    figdir=[indir(1:end-5),'pidPlots/comparePID_UW_largest/'];
+if coldOnly
+    if largeUW
+        figdir=[indir(1:end-5),'pidPlots/comparePID_UW_largest_cold/'];
+    else
+        figdir=[indir(1:end-5),'pidPlots/comparePID_UW_all_cold/'];
+    end
 else
-    figdir=[indir(1:end-5),'pidPlots/comparePID_UW_all/'];
+    if largeUW
+        figdir=[indir(1:end-5),'pidPlots/comparePID_UW_largest/'];
+    else
+        figdir=[indir(1:end-5),'pidPlots/comparePID_UW_all/'];
+    end
 end
-
 cscale_hcr=[1,0,0; 1,0.6,0.47; 0,1,0; 0,0.7,0; 0,0,1; 1,0,1; 0.5,0,0; 1,1,0; 0,1,1; 0,0,0; 0.5,0.5,0.5];
 units_str_hcr={'Rain','Supercooled Rain','Drizzle','Supercooled Drizzle','Cloud Liquid','Supercooled Cloud Liquid',...
     'Mixed Phase','Large Frozen','Small Frozen','Precip','Cloud'};
@@ -127,10 +136,13 @@ for aa=1:14
         end
        
         data=[];
-        
+
         data.DBZ_MASKED = [];
         data.PID=[];
-                
+        if coldOnly
+            data.MELTING_LAYER=[];
+        end
+
         dataVars=fieldnames(data);
                 
         % Load data
@@ -150,7 +162,10 @@ for aa=1:14
             continue
         end
         
-        
+        if coldOnly
+            data.PID(data.MELTING_LAYER<20)=nan;
+        end
+
         %% Find largest
         if largeUW
             countAllFlip=flipud(countAll);

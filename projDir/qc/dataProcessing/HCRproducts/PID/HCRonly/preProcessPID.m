@@ -19,4 +19,7 @@ data.LDR(data.MELTING_LAYER==10 & data.LDR<-8)=nan;
 % Remove data with too much VELTEXT above melting layer
 data.VEL_MASKED((data.VELTEXT>convThresh | isnan(data.VELTEXT)) & data.MELTING_LAYER==20)=nan;
 
+% Remove temperature data above the melting layer and no LDR
+data.TEMP(data.MELTING_LAYER==20 & isnan(data.LDR))=nan;
+
 end

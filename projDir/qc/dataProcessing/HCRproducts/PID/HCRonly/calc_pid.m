@@ -33,7 +33,7 @@ m=nan(4,size(data.DBZ_MASKED,1),size(data.DBZ_MASKED,2));
 m(1,:,:)=trapmf(data.DBZ_MASKED,[dbz.drizzle(1),dbz.drizzle(2),dbz.drizzle(3),dbz.drizzle(4)]);
 m(2,:,:)=zmf(data.LDR,[ldr.drizzle(1),ldr.drizzle(2)]);
 m(3,:,:)=trapmf(data.VEL_MASKED,[vel.drizzle(1),vel.drizzle(2),vel.drizzle(3),vel.drizzle(4)]);% Houze 2014, Beard and Pruppacher 1969
-m(4,:,:)=1;
+m(4,:,:)=smf(data.TEMP,[temp.drizzle(1),temp.drizzle(2)]);
 
 result(2,:,:)=sum(m.*w',1);
 
@@ -46,7 +46,7 @@ m=nan(4,size(data.DBZ_MASKED,1),size(data.DBZ_MASKED,2));
 m(1,:,:)=zmf(data.DBZ_MASKED,[dbz.cloud(1),dbz.cloud(2)]);
 m(2,:,:)=zmf(data.LDR,[ldr.cloud(1),ldr.cloud(2)]);
 m(3,:,:)=zmf(data.VEL_MASKED,[vel.cloud(1),vel.cloud(2)]); % Houze 2014
-m(4,:,:)=1;
+m(4,:,:)=smf(data.TEMP,[temp.cloud(1),temp.cloud(2)]);
 
 result(3,:,:)=sum(m.*w',1);
 

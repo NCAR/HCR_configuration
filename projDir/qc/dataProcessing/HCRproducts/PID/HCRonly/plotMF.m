@@ -45,8 +45,8 @@ vel1.lfrozen=[-100,0;vel.lfrozen(1),0;vel.lfrozen(2),1;100,1];
 vel1.sfrozen=[-100,1;vel.sfrozen(1),1;vel.sfrozen(2),0;100,0];
 
 temp1.rain=[-100,0;temp.rain(1),0;temp.rain(2),1;100,1];
-temp1.drizzle=[-100,1;100,1];
-temp1.cloud=[-100,1;100,1];
+temp1.drizzle=[-100,0;temp.drizzle(1),0;temp.drizzle(2),1;100,1];
+temp1.cloud=[-100,0;temp.cloud(1),0;temp.cloud(2),1;100,1];
 temp1.mixed=[-100,0;temp.mixed(1),0;temp.mixed(2),1;temp.mixed(3),1;temp.mixed(4),0;100,0];
 temp1.lfrozen=[-100,1;temp.lfrozen(1),1;temp.lfrozen(2),0;100,0];
 temp1.sfrozen=[-100,1;temp.sfrozen(1),1;temp.sfrozen(2),0;100,0];
