@@ -128,6 +128,7 @@ for ii=1:size(caseList,1)
             ncwriteatt(infile,'PARTITION_2D','flag_values',[14, 16, 18, 25, 30, 32, 34, 36, 38]);
             ncwriteatt(infile,'PARTITION_2D','flag_meanings',...
                 'strat_low strat_mid strat_high mixed conv conv_elevated conv_shallow conv_mid conv_deep');
+            ncwriteatt(infile,'PARTITION_2D','is_discrete','true');
             ncwriteatt(infile,'PARTITION_2D','grid_mapping','grid_mapping');
             ncwriteatt(infile,'PARTITION_2D','coordinates','time range');
                         
@@ -137,6 +138,7 @@ for ii=1:size(caseList,1)
             ncwriteatt(infile,'PARTITION_1D','flag_values',[14, 16, 18, 25, 30, 32, 34, 36, 38]);
             ncwriteatt(infile,'PARTITION_1D','flag_meanings',...
                 'strat_low strat_mid strat_high mixed conv conv_elevated conv_shallow conv_mid conv_deep');
+            ncwriteatt(infile,'PARTITION_1D','is_discrete','true');
             ncwriteatt(infile,'PARTITION_1D','grid_mapping','grid_mapping');
             ncwriteatt(infile,'PARTITION_1D','coordinates','time');
         end

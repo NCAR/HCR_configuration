@@ -116,7 +116,7 @@ hcr_data_dir = "$(DATA_DIR)/$(QC_VERSION)/cfradial/$(QC_SUB_VERSION)_full/2hz";
 // Type: string
 //
 
-hsrl_data_dir = "$(DATA_DIR)/$(QC_VERSION)/cfradial/hsrl_moments/2hz";
+hsrl_data_dir = "$(DATA_DIR)/$(QC_VERSION)/cfradial/hsrl_moments/$(QC_SUB_VERSION)/2hz";
 
 ///////////// file_match_time_tolerance_sec ///////////
 //
@@ -193,16 +193,16 @@ ray_match_elevation_tolerance_deg = 10;
 
 hcr_fields = {
   {
-    input_field_name = "DBZ",
+    input_field_name = "DBZ_MASKED",
     output_field_name = "HCR_DBZ",
-    apply_flag = TRUE,
+    apply_flag = FALSE,
     set_to_missing_if_scanning = FALSE
   }
   ,
   {
-    input_field_name = "VEL_CORR",
+    input_field_name = "VEL_MASKED",
     output_field_name = "HCR_VEL",
-    apply_flag = TRUE,
+    apply_flag = FALSE,
     set_to_missing_if_scanning = FALSE
   }
   ,
@@ -237,6 +237,41 @@ hcr_fields = {
   {
     input_field_name = "DBMVC",
     output_field_name = "HCR_DBMVC",
+    apply_flag = FALSE,
+    set_to_missing_if_scanning = FALSE
+  }
+  ,
+  {
+    input_field_name = "MELTING_LAYER",
+    output_field_name = "HCR_MELTING_LAYER",
+    apply_flag = FALSE,
+    set_to_missing_if_scanning = FALSE
+  }
+  ,
+  {
+    input_field_name = "ICING_LEVEL",
+    output_field_name = "HCR_ICING_LEVEL",
+    apply_flag = FALSE,
+    set_to_missing_if_scanning = FALSE
+  }
+  ,
+  {
+    input_field_name = "CONVECTIVITY",
+    output_field_name = "HCR_CONVECTIVITY",
+    apply_flag = FALSE,
+    set_to_missing_if_scanning = FALSE
+  }
+  ,
+  {
+    input_field_name = "PARTITION_2D",
+    output_field_name = "HCR_PARTITION_2D",
+    apply_flag = FALSE,
+    set_to_missing_if_scanning = FALSE
+  }
+  ,
+  {
+    input_field_name = "PARTITION_1D",
+    output_field_name = "HCR_PARTITION_1D",
     apply_flag = FALSE,
     set_to_missing_if_scanning = FALSE
   }
@@ -451,7 +486,7 @@ n_dwells_for_hcr_elev_sdev = 7;
 // Type: string
 //
 
-output_dir = "$(DATA_DIR)/$(QC_VERSION)/cfradial/hcr_hsrl_merge/2hz";
+output_dir = "$(DATA_DIR)/$(QC_VERSION)/cfradial/hcr_hsrl_merge/$(QC_SUB_VERSION)/2hz";
 
 ///////////// append_day_dir_to_output_dir ////////////
 //

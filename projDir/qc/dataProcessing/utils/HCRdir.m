@@ -26,7 +26,7 @@ if strcmp(project,'socrates')
             return
         end
     elseif strcmp(qc,'qc3')
-        if strcmp(freq,'10hz')
+        if strcmp(freq,'10hz') | strcmp(freq,'2hz')
             indir=['/scr/snow2/rsfdata/projects/socrates/hcr/',qc,'/cfradial/',qcVersion,'_full/',freq,'/'];
         else
             disp('The requested data does not exist.');

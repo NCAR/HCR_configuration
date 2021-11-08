@@ -4,9 +4,11 @@ close all;
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-project='cset'; % socrates, cset, aristo, otrec
-quality='qc2'; % field, qc1, qc2
-freqData='10hz';
+project='socrates'; % socrates, cset, aristo, otrec
+quality='qc3'; % field, qc1, qc2, qc3
+freqInData='10hz';
+freqOutData='2hz';
+qcVersion='v3.0';
 whichModel='era5';
 
 formatOut = 'yyyymmdd';
@@ -15,28 +17,26 @@ infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_
 
 caseList = table2array(readtable(infile));
 
-%indir=HCRdir(project,quality,freqData);
-indir=['/run/media/romatsch/RSF0006/rsf/meltingLayer/',project,'/combined/'];
+outdir2hz=HCRdir(project,quality,qcVersion,freqOutData);
 
-%[~,modeldir]=modelDir(project,whichModel,freqData);
-modeldir=['/run/media/romatsch/RSF0006/rsf/meltingLayer/',project,'Mat/'];
+[~,indirMat10hz]=modelDir(project,whichModel,quality,qcVersion,freqInData);
 
-figdir=['/home/romatsch/plots/HCR/meltingLayer/flights/',project,'/combined/'];
+figdir=[outdir2hz(1:end-4),'meltLayerPlots/2hzProcess/'];
 
 %% Run processing
 
 % Go through flights
-for ii=1:size(caseList,1)
+for ii=2:size(caseList,1)
     
     disp(['Flight ',num2str(ii)]);
     
-    clearvars -except caseList figdir formatOut freqData ii indir infile ...
-        modeldir project quality whichModel
+    clearvars -except caseList figdir formatOut freqData ii indirMat10hz infile ...
+        outdir2hz project quality whichModel
     
     startTime=datetime(caseList(ii,1:6));
     endTime=datetime(caseList(ii,7:12));
     
-    fileList=makeFileList(indir,startTime,endTime,'xxxxxx20YYMMDDxhhmmss',1);
+    fileList=makeFileList(outdir2hz,startTime,endTime,'xxxxxx20YYMMDDxhhmmss',1);
     
     % Get model data
     disp('Loading 10hz data ...');
@@ -44,7 +44,7 @@ for ii=1:size(caseList,1)
     model.meltLayer=[];
     model.iceLevel=[];
     
-    model=read_model(model,modeldir,startTime,endTime);
+    model=read_model(model,indirMat10hz,startTime,endTime);
         
     %% Resample model data
     disp('Resampling model data ...');
@@ -367,6 +367,7 @@ for ii=1:size(caseList,1)
         ncwriteatt(infile,'MELTING_LAYER','flag_values',[10, 11, 12, 13, 14, 20, 21, 22, 23, 24]);
         ncwriteatt(infile,'MELTING_LAYER','flag_meanings',...
             'below_iceLev ERA5_zeroDeg_below_iceLev meltLayer_detected_below/at_iceLev meltLayer_interpolated_below/at_iceLev meltLayer_estimated_below/at_iceLev above_iceLev ERA5_zeroDeg_above_iceLev meltLayer_detected_above_iceLev meltLayer_interpolated_above_iceLev meltLayer_estimated_above_iceLev');
+        ncwriteatt(infile,'MELTING_LAYER','is_discrete','true');
         ncwriteatt(infile,'MELTING_LAYER','grid_mapping','grid_mapping');
         ncwriteatt(infile,'MELTING_LAYER','coordinates','time range');
         

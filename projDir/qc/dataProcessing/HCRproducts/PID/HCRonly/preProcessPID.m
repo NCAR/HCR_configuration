@@ -14,7 +14,7 @@ data.LDR(19,thirdLDR)=nan;
 data.LDR(18,thirdLDR)=nan;
 
 % Remove LDR below melting layer
-data.LDR(data.MELTING_LAYER==10 & data.LDR<-8)=nan;
+data.LDR(data.MELTING_LAYER==10 & data.LDR<-20)=nan;
 
 % Remove data with too much VELTEXT above melting layer
 data.VEL_MASKED((data.VELTEXT>convThresh | isnan(data.VELTEXT)) & data.MELTING_LAYER==20)=nan;

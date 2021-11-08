@@ -214,7 +214,8 @@ archive_time_span_secs = 900;
 // Type: string
 //
 
-archive_data_url = "$(DATA_DIR)/$(QC_VERSION)/cfradial/hcr_hsrl_merge/2hz";
+archive_data_url = "$(DATA_DIR)/$(QC_VERSION)/cfradial/hcr_hsrl_merge/$(QC_SUB_VERSION)/2hz";
+
 
 //======================================================================
 //
@@ -357,7 +358,7 @@ fields = {
     raw_name = "HCR_VEL",
     filtered_name = "",
     units = "m/s",
-    color_map = "vel_w_4.colors",
+    color_map = "hcr_vel12.colors",
     shortcut = "1"
   }
   ,
@@ -404,6 +405,42 @@ fields = {
     units = "dBm",
     color_map = "dbm.colors",
     shortcut = "6"
+  }
+  ,
+  {
+    label = "HCR_MELTING_LAYER",
+    raw_name = "HCR_MELTING_LAYER",
+    filtered_name = "",
+    units = "",
+    color_map = "hcr_melting_layer.colors",
+    shortcut = "d"
+  }
+  ,
+  {
+    label = "HCR_CONVECTIVITY",
+    raw_name = "HCR_CONVECTIVITY",
+    filtered_name = "",
+    units = "",
+    color_map = "hcr_convectivity.colors",
+    shortcut = "d"
+  }
+  ,
+  {
+    label = "HCR_PARTITION",
+    raw_name = "HCR_PARTITION_2D",
+    filtered_name = "",
+    units = "",
+    color_map = "hcr_partition.colors",
+    shortcut = "d"
+  }
+  ,
+  {
+    label = "FLAG",
+    raw_name = "FLAG",
+    filtered_name = "",
+    units = "",
+    color_map = "hcr_flag.colors",
+    shortcut = "d"
   }
   ,
   {
@@ -510,7 +547,7 @@ fields = {
     raw_name = "TEMP",
     filtered_name = "",
     units = "C",
-    color_map = "tempC_jet.colors",
+    color_map = "hcr_tempC.colors",
     shortcut = "h"
   }
   ,
@@ -519,7 +556,7 @@ fields = {
     raw_name = "PRESS",
     filtered_name = "",
     units = "hPa",
-    color_map = "pressure_jet.colors",
+    color_map = "hcr_pressure.colors",
     shortcut = "i"
   }
   ,
@@ -528,8 +565,17 @@ fields = {
     raw_name = "RH",
     filtered_name = "",
     units = "%",
-    color_map = "rh_jet.colors",
+    color_map = "hcr_rh.colors",
     shortcut = "j"
+  }
+  ,
+  {
+    label = "PID",
+    raw_name = "PID",
+    filtered_name = "",
+    units = "",
+    color_map = "hcr_pid.colors",
+    shortcut = "d"
   }
 };
 
