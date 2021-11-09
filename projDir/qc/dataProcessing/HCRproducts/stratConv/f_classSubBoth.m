@@ -21,8 +21,6 @@ convAreas=bwconncomp(convMask);
 % Calculate distance between asl and topo
 distAslTopo=asl-topo;
 
-nearSurf=zeros(size(classIn));
-
 for ii=1:convAreas.NumObjects
     % Check if next to aircraft
 
@@ -41,7 +39,7 @@ for ii=1:convAreas.NumObjects
     end
 
     % Check if near surface
-    aslArea=asl(convAreas.PixelIdxList{ii});
+    aslArea=distAslTopo(convAreas.PixelIdxList{ii});
     nearSurfPix=sum(aslArea<500);
     if nearSurfPix==0 & ~extinctY % Not near surface: elevated
         % Near plane check

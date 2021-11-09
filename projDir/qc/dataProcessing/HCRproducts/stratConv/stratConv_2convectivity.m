@@ -5,12 +5,14 @@ close all;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Input variables %%%%%%%%%%%%%%%%%%%%%%%%%%
 
-project='socrates'; %socrates, aristo, cset, otrec
-quality='qc3'; %field, qc1, or qc2
+project='spicule'; %socrates, aristo, cset, otrec
+quality='qc1'; %field, qc1, or qc2
 freqData='10hz';
-qcVersion='v3.0';
+qcVersion='v1.1';
 
-showPlot='off';
+showPlot='on';
+
+blockTransition=1; % Remove data where antenna is in transition
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -36,7 +38,7 @@ caseStart=datetime(caseList.Var1,caseList.Var2,caseList.Var3, ...
 caseEnd=datetime(caseList.Var6,caseList.Var7,caseList.Var8, ...
     caseList.Var9,caseList.Var10,0);
 
-for aa=1:length(caseStart)
+for aa=4:length(caseStart)
     
     disp(['Case ',num2str(aa),' of ',num2str(length(caseStart))]);
     
@@ -56,6 +58,10 @@ for aa=1:length(caseStart)
     data.TEMP=[];
     data.MELTING_LAYER=[];
     data.FLAG=[];
+
+    if blockTransition
+        data.ANTFLAG=[];
+    end
         
     dataVars=fieldnames(data);
     
@@ -70,11 +76,17 @@ for aa=1:length(caseStart)
     end
     
     dataVars=dataVars(~cellfun('isempty',dataVars));
-    
+
     ylimUpper=(max(data.asl(~isnan(data.DBZ_MASKED)))./1000)+0.5;
 
     % Take care of up pointing VEL
     data.VEL_MASKED(:,data.elevation>0)=-data.VEL_MASKED(:,data.elevation>0);
+
+    % Remove data where antenna is in transition
+    if blockTransition
+        data.DBZ_MASKED(:,data.ANTFLAG==5)=nan;
+        data.VEL_MASKED(:,data.ANTFLAG==5)=nan;
+    end
 
     %% Texture from reflectivity and velocity
 
