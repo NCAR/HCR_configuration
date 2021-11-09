@@ -447,10 +447,10 @@ end
 
 %% Size of different PID classes
 
-pidSize=nan(9,1);
-pidStd=nan(9,1);
+pidSize=nan(11,1);
+pidStd=nan(11,1);
 
-for ii=1:9
+for ii=1:11
     pidTI=find(outTableAll.pidHCR==ii);
     sizeT=outTableAll.sizeLargestP(pidTI);
     pidSize(ii)=mean(sizeT,'omitnan');
@@ -462,11 +462,11 @@ close all
 f1 = figure('Position',[200 500 800 700],'DefaultAxesFontSize',12,'visible','on','renderer','painters');
 hold on
 
-errorbar(1:9,pidSize.*1000,pidStd.*1000,'sk','MarkerSize',1,'linewidth',1.5,'capsize',15);
-scatter(1:9,pidSize.*1000,150,cscale_hcr(1:9,:),'filled','MarkerEdgeColor','k','linewidth',2);
+errorbar(1:11,pidSize.*1000,pidStd.*1000,'sk','MarkerSize',1,'linewidth',1.5,'capsize',15);
+scatter(1:11,pidSize.*1000,150,cscale_hcr(1:11,:),'filled','MarkerEdgeColor','k','linewidth',2);
 %errorbar(1:9,pidSize,pidStd);
-xlim([0 10]);
-xticks(1:9);
+xlim([0 12]);
+xticks(1:11);
 xticklabels(units_str_hcr);
 yticks(0:100:4000);
 set(gca, 'YGrid', 'on', 'XGrid', 'off')

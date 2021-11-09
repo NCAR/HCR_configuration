@@ -56,7 +56,8 @@ end
 
 %  Membership functions for mixed phase
 m=nan(4,size(data.DBZ_MASKED,1),size(data.DBZ_MASKED,2));
-m(1,:,:)=smf(data.DBZ_MASKED,[dbz.mixed(1),dbz.mixed(2)]);
+%m(1,:,:)=smf(data.DBZ_MASKED,[dbz.mixed(1),dbz.mixed(2)]);
+m(1,:,:)=1;
 m(2,:,:)=trapmf(data.LDR,[ldr.mixed(1),ldr.mixed(2),ldr.mixed(3),ldr.mixed(4)]);
 m(3,:,:)=smf(data.VEL_MASKED,[vel.mixed(1),vel.mixed(2)]);
 m(4,:,:)=trapmf(data.TEMP,[temp.mixed(1),temp.mixed(2),temp.mixed(3),temp.mixed(4)]);

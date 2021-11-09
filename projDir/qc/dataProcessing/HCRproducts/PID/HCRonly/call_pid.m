@@ -35,7 +35,7 @@ caseStart=datetime(caseList.Var1,caseList.Var2,caseList.Var3, ...
 caseEnd=datetime(caseList.Var6,caseList.Var7,caseList.Var8, ...
     caseList.Var9,caseList.Var10,0);
 
-for aa=1:length(caseStart)
+for aa=23:length(caseStart)
     
     disp(['Case ',num2str(aa),' of ',num2str(length(caseStart))]);
     
@@ -173,7 +173,7 @@ for aa=1:length(caseStart)
         view(2);
         ylim(ylimits);
         xlim([data.time(1),data.time(end)]);
-        caxis([-30 -20]);
+        caxis([-30 -10]);
         colormap(s8,jet);
         colorbar;
         ylabel('Altitude (km)');

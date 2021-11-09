@@ -26,7 +26,7 @@ figdir=[indir(1:end-5),'pidPlots/'];
 dbz1.rain=[-100,0;dbz.rain(1),0;dbz.rain(2),1;100,1];
 dbz1.drizzle=[-100,0;dbz.drizzle(1),0;dbz.drizzle(2),1;dbz.drizzle(3),1;dbz.drizzle(4),0;100,0];
 dbz1.cloud=[-100,1;dbz.cloud(1),1;dbz.cloud(2),0;100,0];
-dbz1.mixed=[-100,0;dbz.mixed(1),0;dbz.mixed(2),1;100,1];
+dbz1.mixed=[-100,1;100,1];
 dbz1.lfrozen=[-100,0;dbz.lfrozen(1),0;dbz.lfrozen(2),1;100,1];
 dbz1.sfrozen=[-100,1;dbz.sfrozen(1),1;dbz.sfrozen(2),0;100,0];
 
