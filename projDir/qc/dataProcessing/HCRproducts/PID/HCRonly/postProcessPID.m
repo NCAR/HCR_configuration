@@ -59,7 +59,7 @@ replaceMat3=zeros(size(classOut));
 for ii=1:maskAreas.NumObjects
     pixArea=maskAreas.PixelIdxList{ii};
     belowFrac=length(find(data.MELTING_LAYER(pixArea)==10))./length(pixArea);
-    if belowFrac>0.9
+    if belowFrac>0.6
         pidArea=nan(size(classOut));
         pidArea(pixArea)=classOut(pixArea);
         replaceMat3(pidArea>=7 & pidArea<=9)=1;

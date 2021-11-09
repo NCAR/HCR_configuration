@@ -130,6 +130,7 @@ for aa=1:size(caseList,1)
             box on
             title('Reflectivity (dBZ)')
             s1pos=s1.Position;
+            s1.Position=[s1pos(1),s1pos(2),s1pos(3),s1pos(4)];
             
             s2=subplot(2,1,2);
             

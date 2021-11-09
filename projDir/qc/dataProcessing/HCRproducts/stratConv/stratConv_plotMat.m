@@ -5,10 +5,10 @@ close all;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Input variables %%%%%%%%%%%%%%%%%%%%%%%%%%
 
-project='socrates'; %socrates, aristo, cset, otrec
-quality='qc3'; %field, qc1, or qc2
+project='spicule'; %socrates, aristo, cset, otrec
+quality='qc1'; %field, qc1, or qc2
 freqData='10hz';
-qcVersion='v3.0';
+qcVersion='v1.1';
 whichModel='era5';
 
 if strcmp(project,'otrec')
