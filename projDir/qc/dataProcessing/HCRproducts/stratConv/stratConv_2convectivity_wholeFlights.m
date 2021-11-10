@@ -13,6 +13,8 @@ whichModel='era5';
 
 saveTime=1;
 
+blockTransition=1; % Remove data where antenna is in transition
+
 indir=HCRdir(project,quality,qcVersion,freqData);
 
 [~,outdir]=modelDir(project,whichModel,quality,qcVersion,freqData);
@@ -49,6 +51,10 @@ for aa=1:size(caseList,1)
     data.TEMP=[];
     data.MELTING_LAYER=[];
     data.FLAG=[];
+
+    if blockTransition
+        data.ANTFLAG=[];
+    end
         
     dataVars=fieldnames(data);
     
@@ -68,6 +74,12 @@ for aa=1:size(caseList,1)
 
     % Take care of up pointing VEL
     data.VEL_MASKED(:,data.elevation>0)=-data.VEL_MASKED(:,data.elevation>0);
+
+    % Remove data where antenna is in transition
+    if blockTransition
+        data.DBZ_MASKED(:,data.ANTFLAG==5)=nan;
+        data.VEL_MASKED(:,data.ANTFLAG==5)=nan;
+    end
 
     %% Texture from reflectivity and velocity
 
