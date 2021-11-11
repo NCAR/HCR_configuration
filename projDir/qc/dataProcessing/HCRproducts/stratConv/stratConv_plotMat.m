@@ -49,7 +49,7 @@ colmapSC=[0,0.1,0.6;
     0.99,0.77,0.22;
     0.7,0,0];
 
-for aa=1:size(caseList,1)
+for aa=2:size(caseList,1)
     disp(['Flight ',num2str(aa)]);
     disp('Loading HCR data.')
     disp(['Starting at ',datestr(datetime('now'),'yyyy-mm-dd HH:MM')]);
