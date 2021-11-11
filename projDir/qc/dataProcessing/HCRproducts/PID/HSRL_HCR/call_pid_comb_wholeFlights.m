@@ -58,7 +58,7 @@ for aa=1:size(caseList,1)
     data.LDR=[];
     data.TEMP=[];
     data.MELTING_LAYER=[];
-    %data.SNR=[];
+    data.SNR=[];
 
     dataVars=fieldnames(data);
 

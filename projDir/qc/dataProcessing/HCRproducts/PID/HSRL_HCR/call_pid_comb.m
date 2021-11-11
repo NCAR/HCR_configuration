@@ -51,14 +51,19 @@ for aa=1:length(caseStart)
         
         data=[];
         
-        %HCR data
-        data.DBZ_MASKED=[];
-        data.VEL_MASKED=[];
-        data.LDR=[];
+        % HCR
+        data.HCR_DBZ=[];
+        data.HCR_VEL=[];
+        data.HCR_LDR=[];
+        data.HCR_MELTING_LAYER=[];
+
+        % HSRL
+        data.HSRL_Aerosol_Backscatter_Coefficient=[];
+        data.HSRL_Particle_Linear_Depolarization_Ratio=[];
+
+        % TEMP
         data.TEMP=[];
-        data.MELTING_LAYER=[];
-        %data.SNR=[];
-                
+                       
         dataVars=fieldnames(data);
         
         % Load data
@@ -88,7 +93,7 @@ for aa=1:length(caseStart)
         %% Pre process
 
         disp('Pre processing ...');
-        data=preProcessPID(data,convThresh);
+        data=preProcessPIDcomb(data,convThresh);
 
         %% Calculate PID
 
@@ -97,35 +102,35 @@ for aa=1:length(caseStart)
 
         plotIn.figdir=[figdir,'debugPlots/'];
 
-        pid_hcr=calc_pid(data,plotIn);
+        pid_hcr_hsrl=calc_pid_comb(data,plotIn);
 
         %% Set areas above melting layer with no LDR to cloud or precip
 
-        smallInds=find(data.MELTING_LAYER==20 & isnan(data.LDR) & (pid_hcr==3 | pid_hcr==6));
-        pid_hcr(smallInds)=11;
+        smallInds=find(data.MELTING_LAYER==20 & isnan(data.LDR) & (pid_hcr_hsrl==3 | pid_hcr_hsrl==6));
+        pid_hcr_hsrl(smallInds)=11;
 
         largeInds=find(data.MELTING_LAYER==20 & isnan(data.LDR) & ...
-            (pid_hcr==1 | pid_hcr==2 | pid_hcr==4 | pid_hcr==5));
-        pid_hcr(largeInds)=10;
+            (pid_hcr_hsrl==1 | pid_hcr_hsrl==2 | pid_hcr_hsrl==4 | pid_hcr_hsrl==5));
+        pid_hcr_hsrl(largeInds)=10;
 
         %% Add supercooled
 
         disp('Adding supercooled ...')
-        pid_hcr=addSupercooled(pid_hcr,data);
+        pid_hcr_hsrl=addSupercooledComb(pid_hcr_hsrl,data);
 
         %% Post process
 
         if postProcess
             disp('Post processing ...');
-            pid_hcr=postProcessPID(pid_hcr,data);
+            pid_hcr_hsrl=postProcessPIDcomb(pid_hcr_hsrl,data);
         end
 
         %% Filter
 
         if whichFilter==1
-            pid_hcr=modeFilter(pid_hcr,7,0.7);
+            pid_hcr_hsrl=modeFilter(pid_hcr_hsrl,7,0.7);
         elseif whichFilter==2
-            pid_hcr=coherenceFilter(pid_hcr,7,0.7);
+            pid_hcr_hsrl=coherenceFilter(pid_hcr_hsrl,7,0.7);
         end
 
         %% Scales and units
@@ -224,7 +229,7 @@ for aa=1:length(caseStart)
         grid on
 
         s8=subplot(4,2,8);
-        surf(data.time,data.asl./1000,pid_hcr,'edgecolor','none');
+        surf(data.time,data.asl./1000,pid_hcr_hsrl,'edgecolor','none');
         view(2);
         ylim(ylimits);
         xlim([data.time(1),data.time(end)]);
