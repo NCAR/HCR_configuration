@@ -5,10 +5,10 @@ close all;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Input variables %%%%%%%%%%%%%%%%%%%%%%%%%%
 
-project='otre'; %socrates, aristo, cset, otrec
-quality='qc1'; %field, qc1, or qc2
+project='otrec'; %socrates, aristo, cset, otrec
+quality='qc3'; %field, qc1, or qc2
 freqData='10hz';
-qcVersion='v1.1';
+qcVersion='v3.0';
 
 showPlot='on';
 
@@ -38,7 +38,7 @@ caseStart=datetime(caseList.Var1,caseList.Var2,caseList.Var3, ...
 caseEnd=datetime(caseList.Var6,caseList.Var7,caseList.Var8, ...
     caseList.Var9,caseList.Var10,0);
 
-for aa=1:length(caseStart)
+for aa=23:length(caseStart)
     
     disp(['Case ',num2str(aa),' of ',num2str(length(caseStart))]);
     
