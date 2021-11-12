@@ -71,9 +71,9 @@ while endInd<=size(data.IVc,2) & startInd<size(data.IVc,2)
     % Window
     win=window(@hamming,sampleNum);  % Default window is Hamming
     winWeight=sampleNum/sum(win);
-    win=win*winWeight;
+    winNorm=win*winWeight;
 
-    cIQv=win'.*(data.IVc(:,startInd:endInd)+i*data.QVc(:,startInd:endInd))./sqrt(sampleNum);
+    cIQv=winNorm'.*(data.IVc(:,startInd:endInd)+i*data.QVc(:,startInd:endInd))./sqrt(sampleNum);
 
     %prtThis=mean(prt(startInd:endInd));
     prtThis=prt;
