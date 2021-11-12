@@ -5,7 +5,7 @@ close all;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Input variables %%%%%%%%%%%%%%%%%%%%%%%%%%
 
-project='spicule'; %socrates, aristo, cset, otrec
+project='otre'; %socrates, aristo, cset, otrec
 quality='qc1'; %field, qc1, or qc2
 freqData='10hz';
 qcVersion='v1.1';
