@@ -180,7 +180,7 @@ begin_in_archive_mode = TRUE;
 // Type: string
 //
 
-archive_start_time = "2015 07 01 14 40 00";
+archive_start_time = "2018 01 22 22 45 00";
 
 ///////////// archive_data_url ////////////////////////
 //
@@ -192,7 +192,7 @@ archive_start_time = "2015 07 01 14 40 00";
 // Type: string
 //
 
-archive_data_url = "/scr/snow2/rsfdata/projects/cset/hcr/qc2/cfradial/final/10hz";
+archive_data_url = "$(DATA_DIR)/$(QC_VERSION)/cfradial/$(QC_SUB_VERSION)_full/10hz";
 
 //======================================================================
 //
@@ -315,7 +315,7 @@ color_scale_dir = "$(HOME)/git/HCR_configuration/projDir/display/color_scales";
 
 fields = {
   {
-    label = "DBZ",
+    label = "1Hr_DBZ",
     raw_name = "DBZ",
     filtered_name = "",
     units = "dBZ",
@@ -324,7 +324,7 @@ fields = {
   }
   ,
   {
-    label = "DBZ_MASKED",
+    label = "1Hr_DBZ_MASKED",
     raw_name = "DBZ_MASKED",
     filtered_name = "",
     units = "dBZ",
@@ -333,7 +333,7 @@ fields = {
   }
   ,
   {
-    label = "VEL_CORR",
+    label = "1Hr_VEL_CORR",
     raw_name = "VEL_CORR",
     filtered_name = "",
     units = "m/s",
@@ -342,7 +342,7 @@ fields = {
   }
   ,
   {
-    label = "VEL",
+    label = "1Hr_VEL",
     raw_name = "VEL",
     filtered_name = "",
     units = "m/s",
@@ -351,8 +351,8 @@ fields = {
   }
   ,
   {
-    label = "VEL_RAW",
-    raw_name = "VEL_RAW",
+    label = "1Hr_VEL_MASKED",
+    raw_name = "VEL_MASKED",
     filtered_name = "",
     units = "m/s",
     color_map = "vel_w_8.colors",
@@ -360,7 +360,7 @@ fields = {
   }
   ,
   {
-    label = "WIDTH",
+    label = "1Hr_WIDTH",
     raw_name = "WIDTH",
     filtered_name = "",
     units = "m/s",
@@ -369,16 +369,7 @@ fields = {
   }
   ,
   {
-    label = "WIDTH_RAW",
-    raw_name = "WIDTH_RAW",
-    filtered_name = "",
-    units = "m/s",
-    color_map = "width_w.colors",
-    shortcut = "9"
-  }
-  ,
-  {
-    label = "NCP",
+    label = "1Hr_NCP",
     raw_name = "NCP",
     filtered_name = "",
     units = "",
@@ -387,7 +378,7 @@ fields = {
   }
   ,
   {
-    label = "LDR",
+    label = "1Hr_LDR",
     raw_name = "LDR",
     filtered_name = "",
     units = "dB",
@@ -396,7 +387,7 @@ fields = {
   }
   ,
   {
-    label = "SNR",
+    label = "1Hr_SNR",
     raw_name = "SNR",
     filtered_name = "",
     units = "dB",
@@ -405,7 +396,7 @@ fields = {
   }
   ,
   {
-    label = "DBMVC",
+    label = "1Hr_DBMVC",
     raw_name = "DBMVC",
     filtered_name = "",
     units = "dBm",
@@ -414,7 +405,7 @@ fields = {
   }
   ,
   {
-    label = "DBMHX",
+    label = "1Hr_DBMHX",
     raw_name = "DBMHX",
     filtered_name = "",
     units = "dBm",
@@ -423,38 +414,65 @@ fields = {
   }
   ,
   {
-    label = "TEMP",
+    label = "1Hr_TEMP",
     raw_name = "TEMP",
     filtered_name = "",
     units = "C",
-    color_map = "temp.colors",
+    color_map = "hcr_tempC.colors",
     shortcut = "c"
   }
   ,
   {
-    label = "PRESS",
+    label = "1Hr_PRESS",
     raw_name = "PRESS",
     filtered_name = "",
     units = "hPa",
-    color_map = "pressure_xml.colors",
+    color_map = "hcr_pressure.colors",
     shortcut = "d"
   }
   ,
   {
-    label = "RH",
+    label = "1Hr_RH",
     raw_name = "RH",
     filtered_name = "",
     units = "%",
-    color_map = "rh.colors",
+    color_map = "hcr_rh.colors",
     shortcut = "d"
   }
   ,
   {
-    label = "FLAG",
+    label = "1Hr_FLAG",
     raw_name = "FLAG",
     filtered_name = "",
     units = "",
     color_map = "hcr_flag.colors",
+    shortcut = "d"
+  }
+  ,
+  {
+    label = "1Hr_CONVECTIVITY",
+    raw_name = "CONVECTIVITY",
+    filtered_name = "",
+    units = "",
+    color_map = "hcr_convectivity.colors",
+    shortcut = "d"
+  }
+  ,
+  {
+    label = "1Hr_PARTITION",
+    raw_name = "PARTITION_2D",
+    filtered_name = "",
+    units = "",
+    color_map = "hcr_partition.colors",
+    shortcut = "d"
+  }
+  ,
+  {
+    label = "1Hr_PID",
+    raw_name = "PID",
+    filtered_name = "",
+    units = "",
+    color_map = "hcr_pid.colors",
     shortcut = "d"
   }
 };
@@ -809,7 +827,7 @@ rhi_aspect_ratio = 1;
 // Type: double
 //
 
-bscan_time_span_secs = 300;
+bscan_time_span_secs = 3600;
 
 ///////////// bscan_truncate_start_time ///////////////
 //
@@ -925,7 +943,7 @@ bscan_min_range_km = -1;
 // Type: double
 //
 
-bscan_max_range_km = 14;
+bscan_max_range_km = 9;
 
 ///////////// bscan_min_altitude_km ///////////////////
 //
@@ -945,7 +963,7 @@ bscan_min_altitude_km = -0.5;
 // Type: double
 //
 
-bscan_max_altitude_km = 14.0;
+bscan_max_altitude_km = 9.0;
 
 ///////////// bscan_altitude_in_feet //////////////////
 //
@@ -1416,7 +1434,7 @@ bscan_dwell_stats = DWELL_STATS_MEAN;
 // Type: string
 //
 
-images_output_dir = "/scr/snow2/rsfdata/projects/cset/hcr/qc2/images/catalog5min";
+images_output_dir = "$(DATA_DIR)/$(QC_VERSION)/images/$(QC_SUB_VERSION)/catalog1hr";
 
 ///////////// images_write_to_day_dir /////////////////
 //
@@ -1578,7 +1596,7 @@ images_creation_mode = CREATE_IMAGES_ON_ARCHIVE_SCHEDULE;
 // Type: int
 //
 
-images_schedule_interval_secs = 300;
+images_schedule_interval_secs = 3600;
 
 ///////////// images_schedule_delay_secs //////////////
 //
