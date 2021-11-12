@@ -277,6 +277,13 @@ hcr_fields = {
   }
   ,
   {
+    input_field_name = "PID",
+    output_field_name = "HCR_PID",
+    apply_flag = FALSE,
+    set_to_missing_if_scanning = FALSE
+  }
+  ,
+  {
     input_field_name = "PRESS",
     output_field_name = "PRESS",
     apply_flag = FALSE,

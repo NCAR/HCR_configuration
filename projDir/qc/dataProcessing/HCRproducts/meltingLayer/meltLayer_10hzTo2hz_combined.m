@@ -26,7 +26,7 @@ figdir=[outdir2hz(1:end-4),'meltLayerPlots/2hzProcess/'];
 %% Run processing
 
 % Go through flights
-for ii=2:size(caseList,1)
+for ii=1:size(caseList,1)
     
     disp(['Flight ',num2str(ii)]);
     

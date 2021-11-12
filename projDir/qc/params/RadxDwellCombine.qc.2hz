@@ -485,6 +485,11 @@ stats_method_fields = {
     field_name = "PARTITION_1D",
     stats_method = DWELL_STATS_DISCRETE_MODE
   }
+  ,
+  {
+    field_name = "PID",
+    stats_method = DWELL_STATS_DISCRETE_MODE
+  }
 };
 
 //======================================================================
@@ -839,8 +844,7 @@ exclude_specified_fields = TRUE;
 
 excluded_fields = {
  "MELTING_LAYER",
- "ICING_LEVEL",
- "PID"
+ "ICING_LEVEL"
 };
 
 //======================================================================
