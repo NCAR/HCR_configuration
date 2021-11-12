@@ -7,10 +7,10 @@ close all;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Input variables %%%%%%%%%%%%%%%%%%%%%%%%%%
 
-project='spicule'; %socrates, aristo, cset, otrec
-quality='qc1'; %field, qc1, or qc2
+project='cset'; %socrates, aristo, cset, otrec
+quality='qc3'; %field, qc1, or qc2
 freqData='10hz';
-qcVersion='v1.1';
+qcVersion='v3.0';
 whichModel='era5';
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

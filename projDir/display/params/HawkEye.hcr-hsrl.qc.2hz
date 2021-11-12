@@ -435,6 +435,15 @@ fields = {
   }
   ,
   {
+    label = "HCR_PID",
+    raw_name = "HCR_PID",
+    filtered_name = "",
+    units = "",
+    color_map = "hcr_pid.colors",
+    shortcut = "d"
+  }
+  ,
+  {
     label = "FLAG",
     raw_name = "FLAG",
     filtered_name = "",
