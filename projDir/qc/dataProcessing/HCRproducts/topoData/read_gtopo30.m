@@ -5,8 +5,8 @@ topoOut=[];
 topolon=[];
 topolat=[];
 
-latlim=double([min(inlat),max(inlat)]);
-lonlim=double([min(inlon),max(inlon)]);
+latlim=double([min(inlat)-5,max(inlat)+5]);
+lonlim=double([min(inlon)-5,max(inlon)+5]);
 
 [topoOut,refvec] = gtopo30(indir,1,latlim,lonlim);
 topoOut(isnan(topoOut))=0;

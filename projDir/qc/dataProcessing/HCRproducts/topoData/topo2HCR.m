@@ -69,6 +69,19 @@ for ii=18:size(caseList,1)
     end
     
     data.asl=HCRrange2asl(data.range,data.elevation,data.altitude);
+
+    %% We have some data where lat/lon are zero
+    lonZero=find(data.longitude==0);
+    if ~isempty(lonZero)
+        warning([num2str(length(lonZero)),' zero longitudes replaced.']);
+    end
+    data.longitude(lonZero)=data.longitude(lonZero-1);
+
+    latZero=find(data.latitude==0);
+    if ~isempty(latZero)
+        warning([num2str(length(latZero)),' zero latitudes replaced.']);
+    end
+    data.latitude(latZero)=data.latitude(latZero-1);
     
     %% Topo data
     disp('Getting topo data ...');
