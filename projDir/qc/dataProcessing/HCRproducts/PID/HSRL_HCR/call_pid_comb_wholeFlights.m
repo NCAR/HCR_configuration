@@ -8,10 +8,10 @@ addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 project='socrates'; %socrates, aristo, cset
 quality='qc3'; %field, qc1, or qc2
 qcVersion='v3.0';
-freqData='10hz'; % 10hz, 100hz, 2hz, or combined
+freqData='combined'; % 10hz, 100hz, 2hz, or combined
 whichModel='era5';
 
-saveTime=0;
+saveTime=1;
 
 plotIn.plotMR=0;
 plotIn.plotMax=0;
@@ -24,14 +24,6 @@ postProcess=1; % 1 if post processing is desired
 indir=HCRdir(project,quality,qcVersion,freqData);
 
 [~,outdir]=modelDir(project,whichModel,quality,qcVersion,freqData);
-
-% if strcmp(project,'otrec')
-%     indir='/scr/sleet2/rsfdata/projects/otrec/hcr/qc2/cfradial/development/pid/10hz/';
-% elseif strcmp(project,'socrates')
-%     indir='/scr/snow2/rsfdata/projects/socrates/hcr/qc2/cfradial/development/pid/10hz/';
-% end
-%
-% outdir=[indir(1:end-30),'mat/pid/10hz/'];
 
 infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_',project,'_data.txt'];
 
@@ -49,86 +41,100 @@ for aa=1:size(caseList,1)
     disp([datestr(startTime,'yyyy-mm-dd HH:MM'),' to ',datestr(endTime,'yyyy-mm-dd HH:MM')]);
 
     %% Load data
+        
+        disp('Loading data');
+        
+        data=[];
+        
+        % HCR
+        data.HCR_DBZ=[];
+        data.HCR_VEL=[];
+        data.HCR_LDR=[];
+        data.HCR_MELTING_LAYER=[];
 
-    data=[];
+        % HSRL
+        data.HSRL_Aerosol_Backscatter_Coefficient=[];
+        data.HSRL_Particle_Linear_Depolarization_Ratio=[];
 
-    %HCR data
-    data.DBZ_MASKED=[];
-    data.VEL_MASKED=[];
-    data.LDR=[];
-    data.TEMP=[];
-    data.MELTING_LAYER=[];
-    data.SNR=[];
-
-    dataVars=fieldnames(data);
-
-    % Load data
-    data=read_HCR(fileList,data,startTime,endTime);
-
-    % Check if all variables were found
-    for ii=1:length(dataVars)
-        if ~isfield(data,dataVars{ii})
-            dataVars{ii}=[];
+        % TEMP
+        data.TEMP=[];
+                       
+        dataVars=fieldnames(data);
+        
+        % Load data
+        data=read_HCR(fileList,data,startTime,endTime);
+        
+        % Check if all variables were found
+        for ii=1:length(dataVars)
+            if ~isfield(data,dataVars{ii})
+                dataVars{ii}=[];
+            end
         end
-    end
+       
+        ylimits=[0 (max(data.asl(~isnan(data.HCR_DBZ)))./1000)+0.5];
+        plotIn.ylimits=ylimits;
 
-    % Mask with FLAG
-    data.LDR(isnan(data.DBZ_MASKED))=nan;
-    
-    ylimits=[0 (max(data.asl(~isnan(data.DBZ_MASKED)))./1000)+0.5];
-    plotIn.ylimits=ylimits;
+        %% Calculate velocity texture
 
-    %% Calculate velocity texture
+        pixRadVEL=10;
+        velBase=-20;
 
-    pixRadVEL=50;
-    velBase=-20;
+        data.VELTEXT=f_velTexture(data.HCR_VEL,data.elevation,pixRadVEL,velBase);
 
-    data.VELTEXT=f_velTexture(data.VEL_MASKED,data.elevation,pixRadVEL,velBase);
+        %% Mask LDR and HSRL
 
-    %% Pre process
+        data.HCR_LDR(isnan(data.HCR_DBZ))=nan;
+        data.HSRL_Aerosol_Backscatter_Coefficient(isnan(data.HCR_DBZ))=nan;
+        data.HSRL_Particle_Linear_Depolarization_Ratio(isnan(data.HCR_DBZ))=nan;
 
-    disp('Pre processing ...');
-    data=preProcessPID(data,convThresh);
+        %% Pre process
 
-    %% Calculate PID
+        disp('Pre processing ...');
+        data=preProcessPIDcomb(data,convThresh);
 
-    % HCR
-    disp('Getting PID ...');
-    pid_hcr=calc_pid(data,plotIn);
+        %% Calculate PID
 
-    %% Set areas above melting layer with no WIDTH and no LDR to cloud or precip
+        % HCR
+        disp('Getting PID ...');
 
-    smallInds=find(data.MELTING_LAYER==20 & isnan(data.LDR) & (pid_hcr==3 | pid_hcr==6));
-    pid_hcr(smallInds)=11;
+        plotIn.figdir=[];
 
-    largeInds=find(data.MELTING_LAYER==20 & isnan(data.LDR) & ...
-        (pid_hcr==1 | pid_hcr==2 | pid_hcr==4 | pid_hcr==5));
-    pid_hcr(largeInds)=10;
+        pid_hcr_hsrl=calc_pid_comb(data,plotIn);
 
-    %% Add supercooled
+        %% Set areas above melting layer with no LDR to cloud or precip
 
-    disp('Adding supercooled ...')
-    pid_hcr=addSupercooled(pid_hcr,data);
+        smallInds=find(data.HCR_MELTING_LAYER==20 & isnan(data.HCR_LDR) & isnan(data.HSRL_Particle_Linear_Depolarization_Ratio) & ...
+            (pid_hcr_hsrl==3 | pid_hcr_hsrl==6));
+        pid_hcr_hsrl(smallInds)=11;
 
-    %% Post process
+        largeInds=find(data.HCR_MELTING_LAYER==20 & isnan(data.HCR_LDR) & isnan(data.HSRL_Particle_Linear_Depolarization_Ratio) & ...
+            (pid_hcr_hsrl==1 | pid_hcr_hsrl==2 | pid_hcr_hsrl==4 | pid_hcr_hsrl==5));
+        pid_hcr_hsrl(largeInds)=10;
 
-    if postProcess
-        disp('Post processing ...');
-        pid_hcr=postProcessPID(pid_hcr,data);
-    end
+        %% Add supercooled
 
-    %% Filter
+        disp('Adding supercooled ...')
+        pid_hcr_hsrl=addSupercooledComb(pid_hcr_hsrl,data);
 
-    if whichFilter==1
-        pid_hcr=modeFilter(pid_hcr,7,0.7);
-    elseif whichFilter==2
-        pid_hcr=coherenceFilter(pid_hcr,7,0.7);
-    end
+        %% Post process
+
+        if postProcess
+            disp('Post processing ...');
+            pid_hcr_hsrl=postProcessPIDcomb(pid_hcr_hsrl,data);
+        end
+
+        %% Filter
+
+        if whichFilter==1
+            pid_hcr_hsrl=modeFilter(pid_hcr_hsrl,7,0.7);
+        elseif whichFilter==2
+            pid_hcr_hsrl=coherenceFilter(pid_hcr_hsrl,7,0.7);
+        end
 
     %% Save
     disp('Saving PID ...')
 
-    pid=pid_hcr;
+    pid=pid_hcr_hsrl;
     save([outdir,whichModel,'.pid.',datestr(data.time(1),'YYYYmmDD_HHMMSS'),'_to_',...
         datestr(data.time(end),'YYYYmmDD_HHMMSS'),'.Flight',num2str(aa),'.mat'],'pid');
 

@@ -7,12 +7,12 @@ dbz.mixed=[];
 dbz.lfrozen=[2,4]; % Snow threshold of 5 by shupe 2007
 dbz.sfrozen=[6,8];
 
-ldr.rain=[-26,-24];
-ldr.drizzle=[-24,-22];
-ldr.cloud=[-24,-22];
-ldr.mixed=[-16,-14,-8,-6];
-ldr.lfrozen=[-29,-27,-14,-13];
-ldr.sfrozen=[-28,-26,-14,-13];
+hcrldr.rain=[-26,-24];
+hcrldr.drizzle=[-24,-22];
+hcrldr.cloud=[-24,-22];
+hcrldr.mixed=[-16,-14,-8,-6];
+hcrldr.lfrozen=[-29,-27,-14,-13];
+hcrldr.sfrozen=[-28,-26,-14,-13];
 
 vel.rain=[3,3.5];
 vel.drizzle=[0,0.5,3.5,4];
@@ -27,3 +27,17 @@ temp.cloud=[-100,-10];
 temp.mixed=[-8,-6,3,6];
 temp.lfrozen=[0,6];
 temp.sfrozen=[0,5];
+
+back.rain=[1e-6,1e-5];
+back.drizzle=[1e-6,1e-5];
+back.cloud=[1e-6,1e-5];
+back.mixed=[];
+back.lfrozen=[1e-5,1e-4];
+back.sfrozen=[1e-5,1e-4];
+
+hsrlldr.rain=[0.1,0.2];
+hsrlldr.drizzle=[0.1,0.2];
+hsrlldr.cloud=[0.1,0.2];
+hsrlldr.mixed=[0.1,0.2];
+hsrlldr.lfrozen=[0,0.1];
+hsrlldr.sfrozen=[0,0.1];

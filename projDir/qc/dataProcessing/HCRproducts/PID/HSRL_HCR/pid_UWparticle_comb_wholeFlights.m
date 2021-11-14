@@ -5,10 +5,10 @@ close all;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Input variables %%%%%%%%%%%%%%%%%%%%%%%%%%
 
-project='socrates'; %socrates, aristo, cset, otrec
+project='socrates'; %socrates, aristo, cset
 quality='qc3'; %field, qc1, or qc2
-freqData='10hz';
 qcVersion='v3.0';
+freqData='combined'; % 10hz, 100hz, 2hz, or combined
 whichModel='era5';
 
 largeUW=1; % Set to 1 when we want to use only larges particles up to minPixNumUW
@@ -17,7 +17,13 @@ minPixNumUW=20;
 coldOnly=1; % Set to 1 when only cold region is desired
 
 HCRrangePix=5;
-HCRtimePix=20;
+HCRtimePix=4;
+minPixNumHCR=14;
+
+processHCR=0;
+processHSRL=0;
+processOverlap=1;
+processAll=0;
 
 plotOn=1;
 showPlot='off';
@@ -27,11 +33,7 @@ addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
 indir=HCRdir(project,quality,qcVersion,freqData);
 
-% if strcmp(project,'otrec')
-%     indir='/scr/sleet2/rsfdata/projects/otrec/hcr/qc2/cfradial/development/pid/10hz/';
-% elseif strcmp(project,'socrates')
-%     indir='/scr/snow2/rsfdata/projects/socrates/hcr/qc2/cfradial/development/pid/10hz/';
-% end
+figdir=[indir(1:end-4),'pidPlotsComb/comparePID_UW_largest_cold_overlap/'];
 
 %% Get times of UW data
 
@@ -53,19 +55,6 @@ end
 
 %% HCR data
 
-if coldOnly
-    if largeUW
-        figdir=[indir(1:end-5),'pidPlots/comparePID_UW_largest_cold/'];
-    else
-        figdir=[indir(1:end-5),'pidPlots/comparePID_UW_all_cold/'];
-    end
-else
-    if largeUW
-        figdir=[indir(1:end-5),'pidPlots/comparePID_UW_largest/'];
-    else
-        figdir=[indir(1:end-5),'pidPlots/comparePID_UW_all/'];
-    end
-end
 cscale_hcr=[1,0,0; 1,0.6,0.47; 0,1,0; 0,0.7,0; 0,0,1; 1,0,1; 0.5,0,0; 1,1,0; 0,1,1; 0,0,0; 0.5,0.5,0.5];
 units_str_hcr={'Rain','Supercooled Rain','Drizzle','Supercooled Drizzle','Cloud Liquid','Supercooled Cloud Liquid',...
     'Mixed Phase','Large Frozen','Small Frozen','Precip','Cloud'};
@@ -137,10 +126,17 @@ for aa=1:14
        
         data=[];
 
-        data.DBZ_MASKED = [];
-        data.PID=[];
+        data.HCR_DBZ = [];
+        if processHCR | processHSRL | processOverlap
+            data.HCR_PID=[];
+        end
+
+        if processHSRL | processOverlap | processAll
+            data.PID=[];
+        end
+
         if coldOnly
-            data.MELTING_LAYER=[];
+            data.HCR_MELTING_LAYER=[];
         end
 
         dataVars=fieldnames(data);
@@ -161,9 +157,33 @@ for aa=1:14
             startTime=endTime;
             continue
         end
+
+        if processHCR
+            data.PID=data.HCR_PID;
+            data=rmfield(data,'HCR_PID');
+        elseif processHSRL
+            data.PID(data.HCR_PID<9.8)=nan;
+        elseif processOverlap
+            data.PID(data.PID<9.8 & data.HCR_PID>=9.8)=nan;
+        end
         
         if coldOnly
-            data.PID(data.MELTING_LAYER<20)=nan;
+            data.PID(data.HCR_MELTING_LAYER<20)=nan;
+
+            % Remove particles below icing level
+            altTemp=data.asl;
+            altTemp(data.HCR_MELTING_LAYER>=20)=nan;
+            iceLev=max(altTemp,[],1,'omitnan');
+
+            hcrTT=timetable(data.time',data.altitude',iceLev');
+            uwTT=timetable(ptime,sumAll');
+            syncTT=synchronize(uwTT,hcrTT,'first','linear');
+
+            warmInd=find(syncTT.Var2>syncTT.Var1_hcrTT);
+
+            countAll(:,warmInd)=nan;
+            countLiq(:,warmInd)=nan;
+            countIce(:,warmInd)=nan;
         end
 
         %% Find largest
@@ -204,9 +224,9 @@ for aa=1:14
         %% Calculate HCR liquid fraction
         
         hcrLiqIce=nan(size(data.PID));
-        hcrLiqIce(data.PID<=6)=1;
-        hcrLiqIce(data.PID==7)=2;
-        hcrLiqIce(data.PID>=8 & data.PID<10)=3;
+        hcrLiqIce(data.PID<=6.1)=1;
+        hcrLiqIce(data.PID>=6.9 & data.PID<=7.1)=2;
+        hcrLiqIce(data.PID>=7.9 & data.PID<9.8)=3;
         
         liqFrac_HCR_P=nan(length(ptime),6);
         goodIndsP=find(~isnan(liqFrac));
@@ -225,7 +245,7 @@ for aa=1:14
                 end
                 allNum=sum(sum(~isnan(hcrParts)));                
                 
-                if allNum>50
+                if allNum>minPixNumHCR
                     hcrPID=data.PID(18:18+HCRrangePix,hcrIndCols);
                     pidOut=mode(reshape(hcrPID,1,[]));
                     addFrac=[liqNum/allNum,liqFrac(goodIndsP(jj)),liqNum,iceNum,allNum,pidOut];
@@ -271,7 +291,7 @@ for aa=1:14
             colormap jet
             
             hold on
-            surf(data.time,data.asl./1000,data.DBZ_MASKED,'edgecolor','none');
+            surf(data.time,data.asl./1000,data.HCR_DBZ,'edgecolor','none');
             view(2);
             ylabel('Altitude (km)');
             caxis([-35 25]);
@@ -500,16 +520,18 @@ for ii=1:9
     
     lfUH=cat(2,lfU,lfH);
     lfUH(any(isnan(lfUH),2),:)=[];
-    
+
     subplot(3,3,ii)
-    hist3(lfUH,'Ctrs',centers,'CdataMode','auto','edgecolor','none');
-    view(2)
-    xlim([0 1])
-    ylim([0 1])
-    colorbar
-    
-    title([units_str_hcr{ii},' (',num2str(size(lfUH,1)),')']);
-    
+    if ~isnan(lfUH)
+        hist3(lfUH,'Ctrs',centers,'CdataMode','auto','edgecolor','none');
+        view(2)
+        xlim([0 1])
+        ylim([0 1])
+        colorbar
+
+        title([units_str_hcr{ii},' (',num2str(size(lfUH,1)),')']);
+    end
+
     xlabel('HCR')
     ylabel('UWILD')
 end

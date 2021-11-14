@@ -5,10 +5,10 @@ close all;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Input variables %%%%%%%%%%%%%%%%%%%%%%%%%%
 
-project='socrates'; %socrates, aristo, cset, otrec
+project='socrates'; %socrates, aristo, cset
 quality='qc3'; %field, qc1, or qc2
-freqData='10hz';
 qcVersion='v3.0';
+freqData='combined'; % 10hz, 100hz, 2hz, or combined
 whichModel='era5';
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

@@ -8,7 +8,7 @@ addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 project='socrates'; %socrates, aristo, cset
 quality='qc3'; %field, qc1, or qc2
 qcVersion='v3.0';
-freqData='10hz'; % 10hz, 100hz, 2hz, or combined
+freqData='combined'; % 10hz, 100hz, 2hz, or combined
 
 plotIn.plotMR=0;
 plotIn.plotMax=0;
@@ -24,7 +24,7 @@ elseif strcmp(project,'socrates')
     indir=HCRdir(project,quality,qcVersion,freqData);
 end
 
-figdir=[indir(1:end-5),'pidPlots/cases/'];
+figdir=[indir(1:end-4),'pidPlotsComb/cases/'];
 
 % Loop through cases
 casefile=['~/git/HCR_configuration/projDir/qc/dataProcessing/HCRproducts/caseFiles/pid_',project,'.txt'];
@@ -76,19 +76,21 @@ for aa=1:length(caseStart)
             end
         end
        
-        ylimits=[0 (max(data.asl(~isnan(data.DBZ_MASKED)))./1000)+0.5];
+        ylimits=[0 (max(data.asl(~isnan(data.HCR_DBZ)))./1000)+0.5];
         plotIn.ylimits=ylimits;
 
         %% Calculate velocity texture
 
-        pixRadVEL=50;
+        pixRadVEL=10;
         velBase=-20;
 
-        data.VELTEXT=f_velTexture(data.VEL_MASKED,data.elevation,pixRadVEL,velBase);
+        data.VELTEXT=f_velTexture(data.HCR_VEL,data.elevation,pixRadVEL,velBase);
 
-        %% Mask LDR
+        %% Mask LDR and HSRL
 
-        data.LDR(isnan(data.DBZ_MASKED))=nan;
+        data.HCR_LDR(isnan(data.HCR_DBZ))=nan;
+        data.HSRL_Aerosol_Backscatter_Coefficient(isnan(data.HCR_DBZ))=nan;
+        data.HSRL_Particle_Linear_Depolarization_Ratio(isnan(data.HCR_DBZ))=nan;
 
         %% Pre process
 
@@ -106,10 +108,11 @@ for aa=1:length(caseStart)
 
         %% Set areas above melting layer with no LDR to cloud or precip
 
-        smallInds=find(data.MELTING_LAYER==20 & isnan(data.LDR) & (pid_hcr_hsrl==3 | pid_hcr_hsrl==6));
+        smallInds=find(data.HCR_MELTING_LAYER==20 & isnan(data.HCR_LDR) & isnan(data.HSRL_Particle_Linear_Depolarization_Ratio) & ...
+            (pid_hcr_hsrl==3 | pid_hcr_hsrl==6));
         pid_hcr_hsrl(smallInds)=11;
 
-        largeInds=find(data.MELTING_LAYER==20 & isnan(data.LDR) & ...
+        largeInds=find(data.HCR_MELTING_LAYER==20 & isnan(data.HCR_LDR) & isnan(data.HSRL_Particle_Linear_Depolarization_Ratio) & ...
             (pid_hcr_hsrl==1 | pid_hcr_hsrl==2 | pid_hcr_hsrl==4 | pid_hcr_hsrl==5));
         pid_hcr_hsrl(largeInds)=10;
 
@@ -147,10 +150,10 @@ for aa=1:length(caseStart)
 
         close all
         
-        f1=figure('DefaultAxesFontSize',12,'Position',[0 300 2300 1200],'visible','on');
+        f1=figure('DefaultAxesFontSize',12,'Position',[0 300 2300 1200],'visible','off');
         
-        s1=subplot(4,2,1);
-        surf(data.time,data.asl./1000,data.DBZ_MASKED,'edgecolor','none');
+        s1=subplot(5,2,1);
+        surf(data.time,data.asl./1000,data.HCR_DBZ,'edgecolor','none');
         view(2);
         ylim(ylimits);
         xlim([data.time(1),data.time(end)]);
@@ -161,8 +164,8 @@ for aa=1:length(caseStart)
         title(['HCR reflectivity (dBZ)']);
         grid on
         
-        s3=subplot(4,2,3);
-        surf(data.time,data.asl./1000,data.VEL_MASKED,'edgecolor','none');
+        s3=subplot(5,2,3);
+        surf(data.time,data.asl./1000,data.HCR_VEL,'edgecolor','none');
         view(2);
         ylim(ylimits);
         xlim([data.time(1),data.time(end)]);
@@ -173,20 +176,32 @@ for aa=1:length(caseStart)
         title(['HCR radial velocity (m s^{-1})']);
         grid on
         
-        s8=subplot(4,2,5);
-        surf(data.time,data.asl./1000,data.LDR,'edgecolor','none');
+        s5=subplot(5,2,5);
+        surf(data.time,data.asl./1000,data.HCR_LDR,'edgecolor','none');
         view(2);
         ylim(ylimits);
         xlim([data.time(1),data.time(end)]);
         caxis([-30 -10]);
-        colormap(s8,jet);
+        colormap(s5,jet);
         colorbar;
         ylabel('Altitude (km)');
         title(['HCR linear depolarization ratio (dB)']);
         grid on
+
+        s7=subplot(5,2,7);
+        surf(data.time,data.asl./1000,log10(data.HSRL_Aerosol_Backscatter_Coefficient),'edgecolor','none');
+        view(2);
+        ylim(ylimits);
+        xlim([data.time(1),data.time(end)]);
+        %caxis([-30 -10]);
+        colormap(s7,jet);
+        colorbar;
+        ylabel('Altitude (km)');
+        title(['HSRL aerosol backscatter coefficient (m^{-1} sr^{-1})']);
+        grid on
                 
-        s2=subplot(4,2,2);
-        plotMelt=data.MELTING_LAYER;
+        s2=subplot(5,2,2);
+        plotMelt=data.HCR_MELTING_LAYER;
         plotMelt(~isnan(plotMelt) & plotMelt<20)=10;
         plotMelt(~isnan(plotMelt) & plotMelt>=20)=20;
         surf(data.time,data.asl./1000,plotMelt,'edgecolor','none');
@@ -201,7 +216,7 @@ for aa=1:length(caseStart)
         title(['Melting Layer']);
         grid on
         
-        s4=subplot(4,2,4);
+        s4=subplot(5,2,4);
         jetIn=jet;
         jetTemp=cat(1,jetIn(1:size(jetIn,1)/2,:),repmat([0 0 0],3,1),...
             jetIn(size(jetIn,1)/2+1:end,:));
@@ -216,7 +231,7 @@ for aa=1:length(caseStart)
         title(['Temperature (C)']);
         grid on
         
-        s6=subplot(4,2,6);
+        s6=subplot(5,2,6);
         surf(data.time,data.asl./1000,data.VELTEXT,'edgecolor','none');
         view(2);
         ylim(ylimits);
@@ -228,13 +243,25 @@ for aa=1:length(caseStart)
         title(['HCR velocity texture']);
         grid on
 
-        s8=subplot(4,2,8);
+        s8=subplot(5,2,8);
+        surf(data.time,data.asl./1000,data.HSRL_Particle_Linear_Depolarization_Ratio,'edgecolor','none');
+        view(2);
+        ylim(ylimits);
+        xlim([data.time(1),data.time(end)]);
+        caxis([0 0.6]);
+        colormap(s8,jet);
+        colorbar;
+        ylabel('Altitude (km)');
+        title(['HSRL particle linear depolarization ratio']);
+        grid on
+
+        s10=subplot(5,2,10);
         surf(data.time,data.asl./1000,pid_hcr_hsrl,'edgecolor','none');
         view(2);
         ylim(ylimits);
         xlim([data.time(1),data.time(end)]);
         caxis([.5 11.5]);
-        colormap(s8,cscale_hcr);
+        colormap(s10,cscale_hcr);
         cb=colorbar;
         cb.Ticks=1:11;
         cb.TickLabels=units_str_hcr;

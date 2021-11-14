@@ -142,7 +142,7 @@ for aa=1:length(caseStart)
 
         close all
         
-        f1=figure('DefaultAxesFontSize',12,'Position',[0 300 2300 1200],'visible','on');
+        f1=figure('DefaultAxesFontSize',12,'Position',[0 300 2300 1200],'visible','off');
         
         s1=subplot(4,2,1);
         surf(data.time,data.asl./1000,data.DBZ_MASKED,'edgecolor','none');

@@ -11,5 +11,9 @@ elseif strcmp(project,'spicule')
 end
 
 rawDir=[baseDir,'model/',model,'/'];
-interp=[baseDir,'hcr/',qc,'/',model,'interp/',qcVersion,'/',freq,'/'];
+if strcmp(freq,'10hz') | strcmp(freq,'2hz')
+    interp=[baseDir,'hcr/',qc,'/',model,'interp/',qcVersion,'/',freq,'/'];
+elseif strcmp(freq,'combined')
+    interp=[baseDir,'hcr/',qc,'/',model,'interp/',qcVersion,'/hcr_hsrl_merge/2hz/'];
+end
 end
