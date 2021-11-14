@@ -26,7 +26,7 @@ caseList = table2array(readtable(infile));
 indir=HCRdir(project,quality,qcVersion,freqData);
 
 %% Go through flights
-for ii=1:size(caseList,1)
+for ii=3:size(caseList,1)
     disp(['Flight ',num2str(ii)]);
     
     startTime=datetime(caseList(ii,1:6));
@@ -70,6 +70,19 @@ for ii=1:size(caseList,1)
             dataVars{kk}=[];
         end
     end
+
+    %% We have some data where lat/lon are zero
+    lonZero=find(data.longitude==0);
+    if ~isempty(lonZero)
+        warning([num2str(length(lonZero)),' zero longitudes replaced.']);
+    end
+    data.longitude(lonZero)=data.longitude(lonZero-1);
+
+    latZero=find(data.latitude==0);
+    if ~isempty(latZero)
+        warning([num2str(length(latZero)),' zero latitudes replaced.']);
+    end
+    data.latitude(latZero)=data.latitude(latZero-1);
         
     %% Model data
     disp('Getting model data ...');
