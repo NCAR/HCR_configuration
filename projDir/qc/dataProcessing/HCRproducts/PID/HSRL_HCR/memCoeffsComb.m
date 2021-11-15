@@ -30,14 +30,14 @@ temp.sfrozen=[0,5];
 
 back.rain=[1e-6,1e-5];
 back.drizzle=[1e-6,1e-5];
-back.cloud=[1e-6,1e-5];
+back.cloud=[1e-7,1e-6];
 back.mixed=[];
 back.lfrozen=[1e-5,1e-4];
-back.sfrozen=[1e-5,1e-4];
+back.sfrozen=[1e-6,1e-5];
 
 hsrlldr.rain=[0.1,0.2];
 hsrlldr.drizzle=[0.1,0.2];
-hsrlldr.cloud=[0.1,0.2];
+hsrlldr.cloud=[0.15,0.25];
 hsrlldr.mixed=[0.1,0.2];
 hsrlldr.lfrozen=[0,0.1];
-hsrlldr.sfrozen=[0,0.1];
+hsrlldr.sfrozen=[0.05,0.15];

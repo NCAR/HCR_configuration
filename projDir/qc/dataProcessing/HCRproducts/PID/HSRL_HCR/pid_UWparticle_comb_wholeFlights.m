@@ -20,9 +20,9 @@ HCRrangePix=5;
 HCRtimePix=4;
 minPixNumHCR=14;
 
-processHCR=0;
+processHCR=1;
 processHSRL=0;
-processOverlap=1;
+processOverlap=0;
 processAll=0;
 
 plotOn=1;
@@ -33,7 +33,7 @@ addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
 indir=HCRdir(project,quality,qcVersion,freqData);
 
-figdir=[indir(1:end-4),'pidPlotsComb/comparePID_UW_largest_cold_overlap/'];
+figdir=[indir(1:end-4),'pidPlotsComb/comparePID_UW_largest_cold_hcr/'];
 
 %% Get times of UW data
 
@@ -542,7 +542,7 @@ print([figdir,project,'_heatMapCats.png'],'-dpng','-r0');
 f1 = figure('Position',[200 200 600 500],'DefaultAxesFontSize',12,'visible','on','renderer','painters');
 colormap(cm(30:200,:));
 
-liqFracUW_HCR=cat(2,liqFracPallL,liqFracHCRall);
+liqFracUW_HCR=cat(2,liqFracHCRall,liqFracPallL);
 liqFracUW_HCR(any(isnan(liqFracUW_HCR),2),:)=[];
 
 hist3(liqFracUW_HCR,'Ctrs',centers,'CdataMode','auto');

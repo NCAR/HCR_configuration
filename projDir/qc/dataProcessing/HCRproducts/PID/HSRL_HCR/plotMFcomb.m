@@ -165,7 +165,7 @@ s5.YTick=[0,0.25,1,1.25];
 s5.YTickLabel={'0','0','1','1'};
 set(gca,'xscale','log')
 
-xlim([1e-7,0.002]);
+xlim([1e-8,0.002]);
 title('BACKSCATTER');
 xlabel('Aerosol backscatter coefficient (m^{-1} sr^{-1})');
 

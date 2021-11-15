@@ -164,6 +164,21 @@ for aa=1:14
         
         if coldOnly
             data.PID(data.MELTING_LAYER<20)=nan;
+
+            % Remove particles below icing level
+            altTemp=data.asl;
+            altTemp(data.MELTING_LAYER>=20)=nan;
+            iceLev=max(altTemp,[],1,'omitnan');
+
+            hcrTT=timetable(data.time',data.altitude',iceLev');
+            uwTT=timetable(ptime,sumAll');
+            syncTT=synchronize(uwTT,hcrTT,'first','linear');
+
+            warmInd=find(syncTT.Var2>syncTT.Var1_hcrTT);
+
+            countAll(:,warmInd)=nan;
+            countLiq(:,warmInd)=nan;
+            countIce(:,warmInd)=nan;
         end
 
         %% Find largest
@@ -520,7 +535,7 @@ print([figdir,project,'_heatMapCats.png'],'-dpng','-r0');
 f1 = figure('Position',[200 200 600 500],'DefaultAxesFontSize',12,'visible','on','renderer','painters');
 colormap(cm(30:200,:));
 
-liqFracUW_HCR=cat(2,liqFracPallL,liqFracHCRall);
+liqFracUW_HCR=cat(2,liqFracHCRall,liqFracPallL);
 liqFracUW_HCR(any(isnan(liqFracUW_HCR),2),:)=[];
 
 hist3(liqFracUW_HCR,'Ctrs',centers,'CdataMode','auto');
