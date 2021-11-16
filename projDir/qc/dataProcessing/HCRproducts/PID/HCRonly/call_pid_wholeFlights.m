@@ -25,14 +25,6 @@ indir=HCRdir(project,quality,qcVersion,freqData);
 
 [~,outdir]=modelDir(project,whichModel,quality,qcVersion,freqData);
 
-% if strcmp(project,'otrec')
-%     indir='/scr/sleet2/rsfdata/projects/otrec/hcr/qc2/cfradial/development/pid/10hz/';
-% elseif strcmp(project,'socrates')
-%     indir='/scr/snow2/rsfdata/projects/socrates/hcr/qc2/cfradial/development/pid/10hz/';
-% end
-%
-% outdir=[indir(1:end-30),'mat/pid/10hz/'];
-
 infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_',project,'_data.txt'];
 
 caseList = table2array(readtable(infile));
