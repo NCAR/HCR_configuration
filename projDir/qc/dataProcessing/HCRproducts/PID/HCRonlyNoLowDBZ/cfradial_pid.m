@@ -1,6 +1,4 @@
-% add convstrat data to cfradial files
-
-% Plot HCR convStrat from mat file in hourly plots
+% Add pid data to cfradial files
 
 clear all;
 close all;
@@ -21,10 +19,17 @@ indir=HCRdir(project,quality,qcVersion,freqData);
 
 [~,modeldir]=modelDir(project,whichModel,quality,qcVersion,freqData);
 
+% if strcmp(project,'otrec')
+%     indir='/scr/sleet2/rsfdata/projects/otrec/hcr/qc2/cfradial/development/pid/10hz/';
+% elseif strcmp(project,'socrates')
+%     indir='/scr/snow2/rsfdata/projects/socrates/hcr/qc2/cfradial/development/pid/10hz/';
+% end
+% 
+% modeldir=[indir(1:end-30),'mat/pid/10hz/'];
+
 infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_',project,'_data.txt'];
 
 caseList = table2array(readtable(infile));
-
 %% Run processing
 
 % Go through flights
@@ -40,9 +45,8 @@ for ii=1:size(caseList,1)
     if ~isempty(fileList)
         
         % Get model data
-        model.convStrat=[];
-        model.convStrat1D=[];
-        model.convectivity=[];
+        model=[];
+        model.pid=[];
         
         model=read_model(model,modeldir,startTime,endTime);
         timeModelNum=datenum(model.time);
@@ -92,47 +96,27 @@ for ii=1:size(caseList,1)
             
             % Define variables
             netcdf.reDef(ncid);
-            varidConv = netcdf.defVar(ncid,'CONVECTIVITY','NC_FLOAT',[dimrange dimtime]);
-            netcdf.defVarFill(ncid,varidConv,false,fillVal);
-            varidSC2D = netcdf.defVar(ncid,'PARTITION_2D','NC_SHORT',[dimrange dimtime]);
-            netcdf.defVarFill(ncid,varidSC2D,false,fillVal);
-            varidSC1D = netcdf.defVar(ncid,'PARTITION_1D','NC_SHORT',[dimtime]);
-            netcdf.defVarFill(ncid,varidSC1D,false,fillVal);
+            varidPID_HCR = netcdf.defVar(ncid,'PID','NC_SHORT',[dimrange dimtime]);
+            netcdf.defVarFill(ncid,varidPID_HCR,false,fillVal);
             netcdf.endDef(ncid);
-            
+                        
             % Write variables
-            netcdf.putVar(ncid,varidConv,modOut.convectivity);
-            netcdf.putVar(ncid,varidSC2D,modOut.convStrat);
-            netcdf.putVar(ncid,varidSC1D,modOut.convStrat1D);
-                       
+            netcdf.putVar(ncid,varidPID_HCR,modOut.pid);
+                                   
             netcdf.close(ncid);
             
             % Write attributes
-            ncwriteatt(infile,'CONVECTIVITY','long_name','convective_probability');
-            ncwriteatt(infile,'CONVECTIVITY','standard_name','convectivity');
-            ncwriteatt(infile,'CONVECTIVITY','units','');
-            ncwriteatt(infile,'CONVECTIVITY','grid_mapping','grid_mapping');
-            ncwriteatt(infile,'CONVECTIVITY','coordinates','time range');
-            
-            ncwriteatt(infile,'PARTITION_2D','long_name','convective_stratiform_partition_2D');
-            ncwriteatt(infile,'PARTITION_2D','standard_name','partition_2D');
-            ncwriteatt(infile,'PARTITION_2D','units','');
-            ncwriteatt(infile,'PARTITION_2D','flag_values',[14, 16, 18, 25, 30, 32, 34, 36, 38]);
-            ncwriteatt(infile,'PARTITION_2D','flag_meanings',...
-                'strat_low strat_mid strat_high mixed conv conv_elevated conv_shallow conv_mid conv_deep');
-            ncwriteatt(infile,'PARTITION_2D','is_discrete','true');
-            ncwriteatt(infile,'PARTITION_2D','grid_mapping','grid_mapping');
-            ncwriteatt(infile,'PARTITION_2D','coordinates','time range');
                         
-            ncwriteatt(infile,'PARTITION_1D','long_name','convective_stratiform_partition_1D');
-            ncwriteatt(infile,'PARTITION_1D','standard_name','partition_1D');
-            ncwriteatt(infile,'PARTITION_1D','units','');
-            ncwriteatt(infile,'PARTITION_1D','flag_values',[14, 16, 18, 25, 30, 32, 34, 36, 38]);
-            ncwriteatt(infile,'PARTITION_1D','flag_meanings',...
-                'strat_low strat_mid strat_high mixed conv conv_elevated conv_shallow conv_mid conv_deep');
-            ncwriteatt(infile,'PARTITION_1D','is_discrete','true');
-            ncwriteatt(infile,'PARTITION_1D','grid_mapping','grid_mapping');
-            ncwriteatt(infile,'PARTITION_1D','coordinates','time');
+            ncwriteatt(infile,'PID','long_name','particle_id_hcr');
+            ncwriteatt(infile,'PID','standard_name','hydrometeor_type');
+            ncwriteatt(infile,'PID','units','');
+            ncwriteatt(infile,'PID','flag_values',[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]);
+            ncwriteatt(infile,'PID','flag_meanings',...
+                'rain supercooled_rain drizzle supercooled_drizzle cloud_liquid supercooled_cloud_liquid melting large_frozen small_frozen precipitation cloud');
+            ncwriteatt(infile,'PID','is_discrete','true');
+            ncwriteatt(infile,'PID','grid_mapping','grid_mapping');
+            ncwriteatt(infile,'PID','coordinates','time range');
+                                    
         end
     end
 end
