@@ -861,7 +861,7 @@ excluded_fields = {
 // Type: boolean
 //
 
-set_output_encoding_for_all_fields = TRUE;
+set_output_encoding_for_all_fields = FALSE;
 
 ///////////// output_encoding /////////////////////////
 //
