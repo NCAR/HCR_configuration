@@ -286,6 +286,15 @@ $PROJ_DIR/qc/dataProcessing/HCRproducts/meltingLayer/call_meltLayer_wholeFlights
 $PROJ_DIR/qc/dataProcessing/HCRproducts/meltingLayer/cfradialMeltLayer.m
 
 #################################################################
+# Add convStrat
+
+# Adjust and run
+$PROJ_DIR/qc/dataProcessing/HCRproducts/stratConv/stratConv_2convectivity_wholeFlights.m
+
+# To add id to the dataset run
+$PROJ_DIR/qc/dataProcessing/HCRproducts/stratConv/cfradial_convStrat.m
+
+#################################################################
 # Create final subset
 
 # Once all fields have been added we create a dataset version that

@@ -28,7 +28,7 @@ caseList = table2array(readtable(infile));
 %% Run processing
 
 % Go through flights
-for ii=1:size(caseList,1)
+for ii=2:size(caseList,1)
     
     disp(['Flight ',num2str(ii)]);
     
