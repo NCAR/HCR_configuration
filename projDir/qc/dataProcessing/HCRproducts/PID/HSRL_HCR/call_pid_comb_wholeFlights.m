@@ -74,6 +74,8 @@ for aa=1:size(caseList,1)
         ylimits=[0 (max(data.asl(~isnan(data.HCR_DBZ)))./1000)+0.5];
         plotIn.ylimits=ylimits;
 
+        tempOrig=data.TEMP;
+
         %% Calculate velocity texture
 
         pixRadVEL=10;
@@ -111,7 +113,13 @@ for aa=1:size(caseList,1)
             (pid_hcr_hsrl==1 | pid_hcr_hsrl==2 | pid_hcr_hsrl==4 | pid_hcr_hsrl==5));
         pid_hcr_hsrl(largeInds)=10;
 
+        %% Set low DBZ to cloud liquid
+
+        pid_hcr_hsrl(pid_hcr_hsrl>9 & data.HCR_DBZ<=-30)=3;
+
         %% Add supercooled
+
+        data.TEMP=tempOrig;
 
         disp('Adding supercooled ...')
         pid_hcr_hsrl=addSupercooledComb(pid_hcr_hsrl,data);
