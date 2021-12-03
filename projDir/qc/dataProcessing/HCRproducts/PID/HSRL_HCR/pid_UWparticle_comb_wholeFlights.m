@@ -22,10 +22,10 @@ minPixNumHCR=14;
 
 processHCR=0;
 processHSRL=0;
-processOverlap=0;
-processAll=1;
+processOverlap=1;
+processAll=0;
 
-plotOn=1;
+plotOn=0;
 showPlot='off';
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -33,7 +33,7 @@ addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
 indir=HCRdir(project,quality,qcVersion,freqData);
 
-figdir=[indir(1:end-4),'pidPlotsComb/comparePID_UW_largest_all/'];
+figdir=[indir(1:end-4),'pidPlotsComb/comparePID_UW_largest_overlap/'];
 
 %% Get times of UW data
 
