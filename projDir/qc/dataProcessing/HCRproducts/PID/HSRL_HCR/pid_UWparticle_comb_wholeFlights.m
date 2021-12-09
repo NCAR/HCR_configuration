@@ -14,18 +14,18 @@ whichModel='era5';
 largeUW=1; % Set to 1 when we want to use only larges particles up to minPixNumUW
 minPixNumUW=20;
 
-coldOnly=1; % Set to 1 when only cold region is desired
+coldOnly=0; % Set to 1 when only cold region is desired
 
 HCRrangePix=5;
 HCRtimePix=4;
 minPixNumHCR=14;
 
-processHCR=1;
+processHCR=0;
 processHSRL=0;
-processOverlap=0;
+processOverlap=1;
 processAll=0;
 
-plotOn=1;
+plotOn=0;
 showPlot='off';
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -33,7 +33,7 @@ addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
 indir=HCRdir(project,quality,qcVersion,freqData);
 
-figdir=[indir(1:end-4),'pidPlotsComb/comparePID_UW_largest_cold_hcr/'];
+figdir=[indir(1:end-4),'pidPlotsComb/comparePID_UW_largest_overlap/'];
 
 %% Get times of UW data
 
@@ -135,6 +135,12 @@ for aa=1:14
             data.PID=[];
         end
 
+        if processHSRL
+            data.HCR_LDR=[];
+            data.HSRL_Aerosol_Backscatter_Coefficient=[];
+            data.HSRL_Particle_Linear_Depolarization_Ratio=[];
+        end
+
         if coldOnly
             data.HCR_MELTING_LAYER=[];
         end
@@ -162,7 +168,11 @@ for aa=1:14
             data.PID=data.HCR_PID;
             data=rmfield(data,'HCR_PID');
         elseif processHSRL
-            data.PID(data.HCR_PID<9.8)=nan;
+            data.HSRL_Particle_Linear_Depolarization_Ratio(data.HSRL_Aerosol_Backscatter_Coefficient<9.9e-9)=nan;
+            data.PID(data.HCR_PID<5)=nan;
+            data.PID(data.HCR_PID>6 & data.HCR_PID<10)=nan;
+            data.PID(data.HCR_PID==6 & ~isnan(data.HCR_LDR))=nan;
+            data.PID(isnan(data.HSRL_Particle_Linear_Depolarization_Ratio))=nan;
         elseif processOverlap
             data.PID(data.PID<9.8 & data.HCR_PID>=9.8)=nan;
         end

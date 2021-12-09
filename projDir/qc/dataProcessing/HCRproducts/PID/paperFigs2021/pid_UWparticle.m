@@ -4,15 +4,30 @@ clear all;
 close all;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Input variables %%%%%%%%%%%%%%%%%%%%%%%%%%
+project='socrates'; %socrates, aristo, cset
+quality='qc3'; %field, qc1, or qc2
+qcVersion='v3.0';
+freqData='combined'; % 10hz, 100hz, 2hz, or combined
+%whichModel='era5';
 
-minPixNumUW=5;
+largeUW=1; % Set to 1 when we want to use only larges particles up to minPixNumUW
+minPixNumUW=20;
 
-HCRrangePix=10;
-HCRtimePix=20;
+coldOnly=0; % Set to 1 when only cold region is desired
+
+HCRrangePix=5;
+HCRtimePix=4;
+minPixNumHCR=14;
+
+plotOn=0;
+showPlot='off';
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-indir='/scr/snow2/rsfdata/projects/socrates/hcr/qc2/cfradial/development/pid/10hz/';
+indir=HCRdir(project,quality,qcVersion,freqData);
+
+addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
 %% Get times of UW data
 
@@ -23,24 +38,24 @@ partFiles=dir([particleDir,'UW_particle_classifications.1hz.*.nc']);
 partFileTimes=[];
 for ii=1:length(partFiles)
     thisFile=[particleDir,partFiles(ii).name];
-    
+
     fileInfo=ncinfo(thisFile);
     fileTimeStr=fileInfo.Variables(1).Attributes.Value;
     fileTime=datetime(str2num(fileTimeStr(15:18)),str2num(fileTimeStr(20:21)),str2num(fileTimeStr(23:24)),...
         str2num(fileTimeStr(26:27)),str2num(fileTimeStr(29:30)),str2num(fileTimeStr(32:33)));
-    
+
     partFileTimes=cat(1,partFileTimes,fileTime);
 end
 
 %% HCR data
+figdir=['/scr/snow2/rsfdata/projects/socrates/hcr/qc3/cfradial/hcr_hsrl_merge/v3.0/pidPlotsComb/paperFigs/'];
 
-figdir=['/scr/snow2/rsfdata/projects/socrates/hcr/qc2/cfradial/development/pid/pidPlots/paperFigs/'];
-
-cscale_hcr=[1,0,0; 1,0.6,0.47; 0,1,0; 0,0.7,0; 0,0,1; 1,0,1; 0.5,0,0; 1,1,0; 0,1,1];
-units_str_hcr={'Rain','SC rain','Drizzle','SC drizzle','Cloud liquid','SC cloud liquid','Mixed phase','Large frozen','Small frozen'};
+cscale_hcr=[1,0,0; 1,0.6,0.47; 0,1,0; 0,0.7,0; 0,0,1; 1,0,1; 0.5,0,0; 1,1,0; 0,1,1; 0,0,0; 0.5,0.5,0.5];
+units_str_hcr={'Rain','SC Rain','Drizzle','SC Drizzle','Cloud Liquid','SC Cloud Liq.',...
+    'Melting','Large Frozen','Small Frozen','Precip','Cloud'};
 
 cscale_hcr_2=[1 0 0;0 1 0;0 0 1];
-units_str_hcr_2={'Frozen','Mixed','Liquid'};
+units_str_hcr_2={'Liquid','Melting','Frozen'};
 
 varNames={'numLiqHCR','numIceHCR','numAllHCR','pidHCR','numLiqLargestP','numIceLargestP','numAllLargestP','sizeLargestP'};
 
@@ -86,8 +101,7 @@ fileList=makeFileList(indir,startTime,endTime,'xxxxxx20YYMMDDxhhmmss',1);
 
 data=[];
 
-data.DBZ = [];
-data.FLAG=[];
+data.HCR_DBZ = [];
 data.PID=[];
 
 dataVars=fieldnames(data);
@@ -103,8 +117,6 @@ for ii=1:length(dataVars)
 end
 
 dataVars=dataVars(~cellfun('isempty',dataVars));
-
-data.DBZ(data.FLAG>1)=nan;
 
 %% Find largest
 countAllFlip=flipud(countAll);
@@ -130,7 +142,7 @@ for jj=1:length(colsGood)
     numLiqLargest(colsGood(jj))=sum(countLiq(rowsGood(jj):end,colsGood(jj)));
     numIceLargest(colsGood(jj))=sum(countIce(rowsGood(jj):end,colsGood(jj)));
     numAllLargest(colsGood(jj))=sum(countAll(rowsGood(jj):end,colsGood(jj)));
-    
+
     addSizes=sizeMM(rowsGood(jj):end).*countAll(rowsGood(jj):end,colsGood(jj));
     sizeLargest(colsGood(jj))=sum(addSizes)./numAllLargest(colsGood(jj));
 end
@@ -138,9 +150,9 @@ end
 %% Calculate HCR liquid fraction
 
 hcrLiqIce=nan(size(data.PID));
-hcrLiqIce(data.PID<=6)=1;
-hcrLiqIce(data.PID==7)=2;
-hcrLiqIce(data.PID>=8)=3;
+hcrLiqIce(data.PID<=6.1)=1;
+hcrLiqIce(data.PID>=6.9 & data.PID<=7.1)=2;
+hcrLiqIce(data.PID>=7.9 & data.PID<9.8)=3;
 
 liqFrac_HCR_P=nan(length(ptime),6);
 goodIndsP=find(~isnan(liqFrac));
@@ -158,8 +170,8 @@ for jj=1:length(goodIndsP)
             iceNum=iceNum+floor(mixNum/2);
         end
         allNum=sum(sum(~isnan(hcrParts)));
-        
-        if allNum>50
+
+        if allNum>minPixNumHCR
             hcrPID=data.PID(18:18+HCRrangePix,hcrIndCols);
             pidOut=mode(reshape(hcrPID,1,[]));
             addFrac=[liqNum/allNum,liqFrac(goodIndsP(jj)),liqNum,iceNum,allNum,pidOut];
@@ -175,6 +187,7 @@ outTable=timetable(ptime,liqFrac_HCR_P(:,3),liqFrac_HCR_P(:,4),liqFrac_HCR_P(:,5
 pidSimp=nan(size(hcrLiqIce));
 pidSimp(hcrLiqIce==1)=3;
 pidSimp(hcrLiqIce==3)=1;
+pidSimp(hcrLiqIce==2)=2;
 
 disp('Plotting ...');
 
@@ -198,8 +211,8 @@ close all
 
 ylims=[0 1.6];
 
-wi=8;
-hi=6;
+wi=10;
+hi=7;
 
 fig1=figure('DefaultAxesFontSize',11,'DefaultFigurePaperType','<custom>','units','inch','position',[3,100,wi,hi]);
 fig1.PaperPositionMode = 'manual';
@@ -217,7 +230,7 @@ s1=subplot(3,1,1);
 colormap jet
 
 hold on
-surf(data.time,data.asl./1000,data.DBZ,'edgecolor','none');
+surf(data.time,data.asl./1000,data.HCR_DBZ,'edgecolor','none');
 view(2);
 ylabel('Altitude (km)');
 caxis([-35 25]);
@@ -240,7 +253,7 @@ surf(data.time,data.asl./1000,data.PID,'edgecolor','none');
 view(2);
 colormap(s2,cscale_hcr);
 cb2=colorbar;
-cb2.Ticks=1:9;
+cb2.Ticks=1:11;
 cb2.TickLabels=units_str_hcr;
 ylabel('Altitude (km)');
 %title(['HCR particle ID']);
@@ -250,7 +263,7 @@ text(startTime+seconds(60),ylims(2)-0.11,'(b) PID',...
 l1=plot(data.time,data.altitude./1000,'-k','linewidth',2);
 legend(l1,'Aircraft altitude');
 
-caxis([.5 9.5]);
+caxis([.5 11.5]);
 ylim(ylims);
 xlim([data.time(1),data.time(end)]);
 s2.XTickLabel=[];

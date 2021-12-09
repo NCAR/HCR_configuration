@@ -5,10 +5,10 @@ close all;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Input variables %%%%%%%%%%%%%%%%%%%%%%%%%%
 
-project='socrates'; %socrates, aristo, cset, otrec
+project='socrates'; %socrates, aristo, cset
 quality='qc3'; %field, qc1, or qc2
-freqData='10hz';
 qcVersion='v3.0';
+freqData='combined'; % 10hz, 100hz, 2hz, or combined
 whichModel='era5';
 
 if strcmp(project,'otrec')
@@ -25,15 +25,7 @@ indir=HCRdir(project,quality,qcVersion,freqData);
 
 [~,modeldir]=modelDir(project,whichModel,quality,qcVersion,freqData);
 
-% if strcmp(project,'otrec')
-%     indir='/scr/sleet2/rsfdata/projects/otrec/hcr/qc2/cfradial/development/pid/10hz/';
-% elseif strcmp(project,'socrates')
-%     indir='/scr/snow2/rsfdata/projects/socrates/hcr/qc2/cfradial/development/pid/10hz/';
-% end
-% 
-% modeldir=[indir(1:end-30),'mat/pid/10hz/'];
-
-figdir=[indir(1:end-5),'pidPlots/wholeFlights/'];
+figdir=[indir(1:end-4),'pidPlotsComb/wholeFlights/'];
 
 infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_',project,'_data.txt'];
 
@@ -58,9 +50,8 @@ for aa=1:size(caseList,1)
     
     data=[];
     
-    data.DBZ = [];
-    data.FLAG=[];
-        
+    data.HCR_DBZ = [];
+            
     dataVars=fieldnames(data);
     
     % Load data
@@ -91,9 +82,7 @@ for aa=1:size(caseList,1)
     disp('Plotting ...');
     
     startPlot=startTime;
-       
-    data.DBZ(data.FLAG>1)=nan;
-    
+           
     while startPlot<endTime
         
         close all
@@ -102,7 +91,7 @@ for aa=1:size(caseList,1)
         timeInds=find(data.time>=startPlot & data.time<=endPlot);
         
         timePlot=data.time(timeInds);
-        dbzPlot=data.DBZ(:,timeInds);
+        dbzPlot=data.HCR_DBZ(:,timeInds);
         
         if sum(sum(~isnan(dbzPlot)))~=0
             aslPlot=data.asl(:,timeInds);
