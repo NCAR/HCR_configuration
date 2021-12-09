@@ -11,16 +11,13 @@ freqData='10hz';
 qcVersion='v3.0';
 whichModel='era5';
 
-% startTime=datetime(2019,9,25,15,12,0);
-% endTime=datetime(2019,9,25,15,34,0);
-
-startTime=datetime(2019,9,27,12,32,0);
-endTime=datetime(2019,9,27,12,50,50);
+startTime=datetime(2019,9,9,18,31,0);
+endTime=datetime(2019,9,9,19,9,0);
 
 if strcmp(project,'otrec')
-    ylimUpper=15;
+    ylimUpper=16;
 else
-    ylimUpper=10;
+    ylimUpper=6;
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -123,10 +120,13 @@ stratConvPlotBasic(stratConvPlot>4)=3;
 
 %% Plot
 
+textAlt=15;
+textDate=datetime(2019,9,9,18,32,0);;
+
 close all
 
 wi=9;
-hi=10;
+hi=8;
 
 fig1=figure('DefaultAxesFontSize',11,'DefaultFigurePaperType','<custom>','units','inch','position',[3,100,wi,hi]);
 fig1.PaperPositionMode = 'manual';
@@ -155,7 +155,7 @@ cb1=colorbar;
 plot(data.time,data.altitude./1000,'-k','LineWidth',2);
 grid on
 box on
-text(datetime(2019,9,27,12,32,10),14,'(a) Reflectivity (dBZ)','FontSize',11,'FontWeight','bold');
+text(textDate,textAlt,'(a) Reflectivity (dBZ)','FontSize',11,'FontWeight','bold');
 
 s2=subplot(6,1,2);
 
@@ -172,7 +172,7 @@ set(gca,'XTickLabel',[]);
 cb2=colorbar;
 grid on
 box on
-text(datetime(2019,9,27,12,32,10),14,'(b) Velocity (m s^{-1})','FontSize',11,'FontWeight','bold');
+text(textDate,textAlt,'(b) Velocity (m s^{-1})','FontSize',11,'FontWeight','bold');
 
 s3=subplot(6,1,3);
 
@@ -189,25 +189,7 @@ set(gca,'XTickLabel',[]);
 cb3=colorbar;
 grid on
 box on
-text(datetime(2019,9,27,12,32,10),14,'(c) Convectivity','FontSize',11,'FontWeight','bold');
-
-s4=subplot(6,1,4);
-
-hold on
-surf(timePlot,aslPlot./1000,stratConvPlotBasic,'edgecolor','none');
-view(2);
-ylabel('Altitude (km)');
-ylim([0 ylimUpper]);
-xlim([timePlot(1),timePlot(end)]);
-s4.Colormap=colmapBasic;
-caxis([0.5 3.5]);
-cb4=colorbar;
-cb4.Ticks=1:3;
-cb4.TickLabels={'Stratiform','Mixed','Convective'};
-set(gca,'XTickLabel',[]);
-grid on
-box on
-text(datetime(2019,9,27,12,32,10),14,'(d) Basic convective/stratiform classification','FontSize',11,'FontWeight','bold');
+text(textDate,textAlt,'(c) Convectivity','FontSize',11,'FontWeight','bold');
 
 s6=subplot(35,1,35);
 
@@ -237,20 +219,18 @@ cb5.TickLabels={'Strat Low','Strat Mid','Strat High','Mixed',...
 set(gca,'XTickLabel',[]);
 grid on
 box on
-text(datetime(2019,9,27,12,32,10),14,'(e) Convective/stratiform classification','FontSize',11,'FontWeight','bold');
+text(textDate,textAlt,'(d) Convective/stratiform classification','FontSize',11,'FontWeight','bold');
 
-s1.Position=[0.049 0.805 0.82 0.17];
-s2.Position=[0.049 0.62 0.82 0.17];
-s3.Position=[0.049 0.435 0.82 0.17];
-s4.Position=[0.049 0.25 0.82 0.17];
-s5.Position=[0.049 0.065 0.82 0.17];
-s6.Position=[0.049 0.04 0.82 0.016];
+s1.Position=[0.049 0.77 0.82 0.21];
+s2.Position=[0.049 0.54 0.82 0.21];
+s3.Position=[0.049 0.31 0.82 0.21];
+s5.Position=[0.049 0.08 0.82 0.21];
+s6.Position=[0.049 0.05 0.82 0.02];
 
-cb1.Position=[0.875,0.805,0.02,0.17];
-cb2.Position=[0.875,0.62,0.02,0.17];
-cb3.Position=[0.875,0.435,0.02,0.17];
-cb4.Position=[0.875,0.25,0.02,0.17];
-cb5.Position=[0.875,0.065,0.02,0.17];
+cb1.Position=[0.875,0.77,0.02,0.21];
+cb2.Position=[0.875,0.54,0.02,0.21];
+cb3.Position=[0.875,0.31,0.02,0.21];
+cb5.Position=[0.875,0.08,0.02,0.21];
 
 set(gcf,'PaperPositionMode','auto')
-print(fig1,[figdir,'algorithm.png'],'-dpng','-r0')
+print(fig1,[figdir,'otrec_example.png'],'-dpng','-r0')
