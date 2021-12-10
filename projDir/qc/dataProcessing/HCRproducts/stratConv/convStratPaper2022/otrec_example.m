@@ -11,11 +11,11 @@ freqData='10hz';
 qcVersion='v3.0';
 whichModel='era5';
 
-startTime=datetime(2019,9,9,18,31,0);
-endTime=datetime(2019,9,9,19,9,0);
+startTime=datetime(2019,8,11,17,29,0);
+endTime=datetime(2019,8,11,17,56,0);
 
 if strcmp(project,'otrec')
-    ylimUpper=16;
+    ylimUpper=16.5;
 else
     ylimUpper=6;
 end
@@ -120,8 +120,8 @@ stratConvPlotBasic(stratConvPlot>4)=3;
 
 %% Plot
 
-textAlt=15;
-textDate=datetime(2019,9,9,18,32,0);;
+textAlt=15.5;
+textDate=datetime(2019,8,11,17,29,30);
 
 close all
 
