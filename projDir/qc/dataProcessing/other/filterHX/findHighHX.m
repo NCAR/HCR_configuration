@@ -8,11 +8,11 @@ project='spicule'; % socrates, cset, aristo, otrec
 quality='qc1'; % field, qc0, qc1, qc2
 qcVersion='v1.0';
 freqData='10hz'; % 10hz, 100hz, or 2hz
-whichModel='narr'; % ecmwf or era5
+%whichModel='narr'; % ecmwf or era5
 
 formatOut = 'yyyymmdd_HHMM';
 
-[modeldir outdir]=modelDir(project,whichModel,freqData);
+%[modeldir outdir]=modelDir(project,whichModel,freqData);
 
 topodir=topoDir(project);
 
@@ -25,7 +25,7 @@ indir=HCRdir(project,quality,qcVersion,freqData);
 startEndTimesAll=[];
 
 %% Go through flights
-for ii=5:size(caseList,1)
+for ii=1:size(caseList,1)
     disp(['Flight ',num2str(ii)]);
     
     startTime=datetime(caseList(ii,1:6));
@@ -73,7 +73,7 @@ for ii=5:size(caseList,1)
     %% Find indices where correction needs to be applied
     medianHXend=median(data.DBMHX(760:770,:));
     
-    corrInd=medianHXend>-100;
+    corrInd=medianHXend>-95;
     
     if max(corrInd>0)
         disp('High DBMHX found.');
@@ -89,6 +89,10 @@ for ii=5:size(caseList,1)
     
     startTimes=data.time(corrIndDiff==1);
     endTimes=data.time(corrIndDiff==-1);
+
+    if isempty(startTimes) & isempty(endTimes)
+        continue
+    end
     
     if startTimes(1)>endTimes(1)
         startTimes=cat(2,data.time(1),startTimes);

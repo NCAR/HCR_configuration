@@ -4,12 +4,16 @@ function [fig,s]=do_plotHCR(data,ylimUpper);
 infields=fields(data);
 plotVars=length(infields)-7;
 
-fig=figure('Position',[200 500 1200 plotVars*350],'DefaultAxesFontSize',12);
+% Get indices
+numInds=floor(size(data.(infields{1}),2)./5000);
+plotInds=1:numInds:size(data.(infields{1}),2);
+
+fig=figure('Position',[200 500 1200 min([plotVars*350,1700])],'DefaultAxesFontSize',12);
 colormap('jet');
 
 for ii=1:plotVars
     s.(infields{ii})=subplot(plotVars,1,ii);
-    surf(data.time,data.asl./1000,data.(infields{ii}),'edgecolor','none');
+    surf(data.time(plotInds),data.asl(:,plotInds)./1000,data.(infields{ii})(:,plotInds),'edgecolor','none');
     view(2);
     ylabel('Altitude (km)');
     ylim([0 ylimUpper]);
