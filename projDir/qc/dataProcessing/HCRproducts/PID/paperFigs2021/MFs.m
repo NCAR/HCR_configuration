@@ -147,7 +147,7 @@ xlim([-0.5,0.5]);
 xlabel('Particle linear depolarization ratio');
 
 s4.XTick=-1:0.1:1;
-text(-0.485,0.6,'(d) HSRL PLDR',...
+text(-0.485,0.6,'(d) HSRL LLDR',...
     'fontsize',11,'fontweight','bold','BackgroundColor','w','Margin',0.5);
 grid on
 box on

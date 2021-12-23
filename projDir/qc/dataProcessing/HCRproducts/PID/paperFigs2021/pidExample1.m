@@ -141,7 +141,7 @@ colormap(s4,jet);
 cb4=colorbar;
 %cb4.Ticks=0.25:0.25:1.75;
 ylabel('Altitude (km)');
-text(startTime+seconds(5),ylimits(2)-0.25,'(d) HSRL PLDR (m s^{-1})',...
+text(startTime+seconds(5),ylimits(2)-0.25,'(d) HSRL LLDR (m s^{-1})',...
     'fontsize',11,'fontweight','bold','BackgroundColor','w','Margin',0.5);
 s4.SortMethod = 'childorder';
 grid on
