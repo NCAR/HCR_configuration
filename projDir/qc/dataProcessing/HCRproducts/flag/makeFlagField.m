@@ -3,19 +3,19 @@
 clear all;
 close all;
 
-startTime=datetime(2021,6,5,18,45,0);
-endTime=datetime(2021,6,5,18,50,0);
+startTime=datetime(2019,8,25,17,40,0);
+endTime=datetime(2019,8,25,17,45,0);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Input variables %%%%%%%%%%%%%%%%%%%%%%%%%%
 
-project='spicule'; %socrates, aristo, cset
-quality='qc1'; %field, qc1, or qc2
+project='otrec'; %socrates, aristo, cset
+quality='qc3'; %field, qc1, or qc2
 freqData='10hz'; % 10hz, 100hz, or 2hz
-qcVersion='v1.0';
+qcVersion='v3.0';
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-figdir=['/scr/sleet2/rsfdata/projects/spicule/hcr/qc1/cfradial/v1.0/flagPlots/'];
+figdir=['/scr/sleet2/rsfdata/projects/otrec/hcr/qc3/cfradial/v3.0_full/flagPlots/'];
 
 if ~exist(figdir, 'dir')
     mkdir(figdir)
