@@ -60,7 +60,7 @@ instance = "qc.renameConvStrat";
 // Type: string
 //
 
-input_dir = "$(DATA_DIR)/$(QC_VERSION)/cfradial/$(QC_SUB_VERSION)_full/10hzRenameConvStrat";
+input_dir = "$(DATA_DIR)/$(QC_VERSION)/cfradial/hcr_hsrl_merge/v3.0/2hzRenameConvStrat";
 
 ///////////// mode ////////////////////////////////////
 //
@@ -1459,16 +1459,16 @@ set_output_fields = TRUE;
 
 output_fields = {
   {
-    input_field_name = "PARTITION_2D",
-    output_field_name = "PRECIP_TYPE_2D",
+    input_field_name = "HCR_PARTITION_2D",
+    output_field_name = "HCR_PRECIP_TYPE_2D",
     long_name = "precipitation_type_2D",
     standard_name = "precipitation_type_2D",
     output_units = ""
   }
   ,
   {
-    input_field_name = "PARTITION_1D",
-    output_field_name = "PRECIP_TYPE_1D",
+    input_field_name = "HCR_PARTITION_1D",
+    output_field_name = "HCR_PRECIP_TYPE_1D",
     long_name = "precipitation_type_1D",
     standard_name = "precipitation_type_1D",
     output_units = ""
@@ -1894,7 +1894,7 @@ compression_level = 4;
 // Type: string
 //
 
-output_dir = "$(DATA_DIR)/$(QC_VERSION)/cfradial/$(QC_SUB_VERSION)_full/10hz";
+output_dir = "$(DATA_DIR)/$(QC_VERSION)/cfradial/hcr_hsrl_merge/v3.0/2hz";
 
 ///////////// output_filename_mode ////////////////////
 //
