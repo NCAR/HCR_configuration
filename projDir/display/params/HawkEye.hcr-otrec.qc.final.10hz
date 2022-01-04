@@ -524,8 +524,8 @@ fields = {
   }
   ,
   {
-    label = "PARTITION",
-    raw_name = "PARTITION_2D",
+    label = "PRECIP_TYPE",
+    raw_name = "PRECIP_TYPE_2D",
     filtered_name = "",
     units = "",
     color_map = "hcr_partition.colors",

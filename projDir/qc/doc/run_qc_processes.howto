@@ -295,6 +295,15 @@ $PROJ_DIR/qc/dataProcessing/HCRproducts/stratConv/stratConv_2convectivity_wholeF
 $PROJ_DIR/qc/dataProcessing/HCRproducts/stratConv/cfradial_convStrat.m
 
 #################################################################
+# Add PID
+
+# Adjust and run
+$PROJ_DIR/qc/dataProcessing/HCRproducts/PID/HCRonly/call_pid_wholeFlights.m
+
+# To add id to the dataset run
+$PROJ_DIR/qc/dataProcessing/HCRproducts/HCRonly/cfradial_pid.m
+
+#################################################################
 # Create final subset
 
 # Once all fields have been added we create a dataset version that
@@ -305,6 +314,21 @@ $PROJ_DIR/qc/scripts/run_RadxConvert.qc.select_fields.spicule
 # This will put the selected timess in
 # $DATA_DIR/QC_VERSION/cfradial/selected_fields
 # which can then be renamed to e.g. v1.0
+
+################################################################
+# Create and check images. Replace imges on field catalog.
+
+# Run
+$PROJ_DIR/catalog/scripts/run_HawkEye.catalog.15min_archive.cset
+
+# Check images by running gwenview. (It runs best if run on current
+# desktop, not on servers rain, snow, etc.)
+
+# If the 15 minute images look good, run
+$PROJ_DIR/catalog/scripts/run_HawkEye.catalog.5min_archive.cset
+$PROJ_DIR/catalog/scripts/run_HawkEye.catalog.1hour_archive.cset
+
+# Work with Carol Costanza to replace the images on the field catalog.
 
 ################################################################
 # Sea Surface Cal
@@ -391,7 +415,17 @@ run_MergeHcrAndHsrl.qc.2hz.cset
 # or
 run_MergeHcrAndHsrl.qc.2hz.socrates
 
+#################################################################
+# Add melting layer
 
+# Adjust and run
+$PROJ_DIR/qc/dataProcessing/HCRproducts/meltingLayer/meltLayer_10hzTo2hz_combined.m
 
+#################################################################
+# Add PID
 
+# Adjust and run
+$PROJ_DIR/qc/dataProcessing/HCRproducts/PID/HSRL_HCR/call_pid_comb_wholeFlights.m
 
+# To add id to the dataset run
+$PROJ_DIR/qc/dataProcessing/HCRproducts/HSRL_HCR/cfradial_pid_comb.m

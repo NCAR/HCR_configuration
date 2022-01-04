@@ -94,9 +94,9 @@ for ii=2:size(caseList,1)
             netcdf.reDef(ncid);
             varidConv = netcdf.defVar(ncid,'CONVECTIVITY','NC_FLOAT',[dimrange dimtime]);
             netcdf.defVarFill(ncid,varidConv,false,fillVal);
-            varidSC2D = netcdf.defVar(ncid,'PARTITION_2D','NC_SHORT',[dimrange dimtime]);
+            varidSC2D = netcdf.defVar(ncid,'PRECIP_TYPE_2D','NC_SHORT',[dimrange dimtime]);
             netcdf.defVarFill(ncid,varidSC2D,false,fillVal);
-            varidSC1D = netcdf.defVar(ncid,'PARTITION_1D','NC_SHORT',[dimtime]);
+            varidSC1D = netcdf.defVar(ncid,'PRECIP_TYPE_1D','NC_SHORT',[dimtime]);
             netcdf.defVarFill(ncid,varidSC1D,false,fillVal);
             netcdf.endDef(ncid);
             
@@ -114,25 +114,25 @@ for ii=2:size(caseList,1)
             ncwriteatt(infile,'CONVECTIVITY','grid_mapping','grid_mapping');
             ncwriteatt(infile,'CONVECTIVITY','coordinates','time range');
             
-            ncwriteatt(infile,'PARTITION_2D','long_name','convective_stratiform_partition_2D');
-            ncwriteatt(infile,'PARTITION_2D','standard_name','partition_2D');
-            ncwriteatt(infile,'PARTITION_2D','units','');
-            ncwriteatt(infile,'PARTITION_2D','flag_values',[14, 16, 18, 25, 30, 32, 34, 36, 38]);
-            ncwriteatt(infile,'PARTITION_2D','flag_meanings',...
+            ncwriteatt(infile,'PRECIP_TYPE_2D','long_name','precipitation_type_2D');
+            ncwriteatt(infile,'PRECIP_TYPE_2D','standard_name','precipitation_type_2D');
+            ncwriteatt(infile,'PRECIP_TYPE_2D','units','');
+            ncwriteatt(infile,'PRECIP_TYPE_2D','flag_values',[14, 16, 18, 25, 30, 32, 34, 36, 38]);
+            ncwriteatt(infile,'PRECIP_TYPE_2D','flag_meanings',...
                 'strat_low strat_mid strat_high mixed conv conv_elevated conv_shallow conv_mid conv_deep');
-            ncwriteatt(infile,'PARTITION_2D','is_discrete','true');
-            ncwriteatt(infile,'PARTITION_2D','grid_mapping','grid_mapping');
-            ncwriteatt(infile,'PARTITION_2D','coordinates','time range');
+            ncwriteatt(infile,'PRECIP_TYPE_2D','is_discrete','true');
+            ncwriteatt(infile,'PRECIP_TYPE_2D','grid_mapping','grid_mapping');
+            ncwriteatt(infile,'PRECIP_TYPE_2D','coordinates','time range');
                         
-            ncwriteatt(infile,'PARTITION_1D','long_name','convective_stratiform_partition_1D');
-            ncwriteatt(infile,'PARTITION_1D','standard_name','partition_1D');
-            ncwriteatt(infile,'PARTITION_1D','units','');
-            ncwriteatt(infile,'PARTITION_1D','flag_values',[14, 16, 18, 25, 30, 32, 34, 36, 38]);
-            ncwriteatt(infile,'PARTITION_1D','flag_meanings',...
+            ncwriteatt(infile,'PRECIP_TYPE_1D','long_name','precipitation_type_1D');
+            ncwriteatt(infile,'PRECIP_TYPE_1D','standard_name','precipitation_type_1D');
+            ncwriteatt(infile,'PRECIP_TYPE_1D','units','');
+            ncwriteatt(infile,'PRECIP_TYPE_1D','flag_values',[14, 16, 18, 25, 30, 32, 34, 36, 38]);
+            ncwriteatt(infile,'PRECIP_TYPE_1D','flag_meanings',...
                 'strat_low strat_mid strat_high mixed conv conv_elevated conv_shallow conv_mid conv_deep');
-            ncwriteatt(infile,'PARTITION_1D','is_discrete','true');
-            ncwriteatt(infile,'PARTITION_1D','grid_mapping','grid_mapping');
-            ncwriteatt(infile,'PARTITION_1D','coordinates','time');
+            ncwriteatt(infile,'PRECIP_TYPE_1D','is_discrete','true');
+            ncwriteatt(infile,'PRECIP_TYPE_1D','grid_mapping','grid_mapping');
+            ncwriteatt(infile,'PRECIP_TYPE_1D','coordinates','time');
         end
     end
 end

@@ -42,7 +42,7 @@ debug = DEBUG_OFF;
 // Type: string
 //
 
-instance = "qc.select_fields";
+instance = "qc.renameConvStrat";
 
 //======================================================================
 //
@@ -60,7 +60,7 @@ instance = "qc.select_fields";
 // Type: string
 //
 
-input_dir = "$(DATA_DIR)/$(QC_VERSION)/cfradial/$(QC_SUB_VERSION)_full/10hz";
+input_dir = "$(DATA_DIR)/$(QC_VERSION)/cfradial/$(QC_SUB_VERSION)_full/10hzRenameConvStrat";
 
 ///////////// mode ////////////////////////////////////
 //
@@ -1419,7 +1419,7 @@ user_defined_global_attributes = {
 // Type: boolean
 //
 
-set_output_fields = FALSE;
+set_output_fields = TRUE;
 
 ///////////// output_fields ///////////////////////////
 //
@@ -1459,27 +1459,19 @@ set_output_fields = FALSE;
 
 output_fields = {
   {
-    input_field_name = "DBZ",
-    output_field_name = "DBZ",
-    long_name = "reflectivity",
-    standard_name = "equivalent_reflectivity_factor",
-    output_units = "dBZ",
-    encoding = OUTPUT_ENCODING_ASIS,
-    output_scaling = SCALING_DYNAMIC,
-    output_scale = 0.01,
-    output_offset = 0
+    input_field_name = "PARTITION_2D",
+    output_field_name = "PRECIP_TYPE_2D",
+    long_name = "precipitation_type_2D",
+    standard_name = "precipitation_type_2D",
+    output_units = ""
   }
   ,
   {
-    input_field_name = "VEL",
-    output_field_name = "VEL",
-    long_name = "radial_velocity",
-    standard_name = "radial_velocity_of_scatterers_away_from_instrument",
-    output_units = "m/s",
-    encoding = OUTPUT_ENCODING_ASIS,
-    output_scaling = SCALING_DYNAMIC,
-    output_scale = 0.01,
-    output_offset = 0
+    input_field_name = "PARTITION_1D",
+    output_field_name = "PRECIP_TYPE_1D",
+    long_name = "precipitation_type_1D",
+    standard_name = "precipitation_type_1D",
+    output_units = ""
   }
 };
 
@@ -1494,7 +1486,7 @@ output_fields = {
 // Type: boolean
 //
 
-write_other_fields_unchanged = FALSE;
+write_other_fields_unchanged = TRUE;
 
 ///////////// exclude_specified_fields ////////////////
 //
@@ -1508,7 +1500,7 @@ write_other_fields_unchanged = FALSE;
 // Type: boolean
 //
 
-exclude_specified_fields = TRUE;
+exclude_specified_fields = FALSE;
 
 ///////////// excluded_fields /////////////////////////
 //
@@ -1522,18 +1514,6 @@ exclude_specified_fields = TRUE;
 //
 
 excluded_fields = {
- "DBZHC",
- "DBZVC",
- "VEL_RAW",
- "WIDTH_RAW",
- "SNRHC",
- "SNRVC",
- "SNRHX",
- "SNRVX",
- "DBMHC",
- "DBMVX",
- "LDRH",
- "LDRV"
 };
 
 //======================================================================
@@ -1914,7 +1894,7 @@ compression_level = 4;
 // Type: string
 //
 
-output_dir = "$(DATA_DIR)/$(QC_VERSION)/cfradial/$(QC_SUB_VERSION)/10hz";
+output_dir = "$(DATA_DIR)/$(QC_VERSION)/cfradial/$(QC_SUB_VERSION)_full/10hz";
 
 ///////////// output_filename_mode ////////////////////
 //

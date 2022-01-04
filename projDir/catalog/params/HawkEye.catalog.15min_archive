@@ -192,7 +192,7 @@ archive_start_time = "2018 01 22 22 45 00";
 // Type: string
 //
 
-archive_data_url = "$(DATA_DIR)/$(QC_VERSION)/cfradial/$(QC_SUB_VERSION)_full/10hz";
+archive_data_url = "$(DATA_DIR)/$(QC_VERSION)/cfradial/$(QC_SUB_VERSION)/10hz";
 
 //======================================================================
 //
@@ -337,7 +337,7 @@ fields = {
     raw_name = "VEL_CORR",
     filtered_name = "",
     units = "m/s",
-    color_map = "vel_w_8.colors",
+    color_map = "hcr_vel12.colors",
     shortcut = "1"
   }
   ,
@@ -346,7 +346,16 @@ fields = {
     raw_name = "VEL",
     filtered_name = "",
     units = "m/s",
-    color_map = "vel_w_8.colors",
+    color_map = "hcr_vel12.colors",
+    shortcut = "1"
+  }
+  ,
+  {
+    label = "VEL_UNFOLDED",
+    raw_name = "VEL_UNFOLDED",
+    filtered_name = "",
+    units = "m/s",
+    color_map = "hcr_vel12.colors",
     shortcut = "1"
   }
   ,
@@ -355,7 +364,7 @@ fields = {
     raw_name = "VEL_MASKED",
     filtered_name = "",
     units = "m/s",
-    color_map = "vel_w_8.colors",
+    color_map = "hcr_vel12.colors",
     shortcut = "2"
   }
   ,
@@ -446,6 +455,15 @@ fields = {
     filtered_name = "",
     units = "",
     color_map = "hcr_flag.colors",
+    shortcut = "d"
+  }
+  ,
+  {
+    label = "MELTING_LAYER",
+    raw_name = "MELTING_LAYER",
+    filtered_name = "",
+    units = "",
+    color_map = "hcr_melting_layer.colors",
     shortcut = "d"
   }
   ,
