@@ -263,15 +263,15 @@ hcr_fields = {
   }
   ,
   {
-    input_field_name = "PARTITION_2D",
-    output_field_name = "HCR_PARTITION_2D",
+    input_field_name = "ECHO_TYPE_2D",
+    output_field_name = "HCR_ECHO_TYPE_2D",
     apply_flag = FALSE,
     set_to_missing_if_scanning = FALSE
   }
   ,
   {
-    input_field_name = "PARTITION_1D",
-    output_field_name = "HCR_PARTITION_1D",
+    input_field_name = "ECHO_TYPE_1D",
+    output_field_name = "HCR_ECHO_TYPE_1D",
     apply_flag = FALSE,
     set_to_missing_if_scanning = FALSE
   }
@@ -493,7 +493,7 @@ n_dwells_for_hcr_elev_sdev = 7;
 // Type: string
 //
 
-output_dir = "$(DATA_DIR)/$(QC_VERSION)/cfradial/hcr_hsrl_merge/$(QC_SUB_VERSION)/2hz";
+output_dir = "$(DATA_DIR)/$(QC_VERSION)/cfradial/hcr_hsrl_merge/$(QC_SUB_VERSION)_full/2hz";
 
 ///////////// append_day_dir_to_output_dir ////////////
 //

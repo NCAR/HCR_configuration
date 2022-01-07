@@ -406,7 +406,7 @@ run_Hsrl2Radx.qc.2hz.socrates
 # HSRL model-based fields.
 #
 # This will write data to:
-#  $DATA_DIR/$QC_VERSION/cfradial/hsrl_merge/2hz
+#  $DATA_DIR/$QC_VERSION/cfradial/hsrl_merge/v3.0_full/2hz
 #
 # For example, for socrates:
 #
@@ -429,3 +429,28 @@ $PROJ_DIR/qc/dataProcessing/HCRproducts/PID/HSRL_HCR/call_pid_comb_wholeFlights.
 
 # To add id to the dataset run
 $PROJ_DIR/qc/dataProcessing/HCRproducts/HSRL_HCR/cfradial_pid_comb.m
+
+#################################################################
+# Create final subset
+
+# Once all fields have been added we create a dataset version that
+# has only fields that are useful to the users. Run
+
+$PROJ_DIR/qc/scripts/run_RadxConvert.qc.select_fields.HcrHsrl2hz.cset
+
+################################################################
+# Create and check images. Replace imges on field catalog.
+
+# Run
+$PROJ_DIR/catalog/scripts/run_HawkEye.catalog.15min_archive_HcrHsrl2hz.cset
+
+# Check images by running gwenview. (It runs best if run on current
+# desktop, not on servers rain, snow, etc.)
+
+# If the 15 minute images look good, run
+$PROJ_DIR/catalog/scripts/run_HawkEye.catalog.5min_archive_HcrHsrl2hz.cset
+$PROJ_DIR/catalog/scripts/run_HawkEye.catalog.1hour_archive_HcrHsrl2hz.cset
+
+# Work with Carol Costanza to replace the images on the field catalog.
+
+################################################################

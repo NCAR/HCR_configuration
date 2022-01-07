@@ -42,7 +42,7 @@ debug = DEBUG_OFF;
 // Type: string
 //
 
-instance = "qc.renameConvStrat";
+instance = "qc.select_fields";
 
 //======================================================================
 //
@@ -60,7 +60,7 @@ instance = "qc.renameConvStrat";
 // Type: string
 //
 
-input_dir = "$(DATA_DIR)/$(QC_VERSION)/cfradial/$(QC_SUB_VERSION)_full/10hzRenameConvStrat";
+input_dir = "$(DATA_DIR)/$(QC_VERSION)/cfradial/hcr_hsrl_merge/$(QC_SUB_VERSION)_full/2hz";
 
 ///////////// mode ////////////////////////////////////
 //
@@ -1419,7 +1419,7 @@ user_defined_global_attributes = {
 // Type: boolean
 //
 
-set_output_fields = TRUE;
+set_output_fields = FALSE;
 
 ///////////// output_fields ///////////////////////////
 //
@@ -1459,19 +1459,27 @@ set_output_fields = TRUE;
 
 output_fields = {
   {
-    input_field_name = "PARTITION_2D",
-    output_field_name = "ECHO_TYPE_2D",
-    long_name = "echo_type_2D",
-    standard_name = "echo_type",
-    output_units = ""
+    input_field_name = "DBZ",
+    output_field_name = "DBZ",
+    long_name = "reflectivity",
+    standard_name = "equivalent_reflectivity_factor",
+    output_units = "dBZ",
+    encoding = OUTPUT_ENCODING_ASIS,
+    output_scaling = SCALING_DYNAMIC,
+    output_scale = 0.01,
+    output_offset = 0
   }
   ,
   {
-    input_field_name = "PARTITION_1D",
-    output_field_name = "ECHO_TYPE_1D",
-    long_name = "echo_type_1D",
-    standard_name = "echo_type",
-    output_units = ""
+    input_field_name = "VEL",
+    output_field_name = "VEL",
+    long_name = "radial_velocity",
+    standard_name = "radial_velocity_of_scatterers_away_from_instrument",
+    output_units = "m/s",
+    encoding = OUTPUT_ENCODING_ASIS,
+    output_scaling = SCALING_DYNAMIC,
+    output_scale = 0.01,
+    output_offset = 0
   }
 };
 
@@ -1486,7 +1494,7 @@ output_fields = {
 // Type: boolean
 //
 
-write_other_fields_unchanged = TRUE;
+write_other_fields_unchanged = FALSE;
 
 ///////////// exclude_specified_fields ////////////////
 //
@@ -1500,7 +1508,7 @@ write_other_fields_unchanged = TRUE;
 // Type: boolean
 //
 
-exclude_specified_fields = FALSE;
+exclude_specified_fields = TRUE;
 
 ///////////// excluded_fields /////////////////////////
 //
@@ -1514,6 +1522,7 @@ exclude_specified_fields = FALSE;
 //
 
 excluded_fields = {
+ "HCR_PID"
 };
 
 //======================================================================
@@ -1894,7 +1903,7 @@ compression_level = 4;
 // Type: string
 //
 
-output_dir = "$(DATA_DIR)/$(QC_VERSION)/cfradial/$(QC_SUB_VERSION)_full/10hz";
+output_dir = "$(DATA_DIR)/$(QC_VERSION)/cfradial/hcr_hsrl_merge/$(QC_SUB_VERSION)/2hz";
 
 ///////////// output_filename_mode ////////////////////
 //
