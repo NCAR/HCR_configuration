@@ -207,7 +207,7 @@ cb4.TickLabels={'Stratiform','Mixed','Convective'};
 set(gca,'XTickLabel',[]);
 grid on
 box on
-text(datetime(2019,9,27,12,32,10),14,'(d) Basic convective/stratiform classification','FontSize',11,'FontWeight','bold');
+text(datetime(2019,9,27,12,32,10),14,'(d) Basic echo type','FontSize',11,'FontWeight','bold');
 
 s6=subplot(35,1,35);
 
@@ -237,7 +237,7 @@ cb5.TickLabels={'Strat Low','Strat Mid','Strat High','Mixed',...
 set(gca,'XTickLabel',[]);
 grid on
 box on
-text(datetime(2019,9,27,12,32,10),14,'(e) Convective/stratiform classification','FontSize',11,'FontWeight','bold');
+text(datetime(2019,9,27,12,32,10),14,'(e) Advanced echo type','FontSize',11,'FontWeight','bold');
 
 s1.Position=[0.049 0.805 0.82 0.17];
 s2.Position=[0.049 0.62 0.82 0.17];

@@ -57,8 +57,8 @@ data=[];
 data.DBZ_MASKED=[];
 data.VEL_MASKED=[];
 data.CONVECTIVITY=[];
-data.PARTITION_2D=[];
-data.PARTITION_1D=[];
+data.ECHO_TYPE_2D=[];
+data.ECHO_TYPE_1D=[];
 
 dataVars=fieldnames(data);
 
@@ -87,7 +87,7 @@ dbzPlot=data.DBZ_MASKED;
 aslPlot=data.asl;
 velPlot=data.VEL_MASKED;
 
-sc1D=data.PARTITION_1D;
+sc1D=data.ECHO_TYPE_1D;
 sc1D(sc1D==14)=1;
 sc1D(sc1D==16)=2;
 sc1D(sc1D==18)=3;
@@ -104,7 +104,7 @@ time1D=timePlot(~isnan(sc1D));
 sc1D=sc1D(~isnan(sc1D));
 col1D=colmapSC(sc1D,:);
 
-stratConvPlot=data.PARTITION_2D;
+stratConvPlot=data.ECHO_TYPE_2D;
 stratConvPlot(stratConvPlot==14)=1;
 stratConvPlot(stratConvPlot==16)=2;
 stratConvPlot(stratConvPlot==18)=3;
@@ -222,7 +222,7 @@ cb5.TickLabels={'Strat Low','Strat Mid','Strat High','Mixed',...
 set(gca,'XTickLabel',[]);
 grid on
 box on
-text(textDate,textAlt,'(d) Convective/stratiform classification','FontSize',11,'FontWeight','bold');
+text(textDate,textAlt,'(d) Echo type','FontSize',11,'FontWeight','bold');
 
 s1.Position=[0.049 0.77 0.82 0.21];
 s2.Position=[0.049 0.54 0.82 0.21];
