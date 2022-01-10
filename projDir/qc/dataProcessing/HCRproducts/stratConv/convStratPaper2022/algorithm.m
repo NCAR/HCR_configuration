@@ -57,8 +57,8 @@ data=[];
 data.DBZ_MASKED=[];
 data.VEL_MASKED=[];
 data.CONVECTIVITY=[];
-data.PARTITION_2D=[];
-data.PARTITION_1D=[];
+data.ECHO_TYPE_2D=[];
+data.ECHO_TYPE_1D=[];
 
 dataVars=fieldnames(data);
 
@@ -87,7 +87,7 @@ dbzPlot=data.DBZ_MASKED;
 aslPlot=data.asl;
 velPlot=data.VEL_MASKED;
 
-sc1D=data.PARTITION_1D;
+sc1D=data.ECHO_TYPE_1D;
 sc1D(sc1D==14)=1;
 sc1D(sc1D==16)=2;
 sc1D(sc1D==18)=3;
@@ -104,7 +104,7 @@ time1D=timePlot(~isnan(sc1D));
 sc1D=sc1D(~isnan(sc1D));
 col1D=colmapSC(sc1D,:);
 
-stratConvPlot=data.PARTITION_2D;
+stratConvPlot=data.ECHO_TYPE_2D;
 stratConvPlot(stratConvPlot==14)=1;
 stratConvPlot(stratConvPlot==16)=2;
 stratConvPlot(stratConvPlot==18)=3;
