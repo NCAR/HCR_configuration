@@ -1593,7 +1593,7 @@ output_fields = {
 // Type: boolean
 //
 
-write_other_fields_unchanged = FALSE;
+write_other_fields_unchanged = TRUE;
 
 ///////////// exclude_specified_fields ////////////////
 //
