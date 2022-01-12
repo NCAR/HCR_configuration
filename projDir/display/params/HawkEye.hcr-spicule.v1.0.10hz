@@ -452,6 +452,24 @@ fields = {
   }
   ,
   {
+    label = "SNRVC",
+    raw_name = "SNRVC",
+    filtered_name = "",
+    units = "dB",
+    color_map = "snr.colors",
+    shortcut = "a"
+  }
+  ,
+  {
+    label = "SNRHX",
+    raw_name = "SNRHX",
+    filtered_name = "",
+    units = "dB",
+    color_map = "snr.colors",
+    shortcut = "a"
+  }
+  ,
+  {
     label = "DBMVC",
     raw_name = "DBMVC",
     filtered_name = "",

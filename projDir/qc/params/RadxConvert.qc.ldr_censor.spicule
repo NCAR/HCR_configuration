@@ -1719,7 +1719,7 @@ apply_censoring = TRUE;
 censoring_fields = {
   {
     name = "SNRHX",
-    min_valid_value = -7,
+    min_valid_value = -8.5,
     max_valid_value = 1000,
     combination_method = LOGICAL_OR
   }
