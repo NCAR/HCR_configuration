@@ -1414,7 +1414,7 @@ ldr_correction_db_v = 0;
 // Type: boolean
 //
 
-threshold_ldr_using_snr = FALSE;
+threshold_ldr_using_snr = TRUE;
 
 ///////////// min_snr_db_for_ldr //////////////////////
 //
