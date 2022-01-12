@@ -3,9 +3,9 @@
 clear all;
 close all;
 
-project='otrec'; %socrates, otrec, cset
-quality='qc3'; %field, qc1, or qc2
-qcVersion='v3.0';
+project='spicule'; %socrates, otrec, cset
+quality='qc1'; %field, qc1, or qc2
+qcVersion='v1.1';
 freqData='10hz'; % 10hz, 100hz
 whichModel='era5';
 
@@ -19,7 +19,7 @@ indir=HCRdir(project,quality,qcVersion,freqData);
 
 figdir=[indir(1:end-5),'meltLayerPlots/process/'];
 
-saveTime=0;
+saveTime=1;
 saveOffset=1;
 
 % Default params

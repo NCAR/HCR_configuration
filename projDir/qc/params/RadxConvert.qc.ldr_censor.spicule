@@ -1607,7 +1607,7 @@ write_other_fields_unchanged = TRUE;
 // Type: boolean
 //
 
-exclude_specified_fields = FALSE;
+exclude_specified_fields = TRUE;
 
 ///////////// excluded_fields /////////////////////////
 //
@@ -1621,8 +1621,9 @@ exclude_specified_fields = FALSE;
 //
 
 excluded_fields = {
- "DBZ",
- "VEL"
+ "LDR_MASKED",
+ "MELTING_LAYER",
+ "ICING_LEVEL"
 };
 
 //======================================================================
@@ -1719,7 +1720,7 @@ apply_censoring = TRUE;
 censoring_fields = {
   {
     name = "SNRHX",
-    min_valid_value = -8.5,
+    min_valid_value = -8.0,
     max_valid_value = 1000,
     combination_method = LOGICAL_OR
   }
@@ -1740,7 +1741,7 @@ censoring_fields = {
 // Type: int
 //
 
-censoring_min_valid_run = 1;
+censoring_min_valid_run = 3;
 
 ///////////// specify_fields_to_be_censored ///////////
 //
@@ -1766,7 +1767,7 @@ specify_fields_to_be_censored = TRUE;
 //
 
 fields_to_be_censored = {
-  "LDR", "LDRH"
+  "LDR", "LDRH", "LDRV"
 };
 
 //======================================================================
@@ -2022,7 +2023,7 @@ compression_level = 4;
 // Type: string
 //
 
-output_dir = "/scr/sleet2/rsfdata/projects/spicule/hcr/qc1/cfradial/v1.0_ldr_censored/10hz";
+output_dir = "/scr/sleet2/rsfdata/projects/spicule/hcr/qc1/cfradial/v1.1_full/10hz";
 
 ///////////// output_filename_mode ////////////////////
 //
