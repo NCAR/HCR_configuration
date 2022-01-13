@@ -105,10 +105,10 @@ for aa=1:length(caseStart)
 
         data.TEMP=tempOrig;
 
-        smallInds=find((data.MELTING_LAYER==20 | isnan(data.MELTING_LAYER & data.TEMP<0)) & isnan(data.LDR) & (pid_hcr==3 | pid_hcr==6));
+        smallInds=find((data.MELTING_LAYER==20 | (isnan(data.MELTING_LAYER) & data.TEMP<0)) & isnan(data.LDR) & (pid_hcr==3 | pid_hcr==6));
         pid_hcr(smallInds)=11;
 
-        largeInds=find((data.MELTING_LAYER==20 | isnan(data.MELTING_LAYER & data.TEMP<0)) & isnan(data.LDR) & ...
+        largeInds=find((data.MELTING_LAYER==20 | (isnan(data.MELTING_LAYER) & data.TEMP<0)) & isnan(data.LDR) & ...
             (pid_hcr==1 | pid_hcr==2 | pid_hcr==4 | pid_hcr==5));
         pid_hcr(largeInds)=10;
 

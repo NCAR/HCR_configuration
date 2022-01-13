@@ -18,8 +18,8 @@ cd $PROJ_DIR/display/params
 set HAWKEYE = HawkEye
 
 if ($#argv < 6) then
-  $HAWKEYE -params HawkEye.hcr-socrates.qc.final.10hz -start_time "2018 01 22 22 45 00" >& /dev/null &
+  $HAWKEYE -params HawkEye.hcr.latest.10hz -start_time "2018 01 22 22 45 00" >& /dev/null &
 else
-  $HAWKEYE -params HawkEye.hcr-socrates.qc.final.10hz -start_time "$1 $2 $3 $4 $5 $6" >& /dev/null &
+  $HAWKEYE -params HawkEye.hcr.latest.10hz -start_time "$1 $2 $3 $4 $5 $6" >& /dev/null &
 endif
 

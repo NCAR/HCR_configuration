@@ -70,7 +70,7 @@ register_with_procmap = FALSE;
 // Type: string
 //
 
-instance = "hcr-otrec.qc.final.10hz";
+instance = "hcr-cset.qc.final.10hz";
 
 //======================================================================
 //
@@ -190,7 +190,7 @@ begin_in_archive_mode = TRUE;
 // Type: string
 //
 
-archive_start_time = "2019 08 07 15 30 00";
+archive_start_time = "2015 07 01 17 30 00";
 
 ///////////// archive_time_span_secs //////////////////
 //
@@ -452,6 +452,24 @@ fields = {
   }
   ,
   {
+    label = "SNRVC",
+    raw_name = "SNRVC",
+    filtered_name = "",
+    units = "dB",
+    color_map = "snr.colors",
+    shortcut = "a"
+  }
+  ,
+  {
+    label = "SNRHX",
+    raw_name = "SNRHX",
+    filtered_name = "",
+    units = "dB",
+    color_map = "snr.colors",
+    shortcut = "a"
+  }
+  ,
+  {
     label = "DBMVC",
     raw_name = "DBMVC",
     filtered_name = "",
@@ -524,8 +542,8 @@ fields = {
   }
   ,
   {
-    label = "PRECIP_TYPE",
-    raw_name = "PRECIP_TYPE_2D",
+    label = "ECHO_TYPE",
+    raw_name = "ECHO_TYPE_2D",
     filtered_name = "",
     units = "",
     color_map = "hcr_partition.colors",

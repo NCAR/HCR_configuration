@@ -108,11 +108,13 @@ for aa=1:length(caseStart)
 
         %% Set areas above melting layer with no LDR to cloud or precip
 
-        smallInds=find(data.HCR_MELTING_LAYER==20 & isnan(data.HCR_LDR) & isnan(data.HSRL_Particle_Linear_Depolarization_Ratio) & ...
+        data.TEMP=tempOrig;
+
+        smallInds=find((data.HCR_MELTING_LAYER==20 | (isnan(data.HCR_MELTING_LAYER) & data.TEMP<0)) & isnan(data.HCR_LDR) & isnan(data.HSRL_Particle_Linear_Depolarization_Ratio) & ...
             (pid_hcr_hsrl==3 | pid_hcr_hsrl==6));
         pid_hcr_hsrl(smallInds)=11;
 
-        largeInds=find(data.HCR_MELTING_LAYER==20 & isnan(data.HCR_LDR) & isnan(data.HSRL_Particle_Linear_Depolarization_Ratio) & ...
+        largeInds=find((data.HCR_MELTING_LAYER==20 | (isnan(data.HCR_MELTING_LAYER) & data.TEMP<0)) & isnan(data.HCR_LDR) & isnan(data.HSRL_Particle_Linear_Depolarization_Ratio) & ...
             (pid_hcr_hsrl==1 | pid_hcr_hsrl==2 | pid_hcr_hsrl==4 | pid_hcr_hsrl==5));
         pid_hcr_hsrl(largeInds)=10;
 
