@@ -44,6 +44,7 @@ for ii=1:size(velPadded,2)-pixRad*2-1
     
     % Remove slope
     velCorr=velBlock-newY+mean(velBlock,2,'omitnan');
+    %velCorr=velBlock-newY;
     velCorr(velCorr<1)=1;
     
     % Calculate texture
