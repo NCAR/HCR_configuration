@@ -11,15 +11,15 @@
 # echo "PROJ_DIR: ${PROJ_DIR}"
 
 setenv PROJ_DIR $HOME/git/HCR_configuration/projDir
-source $PROJ_DIR/system/params/project_info.cset
+source $PROJ_DIR/system/params/project_info.socrates
 cd $PROJ_DIR/display/params
 
 # set HAWKEYE = /opt/local/lrose/bin/HawkEye
 set HAWKEYE = HawkEye
 
 if ($#argv < 6) then
-  $HAWKEYE -params HawkEye.hcr-cset.qc.final.2hz -start_time "2015 07 07 20 05 00" >& /dev/null &
+  $HAWKEYE -params HawkEye.hcr.latest.2hz -start_time "2018 01 22 22 45 00" >& /dev/null &
 else
-  $HAWKEYE -params HawkEye.hcr-cset.qc.final.2hz -start_time "$1 $2 $3 $4 $5 $6" >& /dev/null &
+  $HAWKEYE -params HawkEye.hcr.latest.2hz -start_time "$1 $2 $3 $4 $5 $6" >& /dev/null &
 endif
 
