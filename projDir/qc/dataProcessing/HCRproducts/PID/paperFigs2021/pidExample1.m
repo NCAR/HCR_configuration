@@ -7,9 +7,9 @@ addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
 ylimits=[0 2];
 
-indir='/scr/snow2/rsfdata/projects/socrates/hcr/qc3/cfradial/hcr_hsrl_merge/v3.0/2hz/';
+indir='/scr/snow2/rsfdata/projects/socrates/hcr/qc3/cfradial/hcr_hsrl_merge/v3.0_full/2hz/';
 
-figdir=['/scr/snow2/rsfdata/projects/socrates/hcr/qc3/cfradial/hcr_hsrl_merge/v3.0/pidPlotsComb/paperFigs/'];
+figdir=['/scr/snow2/rsfdata/projects/socrates/hcr/qc3/cfradial/hcr_hsrl_merge/v3.0_full/pidPlotsComb/paperFigs/'];
 
 startTime=datetime(2018,1,19,4,25,0);
 endTime=datetime(2018,1,19,4,30,0);
@@ -141,7 +141,7 @@ colormap(s4,jet);
 cb4=colorbar;
 %cb4.Ticks=0.25:0.25:1.75;
 ylabel('Altitude (km)');
-text(startTime+seconds(5),ylimits(2)-0.25,'(d) HSRL LLDR (m s^{-1})',...
+text(startTime+seconds(5),ylimits(2)-0.25,'(d) HSRL LLDR',...
     'fontsize',11,'fontweight','bold','BackgroundColor','w','Margin',0.5);
 s4.SortMethod = 'childorder';
 grid on
