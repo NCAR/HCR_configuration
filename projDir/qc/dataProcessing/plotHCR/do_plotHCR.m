@@ -21,6 +21,6 @@ for ii=1:plotVars
     colorbar
     grid on
     box on
-    title(infields{ii});
+    title(infields{ii},'interpreter','none');
 end
 end
