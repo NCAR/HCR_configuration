@@ -3,7 +3,7 @@ function[classOut]=calc_pid(data,plotIn)
 
 memCoeffs
 % DBZ, LDR, VEL, TEMP
-w=[30 20 20 20];
+w=[34 22 22 22];
 
 % pid_hcr (number before post processing)
 %  1 Rain

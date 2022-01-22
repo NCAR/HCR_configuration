@@ -3,9 +3,9 @@
 clear all
 close all
 
-figdir=['/scr/snow2/rsfdata/projects/socrates/hcr/qc3/cfradial/hcr_hsrl_merge/v3.0/pidPlotsComb/paperFigs/'];
+figdir=['/scr/snow2/rsfdata/projects/socrates/hcr/qc3/cfradial/hcr_hsrl_merge/v3.0_full/pidPlotsComb/paperFigs/'];
 
-indir='/scr/snow2/rsfdata/projects/socrates/hcr/qc3/cfradial/hcr_hsrl_merge/v3.0/pidPlotsComb/comparePID_UW_largest_overlap/';
+indir='/scr/snow2/rsfdata/projects/socrates/hcr/qc3/cfradial/hcr_hsrl_merge/v3.0_full/pidPlotsComb/comparePID_UW_V2_largest_all/';
 
 outTableIn=load([indir,'compTable.mat']);
 outTableAll=outTableIn.outTableAll;
@@ -91,6 +91,10 @@ for ii=1:9
         end
 
         disp(['HitRate ',units_str_hcr{ii},' ',num2str(hitRate)]);
+
+        corrCoeffL=corrcoef(lfU,lfH,'Rows','complete');
+
+        disp(['CorelCoeff ',units_str_hcr{ii},' ',num2str(corrCoeffL(2,1))]);
     end
 end
 
@@ -142,7 +146,7 @@ colorTitleHandle = get(cb,'Title');
 set(colorTitleHandle ,'String','%');
 
 set(gcf,'PaperPositionMode','auto')
-print(fig1,[figdir,'heatMapOverlap.png'],'-dpng','-r0')
+print(fig1,[figdir,'heatMap.png'],'-dpng','-r0')
 
 hitRate=0;
 

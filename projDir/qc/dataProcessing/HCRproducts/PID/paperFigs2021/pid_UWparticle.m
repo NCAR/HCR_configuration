@@ -48,14 +48,14 @@ for ii=1:length(partFiles)
 end
 
 %% HCR data
-figdir=['/scr/snow2/rsfdata/projects/socrates/hcr/qc3/cfradial/hcr_hsrl_merge/v3.0/pidPlotsComb/paperFigs/'];
+figdir=['/scr/snow2/rsfdata/projects/socrates/hcr/qc3/cfradial/hcr_hsrl_merge/v3.0_full/pidPlotsComb/paperFigs/'];
 
 cscale_hcr=[1,0,0; 1,0.6,0.47; 0,1,0; 0,0.7,0; 0,0,1; 1,0,1; 0.5,0,0; 1,1,0; 0,1,1; 0,0,0; 0.5,0.5,0.5];
 units_str_hcr={'Rain','SC Rain','Drizzle','SC Drizzle','Cloud Liquid','SC Cloud Liq.',...
     'Melting','Large Frozen','Small Frozen','Precip','Cloud'};
 
 cscale_hcr_2=[1 0 0;0 1 0;0 0 1];
-units_str_hcr_2={'Liquid','Melting','Frozen'};
+units_str_hcr_2={'Frozen','Melting','Liquid'};
 
 varNames={'numLiqHCR','numIceHCR','numAllHCR','pidHCR','numLiqLargestP','numIceLargestP','numAllLargestP','sizeLargestP'};
 
