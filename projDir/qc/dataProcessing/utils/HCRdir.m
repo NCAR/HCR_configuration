@@ -135,6 +135,8 @@ elseif strcmp(project,'spicule')
         if strcmp(freq,'100hz') | strcmp(freq,'10hz')
             indir=['/scr/sleet2/rsfdata/projects/spicule/hcr/qc1/cfradial/',qcVersion,'_full/',freq,'/'];
         end
+    elseif strcmp(qc,'ts')
+        indir='/scr/sleet2/rsfdata/projects/spicule/hcr/time_series_netcdf/';
     end
 end
 
