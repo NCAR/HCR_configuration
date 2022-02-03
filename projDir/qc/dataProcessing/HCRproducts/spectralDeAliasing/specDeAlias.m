@@ -51,14 +51,24 @@ data.QHc=[];
 
 data=readHCRts(data,file);
 
+% sampleTime=etime(datevec(data.time(2)),datevec(data.time(1)));
+% sampleFreq=1/sampleTime;
+% nFreq=sampleFreq/2;
+
 %% Prepare processing
 beamNum=ceil(size(data.IVc,2)/(timeSpan*10000));
 
-momentsOrig.powerDB=nan(size(data.range,1),beamNum);
-momentsOrig.vel=nan(size(data.range,1),beamNum);
-momentsOrig.width=nan(size(data.range,1),beamNum);
-momentsOrig.snr=nan(size(data.range,1),beamNum);
-momentsOrig.dbz=nan(size(data.range,1),beamNum);
+momentsOrigIQ.powerDB=nan(size(data.range,1),beamNum);
+momentsOrigIQ.vel=nan(size(data.range,1),beamNum);
+momentsOrigIQ.width=nan(size(data.range,1),beamNum);
+momentsOrigIQ.snr=nan(size(data.range,1),beamNum);
+momentsOrigIQ.dbz=nan(size(data.range,1),beamNum);
+
+momentsOrigSpec.powerDB=nan(size(data.range,1),beamNum);
+momentsOrigSpec.vel=nan(size(data.range,1),beamNum);
+momentsOrigSpec.width=nan(size(data.range,1),beamNum);
+momentsOrigSpec.snr=nan(size(data.range,1),beamNum);
+momentsOrigSpec.dbz=nan(size(data.range,1),beamNum);
 
 timeBeams=[];
 
@@ -93,6 +103,8 @@ while endInd<=size(data.IVc,2) & startInd<size(data.IVc,2)
     powerShifted=fftshift(powerSignal,2);
     powerSpec=10*log10(powerShifted);
 
+    phaseVec=-pi:2*pi/(sampleNum-1):pi;
+
     % Add spectra side by side
     powerSpecLarge=cat(2,powerSpec,powerSpec,powerSpec,powerSpec,powerSpec);
 
@@ -110,13 +122,21 @@ while endInd<=size(data.IVc,2) & startInd<size(data.IVc,2)
     %prtThis=mean(prt(startInd:endInd));
     prtThis=prt;
     
-    momentsO=calcMoments(cIQv,rx_gain_v,prtThis,lambda,noise_v,data.range,dbz1km_v);
+    momentsOIQ=calcMomentsIQ(cIQv,rx_gain_v,prtThis,lambda,noise_v,data.range,dbz1km_v);
        
-    momentsOrig.powerDB(:,ii)=momentsO.powerDB;
-    momentsOrig.vel(:,ii)=momentsO.vel;
-    momentsOrig.width(:,ii)=momentsO.width;
-    momentsOrig.snr(:,ii)=momentsO.snr;
-    momentsOrig.dbz(:,ii)=momentsO.dbz;
+    momentsOrigIQ.powerDB(:,ii)=momentsOIQ.powerDB;
+    momentsOrigIQ.vel(:,ii)=momentsOIQ.vel;
+    momentsOrigIQ.width(:,ii)=momentsOIQ.width;
+    momentsOrigIQ.snr(:,ii)=momentsOIQ.snr;
+    momentsOrigIQ.dbz(:,ii)=momentsOIQ.dbz;
+
+    momentsOS=calcMomentsSpec(powerSpec,phaseVec,rx_gain_v,prtThis,lambda,noise_v,data.range,dbz1km_v);
+       
+    momentsOrigSpec.powerDB(:,ii)=momentsOS.powerDB;
+    momentsOrigSpec.vel(:,ii)=momentsOS.vel;
+    momentsOrigSpec.width(:,ii)=momentsOS.width;
+    momentsOrigSpec.snr(:,ii)=momentsOS.snr;
+    momentsOrigSpec.dbz(:,ii)=momentsOS.dbz;
 
     timeBeams=[timeBeams;data.time(startInd)];
 
@@ -129,4 +149,6 @@ end
 
 disp('Plotting moments ...');
 
-plotMoments('momentsOrig',momentsOrig,showPlot,timeBeams,data.range,ylimUpper,figdir,project);
+plotMoments('momentsOrigIQ',momentsOrigIQ,showPlot,timeBeams,data.range,ylimUpper,figdir,project);
+
+plotMoments('momentsOrigSpec',momentsOrigSpec,showPlot,timeBeams,data.range,ylimUpper,figdir,project);

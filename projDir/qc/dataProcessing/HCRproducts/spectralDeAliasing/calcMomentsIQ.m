@@ -1,4 +1,4 @@
-function moments = calcMoments(cIQ,rx_gain,prt,lambda,noiseLev,range,dbz1km)
+function moments = calcMomentsIQ(cIQ,rx_gain,prt,lambda,noiseLev,range,dbz1km)
 % Calculate moments
 
 moments=[];
