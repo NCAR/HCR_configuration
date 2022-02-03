@@ -18,6 +18,7 @@ timeSpan=1/outFreq;
 showPlot='on';
 ylimUpper=6;
 plotTimeInd=130;
+saveWaterfall=0;
 
 plotGates=0;
 
@@ -50,10 +51,6 @@ data.QVc=[];
 data.QHc=[];
 
 data=readHCRts(data,file);
-
-% sampleTime=etime(datevec(data.time(2)),datevec(data.time(1)));
-% sampleFreq=1/sampleTime;
-% nFreq=sampleFreq/2;
 
 %% Prepare processing
 beamNum=ceil(size(data.IVc,2)/(timeSpan*10000));
@@ -101,6 +98,7 @@ while endInd<=size(data.IVc,2) & startInd<size(data.IVc,2)
     powerSignal=powerRealIn+powerImagIn;
 
     powerShifted=fftshift(powerSignal,2);
+    powerShifted=fliplr(powerShifted);
     powerSpec=10*log10(powerShifted);
 
     phaseVec=-pi:2*pi/(sampleNum-1):pi;
@@ -110,14 +108,51 @@ while endInd<=size(data.IVc,2) & startInd<size(data.IVc,2)
 
     %% Filter
 
-    [powerSpecFilt,powerSpecMed,powerSpecMed2]=filterPowerSpec(powerSpecLarge,sampleNum);
+    [powerSpecFilt]=filterPowerSpecPerc(powerSpecLarge,sampleNum);
+    powerSpecFilt(data.range<0,:)=nan;
+
+    %% Find peak
+
+%     if ii==1
+%         prevPeakVec=repmat(round(size(powerSpecLarge,2)/2),size(powerSpecLarge,1),1);
+%     end
+% 
+%     minusInd=floor(sampleNum/2);
+%     plusInd=minusInd;
+% 
+%     isEven=rem(sampleNum,2)==0;
+%     if isEven
+%         plusInd=plusInd-1;
+%     end
+% 
+%     centerPoint=prevPeakVec(1);
+%     searchPeak=nan(length(prevPeakVec),1);
+%     for jj=1:length(prevPeakVec)
+%         searchFilt=powerSpecFilt(jj,centerPoint-minusInd:centerPoint+plusInd);
+%         if all(isnan(searchFilt))
+%             if jj==1
+%             searchPeak(jj)=round(size(powerSpecLarge,2)/2);
+%             else
+%                 searchPeak(jj)=searchPeak(jj-1);
+%             end
+%         else
+%             [max1,maxInd]=max(searchFilt,[],'omitnan');
+%         end
+%     end
+
+     maskF=~isnan(powerSpecFilt);
+     maskF=bwareaopen(maskF,100,4);
+
+     distV=double(bwdist(maskF));
+         
 
     %% Plot waterfall
 
-    if ii==plotTimeInd
-        plotSpec(data,sampleNum,startInd,powerSpecLarge,ylimUpper,powerSpecFilt,powerSpecMed,powerSpecMed2,plotGates,showPlot,figdir)
-    end
-
+    %if ii==plotTimeInd
+        close all
+        plotSpec(data,sampleNum,startInd,distV,ylimUpper,powerSpecFilt,showPlot,figdir,saveWaterfall)
+    %end
+    
     %% Moments
     %prtThis=mean(prt(startInd:endInd));
     prtThis=prt;

@@ -4,29 +4,24 @@ function moments = calcMomentsSpec(specDB,phaseVec,rx_gain,prt,lambda,noiseLev,r
 moments=[];
 
 specLin=10.^(specDB./10);
-powerLin=mean(specLin,2);
+
+sumSpecLin=sum(specLin,2,'omitnan');
+sumSpecPhase=sum(specLin.*phaseVec,2,'omitnan');
+sumSpecPhase2=sum(specLin.*phaseVec.^2,2,'omitnan');
 
 % DBM
+powerLin=mean(specLin,2);
 moments.powerDB=10*log10(powerLin)-rx_gain;
 
 % VEL
-[maxPeak,maxInd]=max(specLin,[],2,'omitnan');
-moments.vel=lambda/(4*pi*prt)*phaseVec(maxInd);
+meanK=sumSpecPhase./sumSpecLin;
+moments.vel=lambda/(4*pi*prt)*meanK;
 
 % WIDTH
-moments.width=lambda/(2*pi*prt*6^.5)*abs(log(abs(std(specLin,0,2)))).^0.5;
-
-%cIQ=cIQ.*sqrt(size(cIQ,2));
-
-% %R0=mean(real(cIQ).^2+imag(cIQ).^2,2);
-% R1=mean(cIQ(:,1:end-1).*conj(cIQ(:,2:end)),2);
-% R2=mean(cIQ(:,1:end-2).*conj(cIQ(:,3:end)),2);
-% 
-% 
-% % VEL
-%moments.vel=lambda/(4*pi*prt)*angle(specLin);
-% % WIDTH
-% moments.width=lambda/(2*pi*prt*6^.5)*abs(log(abs(R1./R2))).^0.5;
+varK=(sumSpecPhase2./sumSpecLin)-meanK.^2;
+sdevK=sqrt(varK);
+sdevK(varK<=0)=0.0001;
+moments.width=sdevK;
 
 % SNR
 noiseLin=10.^(noiseLev./10);
