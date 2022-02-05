@@ -40,7 +40,7 @@ hold on
 surf(timeBeams,range./1000,moments.vel,'edgecolor','none');
 view(2);
 ylabel('Range (km)');
-caxis([-12 12]);
+caxis([-16 16]);
 ylim([0 ylimUpper]);
 xlim([timeBeams(1),timeBeams(end)]);
 colorbar

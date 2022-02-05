@@ -9,6 +9,15 @@ spread=max(powerSpecMed,[],2,'omitnan')-powerSpecMin;
 
 powerSpecFilt=powerSpecMed;
 powerSpecFilt(powerSpecMed<powerSpecMin+spread./2)=nan;
-powerSpecFilt(movmedian(spread,50)<5,:)=nan;
-
+powerSpecFilt(spread<5,:)=nan;
+% 
+% figure
+% 
+% for ii=1:length(spread)
+%     plot(powerSpecLarge(ii,:));
+%     hold on
+%     %plot([1,size(powerSpecFilt,2)],[]);
+%     plot(powerSpecFilt(ii,:));
+%     hold off
+% end
 end

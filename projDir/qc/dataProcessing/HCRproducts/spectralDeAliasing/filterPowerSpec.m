@@ -15,6 +15,6 @@ medDiff=powerSpecMed-powerSpecMed2;
 
 powerSpecFilt=powerSpecLarge;
 powerSpecFilt(medDiff<1)=nan;
-powerSpecFilt(powerSpecLarge<powerSpecMin)=nan;
 
+powerSpecFilt(powerSpecLarge<powerSpecMin)=nan;
 end

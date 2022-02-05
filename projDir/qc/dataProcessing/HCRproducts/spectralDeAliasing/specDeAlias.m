@@ -10,17 +10,16 @@ quality='ts'; %field, qc1, or qc2
 freqData='dummy';
 qcVersion='dummy';
 
-infile='20210620_225138_89.92_169.63.nc';
+infile='20210529_191100_-89.99_229.66.nc';
 
 outFreq=10; % Desired output frequency in Hz
 timeSpan=1/outFreq;
+duplicateSpec=7; % Number of duplicates of spectra
 
 showPlot='on';
 ylimUpper=6;
 plotTimeInd=130;
 saveWaterfall=0;
-
-plotGates=0;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -102,55 +101,59 @@ while endInd<=size(data.IVc,2) & startInd<size(data.IVc,2)
     powerSpec=10*log10(powerShifted);
 
     phaseVec=-pi:2*pi/(sampleNum-1):pi;
+    phaseMat=repmat(phaseVec,size(cIQv,1),1);
 
     % Add spectra side by side
-    powerSpecLarge=cat(2,powerSpec,powerSpec,powerSpec,powerSpec,powerSpec);
+    powerSpecLarge=repmat(powerSpec,1,duplicateSpec);
+    phaseVecLarge=-duplicateSpec*pi:2*pi/(sampleNum):duplicateSpec*pi;
+    phaseVecLarge=phaseVecLarge(1:end-1);
 
     %% Filter
 
     [powerSpecFilt]=filterPowerSpecPerc(powerSpecLarge,sampleNum);
     powerSpecFilt(data.range<0,:)=nan;
 
-    %% Find peak
+    %% Find spectrum boundaries
 
-%     if ii==1
-%         prevPeakVec=repmat(round(size(powerSpecLarge,2)/2),size(powerSpecLarge,1),1);
-%     end
-% 
-%     minusInd=floor(sampleNum/2);
-%     plusInd=minusInd;
-% 
-%     isEven=rem(sampleNum,2)==0;
-%     if isEven
-%         plusInd=plusInd-1;
-%     end
-% 
-%     centerPoint=prevPeakVec(1);
-%     searchPeak=nan(length(prevPeakVec),1);
-%     for jj=1:length(prevPeakVec)
-%         searchFilt=powerSpecFilt(jj,centerPoint-minusInd:centerPoint+plusInd);
-%         if all(isnan(searchFilt))
-%             if jj==1
-%             searchPeak(jj)=round(size(powerSpecLarge,2)/2);
-%             else
-%                 searchPeak(jj)=searchPeak(jj-1);
-%             end
-%         else
-%             [max1,maxInd]=max(searchFilt,[],'omitnan');
-%         end
-%     end
+    maskF=~isnan(powerSpecFilt);
+    maskF=bwareaopen(maskF,500,4);
 
-     maskF=~isnan(powerSpecFilt);
-     maskF=bwareaopen(maskF,100,4);
+    powerSpecFilt(maskF==0)=nan;
 
-     distV=double(bwdist(maskF));
-         
+    distV=double(bwdist(maskF));
+
+    distV(:,1:round(sampleNum/4))=nan;
+    distV(:,end-round(sampleNum/4):end)=nan;
+
+    distFilt=filterDistPerc(distV,sampleNum);
+    distBW=~isnan(distFilt);
+
+    if ii==1
+        leftIndsPrev=repmat(sampleNum*floor(duplicateSpec/2),size(cIQv,1),1);
+    end
+
+    [leftInds,rightInds]=getSpecBounds(distBW,sampleNum,duplicateSpec,leftIndsPrev);
+
+    leftIndsPrev=leftInds;
+
+    %% Build adjusted spectrum
+
+    powerAdj=nan(size(powerSpec));
+    phaseAdj=nan(size(powerSpec));
+
+    for kk=1:size(powerSpec,1)
+        try
+            powerAdj(kk,:)=powerSpecLarge(kk,leftInds(kk):rightInds(kk));
+            phaseAdj(kk,:)=phaseVecLarge(leftInds(kk):rightInds(kk));
+        end
+    end
 
     %% Plot waterfall
 
     %if ii==plotTimeInd
         close all
-        plotSpec(data,sampleNum,startInd,distV,ylimUpper,powerSpecFilt,showPlot,figdir,saveWaterfall)
+        %plotSpec(data,sampleNum,duplicateSpec,startInd,powerSpecLarge,ylimUpper,powerSpecFilt,showPlot,figdir,saveWaterfall)
+        plotSpec(data,sampleNum,duplicateSpec,startInd,double(distBW),ylimUpper,powerSpecFilt,showPlot,figdir,saveWaterfall)
     %end
     
     %% Moments
@@ -165,7 +168,7 @@ while endInd<=size(data.IVc,2) & startInd<size(data.IVc,2)
     momentsOrigIQ.snr(:,ii)=momentsOIQ.snr;
     momentsOrigIQ.dbz(:,ii)=momentsOIQ.dbz;
 
-    momentsOS=calcMomentsSpec(powerSpec,phaseVec,rx_gain_v,prtThis,lambda,noise_v,data.range,dbz1km_v);
+    momentsOS=calcMomentsSpec(powerAdj,phaseAdj,rx_gain_v,prtThis,lambda,noise_v,data.range,dbz1km_v);
        
     momentsOrigSpec.powerDB(:,ii)=momentsOS.powerDB;
     momentsOrigSpec.vel(:,ii)=momentsOS.vel;
