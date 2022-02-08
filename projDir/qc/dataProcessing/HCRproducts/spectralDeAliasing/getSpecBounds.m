@@ -1,7 +1,32 @@
-function [leftInds rightInds] = getSpecBounds(distBW,sampleNum,dupSpec,leftPrev)
+function [leftInds rightInds, outRegions] = getSpecBounds(distBW,sampleNum,dupSpec,leftPrev)
 % Get left and right spectrum boundaries
 
 regions=bwconncomp(distBW);
+
+redoRegions=0;
+
+% Make sure regions don't touch
+for ii=1:regions.NumObjects
+    regMask=zeros(size(distBW));
+    regMask(regions.PixelIdxList{ii})=1;
+    sumReg=any(regMask==1,1);
+    sumSum=sum(sumReg);
+    if sumSum>size(distBW,2)*0.8; % Connected
+        distBW(regions.PixelIdxList{ii})=0;
+        redoRegions=1;
+        oneReg=1;
+        while oneReg==1
+            regMask=imerode(regMask,strel('disk',1));
+            regions1=bwconncomp(regMask);
+            oneReg=regions1.NumObjects;
+        end
+        distBW(regMask==1)=1;
+    end
+end
+
+if redoRegions
+    regions=bwconncomp(distBW);
+end
 
 outRegions=zeros(size(distBW));
 
@@ -46,12 +71,20 @@ while firstEmpty<=size(distBW,1)
 
     jj=0;
     goodInds=[];
-    while isempty(goodInds)
+    checkLine=-1;
+    while isempty(goodInds) & checkLine<size(distBW,1)
         checkLine=firstEmpty+jj;
         firstLine=distBW(checkLine,:);
+        firstLine(1:searchPointL-sampleNum)=0;
+        firstLine(searchPointR+sampleNum:end)=0;
         goodInds=find(firstLine==1);
         sumCols(checkLine)=1;
         jj=jj+1;
+    end
+
+    if isempty(goodInds)
+        firstEmpty=size(distBW,1)+1;
+        continue
     end
 
     distToPointL=abs(goodInds-searchPointL);

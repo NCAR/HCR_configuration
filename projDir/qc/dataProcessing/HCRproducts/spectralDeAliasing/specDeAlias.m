@@ -10,7 +10,8 @@ quality='ts'; %field, qc1, or qc2
 freqData='dummy';
 qcVersion='dummy';
 
-infile='20210529_191100_-89.99_229.66.nc';
+%infile='20210529_191100_-89.99_229.66.nc';
+infile='20210621_015840_89.94_315.84.nc';
 
 outFreq=10; % Desired output frequency in Hz
 timeSpan=1/outFreq;
@@ -132,7 +133,7 @@ while endInd<=size(data.IVc,2) & startInd<size(data.IVc,2)
         leftIndsPrev=repmat(sampleNum*floor(duplicateSpec/2),size(cIQv,1),1);
     end
 
-    [leftInds,rightInds]=getSpecBounds(distBW,sampleNum,duplicateSpec,leftIndsPrev);
+    [leftInds,rightInds,outRegions]=getSpecBounds(distBW,sampleNum,duplicateSpec,leftIndsPrev);
 
     leftIndsPrev=leftInds;
 
@@ -150,11 +151,11 @@ while endInd<=size(data.IVc,2) & startInd<size(data.IVc,2)
 
     %% Plot waterfall
 
-    %if ii==plotTimeInd
+    if ii==plotTimeInd
         close all
         %plotSpec(data,sampleNum,duplicateSpec,startInd,powerSpecLarge,ylimUpper,powerSpecFilt,showPlot,figdir,saveWaterfall)
-        plotSpec(data,sampleNum,duplicateSpec,startInd,double(distBW),ylimUpper,powerSpecFilt,showPlot,figdir,saveWaterfall)
-    %end
+        plotSpec(data,sampleNum,duplicateSpec,startInd,double(outRegions),ylimUpper,powerSpecFilt,showPlot,figdir,saveWaterfall)
+    end
     
     %% Moments
     %prtThis=mean(prt(startInd:endInd));
