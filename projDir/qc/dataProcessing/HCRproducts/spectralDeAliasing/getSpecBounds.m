@@ -1,31 +1,41 @@
-function [leftInds rightInds, outRegions] = getSpecBounds(distBW,sampleNum,dupSpec,leftPrev)
+function [leftInds,rightInds,outRegions] = getSpecBounds(distBWorig,sampleNum,dupSpec)
 % Get left and right spectrum boundaries
 
-regions=bwconncomp(distBW);
-
-redoRegions=0;
-
 % Make sure regions don't touch
-for ii=1:regions.NumObjects
-    regMask=zeros(size(distBW));
-    regMask(regions.PixelIdxList{ii})=1;
-    sumReg=any(regMask==1,1);
-    sumSum=sum(sumReg);
-    if sumSum>size(distBW,2)*0.8; % Connected
-        distBW(regions.PixelIdxList{ii})=0;
-        redoRegions=1;
-        oneReg=1;
-        while oneReg==1
-            regMask=imerode(regMask,strel('disk',1));
-            regions1=bwconncomp(regMask);
-            oneReg=regions1.NumObjects;
+redoRegions=1;
+distBW=distBWorig;
+
+while redoRegions
+
+    regions=bwconncomp(distBW);
+
+    redoRegions=0;
+    for ii=1:regions.NumObjects
+        regMask=zeros(size(distBW));
+        regMask(regions.PixelIdxList{ii})=1;
+        sumReg=any(regMask==1,1);
+        sumSum=sum(sumReg);
+        if sumSum>size(distBW,2)*0.8 % Connected
+            distBW(regions.PixelIdxList{ii})=0;
+            redoRegions=1;
+            oneReg=1;
+            while oneReg==1
+                regMask=imerode(regMask,strel('disk',1));
+                regions1=bwconncomp(regMask);
+                oneReg=regions1.NumObjects;
+            end
+            distBW(regMask==1)=1;
         end
-        distBW(regMask==1)=1;
     end
 end
 
-if redoRegions
-    regions=bwconncomp(distBW);
+if sum(distBW(1,:))==0
+    if sum(distBWorig(1,:))<size(distBW,2)*0.8
+        distBW(1,:)=distBWorig(1,:);
+        regions=bwconncomp(distBW);
+    else
+        error('First line is connected.')
+    end
 end
 
 outRegions=zeros(size(distBW));
@@ -116,7 +126,7 @@ while firstEmpty<=size(distBW,1)
     firstEmpty=min(find(sumCols==0));
 end
 
-% Shrink regions and find boundaries
+% Find boundaries
 
 leftInds=nan(size(distBW,1),1);
 
@@ -128,11 +138,6 @@ for ii=1:size(distBW,1)
         leftInds(ii)=round(mean(oneInds));
     end
 end
-
-% plot(leftInds)
-% hold on
-% plot(leftPrev)
-% hold off
 
 rightInds=leftInds+sampleNum-1;
 

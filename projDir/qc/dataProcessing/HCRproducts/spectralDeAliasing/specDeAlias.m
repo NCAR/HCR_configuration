@@ -82,6 +82,13 @@ while endInd<=size(data.IVc,2) & startInd<size(data.IVc,2)
 
     sampleNum=endInd-startInd+1;
 
+    leftAdd=floor(sampleNum/2);
+    if mod(sampleNum,2)==0
+        rightAdd=leftAdd-1;
+    else
+        rightAdd=leftAdd;
+    end
+
     % Window
     win=window(@hamming,sampleNum);  % Default window is Hamming
     winWeight=sampleNum/sum(win);
@@ -129,13 +136,41 @@ while endInd<=size(data.IVc,2) & startInd<size(data.IVc,2)
     distFilt=filterDistPerc(distV,sampleNum);
     distBW=~isnan(distFilt);
 
-    if ii==1
-        leftIndsPrev=repmat(sampleNum*floor(duplicateSpec/2),size(cIQv,1),1);
+    [leftInds,rightInds,outRegions]=getSpecBounds(distBW,sampleNum,duplicateSpec);
+
+%      %% Check consistency with previous ray
+%     if ii==1
+%         leftIndsPrev=repmat(sampleNum*floor(duplicateSpec/2),size(cIQv,1),1);
+%     end
+% 
+%     diffLeftInds=leftIndsPrev-leftInds;
+% 
+%     leftInds(diffLeftInds>2*sampleNum)=leftIndsPrev(diffLeftInds>2*sampleNum);
+%     leftInds(diffLeftInds<-2*sampleNum)=leftIndsPrev(diffLeftInds<-2*sampleNum);
+% 
+%     leftInds(diffLeftInds>sampleNum)=leftInds(diffLeftInds>sampleNum)-sampleNum;
+%     leftInds(diffLeftInds<-sampleNum)=leftInds(diffLeftInds<-sampleNum)+sampleNum;
+% % close all
+% %     plot(leftIndsPrev)
+% %     hold on
+% %     plot(leftInds)
+% %     hold off
+% %     %ylim([-1974,1974]);
+% 
+%     leftIndsPrev=leftInds;
+
+    %% Find maximum index between left and right
+    maxInds=nan(size(leftInds));
+
+    for kk=1:size(powerSpec,1)
+        try
+            linePiece=powerSpecLarge(kk,:);
+            linePiece(1:leftInds(kk)-1)=nan;
+            linePiece(rightInds(kk)+1:end)=nan;
+            [maxNotUsed,maxPiece]=max(linePiece,[],'omitnan');
+            maxInds(kk)=maxPiece;
+        end
     end
-
-    [leftInds,rightInds,outRegions]=getSpecBounds(distBW,sampleNum,duplicateSpec,leftIndsPrev);
-
-    leftIndsPrev=leftInds;
 
     %% Build adjusted spectrum
 
@@ -144,8 +179,8 @@ while endInd<=size(data.IVc,2) & startInd<size(data.IVc,2)
 
     for kk=1:size(powerSpec,1)
         try
-            powerAdj(kk,:)=powerSpecLarge(kk,leftInds(kk):rightInds(kk));
-            phaseAdj(kk,:)=phaseVecLarge(leftInds(kk):rightInds(kk));
+            powerAdj(kk,:)=powerSpecLarge(kk,maxInds(kk)-leftAdd:maxInds(kk)+rightAdd);
+            phaseAdj(kk,:)=phaseVecLarge(maxInds(kk)-leftAdd:maxInds(kk)+rightAdd);
         end
     end
 
