@@ -10,8 +10,8 @@ quality='ts'; %field, qc1, or qc2
 freqData='dummy';
 qcVersion='dummy';
 
-%infile='20210529_191100_-89.99_229.66.nc';
-infile='20210621_015840_89.94_315.84.nc';
+infile='20210529_191100_-89.99_229.66.nc';
+%infile='20210621_015840_89.94_315.84.nc';
 
 outFreq=10; % Desired output frequency in Hz
 timeSpan=1/outFreq;

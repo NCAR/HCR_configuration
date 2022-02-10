@@ -3,6 +3,7 @@ function [leftInds,rightInds,outRegions] = getSpecBounds(distBWorig,sampleNum,du
 
 % Make sure regions don't touch
 redoRegions=1;
+distBWorig=double(distBWorig);
 distBW=distBWorig;
 
 while redoRegions
@@ -29,19 +30,21 @@ while redoRegions
     end
 end
 
-if sum(distBW(1,:))==0
-    if sum(distBWorig(1,:))<size(distBW,2)*0.8
-        distBW(1,:)=distBWorig(1,:);
-        regions=bwconncomp(distBW);
-    else
-        error('First line is connected.')
-    end
+searchPoint=sampleNum*floor(dupSpec/2);
+
+distBWfirst=distBW;
+distBWfirst(:,1:searchPoint-round(sampleNum/2))=nan;
+distBWfirst(:,searchPoint+round(sampleNum/2):end)=nan;
+
+if sum(distBWfirst(1,:),'omitnan')==0
+    findFirstRow=min(find(sum(distBWfirst,2,'omitnan')>0));
+    distBW(1,:)=distBWfirst(findFirstRow,:);
+    regions=bwconncomp(distBW);
 end
 
 outRegions=zeros(size(distBW));
 
 % Find region closest to left boundary of middle spectrum
-searchPoint=sampleNum*floor(dupSpec/2);
 
 firstLine=distBW(1,:);
 goodInds=find(firstLine==1);
