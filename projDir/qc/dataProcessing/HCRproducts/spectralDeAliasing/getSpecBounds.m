@@ -1,5 +1,15 @@
-function [leftInds,rightInds,outRegions] = getSpecBounds(distBWorig,sampleNum,dupSpec)
+function [leftInds,rightInds,outRegions] = getSpecBounds(distBWorig,powerFilt,sampleNum,dupSpec)
 % Get left and right spectrum boundaries
+
+searchPoint=sampleNum*floor(dupSpec/2);
+outRegions=zeros(size(distBWorig));
+
+% Check if folding occurs
+if length(find(~isnan(powerFilt(:,searchPoint))))<3
+    leftInds=repmat(searchPoint,size(distBWorig,1),1);
+    rightInds=leftInds+sampleNum-1;
+    return
+end
 
 % Make sure regions don't touch
 redoRegions=1;
@@ -30,8 +40,6 @@ while redoRegions
     end
 end
 
-searchPoint=sampleNum*floor(dupSpec/2);
-
 distBWfirst=distBW;
 distBWfirst(:,1:searchPoint-round(sampleNum/2))=nan;
 distBWfirst(:,searchPoint+round(sampleNum/2):end)=nan;
@@ -42,7 +50,15 @@ if sum(distBWfirst(1,:),'omitnan')==0
     regions=bwconncomp(distBW);
 end
 
-outRegions=zeros(size(distBW));
+% Create gaps between clouds
+powerSum=sum(powerFilt,2,'omitnan');
+for jj=2:length(powerSum)
+    if powerSum(jj)==0
+        distBW(jj,:)=0;
+    end
+end
+
+regions=bwconncomp(distBW);
 
 % Find region closest to left boundary of middle spectrum
 
@@ -88,6 +104,10 @@ while firstEmpty<=size(distBW,1)
     while isempty(goodInds) & checkLine<size(distBW,1)
         checkLine=firstEmpty+jj;
         firstLine=distBW(checkLine,:);
+        if jj==15
+            searchPointL=searchPoint;
+            searchPointR=searchPoint;
+        end
         firstLine(1:searchPointL-sampleNum)=0;
         firstLine(searchPointR+sampleNum:end)=0;
         goodInds=find(firstLine==1);

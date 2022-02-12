@@ -21,7 +21,7 @@ moments.vel=lambda/(4*pi*prt)*meanK;
 varK=(sumSpecPhase2./sumSpecLin)-meanK.^2;
 sdevK=sqrt(varK);
 sdevK(varK<=0)=0.0001;
-moments.width=sdevK;
+moments.width=sdevK.*2;
 
 % SNR
 noiseLin=10.^(noiseLev./10);

@@ -10,7 +10,11 @@ quality='ts'; %field, qc1, or qc2
 freqData='dummy';
 qcVersion='dummy';
 
-infile='20210529_191100_-89.99_229.66.nc';
+%infile='20210529_191100_-89.99_229.66.nc';
+%infile='20210620_225107_83.48_16.92.nc';
+%infile='20210620_225138_89.92_169.63.nc';
+infile='20210621_015305_-89.93_353.61.nc';
+%infile='20210621_015437_-89.78_307.29.nc';
 %infile='20210621_015840_89.94_315.84.nc';
 
 outFreq=10; % Desired output frequency in Hz
@@ -136,7 +140,7 @@ while endInd<=size(data.IVc,2) & startInd<size(data.IVc,2)
     distFilt=filterDistPerc(distV,sampleNum);
     distBW=~isnan(distFilt);
 
-    [leftInds,rightInds,outRegions]=getSpecBounds(distBW,sampleNum,duplicateSpec);
+    [leftInds,rightInds,outRegions]=getSpecBounds(distBW,powerSpecFilt,sampleNum,duplicateSpec);
 
 %      %% Check consistency with previous ray
 %     if ii==1
@@ -191,13 +195,17 @@ while endInd<=size(data.IVc,2) & startInd<size(data.IVc,2)
         %plotSpec(data,sampleNum,duplicateSpec,startInd,powerSpecLarge,ylimUpper,powerSpecFilt,showPlot,figdir,saveWaterfall)
         plotSpec(data,sampleNum,duplicateSpec,startInd,double(outRegions),ylimUpper,powerSpecFilt,showPlot,figdir,saveWaterfall)
     end
-    
+
     %% Moments
     %prtThis=mean(prt(startInd:endInd));
     prtThis=prt;
-    
+
+    if ii==100
+        stopHere=1;
+    end
+
     momentsOIQ=calcMomentsIQ(cIQv,rx_gain_v,prtThis,lambda,noise_v,data.range,dbz1km_v);
-       
+
     momentsOrigIQ.powerDB(:,ii)=momentsOIQ.powerDB;
     momentsOrigIQ.vel(:,ii)=momentsOIQ.vel;
     momentsOrigIQ.width(:,ii)=momentsOIQ.width;
