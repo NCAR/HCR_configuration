@@ -1,7 +1,7 @@
 function [powerSpecFilt] = filterPowerSpecPerc(powerSpecLarge,sampleNum)
 % Remove lowest 10% of median
 
-powerSpecMed=movmedian(powerSpecLarge,sampleNum/10,2);
+powerSpecMed=movmedian(powerSpecLarge,round(sampleNum/10),2);
 
 powerSpecMin=min(powerSpecMed,[],2,'omitnan');
 
