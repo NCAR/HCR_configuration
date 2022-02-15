@@ -10,10 +10,10 @@ quality='ts'; %field, qc1, or qc2
 freqData='dummy';
 qcVersion='dummy';
 
-%infile='20210529_191100_-89.99_229.66.nc';
+infile='20210529_191100_-89.99_229.66.nc';
 %infile='20210620_225107_83.48_16.92.nc';
 %infile='20210620_225138_89.92_169.63.nc';
-infile='20210621_015305_-89.93_353.61.nc';
+%infile='20210621_015305_-89.93_353.61.nc';
 %infile='20210621_015437_-89.78_307.29.nc';
 %infile='20210621_015840_89.94_315.84.nc';
 
@@ -32,7 +32,7 @@ addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
 dataDir=HCRdir(project,quality,qcVersion,freqData);
 
-figdir=[dataDir,'figsDeAlias/'];
+figdir=[dataDir,'figsAirVel/'];
 
 file=[dataDir,infile(1:8),'/',infile];
 
@@ -70,6 +70,7 @@ momentsOrigSpec.vel=nan(size(data.range,1),beamNum);
 momentsOrigSpec.width=nan(size(data.range,1),beamNum);
 momentsOrigSpec.snr=nan(size(data.range,1),beamNum);
 momentsOrigSpec.dbz=nan(size(data.range,1),beamNum);
+momentsOrigSpec.airVel=nan(size(data.range,1),beamNum);
 
 timeBeams=[];
 
@@ -111,12 +112,13 @@ while endInd<=size(data.IVc,2) & startInd<size(data.IVc,2)
 
     %% Air velocity
 
-    airVel=getAirVel(powerAdj,phaseAdj,sampleNum);
-
-    %% Moments
     %prtThis=mean(prt(startInd:endInd));
     prtThis=prt;
 
+    [momentsOrigSpec.airVel(:,ii),momentsOrigSpec.traceRefl(:,ii)]=getAirVel(powerAdj,phaseAdj,sampleNum,lambda,prtThis,data.range,dbz1km_v);
+
+    %% Moments
+    
     if ii==100
         stopHere=1;
     end
@@ -151,3 +153,32 @@ disp('Plotting moments ...');
 plotMoments('momentsOrigIQ',momentsOrigIQ,showPlot,timeBeams,data.range,ylimUpper,figdir,project);
 
 plotMoments('momentsOrigSpec',momentsOrigSpec,showPlot,timeBeams,data.range,ylimUpper,figdir,project);
+
+%% Plot air vel
+f1 = figure('Position',[200 500 600 1000],'DefaultAxesFontSize',12,'visible',showPlot);
+colormap jet
+
+subplot(2,1,1)
+surf(timeBeams,data.range./1000,momentsOrigSpec.airVel,'edgecolor','none');
+view(2);
+ylabel('Range (km)');
+caxis([-16 16]);
+ylim([0 ylimUpper]);
+xlim([timeBeams(1),timeBeams(end)]);
+colorbar
+grid on
+title('Air velocity (m s^{-1})')
+
+subplot(2,1,2)
+surf(timeBeams,data.range./1000,momentsOrigSpec.traceRefl,'edgecolor','none');
+view(2);
+ylabel('Range (km)');
+caxis([-40 30]);
+ylim([0 ylimUpper]);
+xlim([timeBeams(1),timeBeams(end)]);
+colorbar
+grid on
+title('Tracer reflectivity (dBZ)')
+
+set(gcf,'PaperPositionMode','auto')
+print(f1,[figdir,project,'_airVel_',datestr(timeBeams(1),'yyyymmdd_HHMMSS'),'_to_',datestr(timeBeams(end),'yyyymmdd_HHMMSS')],'-dpng','-r0');
