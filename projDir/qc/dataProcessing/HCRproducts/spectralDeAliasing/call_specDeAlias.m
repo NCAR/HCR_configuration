@@ -10,10 +10,10 @@ quality='ts'; %field, qc1, or qc2
 freqData='dummy';
 qcVersion='dummy';
 
-%infile='20210529_191100_-89.99_229.66.nc';
+infile='20210529_191100_-89.99_229.66.nc';
 %infile='20210620_225107_83.48_16.92.nc';
 %infile='20210620_225138_89.92_169.63.nc';
-infile='20210621_015305_-89.93_353.61.nc';
+%infile='20210621_015305_-89.93_353.61.nc';
 %infile='20210621_015437_-89.78_307.29.nc';
 %infile='20210621_015840_89.94_315.84.nc';
 
@@ -107,7 +107,12 @@ while endInd<=size(data.IVc,2) & startInd<size(data.IVc,2)
 
     %% De-alias
 
-    [powerAdj,phaseAdj]=specDeAlias(powerSpec,duplicateSpec,sampleNum,data.range,plotTimeInd);
+    if ii==1
+        %maxIndsPrev=repmat(round(sampleNum*floor(duplicateSpec/2)+sampleNum/2),size(fftIQ,1),1);
+        maxIndsPrev=nan(size(fftIQ,1),1);
+    end
+
+    [powerAdj,phaseAdj,maxIndsPrev]=specDeAlias(powerSpec,duplicateSpec,sampleNum,data.range,plotTimeInd,maxIndsPrev);
 
     %% Moments
     %prtThis=mean(prt(startInd:endInd));
