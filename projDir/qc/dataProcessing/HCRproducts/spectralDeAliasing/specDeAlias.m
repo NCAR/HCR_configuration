@@ -47,12 +47,14 @@ end
 
 %% Compare with previous
 
+maxIndsMed=movmedian(maxIndsPrev,50,'omitnan');
+maxIndsPrev=fillmissing(maxIndsPrev,'nearest');
+maxIndsPrev(isnan(maxIndsMed))=nan;
+
 maxIndsOrig=maxInds;
 
 maxIndsTest=maxInds;
 maxIndsTest(noiseGateInds)=nan;
-
-maxIndsPrev=fillmissing(maxIndsPrev,'nearest');
 
 diffMaxInds=maxIndsTest-maxIndsPrev;
 
@@ -75,21 +77,29 @@ maxIndsTest(noiseGateInds)=nan;
 
 % Find outliers
 medMaxInds=movmedian(maxIndsTest,15,'omitnan');
-%medMaxInds=fillmissing(medMaxInds,'nearest');
 
 diffMed=maxIndsTest-medMaxInds;
 
 maxInds(diffMed>sampleNum/2)=maxInds(diffMed>sampleNum/2)-sampleNum;
 maxInds(diffMed<-sampleNum/2)=maxInds(diffMed<-sampleNum/2)+sampleNum;
 
-maxInds(abs(diffMed)>sampleNum/4)=round(medMaxInds(abs(diffMed)>sampleNum/4));
+maxIndsMask=ones(size(maxInds));
+
+%maxInds(abs(diffMed)>sampleNum/4)=round(medMaxInds(abs(diffMed)>sampleNum/4));
+maxInds(abs(diffMed)>sampleNum/4)=nan;
+maxIndsMask(abs(diffMed)>sampleNum/4)=0;
+
+maxIndsFill=maxInds;
+maxIndsFill=fillmissing(maxIndsFill,'linear');
+
+maxInds(maxIndsMask==0)=round(maxIndsFill(maxIndsMask==0));
 
 if plotYes
     maxIndsPlot=maxInds;
     maxIndsPlot(noiseGateInds)=nan;
     scatter(1:length(maxInds),maxIndsPlot,'green')
     hold off
-    xlim([1 500])
+    xlim([1 400])
     ylim([2000 5000])
 end
 

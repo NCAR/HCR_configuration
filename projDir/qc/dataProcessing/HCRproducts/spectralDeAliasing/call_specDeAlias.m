@@ -10,9 +10,9 @@ quality='ts'; %field, qc1, or qc2
 freqData='dummy';
 qcVersion='dummy';
 
-infile='20210529_191100_-89.99_229.66.nc';
+%infile='20210529_191100_-89.99_229.66.nc';
 %infile='20210620_225107_83.48_16.92.nc';
-%infile='20210620_225138_89.92_169.63.nc';
+infile='20210620_225138_89.92_169.63.nc';
 %infile='20210621_015305_-89.93_353.61.nc';
 %infile='20210621_015437_-89.78_307.29.nc';
 %infile='20210621_015840_89.94_315.84.nc';
@@ -71,6 +71,8 @@ momentsOrigSpec.width=nan(size(data.range,1),beamNum);
 momentsOrigSpec.snr=nan(size(data.range,1),beamNum);
 momentsOrigSpec.dbz=nan(size(data.range,1),beamNum);
 
+maxIndsAll=nan(size(data.range,1),beamNum);
+
 timeBeams=[];
 
 startInd=1;
@@ -92,6 +94,7 @@ while endInd<=size(data.IVc,2) & startInd<size(data.IVc,2)
     winNorm=win*winWeight;
 
     cIQv=winNorm'.*(data.IVc(:,startInd:endInd)+i*data.QVc(:,startInd:endInd))./sqrt(sampleNum);
+    %cIQv=(data.IVc(:,startInd:endInd)+i*data.QVc(:,startInd:endInd))./sqrt(sampleNum);
 
     %% FFT and spectra
 
@@ -108,19 +111,15 @@ while endInd<=size(data.IVc,2) & startInd<size(data.IVc,2)
     %% De-alias
 
     if ii==1
-        %maxIndsPrev=repmat(round(sampleNum*floor(duplicateSpec/2)+sampleNum/2),size(fftIQ,1),1);
         maxIndsPrev=nan(size(fftIQ,1),1);
     end
 
     [powerAdj,phaseAdj,maxIndsPrev]=specDeAlias(powerSpec,duplicateSpec,sampleNum,data.range,plotTimeInd,maxIndsPrev);
 
+    maxIndsAll(:,ii)=maxIndsPrev;
     %% Moments
     %prtThis=mean(prt(startInd:endInd));
     prtThis=prt;
-
-    if ii==100
-        stopHere=1;
-    end
 
     momentsOIQ=calcMomentsIQ(cIQv,rx_gain_v,prtThis,lambda,noise_v,data.range,dbz1km_v);
 
@@ -144,6 +143,15 @@ while endInd<=size(data.IVc,2) & startInd<size(data.IVc,2)
     ii=ii+1;
 end
 
+%% Post processing
+
+nyquistVel=7.8311;
+
+[velFinal,changeMat]=postProcessDeAlias(momentsOrigSpec.vel,nyquistVel);
+
+%% Run other de-aliasing code
+
+%velDeAliased=dealiasArea(momentsOrigSpec.vel,repmat(-90,1,size(momentsOrigSpec.vel,2)),7.8311);
 
 %% Plot moments
 
@@ -152,3 +160,16 @@ disp('Plotting moments ...');
 plotMoments('momentsOrigIQ',momentsOrigIQ,showPlot,timeBeams,data.range,ylimUpper,figdir,project);
 
 plotMoments('momentsOrigSpec',momentsOrigSpec,showPlot,timeBeams,data.range,ylimUpper,figdir,project);
+
+% %% Plot final
+% figure
+% colormap('jet');
+% surf(timeBeams,data.range./1000,velDeAliased,'edgecolor','none');
+% view(2);
+% ylabel('Range (km)');
+% caxis([-16 16]);
+% ylim([0 ylimUpper]);
+% xlim([timeBeams(1),timeBeams(end)]);
+% colorbar
+% grid on
+% title('Velocity (m s^{-1})')
