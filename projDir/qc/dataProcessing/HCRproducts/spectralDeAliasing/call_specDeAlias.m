@@ -10,9 +10,9 @@ quality='ts'; %field, qc1, or qc2
 freqData='dummy';
 qcVersion='dummy';
 
-%infile='20210529_191100_-89.99_229.66.nc';
+infile='20210529_191100_-89.99_229.66.nc';
 %infile='20210620_225107_83.48_16.92.nc';
-infile='20210620_225138_89.92_169.63.nc';
+%infile='20210620_225138_89.92_169.63.nc';
 %infile='20210621_015305_-89.93_353.61.nc';
 %infile='20210621_015437_-89.78_307.29.nc';
 %infile='20210621_015840_89.94_315.84.nc';
@@ -147,11 +147,8 @@ end
 
 nyquistVel=7.8311;
 
-[velFinal,changeMat]=postProcessDeAlias(momentsOrigSpec.vel,nyquistVel);
+[velFinal,changeMat]=postProcessDeAlias(momentsOrigSpec.vel,nyquistVel,repmat(-90,1,size(momentsOrigSpec.vel,2)));
 
-%% Run other de-aliasing code
-
-%velDeAliased=dealiasArea(momentsOrigSpec.vel,repmat(-90,1,size(momentsOrigSpec.vel,2)),7.8311);
 
 %% Plot moments
 
@@ -161,15 +158,15 @@ plotMoments('momentsOrigIQ',momentsOrigIQ,showPlot,timeBeams,data.range,ylimUppe
 
 plotMoments('momentsOrigSpec',momentsOrigSpec,showPlot,timeBeams,data.range,ylimUpper,figdir,project);
 
-% %% Plot final
-% figure
-% colormap('jet');
-% surf(timeBeams,data.range./1000,velDeAliased,'edgecolor','none');
-% view(2);
-% ylabel('Range (km)');
-% caxis([-16 16]);
-% ylim([0 ylimUpper]);
-% xlim([timeBeams(1),timeBeams(end)]);
-% colorbar
-% grid on
-% title('Velocity (m s^{-1})')
+%% Plot final
+figure
+colormap('jet');
+surf(timeBeams,data.range./1000,velFinal,'edgecolor','none');
+view(2);
+ylabel('Range (km)');
+caxis([-16 16]);
+ylim([0 ylimUpper]);
+xlim([timeBeams(1),timeBeams(end)]);
+colorbar
+grid on
+title('Velocity (m s^{-1})')
