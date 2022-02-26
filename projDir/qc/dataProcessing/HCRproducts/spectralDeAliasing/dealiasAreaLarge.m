@@ -30,7 +30,7 @@ end
 
 % Other positives
 oncePosMask=zeros(size(velFolded));
-oncePosMask(velDeAlias>nyq-1)=1;
+oncePosMask(velDeAlias>nyq-nyq/2)=1;
 
 oncePosMask=imfill(oncePosMask,'holes');
 
@@ -64,7 +64,7 @@ end
 
 % Other Negatives
 onceNegMask=zeros(size(velFolded));
-onceNegMask(velDeAlias<-(nyq-1))=1;
+onceNegMask(velDeAlias<-(nyq-nyq/2))=1;
 
 onceNegMask=imfill(onceNegMask,'holes');
 

@@ -19,8 +19,8 @@ sizeCloud=fliplr(sizeCloud);
 largeInd=max(find(sizeCloud>50));
 
 % Loop through large clouds
-%for ii=1:largeInd
-for ii=1:length(pixListSorted)
+for ii=1:largeInd
+%for ii=1:length(pixListSorted)
     cloudInds=pixListSorted{ii};
 
     [crows,ccols]=ind2sub(size(velIn),cloudInds);

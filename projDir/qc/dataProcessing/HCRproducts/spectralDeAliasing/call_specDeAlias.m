@@ -10,8 +10,8 @@ quality='ts'; %field, qc1, or qc2
 freqData='dummy';
 qcVersion='dummy';
 
-infile='20210529_191100_-89.99_229.66.nc';
-%infile='20210620_225107_83.48_16.92.nc';
+%infile='20210529_191100_-89.99_229.66.nc';
+infile='20210620_225107_83.48_16.92.nc';
 %infile='20210620_225138_89.92_169.63.nc';
 %infile='20210621_015305_-89.93_353.61.nc';
 %infile='20210621_015437_-89.78_307.29.nc';
@@ -150,16 +150,8 @@ nyquistVel=7.8311;
 [velFinal,changeMat]=postProcessDeAlias(momentsOrigSpec.vel,nyquistVel,repmat(-90,1,size(momentsOrigSpec.vel,2)));
 
 
-%% Plot moments
-
-disp('Plotting moments ...');
-
-plotMoments('momentsOrigIQ',momentsOrigIQ,showPlot,timeBeams,data.range,ylimUpper,figdir,project);
-
-plotMoments('momentsOrigSpec',momentsOrigSpec,showPlot,timeBeams,data.range,ylimUpper,figdir,project);
-
 %% Plot final
-figure
+f1=figure;
 colormap('jet');
 surf(timeBeams,data.range./1000,velFinal,'edgecolor','none');
 view(2);
@@ -170,3 +162,12 @@ xlim([timeBeams(1),timeBeams(end)]);
 colorbar
 grid on
 title('Velocity (m s^{-1})')
+print(f1,[figdir,project,'_velFinal_',datestr(timeBeams(1),'yyyymmdd_HHMMSS'),'_to_',datestr(timeBeams(end),'yyyymmdd_HHMMSS')],'-dpng','-r0');
+
+%% Plot moments
+
+disp('Plotting moments ...');
+
+plotMoments('momentsOrigIQ',momentsOrigIQ,showPlot,timeBeams,data.range,ylimUpper,figdir,project);
+
+plotMoments('momentsOrigSpec',momentsOrigSpec,showPlot,timeBeams,data.range,ylimUpper,figdir,project);
