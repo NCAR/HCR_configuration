@@ -33,7 +33,7 @@ for ii=1:singAreas.NumObjects
 
     foldFrac=sumFold/sumBound;
 
-    if foldFrac>0.1
+    if foldFrac>0.1 % This may be too large
         velDeAlias(thisMask==1)=plusMinus(velDeAlias(thisMask==1),(2*nyq));
         diffOut(largeBound==1)=1;
     end
