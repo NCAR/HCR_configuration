@@ -7,17 +7,17 @@ addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
 project='socrates'; %socrates, aristo, cset, otrec
 quality='qc3'; %field, qc1, or qc2
-freqData='10hz';
+freqData='combined';
 qcVersion='v3.0';
 
-startTime=datetime(2018,1,23,0,28,0);
-endTime=datetime(2018,1,23,0,38,0);
+startTime=datetime(2018,2,5,1,12,0);
+endTime=datetime(2018,2,5,1,16,0);
 
 indir=HCRdir(project,quality,qcVersion,freqData);
 
 ylimUpper=4;
 
-saveFig=1;
+saveFig=0;
 if saveFig
     outname='socratesCONVECTIVITY';
     figdir=['/scr/sci/romatsch/HCR/examplePlots/'];
@@ -35,7 +35,9 @@ fileList=makeFileList(indir,startTime,endTime,'xxxxxx20YYMMDDxhhmmss',1);
 
 data=[];
 
-data.CONVECTIVITY=[];
+data.PID=[];
+data.HCR_DBZ=[];
+data.FLAG=[];
 
 data=read_HCR(fileList,data,startTime,endTime);
 

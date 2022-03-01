@@ -11,18 +11,26 @@ freqData='dummy';
 qcVersion='dummy';
 
 %infile='20210529_191100_-89.99_229.66.nc';
-infile='20210620_225107_83.48_16.92.nc';
+%infile='20210620_225107_83.48_16.92.nc';
 %infile='20210620_225138_89.92_169.63.nc';
+%infile='20210620_230015_89.89_308.46.nc';
+%infile='20210620_232102_87.04_268.26.nc';
+%infile='20210620_233311_89.82_89.28.nc';
 %infile='20210621_015305_-89.93_353.61.nc';
 %infile='20210621_015437_-89.78_307.29.nc';
 %infile='20210621_015840_89.94_315.84.nc';
+%infile='20210621_015910_89.96_132.69.nc';
+%infile='20210621_015941_89.89_71.42.nc';
+%infile='20210621_035228_-89.94_332.98.nc';
+%infile='20210624_233336_89.87_28.29.nc';
+infile='20210625_215734_-89.77_83.01.nc';
 
 outFreq=10; % Desired output frequency in Hz
 timeSpan=1/outFreq;
 duplicateSpec=7; % Number of duplicates of spectra
 
 showPlot='on';
-ylimUpper=6;
+ylimUpper=14;
 plotTimeInd=[];
 saveWaterfall=0;
 
