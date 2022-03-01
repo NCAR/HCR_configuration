@@ -1,11 +1,8 @@
-function [velFinal,changeMat]=postProcessDeAlias(velIn,nyquistVel,elev)
+function [velFinal,changeMat]=postProcessDeAlias(velIn,nyquistVel)
 % Post process velocity after spectral de-aliasing
 
 velFinal=nan(size(velIn));
 changeMat=zeros(size(velIn));
-
-% Make all updrafts negative and updrafts negative
-velIn(:,elev>0)=-velIn(:,elev>0);
 
 inMat=~isnan(velIn);
 clouds=bwconncomp(inMat);
@@ -35,8 +32,5 @@ for ii=1:largeInd
         
     velFinal(pixListSorted{ii})=velDeAliasOne(~isnan(velDeAliasOne));
 end
-
-% Transform down pointing back to original sign
-velFinal(:,elev>0)=-velFinal(:,elev>0);
 
 end

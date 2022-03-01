@@ -2,14 +2,64 @@ function velDeAlias=dealiasAreaLarge(velFolded,nyq)
 % Unfold velocities
 velDeAlias=velFolded;
 
-% Check if folding occurs
-diffBoth=findFoldBoundaries(velFolded,(nyq+nyq/2));
+diffOutAll=zeros(size(velFolded));
+diffOut=zeros(size(velFolded));
 
-if sum(sum(diffBoth))<=5
-    return
+%% Positive
+
+% Find number of folding
+maxVel=max(reshape(velFolded,1,[]),[],'omitnan');
+numFold=floor(maxVel/nyq);
+
+for ii=1:numFold
+
+    % Double
+    velDeAlias=velDeAlias-(numFold-ii+1)*nyq;
+
+    % Check if folded
+    diffBoth=findFoldBoundaries(velDeAlias,(nyq/2));
+    diffOutAll=diffOutAll+diffOut;
+    diffBoth(diffOutAll==1)=0;
+
+    if sum(sum(diffBoth))<=5
+        return
+    end
+
+    % Unfold
+    [velDeAlias,diffOut]=unfoldRegions(diffBoth,velDeAlias,nyq);
+    velDeAlias=velDeAlias+(numFold-ii+1)*nyq;
+
 end
 
-diffOutAll=zeros(size(diffBoth));
+%% Negative
+
+velDeAlias=-velDeAlias;
+
+% Find number of folding
+maxVel=max(reshape(velFolded,1,[]),[],'omitnan');
+numFold=floor(maxVel/nyq);
+
+for ii=1:numFold
+
+    % Double
+    velDeAlias=velDeAlias-(numFold-ii+1)*nyq;
+
+    % Check if folded
+    diffBoth=findFoldBoundaries(velDeAlias,(nyq/2));
+    diffOutAll=diffOutAll+diffOut;
+    diffBoth(diffOutAll==1)=0;
+
+    if sum(sum(diffBoth))<=5
+        return
+    end
+
+    % Unfold
+    [velDeAlias,diffOut]=unfoldRegions(diffBoth,velDeAlias,nyq);
+    velDeAlias=velDeAlias+(numFold-ii+1)*nyq;
+
+end
+
+velDeAlias=-velDeAlias;
 
 % Positive folding
 % oncePosMask=zeros(size(velFolded));
@@ -17,26 +67,11 @@ diffOutAll=zeros(size(diffBoth));
 % 
 % oncePosMask=imfill(oncePosMask,'holes');
 
-[velDeAlias,diffOut]=unfoldRegions(diffBoth,velDeAlias,nyq);
-
-% Check if folding occurs
-diffBoth=findFoldBoundaries(velDeAlias,(nyq+nyq/2));
-diffOutAll=diffOutAll+diffOut;
-diffBoth(diffOutAll==1)=0;
-
-if sum(sum(diffBoth))<=5
-    return
-end
-
 % % Negative folding
 % onceNegMask=zeros(size(velFolded));
 % onceNegMask(velDeAlias<-(nyq-nyq/2))=1;
 % 
 % onceNegMask=imfill(onceNegMask,'holes');
-velDeAliasNeg=-velDeAlias;
-[velDeAliasNeg,diffOut]=unfoldRegions(diffBoth,velDeAliasNeg,nyq);
-velDeAlias=-velDeAliasNeg;
-
 %% Double folding
 
 % % Double positive folding
