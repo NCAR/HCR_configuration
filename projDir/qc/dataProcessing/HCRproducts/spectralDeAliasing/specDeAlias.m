@@ -40,7 +40,7 @@ for kk=1:size(powerSpec,1)
         linePiece=powerSpecLarge(kk,:);
         linePiece(1:leftInds(kk)-1)=nan;
         linePiece(rightInds(kk)+1:end)=nan;
-        [maxNotUsed,maxPiece]=max(linePiece,[],'omitnan');
+        [~,maxPiece]=max(linePiece,[],'omitnan');
         maxInds(kk)=maxPiece;
     end
 end
@@ -76,7 +76,7 @@ end
 maxIndsTest=maxInds;
 maxIndsTest(noiseGateInds)=nan;
 
-% Find outliers
+%% Find outliers
 medMaxInds=movmedian(maxIndsTest,100,'omitnan'); % 15
 
 diffMed=maxIndsTest-medMaxInds;
@@ -98,7 +98,7 @@ maxIndsMask=ones(size(maxInds));
 maxInds(abs(diffMed)>sampleNum/4)=nan;
 maxIndsMask(abs(diffMed)>sampleNum/4)=0;
 
-maxIndsFill=maxInds;
+maxIndsFill=maxIndsTest;
 maxIndsFill=fillmissing(maxIndsFill,'linear');
 
 maxInds(maxIndsMask==0)=round(maxIndsFill(maxIndsMask==0));

@@ -30,7 +30,6 @@ timeSpan=1/outFreq;
 duplicateSpec=7; % Number of duplicates of spectra
 
 showPlot='on';
-ylimUpper=14;
 plotTimeInd=[];
 saveWaterfall=0;
 
@@ -79,9 +78,10 @@ momentsOrigSpec.width=nan(size(data.range,1),beamNum);
 momentsOrigSpec.snr=nan(size(data.range,1),beamNum);
 momentsOrigSpec.dbz=nan(size(data.range,1),beamNum);
 
-maxIndsAll=nan(size(data.range,1),beamNum);
+%maxIndsAll=nan(size(data.range,1),beamNum);
 
 timeBeams=[];
+elevBeams=[];
 
 startInd=1;
 endInd=1;
@@ -95,6 +95,9 @@ while endInd<=size(data.IVc,2) & startInd<size(data.IVc,2)
     [minDiff,endInd]=min(abs(timeDiff+timeSpan));
 
     sampleNum=endInd-startInd+1;
+
+    timeBeams=[timeBeams;data.time(startInd)];
+    elevBeams=[elevBeams;data.elevation(startInd)];
 
     % Window
     win=window(@hamming,sampleNum);  % Default window is Hamming
@@ -120,11 +123,12 @@ while endInd<=size(data.IVc,2) & startInd<size(data.IVc,2)
 
     if ii==1
         maxIndsPrev=nan(size(fftIQ,1),1);
+        %maxIndsPrev(:)=size(powerSpec,2)*duplicateSpec/2;
     end
 
     [powerAdj,phaseAdj,maxIndsPrev]=specDeAlias(powerSpec,duplicateSpec,sampleNum,data.range,plotTimeInd,maxIndsPrev);
 
-    maxIndsAll(:,ii)=maxIndsPrev;
+    %maxIndsAll(:,ii)=maxIndsPrev;
     %% Moments
     %prtThis=mean(prt(startInd:endInd));
     prtThis=prt;
@@ -145,11 +149,18 @@ while endInd<=size(data.IVc,2) & startInd<size(data.IVc,2)
     momentsOrigSpec.snr(:,ii)=momentsOS.snr;
     momentsOrigSpec.dbz(:,ii)=momentsOS.dbz;
 
-    timeBeams=[timeBeams;data.time(startInd)];
-
     startInd=endInd+1;
     ii=ii+1;
 end
+
+%% Fake asl
+asl=nan(size(momentsOrigSpec.vel));
+downInd=find(elevBeams<0);
+upInd=find(elevBeams>=0);
+elevIn=elevBeams';
+rangeIn=repmat(data.range,1,length(elevBeams));
+asl(:,downInd)=-1*((rangeIn(:,downInd).*cosd(abs(elevIn(downInd))-90))-10000);
+asl(:,upInd)=rangeIn(:,upInd).*cosd(abs(elevIn(upInd))-90);
 
 %% Post processing
 
@@ -157,15 +168,25 @@ nyquistVel=7.8311;
 
 [velFinal,changeMat]=postProcessDeAlias(momentsOrigSpec.vel,nyquistVel);
 
+%% Get ylimits
+dbzSum=abs(sum(momentsOrigSpec.dbz,2,'omitnan'));
+maxGate=max(find(dbzSum>50));
+aslGate=median(asl(maxGate,:));
+if isempty(upInd)
+    ylimits=[aslGate-500,10100];
+else
+    ylimits=[0,aslGate+500];
+end
+ylimits=ylimits/1000;
 
 %% Plot final
 f1=figure;
 colormap('jet');
-surf(timeBeams,data.range./1000,velFinal,'edgecolor','none');
+surf(timeBeams,asl/1000,velFinal,'edgecolor','none');
 view(2);
-ylabel('Range (km)');
+ylabel('km');
 caxis([-16 16]);
-ylim([0 ylimUpper]);
+ylim(ylimits);
 xlim([timeBeams(1),timeBeams(end)]);
 colorbar
 grid on
@@ -176,6 +197,6 @@ print(f1,[figdir,project,'_velFinal_',datestr(timeBeams(1),'yyyymmdd_HHMMSS'),'_
 
 disp('Plotting moments ...');
 
-plotMoments('momentsOrigIQ',momentsOrigIQ,showPlot,timeBeams,data.range,ylimUpper,figdir,project);
+%plotMoments('momentsOrigIQ',momentsOrigIQ,showPlot,timeBeams,asl,ylimits,figdir,project);
 
-plotMoments('momentsOrigSpec',momentsOrigSpec,showPlot,timeBeams,data.range,ylimUpper,figdir,project);
+plotMoments('momentsOrigSpec',momentsOrigSpec,showPlot,timeBeams,asl,ylimits,figdir,project);

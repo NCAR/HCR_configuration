@@ -1,4 +1,4 @@
-function plotMoments(outString,moments,showPlot,timeBeams,range,ylimUpper,figdir,project)
+function plotMoments(outString,moments,showPlot,timeBeams,asl,ylimits,figdir,project)
 
 f1 = figure('Position',[200 500 1000 1500],'DefaultAxesFontSize',12,'visible',showPlot);
 
@@ -7,11 +7,11 @@ colormap jet
 s1=subplot(3,2,1);
 
 hold on
-surf(timeBeams,range./1000,moments.powerDB,'edgecolor','none');
+surf(timeBeams,asl./1000,moments.powerDB,'edgecolor','none');
 view(2);
-ylabel('Range (km)');
+ylabel('km');
 caxis([-110 -70]);
-ylim([0 ylimUpper]);
+ylim(ylimits);
 xlim([timeBeams(1),timeBeams(end)]);
 colorbar
 grid on
@@ -22,11 +22,11 @@ s1.Position=[s1pos(1),s1pos(2),s1pos(3),s1pos(4)];
 s2=subplot(3,2,2);
 
 hold on
-surf(timeBeams,range./1000,moments.dbz,'edgecolor','none');
+surf(timeBeams,asl./1000,moments.dbz,'edgecolor','none');
 view(2);
-ylabel('Range (km)');
+ylabel('km');
 caxis([-40 30]);
-ylim([0 ylimUpper]);
+ylim(ylimits);
 xlim([timeBeams(1),timeBeams(end)]);
 colorbar
 grid on
@@ -37,11 +37,11 @@ s2.Position=[s2pos(1),s2pos(2),s1pos(3),s2pos(4)];
 s3=subplot(3,2,4);
 
 hold on
-surf(timeBeams,range./1000,moments.vel,'edgecolor','none');
+surf(timeBeams,asl./1000,moments.vel,'edgecolor','none');
 view(2);
-ylabel('Range (km)');
+ylabel('km');
 caxis([-16 16]);
-ylim([0 ylimUpper]);
+ylim(ylimits);
 xlim([timeBeams(1),timeBeams(end)]);
 colorbar
 grid on
@@ -52,11 +52,11 @@ s3.Position=[s3pos(1),s3pos(2),s1pos(3),s3pos(4)];
 s4=subplot(3,2,5);
 
 hold on
-surf(timeBeams,range./1000,moments.width,'edgecolor','none');
+surf(timeBeams,asl./1000,moments.width,'edgecolor','none');
 view(2);
-ylabel('Range (km)');
+ylabel('km');
 caxis([0 2]);
-ylim([0 ylimUpper]);
+ylim(ylimits);
 xlim([timeBeams(1),timeBeams(end)]);
 colorbar
 grid on
@@ -67,11 +67,11 @@ s4.Position=[s4pos(1),s4pos(2),s1pos(3),s4pos(4)];
 s5=subplot(3,2,3);
 
 hold on
-surf(timeBeams,range./1000,moments.snr,'edgecolor','none');
+surf(timeBeams,asl./1000,moments.snr,'edgecolor','none');
 view(2);
-ylabel('Range (km)');
+ylabel('km');
 caxis([-20 50]);
-ylim([0 ylimUpper]);
+ylim(ylimits);
 xlim([timeBeams(1),timeBeams(end)]);
 colorbar
 grid on
