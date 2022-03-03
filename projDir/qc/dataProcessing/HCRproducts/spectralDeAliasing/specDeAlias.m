@@ -58,12 +58,13 @@ maxIndsTest(noiseGateInds)=nan;
 
 diffMaxInds=maxIndsTest-maxIndsPrev;
 
-% Single folding
-maxInds(diffMaxInds>sampleNum/2)=maxIndsOrig(diffMaxInds>sampleNum/2)-sampleNum;
-maxInds(diffMaxInds<-sampleNum/2)=maxIndsOrig(diffMaxInds<-sampleNum/2)+sampleNum;
-% Double folding
-maxInds(diffMaxInds>sampleNum+sampleNum/2)=maxIndsOrig(diffMaxInds>sampleNum+sampleNum/2)-2*sampleNum;
-maxInds(diffMaxInds<-sampleNum-sampleNum/2)=maxIndsOrig(diffMaxInds<-sampleNum-sampleNum/2)+2*sampleNum;
+% Unfold
+maxFolding=floor(max(abs(diffMaxInds))/sampleNum);
+
+for ii=1:maxFolding
+    maxInds(diffMaxInds>(ii-1)*sampleNum+sampleNum/2)=maxIndsOrig(diffMaxInds>(ii-1)*sampleNum+sampleNum/2)-ii*sampleNum;
+    maxInds(diffMaxInds<-(ii-1)*sampleNum-sampleNum/2)=maxIndsOrig(diffMaxInds<-(ii-1)*sampleNum-sampleNum/2)+ii*sampleNum;
+end
 
 plotYes=0;
 if plotYes
@@ -76,16 +77,24 @@ maxIndsTest=maxInds;
 maxIndsTest(noiseGateInds)=nan;
 
 % Find outliers
-medMaxInds=movmedian(maxIndsTest,15,'omitnan');
+medMaxInds=movmedian(maxIndsTest,100,'omitnan'); % 15
 
 diffMed=maxIndsTest-medMaxInds;
 
-maxInds(diffMed>sampleNum/2)=maxInds(diffMed>sampleNum/2)-sampleNum;
-maxInds(diffMed<-sampleNum/2)=maxInds(diffMed<-sampleNum/2)+sampleNum;
+maxFolding2=floor(max(abs(diffMed))/sampleNum);
+
+for ii=1:maxFolding2
+    maxInds(diffMed>(ii-1)*sampleNum+sampleNum/2)=maxIndsOrig(diffMed>(ii-1)*sampleNum+sampleNum/2)-ii*sampleNum;
+    maxInds(diffMed<-(ii-1)*sampleNum-sampleNum/2)=maxIndsOrig(diffMed<-(ii-1)*sampleNum-sampleNum/2)+ii*sampleNum;
+end
+
+maxInds(diffMed>sampleNum/2 & isnan(maxIndsPrev))=maxInds(diffMed>sampleNum/2 & isnan(maxIndsPrev))-sampleNum;
+maxInds(diffMed<-sampleNum/2 & isnan(maxIndsPrev))=maxInds(diffMed<-sampleNum/2 & isnan(maxIndsPrev))+sampleNum;
+% maxInds(diffMed>sampleNum/2)=maxInds(diffMed>sampleNum/2)-sampleNum;
+% maxInds(diffMed<-sampleNum/2)=maxInds(diffMed<-sampleNum/2)+sampleNum;
 
 maxIndsMask=ones(size(maxInds));
 
-%maxInds(abs(diffMed)>sampleNum/4)=round(medMaxInds(abs(diffMed)>sampleNum/4));
 maxInds(abs(diffMed)>sampleNum/4)=nan;
 maxIndsMask(abs(diffMed)>sampleNum/4)=0;
 
@@ -98,9 +107,10 @@ if plotYes
     maxIndsPlot=maxInds;
     maxIndsPlot(noiseGateInds)=nan;
     scatter(1:length(maxInds),maxIndsPlot,'green')
+    scatter(find(abs(diffMed)>sampleNum/4),maxIndsOrig(abs(diffMed)>sampleNum/4),'red')
     hold off
     xlim([1 400])
-    ylim([2000 5000])
+    ylim([2000 7000])
 end
 
 maxIndsTest=maxInds;
