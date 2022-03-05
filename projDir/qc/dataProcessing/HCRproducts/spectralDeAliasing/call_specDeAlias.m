@@ -78,8 +78,6 @@ momentsOrigSpec.width=nan(size(data.range,1),beamNum);
 momentsOrigSpec.snr=nan(size(data.range,1),beamNum);
 momentsOrigSpec.dbz=nan(size(data.range,1),beamNum);
 
-%maxIndsAll=nan(size(data.range,1),beamNum);
-
 timeBeams=[];
 elevBeams=[];
 
@@ -121,14 +119,39 @@ while endInd<=size(data.IVc,2) & startInd<size(data.IVc,2)
 
     %% De-alias
 
+    % Set up previous maximum index
     if ii==1
+        prevCount=zeros(size(fftIQ,1),1);
         maxIndsPrev=nan(size(fftIQ,1),1);
-        %maxIndsPrev(:)=size(powerSpec,2)*duplicateSpec/2;
+        maxIndsPrev(:)=size(powerSpec,2)*duplicateSpec/2;
+        maxIndsKeep=nan(size(fftIQ,1),1);
     end
 
+    % De-alias
     [powerAdj,phaseAdj,maxIndsPrev]=specDeAlias(powerSpec,duplicateSpec,sampleNum,data.range,plotTimeInd,maxIndsPrev);
 
-    %maxIndsAll(:,ii)=maxIndsPrev;
+    % Replenish old max indeces
+    maxIndsKeep(~isnan(maxIndsPrev))=maxIndsPrev(~isnan(maxIndsPrev));
+    prevCount(isnan(maxIndsPrev))=prevCount(isnan(maxIndsPrev))+1;
+
+    % Add old max indeces
+    maxIndsPrev(isnan(maxIndsPrev) & prevCount<outFreq*5 & ~isnan(maxIndsKeep))=maxIndsKeep(isnan(maxIndsPrev) & prevCount<outFreq*5 & ~isnan(maxIndsKeep));
+    
+    % Clean up old max indeces
+    maxIndsKeep(prevCount>=outFreq*5)=nan;
+    prevCount(prevCount>=outFreq*5)=0;
+
+    % Interpolate prev max
+    maxIndsMed=movmedian(maxIndsPrev,25,'omitnan');
+    maxIndsMedLarge=movmedian(maxIndsPrev,50,'omitnan');
+
+    nanIndsMask=isnan(maxIndsPrev);
+    nanIndsMask=bwareaopen(nanIndsMask,25);
+    nanIndsMask(~isnan(maxIndsMedLarge))=0;
+
+    maxIndsPrev(nanIndsMask==1)=size(powerSpec,2)*duplicateSpec/2;
+    maxIndsPrev=fillmissing(maxIndsPrev,'linear','EndValues','nearest');
+    
     %% Moments
     %prtThis=mean(prt(startInd:endInd));
     prtThis=prt;
@@ -180,9 +203,10 @@ end
 ylimits=ylimits/1000;
 
 %% Plot final
-f1=figure;
+f1=figure('Position',[200 500 800 600],'DefaultAxesFontSize',12);
 colormap('jet');
-surf(timeBeams,asl/1000,velFinal,'edgecolor','none');
+%surf(timeBeams,asl/1000,velFinal,'edgecolor','none');
+surf(timeBeams,asl/1000,momentsOrigSpec.vel,'edgecolor','none');
 view(2);
 ylabel('km');
 caxis([-16 16]);
@@ -191,12 +215,12 @@ xlim([timeBeams(1),timeBeams(end)]);
 colorbar
 grid on
 title('Velocity (m s^{-1})')
-print(f1,[figdir,project,'_velFinal_',datestr(timeBeams(1),'yyyymmdd_HHMMSS'),'_to_',datestr(timeBeams(end),'yyyymmdd_HHMMSS')],'-dpng','-r0');
-
+%print(f1,[figdir,project,'_velFinal_',datestr(timeBeams(1),'yyyymmdd_HHMMSS'),'_to_',datestr(timeBeams(end),'yyyymmdd_HHMMSS')],'-dpng','-r0');
+print(f1,[figdir,project,'_vel_',datestr(timeBeams(1),'yyyymmdd_HHMMSS'),'_to_',datestr(timeBeams(end),'yyyymmdd_HHMMSS')],'-dpng','-r0');
 %% Plot moments
 
-disp('Plotting moments ...');
+%disp('Plotting moments ...');
 
 %plotMoments('momentsOrigIQ',momentsOrigIQ,showPlot,timeBeams,asl,ylimits,figdir,project);
 
-plotMoments('momentsOrigSpec',momentsOrigSpec,showPlot,timeBeams,asl,ylimits,figdir,project);
+%plotMoments('momentsOrigSpec',momentsOrigSpec,showPlot,timeBeams,asl,ylimits,figdir,project);
