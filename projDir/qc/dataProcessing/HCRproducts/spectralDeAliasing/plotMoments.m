@@ -1,6 +1,6 @@
 function plotMoments(outString,moments,showPlot,timeBeams,asl,ylimits,figdir,project)
 
-f1 = figure('Position',[200 500 1000 1500],'DefaultAxesFontSize',12,'visible',showPlot);
+f1 = figure('Position',[200 500 1300 1200],'DefaultAxesFontSize',12,'visible',showPlot);
 
 colormap jet
 
@@ -16,8 +16,6 @@ xlim([timeBeams(1),timeBeams(end)]);
 colorbar
 grid on
 title('Power (dB)')
-s1pos=s1.Position;
-s1.Position=[s1pos(1),s1pos(2),s1pos(3),s1pos(4)];
 
 s2=subplot(3,2,2);
 
@@ -31,8 +29,6 @@ xlim([timeBeams(1),timeBeams(end)]);
 colorbar
 grid on
 title('Reflectivity (dBZ)')
-s2pos=s2.Position;
-s2.Position=[s2pos(1),s2pos(2),s1pos(3),s2pos(4)];
 
 s3=subplot(3,2,4);
 
@@ -46,8 +42,6 @@ xlim([timeBeams(1),timeBeams(end)]);
 colorbar
 grid on
 title('Velocity (m s^{-1})')
-s3pos=s3.Position;
-s3.Position=[s3pos(1),s3pos(2),s1pos(3),s3pos(4)];
 
 s4=subplot(3,2,5);
 
@@ -61,8 +55,6 @@ xlim([timeBeams(1),timeBeams(end)]);
 colorbar
 grid on
 title('Spectrum width (m s^{-1})')
-s4pos=s4.Position;
-s4.Position=[s4pos(1),s4pos(2),s1pos(3),s4pos(4)];
 
 s5=subplot(3,2,3);
 
@@ -76,8 +68,6 @@ xlim([timeBeams(1),timeBeams(end)]);
 colorbar
 grid on
 title('SNR (dB)')
-s5pos=s5.Position;
-s5.Position=[s5pos(1),s5pos(2),s1pos(3),s5pos(4)];
 
 set(gcf,'PaperPositionMode','auto')
 print(f1,[figdir,project,'_',outString,'_',datestr(timeBeams(1),'yyyymmdd_HHMMSS'),'_to_',datestr(timeBeams(end),'yyyymmdd_HHMMSS')],'-dpng','-r0');

@@ -47,9 +47,9 @@ end
 
 %% Compare with previous
 
-maxIndsMed=movmedian(maxIndsPrev,50,'omitnan');
-maxIndsPrev=fillmissing(maxIndsPrev,'nearest');
-maxIndsPrev(isnan(maxIndsMed))=nan;
+% maxIndsMed=movmedian(maxIndsPrev,50,'omitnan');
+% maxIndsPrev=fillmissing(maxIndsPrev,'nearest');
+% maxIndsPrev(isnan(maxIndsMed))=nan;
 
 maxIndsOrig=maxInds;
 
@@ -66,7 +66,7 @@ for ii=1:maxFolding
     maxInds(diffMaxInds<-(ii-1)*sampleNum-sampleNum/2)=maxIndsOrig(diffMaxInds<-(ii-1)*sampleNum-sampleNum/2)+ii*sampleNum;
 end
 
-plotYes=0;
+plotYes=1;
 if plotYes
     plot(maxIndsTest)
     hold on
@@ -109,7 +109,7 @@ if plotYes
     scatter(1:length(maxInds),maxIndsPlot,'green')
     scatter(find(abs(diffMed)>sampleNum/4),maxIndsOrig(abs(diffMed)>sampleNum/4),'red')
     hold off
-    xlim([1 400])
+    xlim([1 300])
     ylim([2000 7000])
 end
 
