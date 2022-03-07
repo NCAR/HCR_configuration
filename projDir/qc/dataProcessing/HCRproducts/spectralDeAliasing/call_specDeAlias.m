@@ -16,7 +16,7 @@ infile='20210529_191100_-89.99_229.66.nc';
 %infile='20210620_230015_89.89_308.46.nc';
 %infile='20210620_232102_87.04_268.26.nc';
 %infile='20210620_233311_89.82_89.28.nc';
-%infile='20210621_015305_-89.93_353.61.nc';
+%infile='20210621_015305_-89.93_353.61outFreq*5.nc';
 %infile='20210621_015437_-89.78_307.29.nc';
 %infile='20210621_015840_89.94_315.84.nc';
 %infile='20210621_015910_89.96_132.69.nc';
@@ -78,6 +78,8 @@ momentsOrigSpec.width=nan(size(data.range,1),beamNum);
 momentsOrigSpec.snr=nan(size(data.range,1),beamNum);
 momentsOrigSpec.dbz=nan(size(data.range,1),beamNum);
 
+prevIndsAll=nan(size(data.range,1),beamNum);
+
 timeBeams=[];
 elevBeams=[];
 
@@ -126,9 +128,15 @@ while endInd<=size(data.IVc,2) & startInd<size(data.IVc,2)
         maxIndsPrev(:)=size(powerSpec,2)*duplicateSpec/2;
         maxIndsKeep=nan(size(fftIQ,1),1);
     end
+    prevIndsAll(:,ii)=maxIndsPrev;
 
     % De-alias
     [powerAdj,phaseAdj,maxIndsPrev]=specDeAlias(powerSpec,duplicateSpec,sampleNum,data.range,plotTimeInd,maxIndsPrev);
+
+    % Clean up max indices
+    prevMask=~isnan(maxIndsPrev);
+    prevMask=bwareaopen(prevMask,10);
+    maxIndsPrev(prevMask==0)=nan;
 
     % Replenish old max indeces
     maxIndsKeep(~isnan(maxIndsPrev))=maxIndsPrev(~isnan(maxIndsPrev));
