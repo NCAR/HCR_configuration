@@ -87,17 +87,19 @@ for ii=1:maxFolding2
 end
 
 maxIndsMask=ones(size(maxInds));
-
-maxInds(abs(diffMed)>sampleNum/4)=nan;
 maxIndsMask(abs(diffMed)>sampleNum/4)=0;
+maxIndsMask2=~maxIndsMask;
+maxIndsMask2=bwareaopen(maxIndsMask2,5);
+
+maxInds(maxIndsMask==0 & maxIndsMask2==0)=nan;
 
 maxIndsTest=maxInds;
 maxIndsTest(noiseGateInds)=nan;
 
 maxIndsFill=maxIndsTest;
-maxIndsFill=fillmissing(maxIndsFill,'linear');
+maxIndsFill=fillmissing(maxIndsFill,'nearest');
 
-maxInds(maxIndsMask==0)=round(maxIndsFill(maxIndsMask==0));
+maxInds(maxIndsMask==0 & maxIndsMask2==0)=round(maxIndsFill(maxIndsMask==0 & maxIndsMask2==0));
 
 if plotYes
     maxIndsPlot=maxInds;

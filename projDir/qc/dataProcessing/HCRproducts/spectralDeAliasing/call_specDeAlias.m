@@ -10,8 +10,8 @@ quality='ts'; %field, qc1, or qc2
 freqData='dummy';
 qcVersion='dummy';
 
-infile='20210529_191100_-89.99_229.66.nc';
-%infile='20210620_225107_83.48_16.92.nc';
+%infile='20210529_191100_-89.99_229.66.nc';
+infile='20210620_225107_83.48_16.92.nc';
 %infile='20210620_225138_89.92_169.63.nc';
 %infile='20210620_230015_89.89_308.46.nc';
 %infile='20210620_232102_87.04_268.26.nc';
@@ -140,21 +140,23 @@ while endInd<=size(data.IVc,2) & startInd<size(data.IVc,2)
 
     % Replenish old max indeces
     maxIndsKeep(~isnan(maxIndsPrev))=maxIndsPrev(~isnan(maxIndsPrev));
+    prevCount(~isnan(maxIndsPrev))=0;
     prevCount(isnan(maxIndsPrev))=prevCount(isnan(maxIndsPrev))+1;
 
     % Add old max indeces
     maxIndsPrev(isnan(maxIndsPrev) & prevCount<outFreq*5 & ~isnan(maxIndsKeep))=maxIndsKeep(isnan(maxIndsPrev) & prevCount<outFreq*5 & ~isnan(maxIndsKeep));
-    
+       
     % Clean up old max indeces
     maxIndsKeep(prevCount>=outFreq*5)=nan;
-    prevCount(prevCount>=outFreq*5)=0;
-
+    
     % Interpolate prev max
-    maxIndsMed=movmedian(maxIndsPrev,25,'omitnan');
-    maxIndsMedLarge=movmedian(maxIndsPrev,50,'omitnan');
+    maxIndsMed=movmedian(maxIndsPrev,50,'omitnan');
+    maxIndsMedLarge=movmedian(maxIndsPrev,100,'omitnan');
 
+    maxIndsPrev(isnan(maxIndsPrev) & ~isnan(maxIndsMed))=maxIndsMedLarge(isnan(maxIndsPrev) & ~isnan(maxIndsMed));
+    
     nanIndsMask=isnan(maxIndsPrev);
-    nanIndsMask=bwareaopen(nanIndsMask,25);
+    nanIndsMask=bwareaopen(nanIndsMask,50);
     nanIndsMask(~isnan(maxIndsMedLarge))=0;
 
     maxIndsPrev(nanIndsMask==1)=size(powerSpec,2)*duplicateSpec/2;
