@@ -54,7 +54,7 @@ noise_v=-61.301;
 
 %% Read data
 
-for jj=4:length(fileList)
+for jj=1:length(fileList)
 
     infile=fileList{jj};
     file=[dataDir,infile(1:8),'/',infile];
@@ -139,7 +139,7 @@ for jj=4:length(fileList)
         prevIndsAll(:,ii)=maxIndsPrev;
 
         % De-alias
-        [powerAdj,specVelAdj,maxIndsPrev]=specDeAlias(powerSpec,duplicateSpec,sampleNum,data.range,plotTimeInd,maxIndsPrev,prt,lambda);
+        [powerAdj,phaseAdj,maxIndsPrev]=specDeAlias(powerSpec,duplicateSpec,sampleNum,data.range,plotTimeInd,maxIndsPrev);
 
         % Clean up max indices
         prevLarge=maxIndsPrev;
@@ -186,7 +186,7 @@ for jj=4:length(fileList)
         momentsOrigIQ.snr(:,ii)=momentsOIQ.snr;
         momentsOrigIQ.dbz(:,ii)=momentsOIQ.dbz;
 
-        momentsOS=calcMomentsSpec(powerAdj,specVelAdj,rx_gain_v,prtThis,lambda,noise_v,data.range,dbz1km_v);
+        momentsOS=calcMomentsSpec(powerAdj,phaseAdj,rx_gain_v,prtThis,lambda,noise_v,data.range,dbz1km_v);
 
         momentsOrigSpec.powerDB(:,ii)=momentsOS.powerDB;
         momentsOrigSpec.vel(:,ii)=momentsOS.vel;
@@ -247,5 +247,5 @@ for jj=4:length(fileList)
 
     plotMoments('momentsOrigIQ',momentsOrigIQ,showPlot,timeBeams,asl,ylimits,figdir,project);
 
-    plotMoments('momentsOrigSpec',momentsOrigSpec,showPlot,timeBeams,asl,ylimits,figdir,project);
+    %plotMoments('momentsOrigSpec',momentsOrigSpec,showPlot,timeBeams,asl,ylimits,figdir,project);
 end

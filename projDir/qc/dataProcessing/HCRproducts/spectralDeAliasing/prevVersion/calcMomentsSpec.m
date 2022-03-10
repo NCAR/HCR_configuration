@@ -1,4 +1,4 @@
-function moments = calcMomentsSpec(specDB,specVelVec,rx_gain,prt,lambda,noiseLev,range,dbz1km)
+function moments = calcMomentsSpec(specDB,phaseVec,rx_gain,prt,lambda,noiseLev,range,dbz1km)
 % Calculate moments
 
 moments=[];
@@ -6,8 +6,8 @@ moments=[];
 specLin=10.^(specDB./10);
 
 sumSpecLin=sum(specLin,2,'omitnan');
-sumSpecPhase=sum(specLin.*specVelVec,2,'omitnan');
-sumSpecPhase2=sum(specLin.*specVelVec.^2,2,'omitnan');
+sumSpecPhase=sum(specLin.*phaseVec,2,'omitnan');
+sumSpecPhase2=sum(specLin.*phaseVec.^2,2,'omitnan');
 
 %%%%%%%%%%%%%%%%%%
 
@@ -17,13 +17,13 @@ moments.powerDB=10*log10(powerLin)-rx_gain;
 
 % VEL
 meanK=sumSpecPhase./sumSpecLin;
-moments.vel=meanK;
+moments.vel=lambda/(4*pi*prt)*meanK;
 
 % WIDTH
 varK=(sumSpecPhase2./sumSpecLin)-meanK.^2;
 sdevK=sqrt(varK);
 sdevK(varK<=0)=0.0001;
-moments.width=sdevK.*2./(lambda/(4*pi*prt));
+moments.width=sdevK.*2;
 
 % SNR
 noiseLin=10.^(noiseLev./10);

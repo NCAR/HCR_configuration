@@ -1,27 +1,9 @@
-function [powerAdj,specVelAdj,maxIndsTest]=specDeAlias(powerSpec,duplicateSpec,sampleNum,rangeIn,plotTimeInd,maxIndsPrev,prt,lambda)
+function [powerAdj,phaseAdj,maxIndsTest]=specDeAlias(powerSpec,duplicateSpec,sampleNum,rangeIn,plotTimeInd,maxIndsPrev)
 
 % Add spectra side by side
 powerSpecLarge=repmat(powerSpec,1,duplicateSpec);
-velSpecLarge=-duplicateSpec*pi:2*pi/(sampleNum):duplicateSpec*pi;
-velSpecLarge=velSpecLarge(1:end-1);
-velSpecLarge=lambda/(4*pi*prt).*velSpecLarge;
-
-plotYes=1;
-if plotYes
-    f1 = figure('Position',[100 500 1000 1100],'DefaultAxesFontSize',12);
-    colormap jet
-    surf(velSpecLarge,rangeIn./1000,powerSpecLarge,'edgecolor','none')
-    view(2)
-    xlim([velSpecLarge(1),velSpecLarge(end)]);
-
-    ylim([0 8])
-
-    xlabel('Velocity (m/s)')
-    ylabel('Range (km)')
-
-    caxis([-80 -25])
-    colorbar
-end
+phaseVecLarge=-duplicateSpec*pi:2*pi/(sampleNum):duplicateSpec*pi;
+phaseVecLarge=phaseVecLarge(1:end-1);
 
 %% Filter
 
@@ -149,12 +131,12 @@ else
 end
 
 powerAdj=nan(size(powerSpec));
-specVelAdj=nan(size(powerSpec));
+phaseAdj=nan(size(powerSpec));
 
 for kk=1:size(powerSpec,1)
     try
         powerAdj(kk,:)=powerSpecLarge(kk,maxInds(kk)-leftAdd:maxInds(kk)+rightAdd);
-        specVelAdj(kk,:)=velSpecLarge(maxInds(kk)-leftAdd:maxInds(kk)+rightAdd);
+        phaseAdj(kk,:)=phaseVecLarge(maxInds(kk)-leftAdd:maxInds(kk)+rightAdd);
     end
 end
 
