@@ -27,7 +27,7 @@ fileList={'20210529_191100_-89.99_229.66.nc';
 
 outFreq=10; % Desired output frequency in Hz
 timeSpan=1/outFreq;
-duplicateSpec=7; % Number of duplicates of spectra
+duplicateSpec=5; % Number of duplicates of spectra
 
 showPlot='on';
 plotTimeInd=[];
@@ -54,7 +54,7 @@ noise_v=-61.301;
 
 %% Read data
 
-for jj=4:length(fileList)
+for jj=5:length(fileList)
 
     infile=fileList{jj};
     file=[dataDir,infile(1:8),'/',infile];

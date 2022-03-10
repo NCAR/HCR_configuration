@@ -1,20 +1,40 @@
 function [powerAdj,specVelAdj,maxIndsTest]=specDeAlias(powerSpec,duplicateSpec,sampleNum,rangeIn,plotTimeInd,maxIndsPrev,prt,lambda)
 
-% Add spectra side by side
-powerSpecLarge=repmat(powerSpec,1,duplicateSpec);
-velSpecLarge=-duplicateSpec*pi:2*pi/(sampleNum):duplicateSpec*pi;
-velSpecLarge=velSpecLarge(1:end-1);
-velSpecLarge=lambda/(4*pi*prt).*velSpecLarge;
+velSpec=-pi:2*pi/(sampleNum):pi;
+velSpec=velSpec(1:end-1);
+velSpec=lambda/(4*pi*prt).*velSpec;
 
-plotYes=1;
+%% Filter
+
+maskSpec=filterGates(powerSpec);
+maskSpec(1:16)=0;
+powerSpecFilt=powerSpec;
+powerSpecFilt(maskSpec==0,:)=nan;
+
+plotYes=0;
 if plotYes
     f1 = figure('Position',[100 500 1000 1100],'DefaultAxesFontSize',12);
     colormap jet
-    surf(velSpecLarge,rangeIn./1000,powerSpecLarge,'edgecolor','none')
-    view(2)
-    xlim([velSpecLarge(1),velSpecLarge(end)]);
 
-    ylim([0 8])
+    subplot(1,2,1)
+    surf(velSpec,rangeIn./1000,powerSpec,'edgecolor','none')
+    view(2)
+    xlim([velSpec(1),velSpec(end)]);
+
+    ylim([0 10])
+
+    xlabel('Velocity (m/s)')
+    ylabel('Range (km)')
+
+    caxis([-80 -25])
+    colorbar
+
+    subplot(1,2,2)
+    surf(velSpec,rangeIn./1000,powerSpecFilt,'edgecolor','none')
+    view(2)
+    xlim([velSpec(1),velSpec(end)]);
+
+    ylim([0 10])
 
     xlabel('Velocity (m/s)')
     ylabel('Range (km)')
@@ -23,32 +43,63 @@ if plotYes
     colorbar
 end
 
-%% Filter
+% Add spectra side by side
+powerSpecLarge=repmat(powerSpecFilt,1,duplicateSpec+2);
+velSpecLarge=-duplicateSpec*pi:2*pi/(sampleNum):duplicateSpec*pi;
+velSpecLarge=velSpecLarge(1:end-1);
+velSpecLarge=lambda/(4*pi*prt).*velSpecLarge;
 
-[powerSpecFilt]=filterPowerSpecPerc(powerSpecLarge,sampleNum);
-powerSpecFilt(rangeIn<0,:)=nan;
+powerSpecSmooth=movmedian(powerSpecLarge,round(size(powerSpec,2))/5,2);
+powerSpecSmooth=powerSpecSmooth(:,sampleNum+1:end-sampleNum);
+powerSpecLarge=powerSpecLarge(:,sampleNum+1:end-sampleNum);
 
 %% Find spectrum boundaries
 
-maskF=~isnan(powerSpecFilt);
-maskF=bwareaopen(maskF,500,4);
+%minInds=findMinInds(powerSpecSmooth,maskSpec);
+maxInds=findMaxInds(powerSpecSmooth,maskSpec);
 
-powerSpecFilt(maskF==0)=nan;
+plotYes=1;
+if plotYes
+    f1 = figure('Position',[100 500 1000 1100],'DefaultAxesFontSize',12);
+    colormap jet
+    hold on
 
-distV=double(bwdist(maskF));
+    surf(1:length(velSpecLarge),rangeIn./1000,powerSpecSmooth,'edgecolor','none')
+    view(2)
+    xlim([1,length(velSpecLarge)]);
 
-distV(:,1:round(sampleNum/4))=nan;
-distV(:,end-round(sampleNum/4):end)=nan;
+    ylim([0 10])
 
-distFilt=filterDistPerc(distV,sampleNum);
-distBW=~isnan(distFilt);
+    xlabel('Velocity (m/s)')
+    ylabel('Range (km)')
 
-noiseGates=sum(powerSpecFilt,2,'omitnan');
-noiseMask=noiseGates~=0;
-noiseMask=bwareaopen(noiseMask,2);
-noiseGateInds=find(noiseMask==0);
+    caxis([-80 -25])
+    colorbar
 
-[leftInds,rightInds,outRegions]=getSpecBounds(distBW,powerSpecFilt,sampleNum,duplicateSpec);
+    scatter(maxInds(maskSpec==1),rangeIn(maskSpec==1)./1000,'black','filled');
+    ax = gca;
+    ax.SortMethod = 'childorder';
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 %% Find maximum index between left and right
 maxInds=nan(size(leftInds));
