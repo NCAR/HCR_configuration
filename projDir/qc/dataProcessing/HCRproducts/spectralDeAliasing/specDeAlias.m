@@ -1,8 +1,4 @@
-function [powerAdj,specVelAdj,maxIndsTest]=specDeAlias(powerSpec,duplicateSpec,sampleNum,rangeIn,plotTimeInd,maxIndsPrev,prt,lambda)
-
-velSpec=-pi:2*pi/(sampleNum):pi;
-velSpec=velSpec(1:end-1);
-velSpec=lambda/(4*pi*prt).*velSpec;
+function [powerAdj,specVelAdj,maxIndsTest]=specDeAlias(powerSpec,duplicateSpec,sampleNum,rangeIn,plotTimeInd,maxIndsPrev)
 
 %% Filter
 
@@ -17,26 +13,26 @@ if plotYes
     colormap jet
 
     subplot(1,2,1)
-    surf(velSpec,rangeIn./1000,powerSpec,'edgecolor','none')
+    surf(1:size(powerSpec,2),rangeIn./1000,powerSpec,'edgecolor','none')
     view(2)
-    xlim([velSpec(1),velSpec(end)]);
+    xlim([1,size(powerSpec,2)]);
 
     ylim([0 10])
 
-    xlabel('Velocity (m/s)')
+    xlabel('Spectrum bin')
     ylabel('Range (km)')
 
     caxis([-80 -25])
     colorbar
 
     subplot(1,2,2)
-    surf(velSpec,rangeIn./1000,powerSpecFilt,'edgecolor','none')
+    surf(1:size(powerSpec,2),rangeIn./1000,powerSpecFilt,'edgecolor','none')
     view(2)
-    xlim([velSpec(1),velSpec(end)]);
+    xlim([1,size(powerSpec,2)]);
 
     ylim([0 10])
 
-    xlabel('Velocity (m/s)')
+    xlabel('Spectrum bin')
     ylabel('Range (km)')
 
     caxis([-80 -25])
@@ -47,13 +43,12 @@ end
 powerSpecLarge=repmat(powerSpecFilt,1,duplicateSpec+2);
 velSpecLarge=-duplicateSpec*pi:2*pi/(sampleNum):duplicateSpec*pi;
 velSpecLarge=velSpecLarge(1:end-1);
-velSpecLarge=lambda/(4*pi*prt).*velSpecLarge;
 
 powerSpecSmooth=movmedian(powerSpecLarge,round(size(powerSpec,2))/5,2);
 powerSpecSmooth=powerSpecSmooth(:,sampleNum+1:end-sampleNum);
 powerSpecLarge=powerSpecLarge(:,sampleNum+1:end-sampleNum);
 
-%% Find spectrum boundaries
+%% Find maximum
 
 %minInds=findMinInds(powerSpecSmooth,maskSpec);
 maxInds=findMaxInds(powerSpecSmooth,maskSpec);
@@ -70,7 +65,7 @@ if plotYes
 
     ylim([0 10])
 
-    xlabel('Velocity (m/s)')
+    xlabel('Spectrum bin')
     ylabel('Range (km)')
 
     caxis([-80 -25])
@@ -82,43 +77,12 @@ if plotYes
 end
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-%% Find maximum index between left and right
-maxInds=nan(size(leftInds));
-
-for kk=1:size(powerSpec,1)
-    try
-        linePiece=powerSpecLarge(kk,:);
-        linePiece(1:leftInds(kk)-1)=nan;
-        linePiece(rightInds(kk)+1:end)=nan;
-        [~,maxPiece]=max(linePiece,[],'omitnan');
-        maxInds(kk)=maxPiece;
-    end
-end
-
 %% Compare with previous
 
 maxIndsOrig=maxInds;
 
 maxIndsTest=maxInds;
+noiseGateInds=find(maskSpec==0);
 maxIndsTest(noiseGateInds)=nan;
 
 plotYes=0;

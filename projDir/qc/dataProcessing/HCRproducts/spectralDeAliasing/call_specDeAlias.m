@@ -84,7 +84,7 @@ for jj=5:length(fileList)
     momentsOrigSpec.snr=nan(size(data.range,1),beamNum);
     momentsOrigSpec.dbz=nan(size(data.range,1),beamNum);
 
-    prevIndsAll=nan(size(data.range,1),beamNum);
+    %prevIndsAll=nan(size(data.range,1),beamNum);
 
     timeBeams=[];
     elevBeams=[];
@@ -124,7 +124,10 @@ for jj=5:length(fileList)
         powerSignal=powerRealIn+powerImagIn;
 
         powerShifted=fftshift(powerSignal,2);
-        powerShifted=fliplr(powerShifted);
+        % If nadir, reverse to get positive down
+        if data.elevation(startInd)<0
+            powerShifted=fliplr(powerShifted);
+        end
         powerSpec=10*log10(powerShifted);
 
         %% De-alias
@@ -136,10 +139,10 @@ for jj=5:length(fileList)
             maxIndsPrev(:)=size(powerSpec,2)*duplicateSpec/2;
             maxIndsKeep=nan(size(fftIQ,1),1);
         end
-        prevIndsAll(:,ii)=maxIndsPrev;
+        %prevIndsAll(:,ii)=maxIndsPrev;
 
         % De-alias
-        [powerAdj,specVelAdj,maxIndsPrev]=specDeAlias(powerSpec,duplicateSpec,sampleNum,data.range,plotTimeInd,maxIndsPrev,prt,lambda);
+        [powerAdj,specVelAdj,maxIndsPrev]=specDeAlias(powerSpec,duplicateSpec,sampleNum,data.range,plotTimeInd,maxIndsPrev);
 
         % Clean up max indices
         prevLarge=maxIndsPrev;
@@ -207,6 +210,9 @@ for jj=5:length(fileList)
     asl(:,downInd)=-1*((rangeIn(:,downInd).*cosd(abs(elevIn(downInd))-90))-10000);
     asl(:,upInd)=rangeIn(:,upInd).*cosd(abs(elevIn(upInd))-90);
 
+    %% Reverse vel sign in up pointing
+    momentsOrigSpec.vel(:,upInd)=-momentsOrigSpec.vel(:,upInd);
+    
     %% Post processing
 
     nyquistVel=7.8311;

@@ -17,7 +17,7 @@ moments.powerDB=10*log10(powerLin)-rx_gain;
 
 % VEL
 meanK=sumSpecPhase./sumSpecLin;
-moments.vel=meanK;
+moments.vel=lambda/(4*pi*prt).*meanK;
 
 % WIDTH
 varK=(sumSpecPhase2./sumSpecLin)-meanK.^2;
