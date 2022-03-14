@@ -17,12 +17,12 @@ for ii=1:length(nonNanInds)
     % Find folds
     diffVelGates=diff(velRay);
     foldInds=find(abs(diffVelGates)>2*nyq-0.5*nyq);
-    diffFoldInds=diffVelGates(foldInds);
+    bigJumpMag=diffVelGates(foldInds);
 
     vertConsRay=velRay;
 
     for jj=1:length(foldInds)
-        if diffFoldInds(jj)>0
+        if bigJumpMag(jj)>0
             vertConsRay(foldInds(jj)+1:end)=vertConsRay(foldInds(jj)+1:end)-2*nyq;
         else
             vertConsRay(foldInds(jj)+1:end)=vertConsRay(foldInds(jj)+1:end)+2*nyq;
@@ -32,57 +32,140 @@ for ii=1:length(nonNanInds)
     %% Make consistent with previous
 
     diffPrev=vertConsRay-velPrev;
-    horConsRay=vertConsRay;
+    timeConsRay=vertConsRay;
 
     maxFolding=floor(max(abs(diffPrev))/(2*nyq));
 
     for kk=1:maxFolding
         indsPos=find(diffPrev>(kk*2*nyq-0.5*nyq));
-        horConsRay(indsPos)=vertConsRay(indsPos)-kk*2*nyq;
+        timeConsRay(indsPos)=vertConsRay(indsPos)-kk*2*nyq;
         indsNeg=find(diffPrev<-(kk*2*nyq-0.5*nyq));
-        horConsRay(indsNeg)=vertConsRay(indsNeg)+kk*2*nyq;
+        timeConsRay(indsNeg)=vertConsRay(indsNeg)+kk*2*nyq;
     end
 
-    %if time(nonNanInds(ii))>plotStart
-    plot(velRay);
-    hold on
-    plot(vertConsRay)
-    plot(velPrev)
-    plot(horConsRay)
-    hold off
-    xlim([1 500])
-    title(datestr(time(nonNanInds(ii))));
-    stopHere=1;
-    %end
+    %% Check for outliers
 
-    % Handle previous velocity
-    velForPrev=horConsRay;
+    finalRay=timeConsRay;
+    diffPrevTime=timeConsRay-velPrev;
+
+    nanInds=isnan(timeConsRay);
+    nanDiff=diff(nanInds);
+    nanEndInds=find(nanDiff~=0);
+
+    % Check if jumps occur
+    diffTimeConsGates=diff(finalRay);
+
+    countWhile=0;
+
+    while max(abs(diffTimeConsGates))>nyq
+
+        bigJumpInds=find(abs(diffTimeConsGates)>nyq);
+        
+        smallJumpInds=find(abs(diffTimeConsGates)>nyq*0.5);
+        allInds=cat(1,smallJumpInds,nanEndInds);
+        allInds=sort(allInds);
+
+        % Check if the problem is before or after the jump
+        beforePrev=finalRay(bigJumpInds(1))-velPrev(bigJumpInds(1));
+        afterPrev=finalRay(bigJumpInds(1)+1)-velPrev(bigJumpInds(1)+1);
+
+        if abs(beforePrev)>=abs(afterPrev)
+            endStretch=bigJumpInds(1);
+            indInAll=find(allInds==endStretch);
+            startStretch=allInds(indInAll-1)+1;
+
+            meanDiffPrev=mean(diffPrevTime(startStretch:endStretch),'omitnan');
+
+            if beforePrev>0 & abs(meanDiffPrev)>nyq*0.5
+                finalRay(startStretch:endStretch)=finalRay(startStretch:endStretch)-2*nyq;
+            elseif beforePrev<0 & abs(meanDiffPrev)>nyq*0.5
+                finalRay(startStretch:endStretch)=finalRay(startStretch:endStretch)+2*nyq;
+            end
+        else
+            startStretch=bigJumpInds(1)+1;
+            indInAll=find(allInds==startStretch-1);
+            endStretch=allInds(indInAll+1);
+
+            meanDiffPrev=mean(diffPrevTime(startStretch:endStretch),'omitnan');
+
+            if afterPrev>0 & abs(meanDiffPrev)>nyq*0.5
+                finalRay(startStretch:endStretch)=finalRay(startStretch:endStretch)-2*nyq;
+            elseif afterPrev<0 & abs(meanDiffPrev)>nyq*0.5
+                finalRay(startStretch:endStretch)=finalRay(startStretch:endStretch)+2*nyq;
+            end
+        end
+
+        testRay=finalRay;
+        testRay(1:endStretch)=nan;
+
+        countWhile=countWhile+1;
+
+        diffTimeConsGates=diff(testRay);
+
+        if countWhile>100
+            warning('Jumping out of while loop ...');
+            diffTimeConsGates=0;
+        end
+    end
+
+    %% Moving mean test
+
+    medFinal=movmedian(finalRay,50,'omitnan');
+    diffMed=finalRay-medFinal;
+    finalRay(diffMed>nyq*0.8)=finalRay(diffMed>nyq*0.8)-2*nyq;
+    finalRay(diffMed<-(nyq*0.8))=finalRay(diffMed<-(nyq*0.8))+2*nyq;
+
+    %% Test plot
+
+%     if time(nonNanInds(ii))>plotStart
+%         plot(velRay);
+%         hold on
+%         plot(vertConsRay)
+%         plot(velPrev)
+%         plot(timeConsRay)
+%         plot(finalRay)
+% 
+%         plot(medFinal)
+%         hold off
+%         xlim([1 500])
+%         ylim([-25 25])
+%         title(datestr(time(nonNanInds(ii))));
+%         stopHere=1;
+%     end
+
+    %% Add to output
+
+    velDeAliased(:,nonNanInds(ii))=finalRay;
+
+    %% Set up time consistency check
+
+    % Decide which velocities to keep for time consistency check: join
+    % close regions and remove small isolated regions
+    velForPrev=finalRay;
     velForPrev=movmean(velForPrev,5,'omitnan');
     velForPrev=movmean(velForPrev,5,'includenan');
     velForPrevMask=~isnan(velForPrev);
     velForPrevMask=bwareaopen(velForPrevMask,10);
 
-    % Replenish old max indeces
-    prevKeep(velForPrevMask)=horConsRay(velForPrevMask);
+    % Create new velPrev
+    velPrev=movmedian(finalRay,20,'omitnan');
+    velPrev(isnan(finalRay))=nan;
+    velPrev(~velForPrevMask)=nan;
+
+    % Add new values to prevKeep and handle counts
+    prevKeep(velForPrevMask)=velPrev(velForPrevMask);
     prevCount(velForPrevMask)=0;
     prevCount(~velForPrevMask)=prevCount(~velForPrevMask)+1;
     prevKeep(prevCount>=dataFreq*5)=nan;
 
-    % Add old max indeces
-    velPrev=movmedian(horConsRay,20,'omitnan');
-    velPrev(isnan(horConsRay))=nan;
-    velPrev(~velForPrevMask)=nan;
-
+    % Add old velocities
     velPrev(isnan(velPrev))=prevKeep(isnan(velPrev));
 
     % Interpolate prev
-    %prevMed=movmedian(velPrev,50,'omitnan');
     prevMedLarge=movmedian(velPrev,100,'omitnan');
 
     velPrev(isnan(prevMedLarge))=2;
     velPrev=fillmissing(velPrev,'linear','EndValues','nearest');
-
-    velDeAliased(:,nonNanInds(ii))=horConsRay;
 
 end
 %velDeAliased(:,elev>0)=-velDeAliased(:,elev>0);

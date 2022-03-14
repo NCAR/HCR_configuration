@@ -27,15 +27,14 @@ caseStart=datetime(caseList.Var1,caseList.Var2,caseList.Var3, ...
 caseEnd=datetime(caseList.Var6,caseList.Var7,caseList.Var8, ...
     caseList.Var9,caseList.Var10,0);
 
-for aa=2:length(caseStart)
-    plotStart=datetime(2021,6,20,22,51,9);
+for aa=1:length(caseStart)
+    plotStart=datetime(2021,6,20,22,51,12);
     
     disp(['Case ',num2str(aa),' of ',num2str(length(caseStart))]);
     
     startTime=caseStart(aa);
     endTime=caseEnd(aa);
     
-    %startTime=datetime(2021,6,20,22,51,13);
     %% Load data
     
     disp('Loading data ...');
