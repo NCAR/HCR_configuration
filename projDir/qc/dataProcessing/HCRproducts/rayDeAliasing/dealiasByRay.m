@@ -55,29 +55,30 @@ for ii=1:length(nonNanInds)
             timeConsRay(indsNeg)=vertConsRay(indsNeg)+kk*2*nyq;
         end
 
-        %% Moving mean test
+        %% Moving median test
 
-        finalRay=timeConsRay;
-        medFinal=movmedian(finalRay,50,'omitnan');
-        diffMed=finalRay-medFinal;
-        finalRay(diffMed>nyq*0.8)=finalRay(diffMed>nyq*0.8)-2*nyq;
-        finalRay(diffMed<-(nyq*0.8))=finalRay(diffMed<-(nyq*0.8))+2*nyq;
+        movMedRay=timeConsRay;
+        medTimeCons=movmedian(movMedRay,50,'omitnan');
+        diffMed=movMedRay-medTimeCons;
+        movMedRay(diffMed>nyq*0.8)=movMedRay(diffMed>nyq*0.8)-2*nyq;
+        movMedRay(diffMed<-(nyq*0.8))=movMedRay(diffMed<-(nyq*0.8))+2*nyq;
 
-        medFinal2=movmedian(finalRay,5,'omitnan');
-        diffMed2=finalRay-medFinal2;
-        finalRay(diffMed2>nyq*0.8)=finalRay(diffMed2>nyq*0.8)-2*nyq;
-        finalRay(diffMed2<-(nyq*0.8))=finalRay(diffMed2<-(nyq*0.8))+2*nyq;
+        medTimeCons2=movmedian(movMedRay,5,'omitnan');
+        diffMed2=movMedRay-medTimeCons2;
+        movMedRay(diffMed2>nyq*0.8)=movMedRay(diffMed2>nyq*0.8)-2*nyq;
+        movMedRay(diffMed2<-(nyq*0.8))=movMedRay(diffMed2<-(nyq*0.8))+2*nyq;
 
         %% Check for outliers
 
-        diffPrevTime=finalRay-velPrev;
+        outliersRay=movMedRay;
+        diffPrevTime=outliersRay-velPrev;
 
-        nanInds=isnan(finalRay);
+        nanInds=isnan(outliersRay);
         nanDiff=diff(nanInds);
         nanEndInds=find(nanDiff~=0);
 
         % Check if jumps occur
-        diffTimeConsGates=diff(finalRay);
+        diffTimeConsGates=diff(outliersRay);
 
         countWhile=0;
 
@@ -90,8 +91,8 @@ for ii=1:length(nonNanInds)
             allInds=sort(allInds);
 
             % Check if the problem is before or after the jump
-            beforePrev=finalRay(bigJumpInds(1))-velPrev(bigJumpInds(1));
-            afterPrev=finalRay(bigJumpInds(1)+1)-velPrev(bigJumpInds(1)+1);
+            beforePrev=outliersRay(bigJumpInds(1))-velPrev(bigJumpInds(1));
+            afterPrev=outliersRay(bigJumpInds(1)+1)-velPrev(bigJumpInds(1)+1);
 
             if abs(beforePrev)>=abs(afterPrev)
                 endStretch=bigJumpInds(1);
@@ -101,9 +102,9 @@ for ii=1:length(nonNanInds)
                 meanDiffPrev=mean(diffPrevTime(startStretch:endStretch),'omitnan');
 
                 if beforePrev>0 & abs(meanDiffPrev)>nyq*0.5
-                    finalRay(startStretch:endStretch)=finalRay(startStretch:endStretch)-2*nyq;
+                    outliersRay(startStretch:endStretch)=outliersRay(startStretch:endStretch)-2*nyq;
                 elseif beforePrev<0 & abs(meanDiffPrev)>nyq*0.5
-                    finalRay(startStretch:endStretch)=finalRay(startStretch:endStretch)+2*nyq;
+                    outliersRay(startStretch:endStretch)=outliersRay(startStretch:endStretch)+2*nyq;
                 end
             else
                 startStretch=bigJumpInds(1)+1;
@@ -113,13 +114,13 @@ for ii=1:length(nonNanInds)
                 meanDiffPrev=mean(diffPrevTime(startStretch:endStretch),'omitnan');
 
                 if afterPrev>0 & abs(meanDiffPrev)>nyq*0.5
-                    finalRay(startStretch:endStretch)=finalRay(startStretch:endStretch)-2*nyq;
+                    outliersRay(startStretch:endStretch)=outliersRay(startStretch:endStretch)-2*nyq;
                 elseif afterPrev<0 & abs(meanDiffPrev)>nyq*0.5
-                    finalRay(startStretch:endStretch)=finalRay(startStretch:endStretch)+2*nyq;
+                    outliersRay(startStretch:endStretch)=outliersRay(startStretch:endStretch)+2*nyq;
                 end
             end
 
-            testRay=finalRay;
+            testRay=outliersRay;
             testRay(1:endStretch)=nan;
 
             countWhile=countWhile+1;
@@ -132,22 +133,34 @@ for ii=1:length(nonNanInds)
             end
         end
 
+        %% Correct extremes
+        finalRay=outliersRay;
+
+        % Positive
+        finalRay=correctExtremes(finalRay,nyq);
+
+        % Negative
+        finalRay=-finalRay;
+        finalRay=correctExtremes(finalRay,nyq);
+        finalRay=-finalRay;
 
         %% Test plot
 
         if time(nonNanInds(ii))>plotStart
-            plot(velRay);
-            hold on
-            plot(vertConsRay)
             plot(velPrev)
+            hold on
+            plot(velRay);
+            plot(vertConsRay)
             plot(timeConsRay)
-            plot(finalRay)
+            plot(movMedRay)
+            plot(outliersRay)
+            plot(finalRay,'LineWidth',2)
 
-            plot(medFinal)
             hold off
             xlim([1 500])
             ylim([-25 25])
             title(datestr(time(nonNanInds(ii))));
+            legend('velPrev','orig','vertCons','timeCons','movMed','outliers','final')
             stopHere=1;
         end
     end
