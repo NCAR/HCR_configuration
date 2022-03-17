@@ -1,4 +1,4 @@
-function finalRay=correctExtremes(finalRay,nyq)
+function finalRay=correctExtremes(finalRay,nyq,prevRay)
 
 % Check if extremes exist
 if max(finalRay,[],'omitnan')<2*nyq-0.5*nyq
@@ -9,12 +9,12 @@ end
 extThresh=2*nyq-0.5*nyq;
 jumpThresh=nyq;
 
-extremes=finalRay>nyq;
+extremes=finalRay>nyq+nyq*0.5;
 
 velExt=finalRay;
 velExt(~extremes)=nan;
-velExt=movmean(velExt,9,'omitnan');
-velExt=movmean(velExt,9,'includenan');
+velExt=movmean(velExt,5,'omitnan');
+velExt=movmean(velExt,5,'includenan');
 extremes(~isnan(velExt))=1;
 
 diffExt=diff(extremes);
@@ -36,9 +36,18 @@ for ll=1:length(startExt)
     end
 
     startJump=finalRay(startExt(ll))-finalRay(startExt(ll)-1);
-    endJump=finalRay(endExt(ll)+1)-finalRay(endExt(ll));
+    endJump=finalRay(endExt(ll))-finalRay(endExt(ll)+1);
 
-    if startJump>jumpThresh | endJump>jumpThresh
+    medStretch=median(finalRay(startExt(ll):endExt(ll)),1,'omitnan');
+
+    if medStretch>nyq+nyq*0.5 & (startJump>jumpThresh | endJump>jumpThresh | isnan(startJump) | isnan(endJump))
         finalRay(startExt(ll):endExt(ll))=finalRay(startExt(ll):endExt(ll))-2*nyq;
+    end
+
+    diffPrev=abs(finalRay(startExt(ll):endExt(ll))-prevRay(startExt(ll):endExt(ll)));
+    minDiff=min(diffPrev,[],'omitnan');
+
+    if minDiff>nyq+0.5*nyq
+        finalRay(startExt(ll):endExt(ll))=finalRay(startExt(ll):endExt(ll))+2*nyq;
     end
 end

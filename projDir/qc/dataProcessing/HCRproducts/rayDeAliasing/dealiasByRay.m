@@ -134,15 +134,15 @@ for ii=1:length(nonNanInds)
         end
 
         %% Correct extremes
-        finalRay=outliersRay;
+        finalRayPos=outliersRay;
 
         % Positive
-        finalRay=correctExtremes(finalRay,nyq);
+        finalRayPos=correctExtremes(finalRayPos,nyq,velPrev);
 
         % Negative
-        finalRay=-finalRay;
-        finalRay=correctExtremes(finalRay,nyq);
-        finalRay=-finalRay;
+        finalRayNeg=-finalRayPos;
+        finalRayNeg=correctExtremes(finalRayNeg,nyq,-velPrev);
+        finalRay=-finalRayNeg;
 
         %% Test plot
 
@@ -154,13 +154,14 @@ for ii=1:length(nonNanInds)
             plot(timeConsRay)
             plot(movMedRay)
             plot(outliersRay)
-            plot(finalRay,'LineWidth',2)
+            plot(finalRayPos)
+            plot(finalRay,'-k','LineWidth',2)
 
             hold off
             xlim([1 500])
             ylim([-25 25])
             title(datestr(time(nonNanInds(ii))));
-            legend('velPrev','orig','vertCons','timeCons','movMed','outliers','final')
+            legend('velPrev','orig','vertCons','timeCons','movMed','outliers','finalPos','final')
             stopHere=1;
         end
     end
