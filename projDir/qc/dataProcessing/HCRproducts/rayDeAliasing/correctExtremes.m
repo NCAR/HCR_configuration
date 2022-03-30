@@ -1,7 +1,7 @@
-function finalRay=correctExtremes(finalRay,nyq,prevRay)
+function testExt=correctExtremes(testExt,nyq,prevRay)
 
 % Check if extremes exist
-if max(finalRay,[],'omitnan')<2*nyq-0.5*nyq
+if max(testExt,[],'omitnan')<2*nyq-0.5*nyq
     return
 end
 
@@ -9,9 +9,9 @@ end
 extThresh=2*nyq-0.5*nyq;
 jumpThresh=nyq;
 
-extremes=finalRay>nyq+nyq*0.5;
+extremes=testExt>nyq+nyq*0.5;
 
-velExt=finalRay;
+velExt=testExt;
 velExt(~extremes)=nan;
 velExt=movmean(velExt,5,'omitnan');
 velExt=movmean(velExt,5,'includenan');
@@ -27,27 +27,27 @@ end
 
 for ll=1:length(startExt)
     % Check if end points are extreme
-    thisStart=finalRay(startExt(ll));
-    thisEnd=finalRay(endExt(ll));
+    thisStart=testExt(startExt(ll));
+    thisEnd=testExt(endExt(ll));
 
     if (thisStart<extThresh & (thisEnd<extThresh | isnan(endExt(ll)))) | ...
             (thisEnd<extThresh & (thisStart<extThresh | isnan(startExt(ll))))
         continue
     end
 
-    startJump=finalRay(startExt(ll))-finalRay(startExt(ll)-1);
-    endJump=finalRay(endExt(ll))-finalRay(endExt(ll)+1);
+    startJump=testExt(startExt(ll))-testExt(startExt(ll)-1);
+    endJump=testExt(endExt(ll))-testExt(min([endExt(ll)+1,length(velExt)]));
 
-    medStretch=median(finalRay(startExt(ll):endExt(ll)),1,'omitnan');
+    medStretch=median(testExt(startExt(ll):endExt(ll)),1,'omitnan');
 
     if medStretch>nyq+nyq*0.5 & (startJump>jumpThresh | endJump>jumpThresh | isnan(startJump) | isnan(endJump))
-        finalRay(startExt(ll):endExt(ll))=finalRay(startExt(ll):endExt(ll))-2*nyq;
+        testExt(startExt(ll):endExt(ll))=testExt(startExt(ll):endExt(ll))-2*nyq;
     end
 
-    diffPrev=abs(finalRay(startExt(ll):endExt(ll))-prevRay(startExt(ll):endExt(ll)));
-    minDiff=min(diffPrev,[],'omitnan');
+    diffPrev=abs(testExt(startExt(ll):endExt(ll))-prevRay(startExt(ll):endExt(ll)));
+    imp=length(find(diffPrev<nyq+0.5*nyq));
 
-    if minDiff>nyq+0.5*nyq
-        finalRay(startExt(ll):endExt(ll))=finalRay(startExt(ll):endExt(ll))+2*nyq;
+    if imp<3
+        testExt(startExt(ll):endExt(ll))=testExt(startExt(ll):endExt(ll))+2*nyq;
     end
 end

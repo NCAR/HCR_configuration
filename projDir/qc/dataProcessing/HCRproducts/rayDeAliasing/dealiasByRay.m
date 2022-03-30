@@ -5,7 +5,9 @@ velDeAliased=nan(size(velIn));
 
 nonNanInds=find(any(~isnan(velIn),1));
 
-velPrev=repmat(2,size(velIn,1),1);
+defaultPrev=nyq;
+
+velPrev=repmat(defaultPrev,size(velIn,1),1);
 prevCount=zeros(size(velPrev));
 prevKeep=nan(size(velPrev));
 
@@ -18,9 +20,7 @@ for ii=1:length(nonNanInds)
     maxPrev=max(velPrev(~isnan(velRay)),[],'omitnan');
     diffRay=diff(velRay);
 
-    if max(abs(diffRay),[],'omitnan')<2*nyq-0.5*nyq & maxPrev<0
-        finalRay=velRay;
-    elseif max(abs(diffRay),[],'omitnan')<2*nyq-0.5*nyq & median(abs(diffPrevInit))<2*nyq-0.5*nyq
+    if max(abs(diffRay),[],'omitnan')<2*nyq-0.5*nyq & median(abs(diffPrevInit))<2*nyq-0.5*nyq
         finalRay=velRay;
     else
 
@@ -109,7 +109,11 @@ for ii=1:length(nonNanInds)
             else
                 startStretch=bigJumpInds(1)+1;
                 indInAll=find(allInds==startStretch-1);
-                endStretch=allInds(indInAll+1);
+                if indInAll<length(allInds)
+                    endStretch=allInds(indInAll+1);
+                else
+                    endStretch=length(outliersRay);
+                end
 
                 meanDiffPrev=mean(diffPrevTime(startStretch:endStretch),'omitnan');
 
@@ -134,19 +138,19 @@ for ii=1:length(nonNanInds)
         end
 
         %% Correct extremes
-        finalRayPos=outliersRay;
+        testExtPos=outliersRay;
 
         % Positive
-        finalRayPos=correctExtremes(finalRayPos,nyq,velPrev);
+        testExtPos=correctExtremes(testExtPos,nyq,velPrev);
 
         % Negative
-        finalRayNeg=-finalRayPos;
-        finalRayNeg=correctExtremes(finalRayNeg,nyq,-velPrev);
-        finalRay=-finalRayNeg;
+        testExtNeg=-testExtPos;
+        testExtNeg=correctExtremes(testExtNeg,nyq,-velPrev);
+        finalRay=-testExtNeg;
 
         %% Test plot
 
-        if time(nonNanInds(ii))>plotStart
+        if ~isempty(plotStart) & time(nonNanInds(ii))>plotStart
             plot(velPrev)
             hold on
             plot(velRay);
@@ -154,7 +158,7 @@ for ii=1:length(nonNanInds)
             plot(timeConsRay)
             plot(movMedRay)
             plot(outliersRay)
-            plot(finalRayPos)
+            plot(testExtPos)
             plot(finalRay,'-k','LineWidth',2)
 
             hold off
@@ -178,6 +182,7 @@ for ii=1:length(nonNanInds)
     velForPrev=movmean(velForPrev,5,'includenan');
     velForPrevMask=~isnan(velForPrev);
     velForPrevMask=bwareaopen(velForPrevMask,15);
+    velForPrevMask(~isnan(velPrev))=1;
 
     % Create new velPrev
     velPrev=movmedian(finalRay,20,'omitnan');
@@ -196,7 +201,7 @@ for ii=1:length(nonNanInds)
     % Interpolate prev
     prevMedLarge=movmedian(velPrev,100,'omitnan');
 
-    velPrev(isnan(prevMedLarge))=2;
+    velPrev(isnan(prevMedLarge))=defaultPrev;
     velPrev=fillmissing(velPrev,'linear','EndValues','nearest');
 
 end
