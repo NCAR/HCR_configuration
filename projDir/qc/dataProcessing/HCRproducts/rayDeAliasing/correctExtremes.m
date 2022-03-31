@@ -40,14 +40,31 @@ for ll=1:length(startExt)
 
     medStretch=median(testExt(startExt(ll):endExt(ll)),1,'omitnan');
 
-    if medStretch>nyq+nyq*0.5 & (startJump>jumpThresh | endJump>jumpThresh | isnan(startJump) | isnan(endJump))
+    if medStretch>nyq+nyq*0.5 & ( ...
+            (startJump>jumpThresh & (endJump>jumpThresh | (isnan(endJump) & thisEnd>extThresh))) | ...
+            ((isnan(startJump) & thisStart>extThresh) & (endJump>jumpThresh | (isnan(endJump) & thisEnd>extThresh))) | ...
+            (endJump>jumpThresh & (isnan(startJump) | startJump>jumpThresh)) | ...
+            ((isnan(endJump) & thisEnd>extThresh) & ((isnan(startJump) & thisStart>extThresh) | startJump>jumpThresh)) ...
+            )
         testExt(startExt(ll):endExt(ll))=testExt(startExt(ll):endExt(ll))-2*nyq;
-    end
+        diffPrev=abs(testExt(startExt(ll):endExt(ll))-prevRay(startExt(ll):endExt(ll)));
+        imp=length(find(diffPrev<nyq));
+        lengthStretch=endExt(ll)-startExt(ll);
 
-    diffPrev=abs(testExt(startExt(ll):endExt(ll))-prevRay(startExt(ll):endExt(ll)));
-    imp=length(find(diffPrev<nyq+0.5*nyq));
+        if imp==0 & lengthStretch>5
+            testExt(startExt(ll):endExt(ll))=testExt(startExt(ll):endExt(ll))+2*nyq;
+        end
+    elseif medStretch>nyq+nyq*0.5 & (startJump>jumpThresh | endJump>jumpThresh | isnan(startJump) | isnan(endJump))
+        testExt(startExt(ll):endExt(ll))=testExt(startExt(ll):endExt(ll))-2*nyq;
 
-    if imp<3
-        testExt(startExt(ll):endExt(ll))=testExt(startExt(ll):endExt(ll))+2*nyq;
+        diffPrev=abs(testExt(startExt(ll):endExt(ll))-prevRay(startExt(ll):endExt(ll)));
+        imp=length(find(diffPrev<nyq));
+
+        lengthStretch=endExt(ll)-startExt(ll);
+        impFrac=imp/lengthStretch;
+
+        if imp<5 | impFrac<0.1
+            testExt(startExt(ll):endExt(ll))=testExt(startExt(ll):endExt(ll))+2*nyq;
+        end
     end
 end
