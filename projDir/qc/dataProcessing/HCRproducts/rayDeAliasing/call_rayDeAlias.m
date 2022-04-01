@@ -75,25 +75,26 @@ for aa=1:length(caseStart)
     f1=figure('DefaultAxesFontSize',12,'Position',[0 300 1700 1200],'visible','on');
     
     s1=subplot(2,1,1);
-    surf(data.time,data.asl./1000,velMasked,'edgecolor','none');
+    h1=surf(data.time,data.asl./1000,velMasked,'edgecolor','none');
     view(2);
     ylim(ylimits);
     xlim([data.time(1),data.time(end)]);
-    caxis([-15 15]);
-    colormap(s1,jet);
-    colorbar;
+    caxis([-16 16]);
+    colM=colormap(velCols);
+    colormap(s1,colM);
+    colorbar
     ylabel('Altitude (km)');
     title(['HCR radial velocity (m s^{-1})']);
     grid on
     
     s2=subplot(2,1,2);
-    surf(data.time,data.asl./1000,velDeAliased,'edgecolor','none');
+    h2=surf(data.time,data.asl./1000,velDeAliased,'edgecolor','none');
     view(2);
     ylim(ylimits);
     xlim([data.time(1),data.time(end)]);
-    caxis([-15 15]);
-    colormap(s2,jet);
-    colorbar;
+    caxis([-16 16]);
+    colormap(s2,colM);
+    colorbar
     ylabel('Altitude (km)');
     title(['HCR radial velocity (m s^{-1})']);
     grid on

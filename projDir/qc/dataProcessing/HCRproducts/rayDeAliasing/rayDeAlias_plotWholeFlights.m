@@ -24,7 +24,7 @@ caseList = table2array(readtable(infile));
 
 figdir=[indir(1:end-5),'rayDeAlias/wholeFlights/'];
 
-for aa=1:size(caseList,1)
+for aa=2:size(caseList,1)
 
     disp(['Flight ',num2str(aa)]);
     disp('Loading HCR data.')
@@ -95,7 +95,7 @@ for aa=1:size(caseList,1)
                 
                 s1=subplot(2,1,1);
                 
-                colormap jet
+                colormap(velCols)
                 
                 hold on
                 surf(timePlot,aslPlot./1000,velPlot,'edgecolor','none');
@@ -108,8 +108,7 @@ for aa=1:size(caseList,1)
                 grid on
                 box on
                 title('VEL CORR')
-                s1pos=s1.Position;
-                
+                                
                 s2=subplot(2,1,2);
                 
                 hold on
@@ -123,9 +122,7 @@ for aa=1:size(caseList,1)
                 colorbar
                 grid on
                 box on
-                s2pos=s2.Position;
-                s2.Position=[s2pos(1),s2pos(2),s1pos(3),s2pos(4)];
-                
+                                
                 set(gcf,'PaperPositionMode','auto')
                 print(f1,[figdir,project,'_Flight',num2str(aa),'_velFinal_',datestr(timePlot(1),'yyyymmdd_HHMMSS'),'_to_',datestr(timePlot(end),'yyyymmdd_HHMMSS')],'-dpng','-r0')
             end
