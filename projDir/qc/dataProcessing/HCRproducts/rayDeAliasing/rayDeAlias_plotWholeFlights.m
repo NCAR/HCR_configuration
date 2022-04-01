@@ -24,7 +24,7 @@ caseList = table2array(readtable(infile));
 
 figdir=[indir(1:end-5),'rayDeAlias/wholeFlights/'];
 
-for aa=2:size(caseList,1)
+for aa=1:size(caseList,1)
 
     disp(['Flight ',num2str(aa)]);
     disp('Loading HCR data.')
