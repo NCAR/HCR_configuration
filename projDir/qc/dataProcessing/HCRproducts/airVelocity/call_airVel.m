@@ -19,12 +19,9 @@ infile='20210529_191100_-89.99_229.66.nc';
 
 outFreq=10; % Desired output frequency in Hz
 timeSpan=1/outFreq;
-duplicateSpec=7; % Number of duplicates of spectra
 
 showPlot='on';
-ylimUpper=6;
-plotTimeInd=[];
-saveWaterfall=0;
+ylimUpper=12;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -41,44 +38,44 @@ file=[dataDir,infile(1:8),'/',infile];
 freq=9.440617e+10;
 c=299792458;
 lambda=c/freq;
-rx_gain_v=45.9;
-rx_gain_h=45.5;
 prt=0.000101376;
+nyq=7.8311;
 dbz1km_v=-23.8657;
-noise_v=-61.301;
 
 %% Read data
 
 data.IVc=[];
-%data.IHc=[];
 data.QVc=[];
-%data.QHc=[];
 
 data=readHCRts(data,file);
 
 %% Prepare processing
 beamNum=ceil(size(data.IVc,2)/(timeSpan*10000));
 
-momentsOrigIQ.powerDB=nan(size(data.range,1),beamNum);
-momentsOrigIQ.vel=nan(size(data.range,1),beamNum);
-momentsOrigIQ.width=nan(size(data.range,1),beamNum);
-momentsOrigIQ.snr=nan(size(data.range,1),beamNum);
-momentsOrigIQ.dbz=nan(size(data.range,1),beamNum);
-
-momentsOrigSpec.powerDB=nan(size(data.range,1),beamNum);
-momentsOrigSpec.vel=nan(size(data.range,1),beamNum);
-momentsOrigSpec.width=nan(size(data.range,1),beamNum);
-momentsOrigSpec.snr=nan(size(data.range,1),beamNum);
-momentsOrigSpec.dbz=nan(size(data.range,1),beamNum);
-momentsOrigSpec.airVel=nan(size(data.range,1),beamNum);
-
 timeBeams=[];
+elevBeams=[];
 
 startInd=1;
 endInd=1;
 ii=1;
 
-% Loop through beams
+velTDall=nan(size(data.range,1),beamNum);
+%velFilteredTDall=nan(size(data.range,1),beamNum);
+velDeAliasedTDall=nan(size(data.range,1),beamNum);
+velDeAliasedSTall=nan(size(data.range,1),beamNum);
+traceReflAll=nan(size(data.range,1),beamNum);
+velAirAll=nan(size(data.range,1),beamNum);
+
+%% Set up for de-aliasing
+
+defaultPrev=nyq;
+
+velPrev=repmat(defaultPrev,length(data.range),1);
+prevCount=zeros(size(velPrev));
+prevKeep=nan(size(velPrev));
+flipYes=0;
+
+%% Loop through beams
 while endInd<=size(data.IVc,2) & startInd<size(data.IVc,2)
 
     % Find start and end indices for beam
@@ -87,15 +84,51 @@ while endInd<=size(data.IVc,2) & startInd<size(data.IVc,2)
 
     sampleNum=endInd-startInd+1;
 
-    % Window
+    timeBeams=[timeBeams;data.time(startInd)];
+    elevBeams=[elevBeams;data.elevation(startInd)];
+
+    %% Window
+
     win=window(@hamming,sampleNum);  % Default window is Hamming
     winWeight=sampleNum/sum(win);
     winNorm=win*winWeight;
 
     cIQv=winNorm'.*(data.IVc(:,startInd:endInd)+i*data.QVc(:,startInd:endInd))./sqrt(sampleNum);
 
-    %% FFT and spectra
+    %% Calculate vel in time domain
 
+    R1=mean(cIQv(:,1:end-1).*conj(cIQv(:,2:end)),2);
+    velTD=lambda/(4*pi*prt)*angle(R1);
+
+    velTDall(:,ii)=velTD;
+
+    %% Filter gates in time domain
+
+    velMasked=filterGatesTD(velTD);
+    %velFilteredTDall(:,ii)=velMasked;
+
+    %% De-alias
+    if data.elevation(startInd)>0
+        velRay=-velMasked;
+    else
+        velRay=velMasked;
+    end
+
+    velDeAliased=deAliasSingleRay(velRay,velPrev,nyq,[],[]);
+
+    % Set up time consistency check
+
+    [velPrev,prevCount,prevKeep,flipYes]=setUpPrev(velDeAliased,velPrev,prevCount,prevKeep,flipYes,data.elevation(startInd),outFreq,defaultPrev);
+
+    if data.elevation(startInd)>0
+        velDeAliased=-velDeAliased;
+    end
+
+    % Add to output
+    velDeAliasedTDall(:,ii)=velDeAliased;
+
+    %% FFT and spectra
+    
     fftIQ=fft(cIQv,[],2);
 
     powerRealIn=real(fftIQ).^2;
@@ -103,63 +136,64 @@ while endInd<=size(data.IVc,2) & startInd<size(data.IVc,2)
     powerSignal=powerRealIn+powerImagIn;
 
     powerShifted=fftshift(powerSignal,2);
-    powerShifted=fliplr(powerShifted);
+
+    % If nadir, reverse to get positive down
+    if data.elevation(startInd)<0
+        powerShifted=fliplr(powerShifted);
+    end
+
     powerSpec=10*log10(powerShifted);
 
-    %% De-alias
+    %% De-alias in spectral domain
 
-    [powerAdj,phaseAdj]=specDeAlias(powerSpec,duplicateSpec,sampleNum,data.range,plotTimeInd);
+    deAliasDiff=velDeAliased-velMasked;
+
+    deAliasMask=zeros(size(deAliasDiff));
+    checkFold=[2,4,6];
+
+    for jj=1:3
+        deAliasMask(round(deAliasDiff)==round(checkFold(jj)*nyq))=jj;
+        deAliasMask(round(deAliasDiff)==-round(checkFold(jj)*nyq))=-jj;
+    end
+
+    if min(velMasked,[],'omitnan')<-5
+        stp=1;
+    end
+
+    [powerAdj,phaseAdj]=specPowerDeAlias(powerSpec,deAliasMask,sampleNum,data.range,velMasked);
 
     %% Air velocity
 
     %prtThis=mean(prt(startInd:endInd));
     prtThis=prt;
 
-    [momentsOrigSpec.airVel(:,ii),momentsOrigSpec.traceRefl(:,ii)]=getAirVel(powerAdj,phaseAdj,sampleNum,lambda,prtThis,data.range,dbz1km_v);
+    [velAir,traceRefl]=getAirVel(powerAdj,phaseAdj,sampleNum,lambda,prtThis,data.range,dbz1km_v);
 
-    %% Moments
-    
-    if ii==100
-        stopHere=1;
-    end
-
-    momentsOIQ=calcMomentsIQ(cIQv,rx_gain_v,prtThis,lambda,noise_v,data.range,dbz1km_v);
-
-    momentsOrigIQ.powerDB(:,ii)=momentsOIQ.powerDB;
-    momentsOrigIQ.vel(:,ii)=momentsOIQ.vel;
-    momentsOrigIQ.width(:,ii)=momentsOIQ.width;
-    momentsOrigIQ.snr(:,ii)=momentsOIQ.snr;
-    momentsOrigIQ.dbz(:,ii)=momentsOIQ.dbz;
-
-    momentsOS=calcMomentsSpec(powerAdj,phaseAdj,rx_gain_v,prtThis,lambda,noise_v,data.range,dbz1km_v);
-       
-    momentsOrigSpec.powerDB(:,ii)=momentsOS.powerDB;
-    momentsOrigSpec.vel(:,ii)=momentsOS.vel;
-    momentsOrigSpec.width(:,ii)=momentsOS.width;
-    momentsOrigSpec.snr(:,ii)=momentsOS.snr;
-    momentsOrigSpec.dbz(:,ii)=momentsOS.dbz;
-
-    timeBeams=[timeBeams;data.time(startInd)];
+    traceReflAll(:,ii)=traceRefl;
+    velAirAll(:,ii)=velAir;
 
     startInd=endInd+1;
     ii=ii+1;
 end
 
-
-%% Plot moments
-
-disp('Plotting moments ...');
-
-plotMoments('momentsOrigIQ',momentsOrigIQ,showPlot,timeBeams,data.range,ylimUpper,figdir,project);
-
-plotMoments('momentsOrigSpec',momentsOrigSpec,showPlot,timeBeams,data.range,ylimUpper,figdir,project);
+%% Fake asl
+asl=nan(size(velTDall));
+downInd=find(elevBeams<0);
+upInd=find(elevBeams>=0);
+elevIn=elevBeams';
+rangeIn=repmat(data.range,1,length(elevBeams));
+asl(:,downInd)=-1*((rangeIn(:,downInd).*cosd(abs(elevIn(downInd))-90))-10000);
+asl(:,upInd)=rangeIn(:,upInd).*cosd(abs(elevIn(upInd))-90);
 
 %% Plot air vel
-f1 = figure('Position',[200 500 600 1000],'DefaultAxesFontSize',12,'visible',showPlot);
-colormap jet
+close all
 
-subplot(2,1,1)
-surf(timeBeams,data.range./1000,momentsOrigSpec.airVel,'edgecolor','none');
+f1 = figure('Position',[200 500 1000 1200],'DefaultAxesFontSize',12,'visible',showPlot);
+colM=colormap(velCols);
+colormap(colM);
+
+s1=subplot(4,1,1);
+surf(timeBeams,asl./1000,velTDall,'edgecolor','none');
 view(2);
 ylabel('Range (km)');
 caxis([-16 16]);
@@ -167,18 +201,34 @@ ylim([0 ylimUpper]);
 xlim([timeBeams(1),timeBeams(end)]);
 colorbar
 grid on
-title('Air velocity (m s^{-1})')
+box on
+title('Velocity time domain (m s^{-1})')
 
-subplot(2,1,2)
-surf(timeBeams,data.range./1000,momentsOrigSpec.traceRefl,'edgecolor','none');
+s2=subplot(4,1,2);
+surf(timeBeams,asl./1000,velDeAliasedTDall,'edgecolor','none');
 view(2);
 ylabel('Range (km)');
-caxis([-40 30]);
+caxis([-16 16]);
 ylim([0 ylimUpper]);
 xlim([timeBeams(1),timeBeams(end)]);
 colorbar
 grid on
-title('Tracer reflectivity (dBZ)')
+box on
+title('Velocity time domain de-aliased (m s^{-1})')
+
+s4=subplot(4,1,4);
+surf(timeBeams,asl./1000,velAirAll,'edgecolor','none');
+view(2);
+ylabel('Range (km)');
+%caxis([-16 16]);
+ylim([0 ylimUpper]);
+xlim([timeBeams(1),timeBeams(end)]);
+colorbar
+grid on
+box on
+title('Velocity time domain de-aliased (m s^{-1})')
+
+linkaxes([s1 s2],'xy')
 
 set(gcf,'PaperPositionMode','auto')
 print(f1,[figdir,project,'_airVel_',datestr(timeBeams(1),'yyyymmdd_HHMMSS'),'_to_',datestr(timeBeams(end),'yyyymmdd_HHMMSS')],'-dpng','-r0');
