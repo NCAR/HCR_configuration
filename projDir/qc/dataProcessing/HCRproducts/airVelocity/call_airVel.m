@@ -50,9 +50,9 @@ noise_v=-61.301;
 %% Read data
 
 data.IVc=[];
-data.IHc=[];
+%data.IHc=[];
 data.QVc=[];
-data.QHc=[];
+%data.QHc=[];
 
 data=readHCRts(data,file);
 

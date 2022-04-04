@@ -62,12 +62,9 @@ for aa=1:size(caseList,1)
     %% Correct velocity folding
 
     nyq=mode(data.nyquist_velocity);
-    velMasked(:,data.elevation>0)=-velMasked(:,data.elevation>0);
-
+  
     disp('De-aliasing ...');
     velDeAliased=dealiasByRay(velMasked,data.elevation,nyq,dataFreq,data.time,[]);
-
-    velDeAliased(:,data.elevation>0)=-velDeAliased(:,data.elevation>0);
 
     %% Plot in hourly increments
 

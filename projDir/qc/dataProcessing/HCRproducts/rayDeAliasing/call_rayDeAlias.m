@@ -61,8 +61,7 @@ for aa=1:length(caseStart)
     %% Correct velocity folding
     
     nyq=mode(data.nyquist_velocity);
-    velMasked(:,data.elevation>0)=-velMasked(:,data.elevation>0);
-
+    
     disp('De-aliasing ...');
     velDeAliased=dealiasByRay(velMasked,data.elevation,nyq,dataFreq,data.time,plotStart);
            
