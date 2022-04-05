@@ -1,4 +1,4 @@
-function [powerAdj,specVelAdj,maxIndsTest]=specPowerDeAlias(powerSpec,deAliasMask,sampleNum,rangeIn,velMasked)
+function [powerAdj,specVelAdj,maxIndsTest]=specPowerDeAlias(powerSpec,velDeAlias,sampleNum,prt,lambda,rangeIn,velMasked)
 
 %% Filter
 
@@ -25,6 +25,25 @@ maxInds=findMaxIndsSpec(powerSpecSmooth,velMasked);
 maxInds=maxInds+floor(duplicateSpec/2)*sampleNum;
 
 %% Adjust maximum based on de-alias mask
+
+phaseMax=nan(size(maxInds));
+
+for ii=1:length(maxInds)
+    if ~isnan(maxInds(ii))
+        phaseMax(ii)=velSpecLarge(maxInds(ii));
+    end
+end
+phaseDeAliased=4*pi*prt*velDeAlias/lambda;
+
+phaseDiff=phaseDeAliased-phaseMax;
+
+deAliasMask=zeros(size(phaseDiff));
+checkFold=[2,4,6];
+
+for jj=1:3
+    deAliasMask(phaseDiff>checkFold(jj)*pi-pi)=jj;
+    deAliasMask(phaseDiff<-(checkFold(jj)*pi+pi))=-jj;
+end
 
 adjMax=maxInds+deAliasMask*sampleNum;
 

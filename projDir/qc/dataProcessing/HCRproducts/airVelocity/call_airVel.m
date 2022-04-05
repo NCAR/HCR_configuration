@@ -62,7 +62,7 @@ ii=1;
 velTDall=nan(size(data.range,1),beamNum);
 %velFilteredTDall=nan(size(data.range,1),beamNum);
 velDeAliasedTDall=nan(size(data.range,1),beamNum);
-velDeAliasedSTall=nan(size(data.range,1),beamNum);
+velDeAliasedSDall=nan(size(data.range,1),beamNum);
 traceReflAll=nan(size(data.range,1),beamNum);
 velAirAll=nan(size(data.range,1),beamNum);
 
@@ -146,26 +146,28 @@ while endInd<=size(data.IVc,2) & startInd<size(data.IVc,2)
 
     %% De-alias in spectral domain
 
-    deAliasDiff=velDeAliased-velMasked;
-
-    deAliasMask=zeros(size(deAliasDiff));
-    checkFold=[2,4,6];
-
-    for jj=1:3
-        deAliasMask(round(deAliasDiff)==round(checkFold(jj)*nyq))=jj;
-        deAliasMask(round(deAliasDiff)==-round(checkFold(jj)*nyq))=-jj;
-    end
-
     if min(velMasked,[],'omitnan')<-5
         stp=1;
     end
 
-    [powerAdj,phaseAdj]=specPowerDeAlias(powerSpec,deAliasMask,sampleNum,data.range,velMasked);
-
-    %% Air velocity
-
     %prtThis=mean(prt(startInd:endInd));
     prtThis=prt;
+
+    [powerAdj,phaseAdj]=specPowerDeAlias(powerSpec,velDeAliased,sampleNum,prtThis,lambda,data.range,velMasked);
+
+    %% De-aliased velocity in spectral domain
+
+    specLin=10.^(powerAdj./10);
+
+    sumSpecLin=sum(specLin,2,'omitnan');
+    sumSpecPhase=sum(specLin.*phaseAdj,2,'omitnan');
+
+    meanK=sumSpecPhase./sumSpecLin;
+    velSpecDeAliased=lambda/(4*pi*prt).*meanK;
+
+    velDeAliasedSDall(:,ii)=velSpecDeAliased;
+
+    %% Air velocity
 
     [velAir,traceRefl]=getAirVel(powerAdj,phaseAdj,sampleNum,lambda,prtThis,data.range,dbz1km_v);
 
@@ -216,19 +218,31 @@ grid on
 box on
 title('Velocity time domain de-aliased (m s^{-1})')
 
-s4=subplot(4,1,4);
-surf(timeBeams,asl./1000,velAirAll,'edgecolor','none');
+s3=subplot(4,1,3);
+surf(timeBeams,asl./1000,velDeAliasedSDall,'edgecolor','none');
 view(2);
 ylabel('Range (km)');
-%caxis([-16 16]);
+caxis([-16 16]);
 ylim([0 ylimUpper]);
 xlim([timeBeams(1),timeBeams(end)]);
 colorbar
 grid on
 box on
-title('Velocity time domain de-aliased (m s^{-1})')
+title('Velocity spectral domain de-aliased (m s^{-1})')
 
-linkaxes([s1 s2],'xy')
+s4=subplot(4,1,4);
+surf(timeBeams,asl./1000,velAirAll,'edgecolor','none');
+view(2);
+ylabel('Range (km)');
+caxis([-16 16]);
+ylim([0 ylimUpper]);
+xlim([timeBeams(1),timeBeams(end)]);
+colorbar
+grid on
+box on
+title('Air velocity de-aliased (m s^{-1})')
+
+linkaxes([s1 s2 s3 s4],'xy')
 
 set(gcf,'PaperPositionMode','auto')
 print(f1,[figdir,project,'_airVel_',datestr(timeBeams(1),'yyyymmdd_HHMMSS'),'_to_',datestr(timeBeams(end),'yyyymmdd_HHMMSS')],'-dpng','-r0');
