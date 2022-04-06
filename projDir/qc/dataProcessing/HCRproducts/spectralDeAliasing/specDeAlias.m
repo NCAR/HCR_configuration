@@ -53,7 +53,7 @@ powerSpecLarge=powerSpecLarge(:,sampleNum+1:end-sampleNum);
 %minInds=findMinInds(powerSpecSmooth,maskSpec);
 maxInds=findMaxInds(powerSpecSmooth,maskSpec);
 
-plotYes=1;
+plotYes=0;
 if plotYes
     f1 = figure('Position',[100 500 1000 1100],'DefaultAxesFontSize',12);
     colormap jet
