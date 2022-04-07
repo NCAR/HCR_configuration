@@ -31,7 +31,7 @@ for ii=1:length(airVel)
 
     locsMin=cat(2,1+round(sampleNum/20),locsMin,length(powerLine)-round(sampleNum/20));
 
-    noisePower=powerRaw;
+    noisePower=powerLine;
 
     if ~isempty(locsMax)
         peakPower=powerLine(locsMax);
@@ -62,10 +62,6 @@ for ii=1:length(airVel)
     powerFilt=powerLine;
     noisePerc=prctile(noisePower,90);
 
-%     noiseMed=median(noisePower,'omitnan');
-%     noiseStd=std(noisePower,'omitnan');
-%     powerFilt(powerLine<noiseMed+noiseStd)=nan;
-
     powerFilt(powerLine<noisePerc)=nan;
 
     lineMask=~isnan(powerFilt);
@@ -81,8 +77,8 @@ for ii=1:length(airVel)
     airInd=min(find(~isnan(powerFilt)));
     
     % Calculate air velocity and tracer reflectivity
-    if ~isnan(airInd)
-        airVel(ii)=lambda/(4*pi*prt)*phaseAdj(ii,airInd);
+    if ~isempty(airInd)
+        airVel(ii)=lambda/(4*pi*prt)*thisPhase(airInd);
 
         % SNR
         powerLin=10^(powerFilt(airInd)/10);

@@ -42,7 +42,7 @@ checkFold=[2,4,6];
 
 for jj=1:3
     deAliasMask(phaseDiff>checkFold(jj)*pi-pi)=jj;
-    deAliasMask(phaseDiff<-(checkFold(jj)*pi+pi))=-jj;
+    deAliasMask(phaseDiff<-(checkFold(jj)*pi-pi))=-jj;
 end
 
 adjMax=maxInds+deAliasMask*sampleNum;

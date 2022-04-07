@@ -40,7 +40,7 @@ dbz1km_v=-23.8657;
 noise_v=-61.301;
 
 %% Loop through files
-for jj=1:length(fileList)
+for jj=4:length(fileList)
     infile=fileList{jj};
 
     disp(infile);
