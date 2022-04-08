@@ -5,7 +5,7 @@ clear all
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-figdir=['/scr/snow2/rsfdata/projects/socrates/hcr/qc3/cfradial/hcr_hsrl_merge/v3.0/pidPlotsComb/paperFigs/'];
+figdir=['/scr/snow2/rsfdata/projects/socrates/hcr/qc3/cfradial/hcr_hsrl_merge/v3.0_full/pidPlotsComb/paperFigs/'];
 
 memCoeffsComb
 
@@ -198,7 +198,7 @@ for ii=1:length(fieldsIn)
     plot(dbz1.(fieldsIn{ii})(:,1),dbz1.(fieldsIn{ii})(:,2)+offset(ii),'-','color',colorsPlot(ii,:),'linewidth',2);
 end
 
-legend('Rain','Drizzle','Cloud drops','Mixed phase','Large frozen','Small frozen',...
+legend('Rain','Drizzle','Cloud drops','Melting','Large frozen','Small frozen',...
     'orientation','horizontal','location','northoutside','FontSize',10);
 
 s1.Position=[0.025 0.88 0.95 0.11];

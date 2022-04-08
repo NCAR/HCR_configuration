@@ -1,4 +1,4 @@
-function [airVel,traceRefl]=getAirVel(powerAdj,phaseAdj,sampleNum,lambda,prt,range,dbz1km,noiseIn)
+function [airVel,traceRefl]=getAirVel(powerAdj,phaseAdj,elev,sampleNum,lambda,prt,range,dbz1km,noiseIn)
 % Get air velocity from spectral data
 
 airVel=nan(size(powerAdj,1),1);
@@ -74,7 +74,11 @@ for ii=1:length(airVel)
         powerFilt(:)=nan;
     end
 
-    airInd=min(find(~isnan(powerFilt)));
+    if elev<0
+        airInd=min(find(~isnan(powerFilt)));
+    else
+        airInd=max(find(~isnan(powerFilt)));
+    end
     
     % Calculate air velocity and tracer reflectivity
     if ~isempty(airInd)

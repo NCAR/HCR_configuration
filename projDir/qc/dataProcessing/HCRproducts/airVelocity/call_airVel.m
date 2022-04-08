@@ -11,6 +11,7 @@ freqData='dummy';
 qcVersion='dummy';
 
 fileList={'20210529_191100_-89.99_229.66.nc';
+    '20210601_194538_-89.95_85.15.nc';
     '20210621_015305_-89.93_353.61.nc';
     '20210621_015437_-89.78_307.29.nc';
     '20210621_015840_89.94_315.84.nc'};
@@ -30,7 +31,6 @@ dataDir=HCRdir(project,quality,qcVersion,freqData);
 figdir=[dataDir,'figsAirVel/'];
 
 %% Radar variables
-
 freq=9.440617e+10;
 c=299792458;
 lambda=c/freq;
@@ -40,7 +40,7 @@ dbz1km_v=-23.8657;
 noise_v=-61.301;
 
 %% Loop through files
-for jj=4:length(fileList)
+for jj=1:length(fileList)
     infile=fileList{jj};
 
     disp(infile);
@@ -145,6 +145,7 @@ for jj=4:length(fileList)
 
         if data.elevation(startInd)>0
             velDeAliased=-velDeAliased;
+            velRay=-velRay;
         end
 
         % Add to output
@@ -160,11 +161,9 @@ for jj=4:length(fileList)
 
         powerShifted=fftshift(powerSignal,2);
 
-        % If nadir, reverse to get positive down
-        if data.elevation(startInd)<0
-            powerShifted=fliplr(powerShifted);
-        end
-
+        % Reverse to get pointing direction consistent
+        powerShifted=fliplr(powerShifted);
+        
         powerSpec=10*log10(powerShifted);
 
         %% De-alias in spectral domain
@@ -176,7 +175,7 @@ for jj=4:length(fileList)
         %prtThis=mean(prt(startInd:endInd));
         prtThis=prt;
 
-        [powerAdj,phaseAdj]=specPowerDeAlias(powerSpec,velDeAliased,sampleNum,prtThis,lambda,data.range,velMasked);
+        [powerAdj,phaseAdj]=specPowerDeAlias(powerSpec,velDeAliased,sampleNum,prtThis,lambda,data.range,velRay);
 
         %% De-aliased velocity in spectral domain
 
@@ -192,7 +191,7 @@ for jj=4:length(fileList)
 
         %% Air velocity
 
-        [velAir,traceRefl]=getAirVel(powerAdj,phaseAdj,sampleNum,lambda,prtThis,data.range,dbz1km_v,noise_v);
+        [velAir,traceRefl]=getAirVel(powerAdj,phaseAdj,data.elevation(startInd),sampleNum,lambda,prtThis,data.range,dbz1km_v,noise_v);
 
         traceReflAll(:,ii)=traceRefl;
         velAirAll(:,ii)=velAir;
