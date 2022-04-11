@@ -50,7 +50,9 @@ end
 %% HCR data
 figdir=['/scr/snow2/rsfdata/projects/socrates/hcr/qc3/cfradial/hcr_hsrl_merge/v3.0_full/pidPlotsComb/paperFigs/'];
 
-cscale_hcr=[1,0,0; 1,0.6,0.47; 0,1,0; 0,0.7,0; 0,0,1; 1,0,1; 0.5,0,0; 1,1,0; 0,1,1; 0,0,0; 0.5,0.5,0.5];
+%cscale_hcr=[1,0,0; 1,0.6,0.47; 0,1,0; 0,0.7,0; 0,0,1; 1,0,1; 0.5,0,0; 1,1,0; 0,1,1; 0,0,0; 0.5,0.5,0.5];
+cscale_hcr=[255,0,0; 255,204,204; 249,163,25; 255,240,60; 136,34,85; 255,0,255; 17,170,51; 0,0,255; 0,255,255; 0,0,0; 150,150,150];
+cscale_hcr=cscale_hcr./255;
 units_str_hcr={'Rain','SC Rain','Drizzle','SC Drizzle','Cloud Liquid','SC Cloud Liq.',...
     'Melting','Large Frozen','Small Frozen','Precip','Cloud'};
 
@@ -103,6 +105,7 @@ data=[];
 
 data.HCR_DBZ = [];
 data.PID=[];
+data.HSRL_Aerosol_Backscatter_Coefficient=[];
 
 dataVars=fieldnames(data);
 
@@ -212,7 +215,7 @@ close all
 ylims=[0 1.6];
 
 wi=10;
-hi=7;
+hi=9.3;
 
 fig1=figure('DefaultAxesFontSize',11,'DefaultFigurePaperType','<custom>','units','inch','position',[3,100,wi,hi]);
 fig1.PaperPositionMode = 'manual';
@@ -225,7 +228,7 @@ fig1.InvertHardcopy = 'off';
 
 set(fig1,'color','w');
 
-s1=subplot(3,1,1);
+s1=subplot(4,1,1);
 
 colormap jet
 
@@ -246,18 +249,42 @@ text(startTime+seconds(60),ylims(2)-0.11,'(a) DBZ (dBZ)',...
 l1=plot(data.time,data.altitude./1000,'-k','linewidth',2);
 legend(l1,'Aircraft altitude');
 
-s2=subplot(3,1,2);
+s2=subplot(4,1,2);
+
+colormap jet
+
+data.HSRL_Aerosol_Backscatter_Coefficient(isnan(data.HCR_DBZ))=nan;
+data.HSRL_Aerosol_Backscatter_Coefficient(data.HSRL_Aerosol_Backscatter_Coefficient<9.9e-9)=nan;
+
+hold on
+surf(data.time,data.asl./1000,log10(data.HSRL_Aerosol_Backscatter_Coefficient),'edgecolor','none');
+view(2);
+ylabel('Altitude (km)');
+caxis([-9 0]);
+ylim(ylims);
+xlim([data.time(1),data.time(end)]);
+s2.XTickLabel=[];
+cb2=colorbar;
+grid on
+box on
+text(startTime+seconds(60),ylims(2)-0.11,'(b) log10(HSRL BACKSCAT) (m^{-1} sr^{-1})',...
+    'fontsize',11,'fontweight','bold','BackgroundColor','w','Margin',0.5);
+%title('Reflectivity (dBZ)')
+l1=plot(data.time,data.altitude./1000,'-k','linewidth',2);
+legend(l1,'Aircraft altitude');
+
+s3=subplot(4,1,3);
 
 hold on
 surf(data.time,data.asl./1000,data.PID,'edgecolor','none');
 view(2);
-colormap(s2,cscale_hcr);
-cb2=colorbar;
-cb2.Ticks=1:11;
-cb2.TickLabels=units_str_hcr;
+colormap(s3,cscale_hcr);
+cb3=colorbar;
+cb3.Ticks=1:11;
+cb3.TickLabels=units_str_hcr;
 ylabel('Altitude (km)');
 %title(['HCR particle ID']);
-text(startTime+seconds(60),ylims(2)-0.11,'(b) PID',...
+text(startTime+seconds(60),ylims(2)-0.11,'(c) PID',...
     'fontsize',11,'fontweight','bold','BackgroundColor','w','Margin',0.5);
 
 l1=plot(data.time,data.altitude./1000,'-k','linewidth',2);
@@ -266,33 +293,33 @@ legend(l1,'Aircraft altitude');
 caxis([.5 11.5]);
 ylim(ylims);
 xlim([data.time(1),data.time(end)]);
-s2.XTickLabel=[];
+s3.XTickLabel=[];
 
 grid on
 box on
 
 % Dummy for colorbar
+s5=subplot(5,1,5);
+
+colormap(s5,colmapL(2:end,:));
+cb5=colorbar;
+cb5.Title.String='Liq. frac.       ';
+cb5.Ticks=[0 0.5 1];
+s5.Position=[5 0.451 0.79 0.13];
+
 s4=subplot(4,1,4);
-
-colormap(s4,colmapL(2:end,:));
-cb4=colorbar;
-cb4.Title.String='Liq. frac.       ';
-cb4.Ticks=[0 0.5 1];
-s4.Position=[5 0.451 0.79 0.13];
-
-s3=subplot(3,1,3);
 
 hold on
 surf(data.time,data.asl./1000,pidSimp,'edgecolor','none');
 view(2);
-colormap(s3,flipud(cscale_hcr_2));
-cb3=colorbar;
-cb3.Ticks=1:3;
-cb3.TickLabels=units_str_hcr_2;
-cb3.Title.String=' PID';
+colormap(s4,flipud(cscale_hcr_2));
+cb4=colorbar;
+cb4.Ticks=1:3;
+cb4.TickLabels=units_str_hcr_2;
+cb4.Title.String=' PID';
 ylabel('Altitude (km)');
 %title(['HCR particle ID']);
-text(startTime+seconds(60),ylims(2)-0.11,'(c) Simplified PID and UWILD liquid fraction',...
+text(startTime+seconds(60),ylims(2)-0.11,'(d) Simplified PID and UWILD liquid fraction',...
     'fontsize',11,'fontweight','bold','BackgroundColor','w','Margin',0.5);
 
 scatter(ptime,ttSync.Var1./1000,20,col1DL,'filled');
@@ -305,20 +332,24 @@ xlim([data.time(1),data.time(end)]);
 grid on
 box on
 
-s1.Position=[0.065 0.7 0.76 0.28];
-cb1.Position=[0.84 0.7 0.023 0.28];
+s1.Position=[0.065 0.767 0.775 0.23];
+cb1.Position=[0.85 0.767 0.023 0.23];
 cb1.FontSize=9;
 
-s2.Position=[0.065 0.39 0.76 0.28];
-cb2.Position=[0.84 0.39 0.023 0.28];
+s2.Position=[0.065 0.527 0.775 0.23];
+cb2.Position=[0.85 0.527 0.023 0.23];
 cb2.FontSize=9;
 
-s3.Position=[0.065 0.08 0.76 0.28];
-cb3.Position=[0.91 0.08 0.023 0.25];
+s3.Position=[0.065 0.287 0.775 0.23];
+cb3.Position=[0.85 0.287 0.023 0.23];
 cb3.FontSize=9;
 
-cb4.Position=[0.87 0.08 0.023 0.25];
+s4.Position=[0.065 0.047 0.775 0.23];
+cb4.Position=[0.92 0.047 0.023 0.21];
 cb4.FontSize=9;
+
+cb5.Position=[0.88 0.047 0.023 0.21];
+cb5.FontSize=9;
 
 set(gcf,'PaperPositionMode','auto')
 print(fig1,[figdir,'pidUW.png'],'-dpng','-r0')

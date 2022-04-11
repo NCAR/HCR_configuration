@@ -58,7 +58,9 @@ close all
 
 fieldsIn=fields(dbz);
 
-colorsPlot=[1,0,0;0,1,0;0,0,1;0.5,0,0;1,1,0;0,1,1];
+%colorsPlot=[1,0,0;0,1,0;0,0,1;0.5,0,0;1,1,0;0,1,1];
+colorsPlot=[255,0,0; 249,163,25; 136,34,85; 17,170,51; 0,0,255; 0,255,255];
+colorsPlot=colorsPlot./255;
 
 wi=8;
 hi=9;

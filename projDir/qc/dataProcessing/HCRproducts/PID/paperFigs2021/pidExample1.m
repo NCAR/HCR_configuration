@@ -52,7 +52,17 @@ data.HSRL_Aerosol_Backscatter_Coefficient(data.HSRL_Aerosol_Backscatter_Coeffici
 data.HSRL_Particle_Linear_Depolarization_Ratio(data.HSRL_Aerosol_Backscatter_Coefficient<9.9e-9)=nan;
 
 %% Scales and units
-cscale_hcr=[1,0,0; 1,0.6,0.47; 0,1,0; 0,0.7,0; 0,0,1; 1,0,1; 0.5,0,0; 1,1,0; 0,1,1; 0,0,0; 0.5,0.5,0.5];
+%cscale_hcr=[1,0,0; 1,0.6,0.47; 0,1,0; 0,0.7,0; 0,0,1; 1,0,1; 0.5,0,0; 1,1,0; 0,1,1; 0,0,0; 0.5,0.5,0.5];
+
+%cscale_hcr=[1,0,0; 1,0,1; 0.98,0.64,0.1; 1,1,0; 0.1,0.6,0.1; 0,1,0; 0.6,0.4,0.1; 0,0,1; 0,1,1; 0,0,0; 0.4,0.5,0.5];
+
+%cscale_hcr=[1,0,0; 1,0,1; 0.98,0.64,0.1; 1,1,0; 0.1,0.6,0.1; 0,1,0; 0.6,0.4,0.1; 0,0,1; 0,1,1; 0,0,0; 0.4,0.5,0.5];
+
+%cscale_hcr=[255,0,0; 238,153,170; 249,163,25; 255,255,0; 153,119,0; 221,204,119; 17,119,51; 0,0,255; 0,255,255; 0,0,0; 150,150,150];
+
+cscale_hcr=[255,0,0; 255,204,204; 249,163,25; 255,240,60; 136,34,85; 255,0,255; 17,170,51; 0,0,255; 0,255,255; 0,0,0; 150,150,150];
+
+cscale_hcr=cscale_hcr./255;
 
 units_str_hcr={'Rain','SC Rain','Drizzle','SC Drizzle','Cloud Liquid','SC Cloud Liq.',...
     'Melting','Large Frozen','Small Frozen','Precip','Cloud'};

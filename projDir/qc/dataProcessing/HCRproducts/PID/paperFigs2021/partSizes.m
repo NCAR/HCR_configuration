@@ -3,14 +3,18 @@
 clear all
 close all
 
-figdir=['/scr/snow2/rsfdata/projects/socrates/hcr/qc3/cfradial/hcr_hsrl_merge/v3.0/pidPlotsComb/paperFigs/'];
-indir='/scr/snow2/rsfdata/projects/socrates/hcr/qc3/cfradial/hcr_hsrl_merge/v3.0/pidPlotsComb/comparePID_UW_largest_all/';
+figdir=['/scr/snow2/rsfdata/projects/socrates/hcr/qc3/cfradial/hcr_hsrl_merge/v3.0_full/pidPlotsComb/paperFigs/'];
+indir='/scr/snow2/rsfdata/projects/socrates/hcr/qc3/cfradial/hcr_hsrl_merge/v3.0_full/pidPlotsComb/comparePID_UW_largest_all/';
 
 sizes=load([indir,'sizes.mat']);
 pidSize=sizes.pidSize;
 pidStd=sizes.pidStd;
 
-cscale_hcr=[1,0,0; 1,0.6,0.47; 0,1,0; 0,0.7,0; 0,0,1; 1,0,1; 0.5,0,0; 1,1,0; 0,1,1; 0,0,0; 0.5,0.5,0.5];
+%cscale_hcr=[1,0,0; 1,0.6,0.47; 0,1,0; 0,0.7,0; 0,0,1; 1,0,1; 0.5,0,0; 1,1,0; 0,1,1; 0,0,0; 0.5,0.5,0.5];
+cscale_hcr=[255,0,0; 255,204,204; 249,163,25; 255,240,60; 136,34,85; 255,0,255; 17,170,51; 0,0,255; 0,255,255; 0,0,0; 150,150,150];
+
+cscale_hcr=cscale_hcr./255;
+
 units_str_hcr={'Rain','SC Rain','Drizzle','SC Drizzle','Cloud Liquid','SC Cloud Liquid',...
     'Melting','Large Frozen','Small Frozen','Precip','Cloud'};
 

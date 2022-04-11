@@ -11,9 +11,10 @@ qcVersion='v3.0';
 freqData='combined'; % 10hz, 100hz, 2hz, or combined
 whichModel='era5';
 
-largeUW=0; % Set to 1 when we want to use only larges particles up to minPixNumUW
+largeUW=1; % Set to 1 when we want to use only larges particles up to minPixNumUW (default is 20)
 smallUW=0; % Set to 1 when we want to use only smallest particles up to minPixNumUW
-minPixNumUW=20;
+minUW=0;
+minPixNumUW=20; % 20 is default
 
 coldOnly=0; % Set to 1 when only cold region is desired
 
@@ -22,9 +23,9 @@ HCRtimePix=4;
 minPixNumHCR=14;
 
 processHCR=0;
-processHSRL=1;
+processHSRL=0;
 processOverlap=0;
-processAll=0;
+processAll=1;
 
 plotOn=0;
 showPlot='off';
@@ -34,7 +35,7 @@ addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
 indir=HCRdir(project,quality,qcVersion,freqData);
 
-figdir=[indir(1:end-4),'pidPlotsComb/comparePID_UW_V2_hsrl/'];
+figdir=[indir(1:end-4),'pidPlotsComb/comparePID_UW_V2_largest_all_20UWparts/'];
 
 removeTimesIn=table2array(readtable('/git/HCR_configuration/projDir/qc/dataProcessing/HCRproducts/caseFiles/pid_socrates.txt'));
 removeStart=datetime(removeTimesIn(:,1),removeTimesIn(:,2),removeTimesIn(:,3),...
@@ -241,6 +242,9 @@ for aa=1:14
             indMat(cumSumAllBack<minPixNumUW)=nan;
 
             rowsGood=max(indMat,[],1,'omitnan');
+        elseif minUW
+            rowsGood=ones(1,size(countAll,2));
+            rowsGood(sumAll<20)=nan;
         else
             rowsGood=ones(1,size(countAll,2));
             rowsGood(sumAll==0)=nan;
@@ -434,7 +438,7 @@ liqFracHCRall=outTableAll.numLiqHCR./outTableAll.numAllHCR;
 
 liqFracPallL=outTableAll.numLiqLargestP./outTableAll.numAllLargestP;
 
-corrCoeffL=corrcoef(liqFracPallL,liqFracHCRall,'Rows','complete');
+[corrCoeffL,Pval,LR,LU]=corrcoef(liqFracPallL,liqFracHCRall,'Rows','complete');
 
 %% Hit miss table 1
 
