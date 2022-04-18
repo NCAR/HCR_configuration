@@ -119,6 +119,8 @@ elseif strcmp(project,'otrec')
             disp('The requested data does not exist.');
             return
         end
+    elseif strcmp(qc,'ts')
+        indir='/scr/sleet2/rsfdata/projects/otrec/hcr/time_series_netcdf/';
     end
 
     %% SPICULE
