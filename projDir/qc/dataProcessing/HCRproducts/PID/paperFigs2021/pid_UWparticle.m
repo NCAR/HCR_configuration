@@ -352,4 +352,5 @@ cb5.Position=[0.88 0.047 0.023 0.21];
 cb5.FontSize=9;
 
 set(gcf,'PaperPositionMode','auto')
-print(fig1,[figdir,'pidUW.png'],'-dpng','-r0')
+%print(fig1,[figdir,'pidUW.png'],'-dpng','-r0')
+print(fig1,[figdir,'pidUW.tif'],'-dtiffn','-r0')

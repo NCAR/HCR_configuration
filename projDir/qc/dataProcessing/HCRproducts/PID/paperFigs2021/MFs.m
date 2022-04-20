@@ -218,4 +218,5 @@ s6.Position=[0.025 0.074 0.95 0.11];
 s7.Position=[0.025 -0.14 0.95 0.13];
 
 set(gcf,'PaperPositionMode','auto')
-print(fig1,[figdir,'MFs.png'],'-dpng','-r0')
+%print(fig1,[figdir,'MFs.png'],'-dpng','-r0')
+print(fig1,[figdir,'MFs.tif'],'-dtiffn','-r0')

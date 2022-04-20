@@ -50,4 +50,5 @@ ylabel('Mean particle diameter (mm)');
 s1.Position=[0.11 0.16 0.86 0.81];
 
 set(gcf,'PaperPositionMode','auto')
-print(fig1,[figdir,'partSizes.png'],'-dpng','-r0')
+%print(fig1,[figdir,'partSizes.png'],'-dpng','-r0')
+print(fig1,[figdir,'partSizes.tif'],'-dtiffn','-r0')

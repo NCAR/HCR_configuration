@@ -67,4 +67,5 @@ text(1,66,['Liquid: ',num2str(cloudPerc,2),' %. Frozen: ',num2str(sFr,2),' %.'],
 s1.Position=[0.09 0.18 0.9 0.8];
 
 set(gcf,'PaperPositionMode','auto')
-print(fig1,[figdir,'lowRefl.png'],'-dpng','-r0')
+%print(fig1,[figdir,'lowRefl.png'],'-dpng','-r0')
+print(fig1,[figdir,'lowRefl.tif'],'-dtiffn','-r0')

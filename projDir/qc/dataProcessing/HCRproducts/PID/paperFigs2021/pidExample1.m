@@ -264,4 +264,5 @@ cb8.Position=[0.856 0.04 0.023 0.11];
 cb8.FontSize=9;
 
 set(gcf,'PaperPositionMode','auto')
-print(fig1,[figdir,'pidExample1.png'],'-dpng','-r0')
+%print(fig1,[figdir,'pidExample1.png'],'-dpng','-r0')
+print(fig1,[figdir,'pidExample1.tif'],'-dtiffn','-r0')

@@ -140,7 +140,8 @@ colorTitleHandle = get(cb,'Title');
 set(colorTitleHandle ,'String','%');
 
 set(gcf,'PaperPositionMode','auto')
-print(fig1,[figdir,'heatMap.png'],'-dpng','-r0')
+%print(fig1,[figdir,'heatMap.png'],'-dpng','-r0')
+print(fig1,[figdir,'heatMap.tif'],'-dtiffn','-r0')
 
 hitRate=0;
 
