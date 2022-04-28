@@ -147,24 +147,24 @@ for aa=25:length(caseStart)
     classSubPlot(classSub==34)=7;
     classSubPlot(classSub==36)=8;
     classSubPlot(classSub==38)=9;
-    
+
     % 1D
     stratConv1D=max(classSubPlot,[],1);
     time1D=data.time(~isnan(stratConv1D));
     stratConv1D=stratConv1D(~isnan(stratConv1D));
-        
+
     colmapSC=[0,0.1,0.6;
         0.38,0.42,0.96;
         0.65,0.74,0.86;
         0.32,0.78,0.59;
-        1,0,0;
+        0.7,0,0;
         1,0,1;
         1,1,0;
         0.99,0.77,0.22;
-        0.7,0,0];
-    
+        1,0,0];
+
     col1D=colmapSC(stratConv1D,:);
-        
+
     close all
     
     f1 = figure('Position',[200 500 1500 1100],'DefaultAxesFontSize',12,'visible',showPlot);
