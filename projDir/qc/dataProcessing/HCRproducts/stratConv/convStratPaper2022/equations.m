@@ -284,4 +284,4 @@ s4.Position=[0.58 0.37 0.35 0.24];
 s5.Position=[0.58 0.07 0.35 0.24];
 
 set(gcf,'PaperPositionMode','auto')
-print(fig1,[figdir,'equations.tif'],'-dtiffn','-r0')
+print(fig1,[figdir,'equations.png'],'-dpng','-r0')

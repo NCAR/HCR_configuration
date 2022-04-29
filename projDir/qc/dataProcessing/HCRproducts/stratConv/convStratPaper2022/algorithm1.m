@@ -128,4 +128,4 @@ cb4.Position=[0.94,0.245,0.02,0.17];
 cb5.Position=[0.94,0.055,0.02,0.17];
 
 set(gcf,'PaperPositionMode','auto')
-print(fig1,[figdir,'algorithm1.tif'],'-dtiffn','-r0')
+print(fig1,[figdir,'algorithm1.png'],'-dpng','-r0')

@@ -88,4 +88,4 @@ cb2.Position=[0.855,0.15,0.02,0.4];
 
 
 set(gcf,'PaperPositionMode','auto')
-print(fig1,[figdir,'algorithm2.tif'],'-dtiffn','-r0')
+print(fig1,[figdir,'algorithm2.png'],'-dpng','-r0')
