@@ -12,6 +12,10 @@ velMasked(:,data.elevation>0)=-velMasked(:,data.elevation>0);
 % Find cloud top vel
 cloudTopVel=nan(size(velMasked,2),1);
 for mm=1:size(velMasked,2)
+    if mm==151828
+        stophere=1;
+    end
+
     velCol=velMasked(:,mm);
     if all(isnan(velCol))
         continue
@@ -20,7 +24,7 @@ for mm=1:size(velMasked,2)
     % Find individual clouds
     cloudMask=~isnan(velCol);
     % Join clouds that are close
-    cloudMask=movmedian(cloudMask,7,'omitnan');
+    cloudMask=movmedian(cloudMask,9,'omitnan');
     % Remove small clouds
     cloudMask=bwareaopen(cloudMask,10);
     if sum(cloudMask)==0
@@ -43,7 +47,8 @@ for mm=1:size(velMasked,2)
         % Collect cloud top data
         if data.elevation(mm)<=0
             % Check if in cloud
-            if ~isnan(thisCloud(22))
+            %if ~isnan(thisCloud(22))
+            if ~isempty(intersect(clouds.PixelIdxList{nn},22))
                 continue
             end
             firstInd=min(find(~isnan(thisCloud)));
@@ -83,6 +88,12 @@ medCloudVelNadirInt=fillmissing(medCloudVelNadir,'linear','EndValues','nearest')
 cloudTopVelIndsZenith=intersect(cloudTopVelInds,cloudTopZenithInds);
 cloudTopVelOnlyZenith=nan(size(cloudTopVel));
 cloudTopVelOnlyZenith(cloudTopVelIndsZenith)=cloudTopVel(cloudTopVelIndsZenith);
+
+% Remove isolated
+ctvelz=movmean(cloudTopVelOnlyZenith,100,'omitnan');
+ctMask=~isnan(ctvelz);
+ctMask=bwareaopen(ctMask,180);
+cloudTopVelOnlyZenith(ctMask==0)=nan;
 
 medCloudVelZenith=movmedian(cloudTopVelOnlyZenith,smoothfactor*2,'omitnan');
 medCloudVelZenith(isnan(cloudTopVelOnlyZenith))=nan;
