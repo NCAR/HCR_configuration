@@ -252,6 +252,24 @@ refl(echoMask>0)=nan;
 goodInds=find(~isnan(refl));
 echoMask(goodInds)=1;
 
+%% Speckle (2)
+specCut=100;
+
+reflTemp=data.DBZ;
+reflTemp(echoMask>1)=nan;
+
+maskTemp=zeros(size(reflTemp));
+maskTemp(~isnan(reflTemp))=1;
+
+CC=bwconncomp(maskTemp);
+
+for ii=1:CC.NumObjects
+    area=CC.PixelIdxList{ii};
+    if length(area)<=specCut
+        echoMask(area)=2;
+    end
+end
+
 %% Extinct (3)
 maskTemp=flipud(echoMask);
 
@@ -278,7 +296,7 @@ noSurfInds(lowest==1)=0;
 
 noSurfInds(linAboveSurf<300)=0;
 noSurfInds(~isnan(outRangePix))=0;
-noSurfInds(data.elevation>0)=0;
+noSurfInds(data.elevation>-85)=0;
 noSurfCols=find(noSurfInds==1);
 
 for ii=1:length(noSurfCols)
@@ -289,24 +307,6 @@ for ii=1:length(noSurfCols)
     firstInd=nanCol(bigInd);
     maskTemp(1:firstInd,noSurfCols(ii))=3;
 end
-echoMask=flipud(maskTemp);
-
-%% Speckle (2)
-specCut=100;
-
-reflTemp=data.DBZ;
-reflTemp(echoMask>1)=nan;
-
-maskTemp=zeros(size(reflTemp));
-maskTemp(~isnan(reflTemp))=1;
-
-CC = bwconncomp(maskTemp);
-
-for ii=1:CC.NumObjects
-    area=CC.PixelIdxList{ii};
-    if length(area)<=specCut
-         echoMask(area)=2;
-    end
-end
-
+maskTemp=flipud(maskTemp);
+echoMask(isnan(echoMask))=maskTemp(isnan(echoMask));
 end
