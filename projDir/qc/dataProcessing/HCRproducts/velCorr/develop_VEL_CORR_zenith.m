@@ -16,7 +16,7 @@ caseList = table2array(readtable(infile));
 
 indir=HCRdir(project,quality,qcVersion,freqData);
 
-figdir='/scr/snow2/rsfdata/projects/socrates/hcr/qc3/cfradial/v3.0_full/velCorrZenithPlots/';
+figdir='/scr/snow2/rsfdata/projects/socrates/hcr/qc3/cfradial/v3.0_full/velCorrZenithPlots/wholeFlights/';
 
 polyTimePeriod=15; %Time period for poly fit in seconds
 polyOrder=3; % Order of polynomial fit

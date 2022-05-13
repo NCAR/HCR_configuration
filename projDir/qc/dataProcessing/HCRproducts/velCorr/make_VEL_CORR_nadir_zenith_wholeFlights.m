@@ -23,7 +23,7 @@ caseList = table2array(readtable(infile));
 %indir=HCRdir(project,quality,qcVersion,freqData);
 indir='/scr/snow2/rsfdata/projects/socrates/hcr/qc3/cfradial/v3.0_full/10hz/';
 
-figdir='/scr/snow2/rsfdata/projects/socrates/hcr/qc3/cfradial/v3.0_full/velCorrZenithPlots/';
+figdir='/scr/snow2/rsfdata/projects/socrates/hcr/qc3/cfradial/v3.0_full/velCorrZenithPlots/wholeFlights/';
 
 polyTimePeriod=15; %Time period for poly fit in seconds
 polyOrder=3; % Order of polynomial fit
@@ -101,7 +101,7 @@ for kk=1:size(caseList,1)
         if saveTime
             timeHCR=data.time;
             save([outdir,whichModel,'.time.',datestr(data.time(1),'YYYYmmDD_HHMMSS'),'_to_',...
-                datestr(data.time(end),'YYYYmmDD_HHMMSS'),'.Flight',num2str(ii),'.mat'],'timeHCR');
+                datestr(data.time(end),'YYYYmmDD_HHMMSS'),'.Flight',num2str(kk),'.mat'],'timeHCR');
         end
 
         %% Plot
