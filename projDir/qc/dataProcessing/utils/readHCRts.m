@@ -16,6 +16,7 @@ data.prt=ncread(file,'prt')';
 data.lambda=ncreadatt(file,'/','radar_wavelength_cm')/100;
 data.dbz1km_v=ncreadatt(file,'/','cal_base_dbz_1km_vc');
 data.noise_v=ncreadatt(file,'/','cal_noise_dbm_vc');
+data.rx_gain_v=ncreadatt(file,'/','cal_receiver_gain_db_vc');
 
 for ii=1:length(vars)
     data.(vars{ii})=ncread(file,(vars{ii}));

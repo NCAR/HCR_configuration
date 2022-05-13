@@ -80,30 +80,90 @@ for jj=4:length(fileList)
         winWeight=sampleNum/sum(win);
         winNorm=win*winWeight;
 
-        cIQv=winNorm'.*(data.IVc(:,startInd:endInd)+i*data.QVc(:,startInd:endInd));%./sqrt(sampleNum);
+        cIQv=winNorm'.*(data.IVc(:,startInd:endInd)+i*data.QVc(:,startInd:endInd))./sqrt(sampleNum);
 
         %prtThis=mean(prt(startInd:endInd));
-        prtThis=mode(data.prt);
+        prt=mode(data.prt);
 
-        cIQ=cIQv;%.*sqrt(size(cIQv,2));
+        %% FFT and spectra
 
-        R0=mean(real(cIQ).^2+imag(cIQ).^2,2);
-        R1=mean(cIQ(:,1:end-1).*conj(cIQ(:,2:end)),2);
-        R2=mean(cIQ(:,1:end-2).*conj(cIQ(:,3:end)),2);
-        R3=mean(cIQ(:,1:end-3).*conj(cIQ(:,4:end)),2);
-        R4=mean(cIQ(:,1:end-4).*conj(cIQ(:,5:end)),2);
-        
-        powerV(:,ii)=10*log10(R0)-data.rx_gain_v;
-        vel(:,ii)=data.lambda/(4*pi*prtThis)*angle(R1);
-        width(:,ii)=data.lambda/(2*pi*prtThis*6^.5)*abs(log(abs(R1./R2))).^0.5;
-        skew(:,ii)=abs(log(abs(R3./(R2.^3))));
-        kurt(:,ii)=abs(log(abs(R4./(R2.^2))));
+        fftIQ=fft(cIQv,[],2);
+
+        powerRealIn=real(fftIQ).^2;
+        powerImagIn=imag(fftIQ).^2;
+        powerSignal=powerRealIn+powerImagIn;
+
+        powerShifted=fftshift(powerSignal,2);
+
+        % Reverse to get pointing direction consistent
+        specLin=fliplr(powerShifted);
+
+        specVelVec=-pi:2*pi/(sampleNum-1):pi;
+
+        sumSpecLin=sum(specLin,2,'omitnan');
+        sumSpecPhase=sum(specLin.*specVelVec,2,'omitnan');
+        sumSpecPhase2=sum(specLin.*specVelVec.^2,2,'omitnan');
+
+        %%%%%%%%%%%%%%%%%%
+
+        % DBM
+        powerLin=mean(specLin,2);
+        powerV(:,ii)=10*log10(powerLin)-data.rx_gain_v;
+
+        % VEL
+        meanK=sumSpecPhase./sumSpecLin;
+        vel(:,ii)=data.lambda/(4*pi*prt).*meanK;
+
+        % WIDTH
+        varK=(sumSpecPhase2./sumSpecLin)-meanK.^2;
+        sdevK=sqrt(varK);
+        sdevK(varK<=0)=0.0001;
+        width(:,ii)=sdevK.*2./(data.lambda/(4*pi*prt));
 
         % SNR
         noiseLin=10.^(data.noise_v./10);
-        snrLin=(R0-noiseLin)./noiseLin;
+        snrLin=(powerLin-noiseLin)./noiseLin;
         snrLin(snrLin<0)=nan;
         snr(:,ii)=10*log10(snrLin);
+% 
+%         % DBZ
+%         range(range<0)=nan;
+%         moments.dbz=moments.snr+20*log10(range./1000)+dbz1km;
+% 
+% 
+%         specLin=10.^(powerSpec./10);
+% 
+%         sumSpecLin=sum(specLin,2,'omitnan');
+%         sumSpecPhase=sum(specLin.*phaseAdj,2,'omitnan');
+% 
+%         meanK=sumSpecPhase./sumSpecLin;
+%         vel(:,ii)=data.lambda/(4*pi*prtThis).*meanK;
+
+% 
+% 
+% 
+% 
+% 
+% 
+%         cIQ=cIQv;%.*sqrt(size(cIQv,2));
+% 
+%         R0=mean(real(cIQ).^2+imag(cIQ).^2,2);
+%         R1=mean(cIQ(:,1:end-1).*conj(cIQ(:,2:end)),2);
+%         R2=mean(cIQ(:,1:end-2).*conj(cIQ(:,3:end)),2);
+%         R3=mean(cIQ(:,1:end-3).*conj(cIQ(:,4:end)),2);
+%         R4=mean(cIQ(:,1:end-4).*conj(cIQ(:,5:end)),2);
+%         
+%         powerV(:,ii)=10*log10(R0)-data.rx_gain_v;
+%         vel(:,ii)=data.lambda/(4*pi*prtThis)*angle(R1);
+%         width(:,ii)=data.lambda/(2*pi*prtThis*6^.5)*abs(log(abs(R1./R2))).^0.5;
+%         skew(:,ii)=abs(log(abs(R3./(R2.^3))));
+%         kurt(:,ii)=abs(log(abs(R4./(R2.^2))));
+% 
+        % SNR
+%         noiseLin=10.^(data.noise_v./10);
+%         snrLin=(R0-noiseLin)./noiseLin;
+%         snrLin(snrLin<0)=nan;
+%         snr(:,ii)=10*log10(snrLin);
         
         % DBZ
         data.range(data.range<0)=nan;
@@ -212,41 +272,41 @@ for jj=4:length(fileList)
         set(gca, 'YDir','reverse');
     end
 
-    s6=subplot(4,2,6);
-
-    hold on
-    surf(timeBeams,data.range./1000,skew,'edgecolor','none');
-    view(2);
-    ylabel('Range (km)');
-    caxis([0 35]);
-    ylim([0 ylimUpper]);
-    xlim([timeBeams(1),timeBeams(end)]);
-    colorbar
-    grid on
-    title('Skew (dB)')
-    
-    if flipYes
-        set(gca, 'YDir','reverse');
-    end
-
-    s8=subplot(4,2,8);
-
-    hold on
-    surf(timeBeams,data.range./1000,kurt,'edgecolor','none');
-    view(2);
-    ylabel('Range (km)');
-    %caxis([-60 20]);
-    ylim([0 ylimUpper]);
-    xlim([timeBeams(1),timeBeams(end)]);
-    colorbar
-    grid on
-    title('Kurtosis (dB)')
-    
-    if flipYes
-        set(gca, 'YDir','reverse');
-    end
+%     s6=subplot(4,2,6);
+% 
+%     hold on
+%     surf(timeBeams,data.range./1000,skew,'edgecolor','none');
+%     view(2);
+%     ylabel('Range (km)');
+%     caxis([0 35]);
+%     ylim([0 ylimUpper]);
+%     xlim([timeBeams(1),timeBeams(end)]);
+%     colorbar
+%     grid on
+%     title('Skew (dB)')
+%     
+%     if flipYes
+%         set(gca, 'YDir','reverse');
+%     end
+% 
+%     s8=subplot(4,2,8);
+% 
+%     hold on
+%     surf(timeBeams,data.range./1000,kurt,'edgecolor','none');
+%     view(2);
+%     ylabel('Range (km)');
+%     caxis([0 20]);
+%     ylim([0 ylimUpper]);
+%     xlim([timeBeams(1),timeBeams(end)]);
+%     colorbar
+%     grid on
+%     title('Kurtosis (dB)')
+%     
+%     if flipYes
+%         set(gca, 'YDir','reverse');
+%     end
 
     set(gcf,'PaperPositionMode','auto')
-    print(f1,[figdir,project,'_moments_',datestr(data.time(1),'yyyymmdd_HHMMSS'),'_to_',datestr(data.time(end),'yyyymmdd_HHMMSS')],'-dpng','-r0');
+    print(f1,[figdir,project,'_momentsSpec_',datestr(data.time(1),'yyyymmdd_HHMMSS'),'_to_',datestr(data.time(end),'yyyymmdd_HHMMSS')],'-dpng','-r0');
 
 end
