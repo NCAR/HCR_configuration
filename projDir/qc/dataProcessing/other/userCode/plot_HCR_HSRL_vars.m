@@ -5,17 +5,17 @@ close all
 
 %% Input variables
 
-startTime=datetime(2018,1,29,1,10,0);
-endTime=datetime(2018,1,29,1,20,0);
+startTime=datetime(2021,6,21,1,53,5);
+endTime=datetime(2021,6,21,1,53,35);
 
-indir='/scr/snow2/rsfdata/projects/socrates/hcr/qc3/cfradial/hcr_hsrl_merge/v3.0/2hz/';
+indir='/scr/sleet2/rsfdata/projects/spicule/hcr/qc1/cfradial/v1.1_full/10hz/';
 
-ylimUpper=18;
+ylimUpper=5;
 
 % Variables to plot.
-plotVars={'HCR_DBZ','HSRL_Particle_Depolarization'};
+plotVars={'WIDTH'};
 
-saveFig=1; % Set to 1 to save the figure. Adjust outname and figdir below. 
+saveFig=0; % Set to 1 to save the figure. Adjust outname and figdir below. 
 if saveFig
     outname='examplePlot' % Figure name
     figdir=['.']; % Output directory
@@ -40,7 +40,7 @@ disp('Plotting ...');
 [fig,s]=do_plot_HCR_HSRL(data,ylimUpper);
 
 % Plot can be adjusted with the figure handle s.<variable_name>
-s.HCR_DBZ.CLim=[-60,20];
+s.WIDTH.CLim=[0,2];
 
 if saveFig
     set(gcf,'PaperPositionMode','auto')
