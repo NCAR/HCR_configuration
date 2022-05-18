@@ -9,14 +9,8 @@ quality='ts'; %field, qc1, or qc2
 freqData='dummy';
 qcVersion='dummy';
 
-fileList={'20210621_015305_-89.93_353.61.nc';
-    '20210529_191100_-89.99_229.66.nc';
-    '20210601_194538_-89.95_85.15.nc';
-    '20210621_015305_-89.93_353.61.nc';
-    '20210621_015437_-89.78_307.29.nc';
-    '20210621_015840_89.94_315.84.nc'};
-
-flipYes=1;
+fileList={'20210601_174228_89.97_114.90.nc';
+    '20210621_015305_-89.93_353.61.nc'};
 
 showPlot='on';
 
@@ -33,7 +27,7 @@ dataDir=HCRdir(project,quality,qcVersion,freqData);
 figdir=[dataDir,'figsTS/'];
 
 %% Loop through files
-for jj=4:length(fileList)
+for jj=1:length(fileList)
     infile=fileList{jj};
 
     disp(infile);
@@ -110,6 +104,12 @@ for jj=4:length(fileList)
         dbz(:,ii)=snr(:,ii)+20*log10(data.range./1000)+data.dbz1km_v;
         
         timeBeams=[timeBeams;data.time(startInd)];
+
+        if data.elevation(startInd)<0
+            flipYes=1;
+        else
+            flipYes=0;
+        end
 
         startInd=endInd+1;
         ii=ii+1;

@@ -9,14 +9,8 @@ quality='ts'; %field, qc1, or qc2
 freqData='dummy';
 qcVersion='dummy';
 
-fileList={'20210621_015305_-89.93_353.61.nc';
-    '20210529_191100_-89.99_229.66.nc';
-    '20210601_194538_-89.95_85.15.nc';
-    '20210621_015305_-89.93_353.61.nc';
-    '20210621_015437_-89.78_307.29.nc';
-    '20210621_015840_89.94_315.84.nc'};
-
-flipYes=1;
+fileList={'20210601_174228_89.97_114.90.nc';
+    '20210621_015305_-89.93_353.61.nc'};
 
 showPlot='on';
 
@@ -34,7 +28,7 @@ dataDir=HCRdir(project,quality,qcVersion,freqData);
 figdir=[dataDir,'figsTS/'];
 
 %% Loop through files
-for jj=4:length(fileList)
+for jj=1:length(fileList)
     infile=fileList{jj};
 
     disp(infile);
@@ -62,7 +56,7 @@ for jj=4:length(fileList)
     kurt=nan(size(data.range,1),beamNum);
 
     timeBeams=[];
-
+   
     startInd=1;
     endInd=1;
     ii=1;
@@ -140,8 +134,8 @@ for jj=4:length(fileList)
         vel(:,ii)=sum(specLin.*specVelVec,2,'omitnan')./sum(specLin,2,'omitnan');
 
         % WIDTH
-        width(:,ii)=sqrt(sum(specLin.*(specVelVec-vel(:,ii)).^2,2,'omitnan')./sum(specLin,2,'omitnan'));
-
+        width(:,ii)=(sum(specLin.*(specVelVec-vel(:,ii)).^2,2,'omitnan')./sum(specLin,2,'omitnan')).^0.5;
+        
         % SKEWNESS
         skew(:,ii)=sum(specLin.*(specVelVec-vel(:,ii)).^3,2,'omitnan')./(sum(specLin,2,'omitnan').*width(:,ii).^3);
 
@@ -149,6 +143,13 @@ for jj=4:length(fileList)
         kurt(:,ii)=sum(specLin.*(specVelVec-vel(:,ii)).^4,2,'omitnan')./(sum(specLin,2,'omitnan').*width(:,ii).^4);
 
         timeBeams=[timeBeams;data.time(startInd)];
+
+        if data.elevation(startInd)<0
+            flipYes=1;
+        else
+            flipYes=0;
+        end
+
         %% Plot
         if abs(etime(datevec(data.time(startInd)),datevec(datetime(2021,6,21,1,53,30))))<0.05
             powerSpec=10*log10(powerShifted);
@@ -157,7 +158,7 @@ for jj=4:length(fileList)
             plotRange=3;
             rangeInd=min(find((data.range./1000)>=plotRange));
             figure('Position',[200 500 800 1200],'DefaultAxesFontSize',12,'visible',showPlot);
-            plot(powerSpec(rangeInd,:),'-b','LineWidth',2);
+            plot(powerSpecNew(rangeInd,:),'-b','LineWidth',2);
             ylim([-80 -30])
 
             figure('Position',[200 500 800 1200],'DefaultAxesFontSize',12,'visible',showPlot);
@@ -185,7 +186,7 @@ for jj=4:length(fileList)
     end
    
     vel=vel.*data.lambda/(4*pi*prt);
-    
+       
     %% Plot
 
     disp('Plotting ...');
