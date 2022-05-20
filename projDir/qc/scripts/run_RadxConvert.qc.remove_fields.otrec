@@ -1,0 +1,64 @@
+#! /bin/csh -f
+
+# HCR QC processing
+#
+# Run RadxConvert to select desired fields, and trim out unwanted fields
+# Reads 10 hz data in CfRadial files, removed unwanted fields, and
+# writes 10hz CfRadial data
+
+source ~/git/HCR_configuration/projDir/system/params/project_info.otrec
+
+cd $PROJ_DIR/qc/params
+
+# flight by flight
+
+RadxConvert -params RadxConvert.qc.remove_fields -debug -start "2019 08 07 00 00 00" -end "2019 08 07 23 59 59" >& $LOG_DIR/RadxConvert.qc.remove_fields.otrec.20190807.log &
+
+RadxConvert -params RadxConvert.qc.remove_fields -debug -start "2019 08 11 00 00 00" -end "2019 08 11 23 59 59" >& $LOG_DIR/RadxConvert.qc.remove_fields.otrec.20190811.log &
+
+RadxConvert -params RadxConvert.qc.remove_fields -debug -start "2019 08 12 00 00 00" -end "2019 08 12 23 59 59" >& $LOG_DIR/RadxConvert.qc.remove_fields.otrec.20190812.log &
+
+RadxConvert -params RadxConvert.qc.remove_fields -debug -start "2019 08 16 00 00 00" -end "2019 08 16 23 59 59" >& $LOG_DIR/RadxConvert.qc.remove_fields.otrec.20190816.log &
+
+RadxConvert -params RadxConvert.qc.remove_fields -debug -start "2019 08 17 00 00 00" -end "2019 08 17 23 59 59" >& $LOG_DIR/RadxConvert.qc.remove_fields.otrec.20190817.log &
+
+RadxConvert -params RadxConvert.qc.remove_fields -debug -start "2019 08 18 00 00 00" -end "2019 08 18 23 59 59" >& $LOG_DIR/RadxConvert.qc.remove_fields.otrec.20190818.log &
+
+RadxConvert -params RadxConvert.qc.remove_fields -debug -start "2019 08 22 00 00 00" -end "2019 08 22 23 59 59" >& $LOG_DIR/RadxConvert.qc.remove_fields.otrec.20190822.log &
+
+RadxConvert -params RadxConvert.qc.remove_fields -debug -start "2019 08 23 00 00 00" -end "2019 08 23 23 59 59" >& $LOG_DIR/RadxConvert.qc.remove_fields.otrec.20190823.log &
+
+RadxConvert -params RadxConvert.qc.remove_fields -debug -start "2019 08 25 00 00 00" -end "2019 08 25 23 59 59" >& $LOG_DIR/RadxConvert.qc.remove_fields.otrec.20190825.log &
+
+RadxConvert -params RadxConvert.qc.remove_fields -debug -start "2019 09 03 00 00 00" -end "2019 09 03 23 59 59" >& $LOG_DIR/RadxConvert.qc.remove_fields.otrec.20190903.log &
+
+RadxConvert -params RadxConvert.qc.remove_fields -debug -start "2019 09 04 00 00 00" -end "2019 09 04 23 59 59" >& $LOG_DIR/RadxConvert.qc.remove_fields.otrec.20190904.log &
+
+RadxConvert -params RadxConvert.qc.remove_fields -debug -start "2019 09 09 00 00 00" -end "2019 09 09 23 59 59" >& $LOG_DIR/RadxConvert.qc.remove_fields.otrec.20190909.log &
+
+RadxConvert -params RadxConvert.qc.remove_fields -debug -start "2019 09 17 00 00 00" -end "2019 09 17 23 59 59" >& $LOG_DIR/RadxConvert.qc.remove_fields.otrec.20190917.log &
+
+RadxConvert -params RadxConvert.qc.remove_fields -debug -start "2019 09 21 00 00 00" -end "2019 09 21 23 59 59" >& $LOG_DIR/RadxConvert.qc.remove_fields.otrec.20190921.log &
+
+RadxConvert -params RadxConvert.qc.remove_fields -debug -start "2019 09 22 00 00 00" -end "2019 09 22 23 59 59" >& $LOG_DIR/RadxConvert.qc.remove_fields.otrec.20190922.log &
+
+RadxConvert -params RadxConvert.qc.remove_fields -debug -start "2019 09 24 00 00 00" -end "2019 09 24 23 59 59" >& $LOG_DIR/RadxConvert.qc.remove_fields.otrec.20190924.log &
+
+RadxConvert -params RadxConvert.qc.remove_fields -debug -start "2019 09 25 00 00 00" -end "2019 09 25 23 59 59" >& $LOG_DIR/RadxConvert.qc.remove_fields.otrec.20190925.log &
+
+RadxConvert -params RadxConvert.qc.remove_fields -debug -start "2019 09 27 00 00 00" -end "2019 09 27 23 59 59" >& $LOG_DIR/RadxConvert.qc.remove_fields.otrec.20190927.log &
+
+RadxConvert -params RadxConvert.qc.remove_fields -debug -start "2019 09 28 00 00 00" -end "2019 09 28 23 59 59" >& $LOG_DIR/RadxConvert.qc.remove_fields.otrec.20190928.log &
+
+RadxConvert -params RadxConvert.qc.remove_fields -debug -start "2019 09 30 00 00 00" -end "2019 09 30 23 59 59" >& $LOG_DIR/RadxConvert.qc.remove_fields.otrec.20190930.log &
+
+RadxConvert -params RadxConvert.qc.remove_fields -debug -start "2019 10 01 00 00 00" -end "2019 10 01 23 59 59" >& $LOG_DIR/RadxConvert.qc.remove_fields.otrec.20191001.log &
+
+RadxConvert -params RadxConvert.qc.remove_fields -debug -start "2019 10 02 00 00 00" -end "2019 10 02 23 59 59" >& $LOG_DIR/RadxConvert.qc.remove_fields.otrec.20191002.log &
+
+
+
+
+
+
+

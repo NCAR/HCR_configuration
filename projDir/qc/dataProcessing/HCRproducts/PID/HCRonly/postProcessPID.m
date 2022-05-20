@@ -16,4 +16,8 @@ idx = knnsearch([oldR oldC], [addR addC]);
 nearest_OldValue = classOut(sub2ind(size(classOut), oldR(idx), oldC(idx)));
 classOut(sub2ind(size(classOut), addR, addC))=nearest_OldValue;
 
+% Below -40 C temps
+% SC drizzle and and SC cloud liquid to small ice
+lowLiq=find(data.TEMP<-40 & (classOut==)
+
 end
