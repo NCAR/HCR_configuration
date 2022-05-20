@@ -5,9 +5,9 @@ close all
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-project='socrates'; %socrates, aristo, cset
+project='otrec'; %socrates, aristo, cset
 quality='qc3'; %field, qc1, or qc2
-qcVersion='v3.0';
+qcVersion='v3.1';
 freqData='10hz'; % 10hz, 100hz, 2hz, or combined
 
 plotIn.plotMR=0;
@@ -18,11 +18,7 @@ convThresh=4;
 whichFilter=0; % 0: no filter, 1: mode filter, 2: coherence filter
 postProcess=1; % 1 if post processing is desired
 
-if strcmp(project,'otrec')
-    indir='/scr/sleet2/rsfdata/projects/otrec/hcr/qc2/cfradial/development/pid/10hz/';
-elseif strcmp(project,'socrates')
-    indir=HCRdir(project,quality,qcVersion,freqData);
-end
+indir=HCRdir(project,quality,qcVersion,freqData);
 
 figdir=[indir(1:end-5),'pidPlots/cases/'];
 
