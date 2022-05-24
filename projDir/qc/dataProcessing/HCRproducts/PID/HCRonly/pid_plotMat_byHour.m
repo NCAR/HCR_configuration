@@ -5,10 +5,10 @@ close all;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Input variables %%%%%%%%%%%%%%%%%%%%%%%%%%
 
-project='spicule'; %socrates, aristo, cset, otrec
-quality='qc1'; %field, qc1, or qc2
+project='otrec'; %socrates, aristo, cset, otrec
+quality='qc3'; %field, qc1, or qc2
 freqData='10hz';
-qcVersion='v1.1';
+qcVersion='v3.1';
 whichModel='era5';
 
 if strcmp(project,'otrec')
@@ -17,7 +17,7 @@ else
     ylimUpper=12;
 end
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
@@ -50,9 +50,8 @@ for aa=1:size(caseList,1)
     
     data=[];
     
-    data.DBZ = [];
-    data.FLAG=[];
-        
+    data.DBZ_MASKED=[];
+            
     dataVars=fieldnames(data);
     
     % Load data
@@ -83,9 +82,7 @@ for aa=1:size(caseList,1)
     disp('Plotting ...');
     
     startPlot=startTime;
-       
-    data.DBZ(data.FLAG>1)=nan;
-    
+        
     while startPlot<endTime
         
         close all
@@ -94,7 +91,7 @@ for aa=1:size(caseList,1)
         timeInds=find(data.time>=startPlot & data.time<=endPlot);
         
         timePlot=data.time(timeInds);
-        dbzPlot=data.DBZ(:,timeInds);
+        dbzPlot=data.DBZ_MASKED(:,timeInds);
         
         if sum(sum(~isnan(dbzPlot)))~=0
             aslPlot=data.asl(:,timeInds);

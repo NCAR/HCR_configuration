@@ -29,7 +29,7 @@ infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_
 
 caseList = table2array(readtable(infile));
 
-for aa=1:size(caseList,1)
+for aa=2:size(caseList,1)
     disp(['Flight ',num2str(aa)]);
     disp('Loading data ...')
 
@@ -103,7 +103,7 @@ for aa=1:size(caseList,1)
 
     %% Set low DBZ to cloud liquid
 
-    pid_hcr(pid_hcr>9 & data.DBZ_MASKED<=-30)=3;
+    pid_hcr(pid_hcr>9 & data.DBZ_MASKED<=-30 & data.TEMP>-40)=3;
 
     %% Add supercooled
 

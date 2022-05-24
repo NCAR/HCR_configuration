@@ -110,7 +110,7 @@ for aa=1:length(caseStart)
 
         %% Set low DBZ to cloud liquid
 
-        pid_hcr(pid_hcr>9 & data.DBZ_MASKED<=-30)=3;
+        pid_hcr(pid_hcr>9 & data.DBZ_MASKED<=-30 & data.TEMP>-40)=3;
 
         %% Add supercooled
 
