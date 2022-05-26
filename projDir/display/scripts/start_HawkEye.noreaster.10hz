@@ -1,14 +1,25 @@
 #! /bin/csh
 
-rehash
+# basic setup
 
-setenv PROJ_DIR /opt/local/git/HCR_configuration/projDir
-setenv DATA_DIR /scr/snow2/rsfdata/projects
+# source /opt/local/git/HCR_configuration/projDir/system/params/project_info.noreaster
+
+# override proj dir
+
+# setenv PROJ_DIR /opt/local/git/HCR_configuration/projDir
+
+# echo "PROJ_DIR: ${PROJ_DIR}"
+
+setenv PROJ_DIR $HOME/git/HCR_configuration/projDir
+source $PROJ_DIR/system/params/project_info.noreaster
 cd $PROJ_DIR/display/params
 
+# set HAWKEYE = /opt/local/lrose/bin/HawkEye
+set HAWKEYE = HawkEye
+
 if ($#argv < 6) then
-  /opt/local/lrose/bin/HawkEye -params HawkEye.noreaster.10hz >& /dev/null &
+  $HAWKEYE -params HawkEye.noreaster.10hz -start_time "2015 02 02 19 00 00" >& /dev/null &
 else
-  /opt/local/lrose/bin/HawkEye -params HawkEye.noreaster.10hz -start_time "$1 $2 $3 $4 $5 $6" >& /dev/null &
+  $HAWKEYE -params HawkEye.noreaster.10hz -start_time "$1 $2 $3 $4 $5 $6" >& /dev/null &
 endif
 

@@ -70,7 +70,7 @@ register_with_procmap = FALSE;
 // Type: string
 //
 
-instance = "noreaster.10hz";
+instance = "hcr-cset.qc.final.10hz";
 
 //======================================================================
 //
@@ -190,7 +190,7 @@ begin_in_archive_mode = TRUE;
 // Type: string
 //
 
-archive_start_time = "2015 02 02 17 00 00";
+archive_start_time = "2015 07 01 17 30 00";
 
 ///////////// archive_time_span_secs //////////////////
 //
@@ -202,7 +202,7 @@ archive_start_time = "2015 02 02 17 00 00";
 // Type: double
 //
 
-archive_time_span_secs = 3600;
+archive_time_span_secs = 600;
 
 ///////////// archive_data_url ////////////////////////
 //
@@ -214,7 +214,7 @@ archive_time_span_secs = 3600;
 // Type: string
 //
 
-archive_data_url = "$(DATA_DIR)/noreaster/cfradial/moments/qcv1/10hz";
+archive_data_url = "/scr/snow2/rsfdata/projects/noreaster/hcr/qc/cfradial/v1.0_full/10hz";
 
 //======================================================================
 //
@@ -353,57 +353,30 @@ fields = {
   }
   ,
   {
-    label = "VEL_CORR_4",
-    raw_name = "VEL_CORR",
+    label = "VEL_RAW",
+    raw_name = "VEL_RAW",
     filtered_name = "",
     units = "m/s",
-    color_map = "vel_w_4.colors",
-    shortcut = "e"
-  }
-  ,
-  {
-    label = "VEL_4",
-    raw_name = "VEL",
-    filtered_name = "",
-    units = "m/s",
-    color_map = "vel_w_4.colors",
+    color_map = "hcr_vel_blueYellow.colors",
     shortcut = "1"
   }
   ,
   {
-    label = "VEL_RAW_4",
-    raw_name = "VEL_RAW",
-    filtered_name = "",
-    units = "m/s",
-    color_map = "vel_w_4.colors",
-    shortcut = "2"
-  }
-  ,
-  {
-    label = "VEL_CORR_8",
-    raw_name = "VEL_CORR",
-    filtered_name = "",
-    units = "m/s",
-    color_map = "vel_w_8.colors",
-    shortcut = "e"
-  }
-  ,
-  {
-    label = "VEL_8",
+    label = "VEL",
     raw_name = "VEL",
     filtered_name = "",
     units = "m/s",
-    color_map = "vel_w_8.colors",
-    shortcut = "3"
+    color_map = "hcr_vel_blueYellow.colors",
+    shortcut = "1"
   }
   ,
   {
-    label = "VEL_RAW_8",
-    raw_name = "VEL_RAW",
+    label = "VEL_CORR",
+    raw_name = "VEL_CORR",
     filtered_name = "",
     units = "m/s",
-    color_map = "vel_w_8.colors",
-    shortcut = "4"
+    color_map = "hcr_vel_blueYellow.colors",
+    shortcut = "2"
   }
   ,
   {
@@ -412,16 +385,34 @@ fields = {
     filtered_name = "",
     units = "m/s",
     color_map = "width_w.colors",
-    shortcut = "5"
+    shortcut = "9"
   }
   ,
   {
-    label = "SNRVC",
-    raw_name = "SNRVC",
+    label = "NCP",
+    raw_name = "NCP",
+    filtered_name = "",
+    units = "",
+    color_map = "ncp.colors",
+    shortcut = "e"
+  }
+  ,
+  {
+    label = "LDR",
+    raw_name = "LDR",
+    filtered_name = "",
+    units = "dB",
+    color_map = "ldr.colors",
+    shortcut = "f"
+  }
+  ,
+  {
+    label = "SNR",
+    raw_name = "SNR",
     filtered_name = "",
     units = "dB",
     color_map = "snr.colors",
-    shortcut = "8"
+    shortcut = "a"
   }
   ,
   {
@@ -430,25 +421,7 @@ fields = {
     filtered_name = "",
     units = "dB",
     color_map = "snr.colors",
-    shortcut = "9"
-  }
-  ,
-  {
-    label = "SNRVC_expand",
-    raw_name = "SNRVC",
-    filtered_name = "",
-    units = "dB",
-    color_map = "snr_-10_to_20.colors",
-    shortcut = "8"
-  }
-  ,
-  {
-    label = "SNRHX_expand",
-    raw_name = "SNRHX",
-    filtered_name = "",
-    units = "dB",
-    color_map = "snr_-10_to_20.colors",
-    shortcut = "9"
+    shortcut = "a"
   }
   ,
   {
@@ -467,60 +440,6 @@ fields = {
     units = "dBm",
     color_map = "dbm.colors",
     shortcut = "d"
-  }
-  ,
-  {
-    label = "DBMVC_expand",
-    raw_name = "DBMVC",
-    filtered_name = "",
-    units = "dBm",
-    color_map = "dbm_-110_to_080.colors",
-    shortcut = "c"
-  }
-  ,
-  {
-    label = "DBMHX_expand",
-    raw_name = "DBMHX",
-    filtered_name = "",
-    units = "dBm",
-    color_map = "dbm_-110_to_080.colors",
-    shortcut = "d"
-  }
-  ,
-  {
-    label = "NCP",
-    raw_name = "NCP",
-    filtered_name = "",
-    units = "",
-    color_map = "ncp.colors",
-    shortcut = "f"
-  }
-  ,
-  {
-    label = "LDR",
-    raw_name = "LDR",
-    filtered_name = "",
-    units = "dB",
-    color_map = "ldr.colors",
-    shortcut = "g"
-  }
-  ,
-  {
-    label = "LDR_expand",
-    raw_name = "LDR",
-    filtered_name = "",
-    units = "dB",
-    color_map = "ldr_-35_to_5.colors",
-    shortcut = "h"
-  }
-  ,
-  {
-    label = "LDR_expand2",
-    raw_name = "LDR",
-    filtered_name = "",
-    units = "dB",
-    color_map = "ldr_-35_to_-25.colors",
-    shortcut = "h"
   }
 };
 
@@ -565,7 +484,7 @@ use_field_label_in_title = FALSE;
 // Type: double
 //
 
-max_range_km = 150;
+max_range_km = 15;
 
 //======================================================================
 //
@@ -613,7 +532,7 @@ override_radar_name = TRUE;
 // Type: string
 //
 
-radar_name = "HCR-QCV1-10hz";
+radar_name = "HCR-10hz";
 
 ///////////// display_site_name ///////////////////////
 //
@@ -699,7 +618,7 @@ main_window_start_y = 100;
 // Type: int
 //
 
-color_scale_width = 50;
+color_scale_width = 90;
 
 ///////////// label_font_size /////////////////////////
 //
@@ -1088,7 +1007,7 @@ rhi_beam_queue_size = 360;
 // Type: double
 //
 
-bscan_time_span_secs = 300;
+bscan_time_span_secs = 600;
 
 ///////////// bscan_truncate_start_time ///////////////
 //
@@ -1192,7 +1111,7 @@ bscan_specify_range_limits = TRUE;
 // Type: double
 //
 
-bscan_min_range_km = 0;
+bscan_min_range_km = -0.5;
 
 ///////////// bscan_max_range_km //////////////////////
 //
@@ -1204,7 +1123,7 @@ bscan_min_range_km = 0;
 // Type: double
 //
 
-bscan_max_range_km = 25;
+bscan_max_range_km = 15;
 
 ///////////// bscan_min_altitude_km ///////////////////
 //
@@ -1214,7 +1133,7 @@ bscan_max_range_km = 25;
 // Type: double
 //
 
-bscan_min_altitude_km = -0.2;
+bscan_min_altitude_km = $(BSCAN_MIN_ALTITUDE_KM);
 
 ///////////// bscan_max_altitude_km ///////////////////
 //
@@ -1224,7 +1143,7 @@ bscan_min_altitude_km = -0.2;
 // Type: double
 //
 
-bscan_max_altitude_km = 13;
+bscan_max_altitude_km = $(BSCAN_MAX_ALTITUDE_KM);
 
 ///////////// bscan_altitude_in_feet //////////////////
 //
@@ -1385,7 +1304,7 @@ bscan_left_margin = 50;
 // Type: int
 //
 
-bscan_right_margin = 40;
+bscan_right_margin = 30;
 
 ///////////// bscan_axis_tick_len /////////////////////
 //
