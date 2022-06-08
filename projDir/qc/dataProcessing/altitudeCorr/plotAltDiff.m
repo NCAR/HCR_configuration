@@ -4,8 +4,8 @@ close all;
 
 addpath(genpath('/h/eol/romatsch/gitPriv/utils/'));
 
-project='otrec'; % socrates, cset, aristo, otrec
-quality='qc3'; % field, qc1, qc2
+project='noreaster'; % socrates, cset, aristo, otrec
+quality='qc2'; % field, qc1, qc2
 freqData='10hz';
 qcVersion='moments';
 
@@ -22,6 +22,10 @@ elseif strcmp(project,'cset')
     gvfiles=dir('/scr/snow2/rsfdata/projects/cset/GV/RF*.nc');
 elseif strcmp(project,'spicule')
     gvfiles=dir('/scr/sleet2/rsfdata/projects/spicule/GV/*rf*.nc');
+elseif strcmp(project,'noreaster')
+    gvfiles=dir('/scr/snow2/rsfdata/projects/noreaster/gv/*rf*.nc');
+    indir='/scr/snow2/rsfdata/projects/noreaster/hcr/qc2/cfradial/moments/10hz/';
+    %indir='/scr/snow2/rsfdata/projects/noreaster/hcr/cfradial/moments/orig/10hz/';
 end
 
 %% HCR

@@ -1,0 +1,26 @@
+#! /bin/csh -f
+
+# HCR QC processing
+#
+# Run RadxCalUpdate
+# Reads 100 hz data in CfRadial files, combines into 10 hz dwells
+# Writes 10hz CfRadial data
+
+source ~/git/HCR_configuration/projDir/system/params/project_info.noreaster
+
+cd $PROJ_DIR/qc/params
+
+# run for entire project
+
+#RadxCalUpdate -params RadxCalUpdate.qc.100hz -debug -start "2019 08 07 00 00 00" -end "2019 10 10 00 00 00" >& $LOG_DIR/RadxCalUpdate.qc.100hz.noreaster.log &
+
+#tail -f $LOG_DIR/RadxCalUpdate.qc.100hz.noreaster.log
+
+# run 1 day at a time, as separate processes
+
+foreach day ( 20150202 )
+  RadxCalUpdate -params RadxCalUpdate.qc.100hz.noreaster -debug -f ${DATA_DIR}/cfradial/moments/orig/100hz/${day}/cfrad*.nc >& $LOG_DIR/RadxCalUpdate.qc.100hz.noreaster.${day}.log &
+end
+
+
+

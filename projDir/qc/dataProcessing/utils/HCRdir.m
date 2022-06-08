@@ -140,6 +140,26 @@ elseif strcmp(project,'spicule')
     elseif strcmp(qc,'ts')
         indir='/scr/sleet2/rsfdata/projects/spicule/hcr/time_series_netcdf/';
     end
+
+    %% NOREASTER
+elseif strcmp(project,'noreaster')
+    if strcmp(qc,'field')
+        if strcmp(freq,'100hz') | strcmp(freq,'10hz')
+            indir=['/scr/snow2/rsfdata/projects/noreaster/hcr/cfradial/moments/orig/',freq,'/'];
+        end
+%     elseif strcmp(qc,'qc0')
+%         if strcmp(freq,'10hz')
+%             indir=['/scr/sleet2/rsfdata/projects/spicule/hcr/',qc,'/cfradial/',qcVersion,'/',freq,'/'];
+%         end
+    elseif strcmp(qc,'qc1')
+        if strcmp(freq,'100hz') | strcmp(freq,'10hz')
+            indir=['/scr/snow2/rsfdata/projects/noreaster/hcr/qc/cfradial/',qcVersion,'_full/',freq,'/'];
+        end
+    elseif strcmp(qc,'qc2')
+        if strcmp(freq,'100hz') | strcmp(freq,'10hz')
+            indir=['/scr/snow2/rsfdata/projects/noreaster/hcr/qc2/cfradial/',qcVersion,'_full/',freq,'/'];
+        end
+    end
 end
 
 end

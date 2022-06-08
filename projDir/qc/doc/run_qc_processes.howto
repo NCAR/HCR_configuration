@@ -203,6 +203,17 @@ Interpolate topography data
 # $PROJ_DIR/qc/dataProcessing/HCRproducts/topoData/cfradialTopo.m
 
 #################################################################
+# FLAG field and DBZ_masked
+# To create the flag field, run
+$PROJ_DIR/qc/dataProcessing/HCRproducts/flag/makeFlagField_wholeFlights.m
+
+# To add it to the cfradial files, run
+$PROJ_DIR/qc/dataProcessing/HCRproducts/flag/cfradialFlagfield.m
+
+# To add a DBZ field that has only cloud data, run
+$PROJ_DIR/qc/dataProcessing/HCRproducts/flag/cfradialDBZmasked.m
+
+#################################################################
 # VEL_CORR
 
 # Find out which poly order to use by running
@@ -219,15 +230,23 @@ $PROJ_DIR/qc/dataProcessing/HCRproducts/velCorr/plotVelCorr_findPoly.m
 $PROJ_DIR/qc/dataProcessing/HCRproducts/velCorr/cfradialVelCorr.m
 
 #################################################################
-# FLAG field and DBZ_masked
-# To create the flag field, run
-$PROJ_DIR/qc/dataProcessing/HCRproducts/flag/makeFlagField_wholeFlights.m
+# De-alias velocity
 
-# To add it to the cfradial files, run
-$PROJ_DIR/qc/dataProcessing/HCRproducts/flag/cfradialFlagfield.m
+# To de-alias velocity and mask out and non-cloud
+# data run
 
-# To add a DBZ field that has only cloud data, run
-$PROJ_DIR/qc/dataProcessing/HCRproducts/flag/cfradialDBZmasked.m
+$PROJ_DIR/qc/dataProcessing/HCRproducts/VELdeAliasing/call_VELdeAlias_wholeFlights.m
+
+# To add it to the dataset run
+$PROJ_DIR/qc/dataProcessing/HCRproducts/VELdeAliasing/cfradialVELunfolded.m
+
+#################################################################
+# Mask out non vertical angles in VEL
+
+# Velocity is not of much use when the pointing angle is not vertical.
+# To mask out non-vertical data run
+
+$PROJ_DIR/qc/dataProcessing/HCRproducts/flag/cfradialVELmasked.m
 
 #################################################################
 # Interpolate forecast or reanalysis data
@@ -256,25 +275,6 @@ $PROJ_DIR/qc/dataProcessing/other/filterHX/filterHX.m
 
 # To created corrected and masked LDR field, run
 $PROJ_DIR/qc/dataProcessing/other/filterHX/cfradialLDRmasked.m
-
-#################################################################
-# De-alias velocity
-
-# To de-alias velocity and mask out and non-cloud
-# data run
-
-$PROJ_DIR/qc/dataProcessing/HCRproducts/VELdeAliasing/call_VELdeAlias_wholeFlights.m
-
-# To add it to the dataset run
-$PROJ_DIR/qc/dataProcessing/HCRproducts/VELdeAliasing/cfradialVELunfolded.m
-
-#################################################################
-# Mask out non vertical angles in VEL
-
-# Velocity is not of much use when the pointing angle is not vertical.
-# To mask out non-vertical data run
-
-$PROJ_DIR/qc/dataProcessing/HCRproducts/flag/cfradialVELmasked.m
 
 #################################################################
 # Add melting layer

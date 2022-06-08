@@ -1,0 +1,10 @@
+#! /bin/csh
+
+# run the temperate vs gain analysis for HCR in noreaster
+
+source ~/git/HCR_configuration/projDir/system/params/project_info.noreaster
+cd $PROJ_DIR/qc/params
+
+HcrTempRxGain -params HcrTempRxGain.qc.noreaster -debug -start "2015 02 02 00 00 00" -end "2015 02 03 00 00 00" > $DATA_DIR/logs/HcrTempRxGain.qc.noreaster.log &
+
+tail -f $DATA_DIR/logs/HcrTempRxGain.qc.noreaster.log

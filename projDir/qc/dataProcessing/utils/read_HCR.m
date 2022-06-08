@@ -90,7 +90,7 @@ for jj=2:length(fileList)
                 temp=repmat(temp,1,timeLength);
             end
             try
-            indata.(allVars{ii})=cat(2,indata.(allVars{ii}),temp);
+                indata.(allVars{ii})=cat(2,indata.(allVars{ii}),temp);
             catch
                 stop1=1;
             end

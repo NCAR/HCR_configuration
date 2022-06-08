@@ -4,17 +4,16 @@ close all;
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-project='spicule'; % socrates, cset, aristo, otrec
+project='noreaster'; % socrates, cset, aristo, otrec
 quality='field'; % field, qc0, qc1, qc2
-qcVersion='v0.1';
+qcVersion=[];
 freq='10hz';
 
 infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_',project,'_data_TFRF.txt'];
 
 caseList = table2array(readtable(infile));
 
-%indir=HCRdir(project,quality,qcVersion,freq);
-indir='/scr/sleet2/rsfdata/projects/spicule/hcr/qc0/cfradial/moments/10hz/';
+indir=HCRdir(project,quality,qcVersion,freq);
 
 %% Run processing
 

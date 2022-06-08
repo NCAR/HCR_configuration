@@ -7,7 +7,7 @@ savefig=1;
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-project='cset'; % socrates, cset, aristo, otrec
+project='noreaster'; % socrates, cset, aristo, otrec
 quality='qc2'; % field, qc1, qc2
 freqData='10hz'; % 10hz, 100hz, or 2hz
 
