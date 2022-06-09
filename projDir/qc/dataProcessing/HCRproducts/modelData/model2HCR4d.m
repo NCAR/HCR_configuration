@@ -4,11 +4,13 @@ close all;
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-project='otrec'; % socrates, cset, aristo, otrec
-quality='qc3'; % field, qc0, qc1, qc2
-qcVersion='v3.0';
+project='noreaster'; % socrates, cset, aristo, otrec
+quality='qc2'; % field, qc0, qc1, qc2
+qcVersion='v2.0';
 freqData='10hz'; % 10hz, 100hz, or 2hz
 whichModel='era5'; % ecmwf or era5 or narr
+
+era5levelFiles=0;
 
 addTopo=0; % Set to 1 if topo data should be added and hasn't been added in separate script.
 getSST=1;
@@ -26,7 +28,7 @@ caseList = table2array(readtable(infile));
 indir=HCRdir(project,quality,qcVersion,freqData);
 
 %% Go through flights
-for ii=3:size(caseList,1)
+for ii=1:size(caseList,1)
     disp(['Flight ',num2str(ii)]);
     
     startTime=datetime(caseList(ii,1:6));
@@ -87,7 +89,11 @@ for ii=3:size(caseList,1)
     %% Model data
     disp('Getting model data ...');
     if strcmp(whichModel,'era5')
-        modelData=read_era5(modeldir,data.time(1),data.time(end),getSST);
+        if era5levelFiles
+            modelData=read_era5_levelFiles_uv1D(modeldir,data.time(1),data.time(end),getSST);
+        else
+            modelData=read_era5_oneFile(modeldir,data.time(1),data.time(end),getSST);
+        end
     elseif strcmp(whichModel,'ecmwf')
         modelData=read_ecmwf(modeldir,data.time(1),data.time(end),getSST);
     elseif strcmp(whichModel,'narr')
@@ -142,6 +148,8 @@ for ii=3:size(caseList,1)
     int.zHCR=[];
     int.pHCR=[];
     int.rhHCR=[];
+    int.uHCR=[];
+    int.vHCR=[];
     
     if strcmp(whichModel,'narr')
         
@@ -241,6 +249,12 @@ for ii=3:size(caseList,1)
             Vq = interpn(lonMat,latMat,timeMat,squeeze(modelData.rh(:,:,jj,:)),...
                 wrapTo360(data.longitude(timeInd)),data.latitude(timeInd),datenum(data.time(timeInd)));
             int.rhHCR=cat(1,int.rhHCR,Vq);
+            Vq = interpn(lonMat,latMat,timeMat,squeeze(modelData.u(:,:,jj,:)),...
+                wrapTo360(data.longitude(timeInd)),data.latitude(timeInd),datenum(data.time(timeInd)));
+            int.uHCR=cat(1,int.uHCR,Vq);
+            Vq = interpn(lonMat,latMat,timeMat,squeeze(modelData.v(:,:,jj,:)),...
+                wrapTo360(data.longitude(timeInd)),data.latitude(timeInd),datenum(data.time(timeInd)));
+            int.vHCR=cat(1,int.vHCR,Vq);
         end
         
         % 2D variables
@@ -355,6 +369,14 @@ for ii=3:size(caseList,1)
                 rhHCR=modelvar;
                 save([outdir,whichModel,'.',intFields{ll},'.',datestr(data.time(1),'YYYYmmDD_HHMMSS'),'_to_',...
                     datestr(data.time(end),'YYYYmmDD_HHMMSS'),'.Flight',num2str(ii),'.mat'],'rhHCR');
+            elseif strcmp(intFields{ll},'uHCR')
+                uHCR=modelvar;
+                save([outdir,whichModel,'.',intFields{ll},'.',datestr(data.time(1),'YYYYmmDD_HHMMSS'),'_to_',...
+                    datestr(data.time(end),'YYYYmmDD_HHMMSS'),'.Flight',num2str(ii),'.mat'],'uHCR');
+            elseif strcmp(intFields{ll},'vHCR')
+                vHCR=modelvar;
+                save([outdir,whichModel,'.',intFields{ll},'.',datestr(data.time(1),'YYYYmmDD_HHMMSS'),'_to_',...
+                    datestr(data.time(end),'YYYYmmDD_HHMMSS'),'.Flight',num2str(ii),'.mat'],'vHCR');
             end
         end
     end
@@ -368,15 +390,15 @@ for ii=3:size(caseList,1)
         save([outdir,whichModel,'.topo.',datestr(data.time(1),'YYYYmmDD_HHMMSS'),'_to_',...
             datestr(data.time(end),'YYYYmmDD_HHMMSS'),'.Flight',num2str(ii),'.mat'],'topo');
     end
-%     aslHCR=data.asl;
-%     save([outdir,whichModel,'.asl.',datestr(data.time(1),'YYYYmmDD_HHMMSS'),'_to_',...
-%         datestr(data.time(end),'YYYYmmDD_HHMMSS'),'.Flight',num2str(ii),'.mat'],'aslHCR');
-    uSurfHCR=surfData.uHCR;
-    save([outdir,whichModel,'.uSurf.',datestr(data.time(1),'YYYYmmDD_HHMMSS'),'_to_',...
-        datestr(data.time(end),'YYYYmmDD_HHMMSS'),'.Flight',num2str(ii),'.mat'],'uSurfHCR');
-    vSurfHCR=surfData.vHCR;
-    save([outdir,whichModel,'.vSurf.',datestr(data.time(1),'YYYYmmDD_HHMMSS'),'_to_',...
-        datestr(data.time(end),'YYYYmmDD_HHMMSS'),'.Flight',num2str(ii),'.mat'],'vSurfHCR');
+% %     aslHCR=data.asl;
+% %     save([outdir,whichModel,'.asl.',datestr(data.time(1),'YYYYmmDD_HHMMSS'),'_to_',...
+% %         datestr(data.time(end),'YYYYmmDD_HHMMSS'),'.Flight',num2str(ii),'.mat'],'aslHCR');
+%     uSurfHCR=surfData.uHCR;
+%     save([outdir,whichModel,'.uSurf.',datestr(data.time(1),'YYYYmmDD_HHMMSS'),'_to_',...
+%         datestr(data.time(end),'YYYYmmDD_HHMMSS'),'.Flight',num2str(ii),'.mat'],'uSurfHCR');
+%     vSurfHCR=surfData.vHCR;
+%     save([outdir,whichModel,'.vSurf.',datestr(data.time(1),'YYYYmmDD_HHMMSS'),'_to_',...
+%         datestr(data.time(end),'YYYYmmDD_HHMMSS'),'.Flight',num2str(ii),'.mat'],'vSurfHCR');
     if isfield(modelData,'sstSurf')
         sstHCR=surfData.sstHCR;
         save([outdir,whichModel,'.sst.',datestr(data.time(1),'YYYYmmDD_HHMMSS'),'_to_',...

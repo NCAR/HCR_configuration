@@ -506,6 +506,24 @@ fields = {
   }
   ,
   {
+    label = "U",
+    raw_name = "U",
+    filtered_name = "",
+    units = "m/s",
+    color_map = "hcr_uv.colors",
+    shortcut = "1"
+  }
+  ,
+  {
+    label = "V",
+    raw_name = "V",
+    filtered_name = "",
+    units = "m/s",
+    color_map = "hcr_uv.colors",
+    shortcut = "1"
+  }
+  ,
+  {
     label = "MELTING_LAYER",
     raw_name = "MELTING_LAYER",
     filtered_name = "",

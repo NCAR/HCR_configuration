@@ -4,9 +4,9 @@ close all;
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-project='otrec'; % socrates, cset, aristo, otrec
-quality='qc3'; % field, qc1, qc2
-qcVersion='v3.0';
+project='noreaster'; % socrates, cset, aristo, otrec
+quality='qc2'; % field, qc1, qc2
+qcVersion='v2.0';
 freqData='10hz';
 whichModel='era5';
 
@@ -47,8 +47,8 @@ for ii=1:size(caseList,1)
         if addTOPO
             model.topo=[];
         end
-        model.uSurf=[];
-        model.vSurf=[];
+        model.u=[];
+        model.v=[];
         model.rh=[];
         
         model=read_model(model,modeldir,startTime,endTime);
@@ -106,6 +106,10 @@ for ii=1:size(caseList,1)
             netcdf.defVarFill(ncid,varidT,false,fillVal);
             varidRH = netcdf.defVar(ncid,'RH','NC_FLOAT',[dimrange dimtime]);
             netcdf.defVarFill(ncid,varidRH,false,fillVal);
+            varidU = netcdf.defVar(ncid,'U','NC_FLOAT',[dimrange dimtime]);
+            netcdf.defVarFill(ncid,varidU,false,fillVal);
+            varidV = netcdf.defVar(ncid,'V','NC_FLOAT',[dimrange dimtime]);
+            netcdf.defVarFill(ncid,varidV,false,fillVal);
             if addSST
                 varidSST = netcdf.defVar(ncid,'SST','NC_FLOAT',[dimtime]);
                 netcdf.defVarFill(ncid,varidSST,false,fillVal);
@@ -114,24 +118,26 @@ for ii=1:size(caseList,1)
                 varidTOPO = netcdf.defVar(ncid,'TOPO','NC_FLOAT',[dimtime]);
                 netcdf.defVarFill(ncid,varidTOPO,false,fillVal);
             end
-            varidUSURF = netcdf.defVar(ncid,'U_SURF','NC_FLOAT',[dimtime]);
-            netcdf.defVarFill(ncid,varidUSURF,false,fillVal);
-            varidVSURF = netcdf.defVar(ncid,'V_SURF','NC_FLOAT',[dimtime]);
-            netcdf.defVarFill(ncid,varidVSURF,false,fillVal);
+%             varidUSURF = netcdf.defVar(ncid,'U_SURF','NC_FLOAT',[dimtime]);
+%             netcdf.defVarFill(ncid,varidUSURF,false,fillVal);
+%             varidVSURF = netcdf.defVar(ncid,'V_SURF','NC_FLOAT',[dimtime]);
+%             netcdf.defVarFill(ncid,varidVSURF,false,fillVal);
             netcdf.endDef(ncid);
             
             % Write variables
             netcdf.putVar(ncid,varidP,modOut.p);
             netcdf.putVar(ncid,varidT,modOut.temp);
             netcdf.putVar(ncid,varidRH,modOut.rh);
+            netcdf.putVar(ncid,varidU,modOut.u);
+            netcdf.putVar(ncid,varidV,modOut.v);
             if addSST
                 netcdf.putVar(ncid,varidSST,modOut.sst);
             end
             if addTOPO
                 netcdf.putVar(ncid,varidTOPO,modOut.topo);
             end
-            netcdf.putVar(ncid,varidUSURF,modOut.uSurf);
-            netcdf.putVar(ncid,varidVSURF,modOut.vSurf);
+%             netcdf.putVar(ncid,varidUSURF,modOut.uSurf);
+%             netcdf.putVar(ncid,varidVSURF,modOut.vSurf);
             
             netcdf.close(ncid);
             
@@ -153,6 +159,18 @@ for ii=1:size(caseList,1)
             ncwriteatt(infile,'RH','units','%');
             ncwriteatt(infile,'RH','grid_mapping','grid_mapping');
             ncwriteatt(infile,'RH','coordinates','time range');
+
+            ncwriteatt(infile,'U','long_name','u_wind_velocity');
+            ncwriteatt(infile,'U','standard_name','eastward_wind');
+            ncwriteatt(infile,'U','units','m/s');
+            ncwriteatt(infile,'U','grid_mapping','grid_mapping');
+            ncwriteatt(infile,'U','coordinates','time range');
+            
+            ncwriteatt(infile,'V','long_name','v_wind_velocity');
+            ncwriteatt(infile,'V','standard_name','northward_wind');
+            ncwriteatt(infile,'V','units','m/s');
+            ncwriteatt(infile,'V','grid_mapping','grid_mapping');
+            ncwriteatt(infile,'V','coordinates','time range');
             
             if addSST
                 ncwriteatt(infile,'SST','long_name','sea_surface_temperature');
@@ -167,15 +185,15 @@ for ii=1:size(caseList,1)
                 ncwriteatt(infile,'TOPO','coordinates','time');
             end
             
-            ncwriteatt(infile,'U_SURF','long_name','u_wind_velocity');
-            ncwriteatt(infile,'U_SURF','standard_name','eastward_wind');
-            ncwriteatt(infile,'U_SURF','units','m/s');
-            ncwriteatt(infile,'U_SURF','coordinates','time');
-            
-            ncwriteatt(infile,'V_SURF','long_name','v_wind_velocity');
-            ncwriteatt(infile,'V_SURF','standard_name','northward_wind');
-            ncwriteatt(infile,'V_SURF','units','m/s');
-            ncwriteatt(infile,'V_SURF','coordinates','time');
+%             ncwriteatt(infile,'U_SURF','long_name','u_wind_velocity');
+%             ncwriteatt(infile,'U_SURF','standard_name','eastward_wind');
+%             ncwriteatt(infile,'U_SURF','units','m/s');
+%             ncwriteatt(infile,'U_SURF','coordinates','time');
+%             
+%             ncwriteatt(infile,'V_SURF','long_name','v_wind_velocity');
+%             ncwriteatt(infile,'V_SURF','standard_name','northward_wind');
+%             ncwriteatt(infile,'V_SURF','units','m/s');
+%             ncwriteatt(infile,'V_SURF','coordinates','time');
             
         end
     end

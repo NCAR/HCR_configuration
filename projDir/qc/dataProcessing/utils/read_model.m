@@ -11,10 +11,8 @@ varNamesIn=fields(model);
 varNames={};
 for ii=1:length(varNamesIn)
     if strcmp(varNamesIn{ii},'p') | strcmp(varNamesIn{ii},'rh') ...
-            | strcmp(varNamesIn{ii},'temp')
+            | strcmp(varNamesIn{ii},'temp') | strcmp(varNamesIn{ii},'u') | strcmp(varNamesIn{ii},'v')
         varNames{end+1}=[varNamesIn{ii} 'HCR'];
-    elseif strcmp(varNamesIn{ii},'u') | strcmp(varNamesIn{ii},'v')
-        varNames{end+1}=[varNamesIn{ii} 'Surf'];
     else
         varNames{end+1}=varNamesIn{ii};
     end

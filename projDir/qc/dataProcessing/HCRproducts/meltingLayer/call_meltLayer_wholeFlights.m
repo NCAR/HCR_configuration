@@ -3,9 +3,9 @@
 clear all;
 close all;
 
-project='spicule'; %socrates, otrec, cset
-quality='qc1'; %field, qc1, or qc2
-qcVersion='v1.1';
+project='noreaster'; %socrates, otrec, cset
+quality='qc2'; %field, qc1, or qc2
+qcVersion='v2.0';
 freqData='10hz'; % 10hz, 100hz
 whichModel='era5';
 

@@ -233,9 +233,13 @@ $PROJ_DIR/qc/dataProcessing/HCRproducts/velCorr/cfradialVelCorr.m
 # De-alias velocity
 
 # To de-alias velocity and mask out and non-cloud
-# data run
+# data run either (!!!)
 
 $PROJ_DIR/qc/dataProcessing/HCRproducts/VELdeAliasing/call_VELdeAlias_wholeFlights.m
+
+or (!!!)
+
+$PROJ_DIR/qc/dataProcessing/HCRproducts/rayDeAliasing/call_rayDeAlias_wholeFlights_withPlot.m
 
 # To add it to the dataset run
 $PROJ_DIR/qc/dataProcessing/HCRproducts/VELdeAliasing/cfradialVELunfolded.m

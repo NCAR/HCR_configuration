@@ -520,7 +520,9 @@ for kk=1:size(layerAltsAdj,1)
         
         startInds=startInds+1;
         
-        if isempty(startInds) | endInds(1)<startInds(1)
+        if isempty(startInds)
+            startInds=[1 startInds];
+        elseif ~isempty(endInds) & endInds(1)<startInds(1)
             startInds=[1 startInds];
         end
         if length(endInds)~=length(startInds)
