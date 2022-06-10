@@ -5,10 +5,10 @@ close all;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Input variables %%%%%%%%%%%%%%%%%%%%%%%%%%
 
-project='otrec'; %socrates, aristo, cset, otrec
-quality='qc3'; %field, qc1, or qc2
+project='noreaster'; %socrates, aristo, cset, otrec
+quality='qc2'; %field, qc1, or qc2
 freqData='10hz';
-qcVersion='v3.0';
+qcVersion='v2.0';
 whichModel='era5';
 
 if strcmp(project,'otrec')
@@ -26,14 +26,6 @@ indir=HCRdir(project,quality,qcVersion,freqData);
 [~,modeldir]=modelDir(project,whichModel,quality,qcVersion,freqData);
 
 figdir=[indir(1:end-5),'convStratPlots/wholeFlights/'];
-
-% if strcmp(project,'otrec')
-%     indir='/scr/sleet2/rsfdata/projects/otrec/hcr/qc2/cfradial/development/convStrat/10hz/';
-% elseif strcmp(project,'socrates')
-%     indir='/scr/snow2/rsfdata/projects/socrates/hcr/qc2/cfradial/development/convStrat/10hz/';
-% end
-% 
-% modeldir=[indir(1:end-36),'mat/convStrat/10hz/'];
 
 infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_',project,'_data.txt'];
 

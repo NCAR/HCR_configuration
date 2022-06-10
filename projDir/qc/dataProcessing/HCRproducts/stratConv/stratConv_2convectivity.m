@@ -5,10 +5,10 @@ close all;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Input variables %%%%%%%%%%%%%%%%%%%%%%%%%%
 
-project='otrec'; %socrates, aristo, cset, otrec
-quality='qc3'; %field, qc1, or qc2
+project='noreaster'; %socrates, aristo, cset, otrec
+quality='qc2'; %field, qc1, or qc2
 freqData='10hz';
-qcVersion='v3.0';
+qcVersion='v2.0';
 
 showPlot='on';
 
@@ -19,12 +19,6 @@ blockTransition=1; % Remove data where antenna is in transition
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
 dataDir=HCRdir(project,quality,qcVersion,freqData);
-
-% if strcmp(project,'otrec')
-%     dataDir='/scr/sleet2/rsfdata/projects/otrec/hcr/qc2/cfradial/development/convStrat/10hz/';
-% elseif strcmp(project,'socrates')
-%     dataDir='/scr/snow2/rsfdata/projects/socrates/hcr/qc2/cfradial/development/convStrat/10hz/';
-% end
 
 figdir=[dataDir(1:end-5),'convStratPlots/cases/'];
 
@@ -38,7 +32,7 @@ caseStart=datetime(caseList.Var1,caseList.Var2,caseList.Var3, ...
 caseEnd=datetime(caseList.Var6,caseList.Var7,caseList.Var8, ...
     caseList.Var9,caseList.Var10,0);
 
-for aa=25:length(caseStart)
+for aa=1:length(caseStart)
     
     disp(['Case ',num2str(aa),' of ',num2str(length(caseStart))]);
     
