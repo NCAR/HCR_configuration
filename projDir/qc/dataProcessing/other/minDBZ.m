@@ -2,7 +2,7 @@
 clear all;
 close all;
 
-addpath(genpath('/h/eol/romatsch/gitPriv/utils/'));
+addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
 project='spicule'; % socrates, cset, aristo, otrec
 quality='qc1'; % field, qc1, qc2
