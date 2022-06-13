@@ -450,6 +450,24 @@ fields = {
   }
   ,
   {
+    label = "1Hr_U",
+    raw_name = "U",
+    filtered_name = "",
+    units = "m/s",
+    color_map = "hcr_uv.colors",
+    shortcut = "d"
+  }
+  ,
+  {
+    label = "1Hr_V",
+    raw_name = "V",
+    filtered_name = "",
+    units = "m/s",
+    color_map = "hcr_uv.colors",
+    shortcut = "d"
+  }
+  ,
+  {
     label = "1Hr_FLAG",
     raw_name = "FLAG",
     filtered_name = "",

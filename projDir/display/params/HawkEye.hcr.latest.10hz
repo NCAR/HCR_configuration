@@ -497,15 +497,6 @@ fields = {
   }
   ,
   {
-    label = "FLAG",
-    raw_name = "FLAG",
-    filtered_name = "",
-    units = "",
-    color_map = "hcr_flag.colors",
-    shortcut = "d"
-  }
-  ,
-  {
     label = "U",
     raw_name = "U",
     filtered_name = "",
@@ -521,6 +512,15 @@ fields = {
     units = "m/s",
     color_map = "hcr_uv.colors",
     shortcut = "1"
+  }
+  ,
+  {
+    label = "FLAG",
+    raw_name = "FLAG",
+    filtered_name = "",
+    units = "",
+    color_map = "hcr_flag.colors",
+    shortcut = "d"
   }
   ,
   {

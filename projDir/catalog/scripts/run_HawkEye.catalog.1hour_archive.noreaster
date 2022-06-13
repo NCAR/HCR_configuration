@@ -1,0 +1,10 @@
+#! /bin/csh -f
+
+# HCR QC processing for NOREASTER
+
+source ~/git/HCR_configuration/projDir/system/params/project_info.noreaster
+
+cd $PROJ_DIR/catalog/params
+
+HawkEye -params HawkEye.catalog.1hour_archive -debug -images_start_time "2015 02 02 12 35 00" -images_end_time "2015 02 02 20 25 00"
+
