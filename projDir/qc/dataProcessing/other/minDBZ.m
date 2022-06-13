@@ -4,9 +4,10 @@ close all;
 
 addpath(genpath('/h/eol/romatsch/gitPriv/utils/'));
 
-project='otrec'; % socrates, cset, aristo, otrec
-quality='qc2'; % field, qc1, qc2
+project='spicule'; % socrates, cset, aristo, otrec
+quality='qc1'; % field, qc1, qc2
 freqData='10hz';
+qcVersion='v1.1';
 
 figdir=['/h/eol/romatsch/hcrCalib/sensitivity/'];
 formatOut = 'yyyymmdd_HHMM';
@@ -15,7 +16,7 @@ infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_
 
 caseList = table2array(readtable(infile));
 
-indir=HCRdir(project,quality,freqData);
+indir=HCRdir(project,quality,qcVersion,freqData);
 
 edges=-100:0.5:100;
 edgesS=-30:0.5:100;

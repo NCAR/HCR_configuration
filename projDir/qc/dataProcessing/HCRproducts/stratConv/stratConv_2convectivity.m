@@ -10,7 +10,7 @@ quality='qc2'; %field, qc1, or qc2
 freqData='10hz';
 qcVersion='v2.0';
 
-showPlot='on';
+showPlot='off';
 
 blockTransition=1; % Remove data where antenna is in transition
 
@@ -101,10 +101,10 @@ for aa=1:length(caseStart)
     %% Convectivity
 
     % Convectivity
-    upperLimDBZ=12;%14
+    upperLimDBZ=12; % 12 for cset, socrates, otrec, and spicule, 14 for noreaster
     convDBZ=1/upperLimDBZ.*dbzText;
 
-    upperLimVEL=5;%6
+    upperLimVEL=5; % 5 for cset, socrates, otrec, and spicule, 7 for noreaster
     convVEL=1/upperLimVEL.*velText;
 
     convBoth=convDBZ.*convVEL;

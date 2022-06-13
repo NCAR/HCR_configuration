@@ -92,10 +92,10 @@ for aa=1:size(caseList,1)
     %% Convectivity
 
     % Convectivity
-    upperLimDBZ=12;
+    upperLimDBZ=12; % 12 for cset, socrates, otrec, and spicule, 14 for noreaster
     convDBZ=1/upperLimDBZ.*dbzText;
 
-    upperLimVEL=5;
+    upperLimVEL=5; % 5 for cset, socrates, otrec, and spicule, 7 for noreaster
     convVEL=1/upperLimVEL.*velText;
 
     convectivity=convDBZ.*convVEL;
