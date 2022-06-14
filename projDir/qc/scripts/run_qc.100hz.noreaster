@@ -1,0 +1,24 @@
+#! /bin/csh -f
+
+# HCR 100Hz QC processing for noreaster
+#
+
+# first start Dsr2Radx
+
+echo "==>> running run_Dsr2Radx.qc.100hz.noreaster"
+run_Dsr2Radx.qc.100hz.noreaster >& $LOG_DIR/Dsr2Radx.qc.100hz.noreaster.log &
+echo "======>> log will be in file: $LOG_DIR/Dsr2Radx.qc.100hz.noreaster.log"
+
+# then run Iq2Dsr
+
+echo "==>> running run_Iq2Dsr.qc.100hz.noreaster"
+run_Iq2Dsr.qc.100hz.noreaster >& $LOG_DIR/Iq2Dsr.qc.100hz.noreaster.log &
+echo "======>> log will be in file: $LOG_DIR/Iq2Dsr.qc.100hz.noreaster.log"
+
+echo "To see these logs, use:"
+echo "  tail -f $LOG_DIR/Dsr2Radx.qc.100hz.noreaster.log"
+echo "  tail -f $LOG_DIR/Iq2Dsr.qc.100hz.noreaster.log"
+echo
+echo "To kill these processes, use:"
+echo "  kill_qc.100hz.noreaster"
+

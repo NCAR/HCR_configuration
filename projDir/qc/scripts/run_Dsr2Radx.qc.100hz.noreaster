@@ -1,0 +1,21 @@
+#! /bin/csh -f
+
+# HCR QC processing
+#
+# Run Dsr2Radx
+# Reads FMQ from Iq2Dsr.qc.100hz
+# Writes 100hz CfRadial data
+
+source ~/git/HCR_configuration/projDir/system/params/project_info.noreaster
+cd $PROJ_DIR/qc/params
+
+snuff "Dsr2Radx -params Dsr2Radx.qc.100hz"
+
+Dsr2Radx -params Dsr2Radx.qc.100hz -debug >& \
+    $LOG_DIR/Dsr2Radx.qc.100hz.noreaster.log &
+
+tail -f $LOG_DIR/Dsr2Radx.qc.100hz.noreaster.log
+
+
+
+

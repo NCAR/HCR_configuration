@@ -1,0 +1,14 @@
+#! /bin/csh -f
+
+# HCR 100Hz QC processing for noreaster
+#
+# Run Iq2Dsr, writing 100 hz data to fmq
+# This will be read in by Dsr2Radx, to write CfRadial files
+
+source ~/git/HCR_configuration/projDir/system/params/project_info.noreaster
+cd $PROJ_DIR/qc/params
+
+# flight by flight
+
+Iq2Dsr -params Iq2Dsr.qc.100hz.noreaster -debug -start "2015 02 02 12 00 00" -end "2015 02 02 21 00 00"
+
