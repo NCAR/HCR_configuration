@@ -15,6 +15,17 @@ saveTime=0;
 
 blockTransition=1; % Remove data where antenna is in transition
 
+if strcmp(project,'cset') | strcmp(project,'socrates') | ...
+        strcmp(project,'otrec') | strcmp(project,'spicule')
+    upperLimDBZ=12;
+    upperLimVEL=5;
+elseif strcmp(project,'noreaster')
+    upperLimDBZ=14;
+    upperLimVEL=7;
+else
+    error('Set upperLimDBZ and upperLimVE')
+end
+
 indir=HCRdir(project,quality,qcVersion,freqData);
 
 [~,outdir]=modelDir(project,whichModel,quality,qcVersion,freqData);
@@ -92,10 +103,8 @@ for aa=1:size(caseList,1)
     %% Convectivity
 
     % Convectivity
-    upperLimDBZ=12; % 12 for cset, socrates, otrec, and spicule, 14 for noreaster
     convDBZ=1/upperLimDBZ.*dbzText;
 
-    upperLimVEL=5; % 5 for cset, socrates, otrec, and spicule, 7 for noreaster
     convVEL=1/upperLimVEL.*velText;
 
     convectivity=convDBZ.*convVEL;

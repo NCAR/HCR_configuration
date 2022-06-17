@@ -15,7 +15,7 @@ dataFreq=10;
 whichModel='era5';
 
 saveData=1;
-plotData=1;
+plotData=0;
 
 [~,outdir]=modelDir(project,whichModel,quality,qcVersion,freqData);
 

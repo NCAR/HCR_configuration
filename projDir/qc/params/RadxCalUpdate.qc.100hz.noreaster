@@ -226,7 +226,7 @@ update_calibration = TRUE;
 // Type: string
 //
 
-calibration_file_path = "$(PROJ_DIR)/calibration/data/wband_256ns/TsCalAuto_Wband-HCR-256ns_20140825_222458.cset_qc2.xml";
+calibration_file_path = "$(PROJ_DIR)/calibration/data/wband_256ns/TsCalAuto_Wband-HCR-256ns_20160822_211217.cset_qc2.xml";
 
 ///////////// dbz_fields_for_update ///////////////////
 //

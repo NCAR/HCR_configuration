@@ -11,7 +11,7 @@ qcVersion='v2.0';
 freqData='10hz'; % 10hz, 100hz, 2hz, or combined
 whichModel='era5';
 
-saveTime=1;
+saveTime=0;
 
 plotIn.plotMR=0;
 plotIn.plotMax=0;
@@ -114,7 +114,14 @@ for aa=1:size(caseList,1)
 
     if postProcess
         disp('Post processing ...');
-        pid_hcr=postProcessPID(pid_hcr,data);
+        if strcmp(project,'cset') | strcmp(project,'socrates') | ...
+                strcmp(project,'otrec') | strcmp(project,'spicule')
+            pid_hcr=postProcessPID(pid_hcr,data);
+        elseif strcmp(project,'noreaster')
+            pid_hcr=postProcessPID_noWarmBelowMelt(pid_hcr,data);
+        else
+            error('Set up post processing.')
+        end
     end
 
     %% Filter
