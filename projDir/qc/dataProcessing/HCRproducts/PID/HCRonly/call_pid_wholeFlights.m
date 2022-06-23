@@ -113,15 +113,7 @@ for aa=1:size(caseList,1)
     %% Post process
 
     if postProcess
-        disp('Post processing ...');
-        if strcmp(project,'cset') | strcmp(project,'socrates') | ...
-                strcmp(project,'otrec') | strcmp(project,'spicule')
-            pid_hcr=postProcessPID(pid_hcr,data);
-        elseif strcmp(project,'noreaster')
-            pid_hcr=postProcessPID_noWarmBelowMelt(pid_hcr,data);
-        else
-            error('Set up post processing.')
-        end
+        pid_hcr=postProcessPID(pid_hcr,data);
     end
 
     %% Filter

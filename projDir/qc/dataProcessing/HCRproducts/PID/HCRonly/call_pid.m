@@ -120,15 +120,7 @@ for aa=1:length(caseStart)
         %% Post process
 
         if postProcess
-            disp('Post processing ...');
-            if strcmp(project,'cset') | strcmp(project,'socrates') | ...
-                    strcmp(project,'otrec') | strcmp(project,'spicule')
-                pid_hcr=postProcessPID(pid_hcr,data);
-            elseif strcmp(project,'noreaster')
-                pid_hcr=postProcessPID_noWarmBelowMelt(pid_hcr,data);
-            else
-                error('Set up post processing.')
-            end
+            pid_hcr=postProcessPID(pid_hcr,data);
         end
 
         %% Filter
@@ -141,7 +133,7 @@ for aa=1:length(caseStart)
 
         %% Scales and units
         cscale_hcr=[1,0,0; 1,0.6,0.47; 0,1,0; 0,0.7,0; 0,0,1; 1,0,1; 0.5,0,0; 1,1,0; 0,1,1; 0,0,0; 0.5,0.5,0.5];
-        
+
         units_str_hcr={'Rain','Supercooled Rain','Drizzle','Supercooled Drizzle','Cloud Liquid','Supercooled Cloud Liquid',...
             'Mixed Phase','Large Frozen','Small Frozen','Precip','Cloud'};
         

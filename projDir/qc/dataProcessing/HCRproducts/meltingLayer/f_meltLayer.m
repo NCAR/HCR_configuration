@@ -659,15 +659,28 @@ iceLev=nan(1,size(BBfinishedOut,2));
 for ii=1:size(BBfinishedOrigInds,2)
     BBcol=BBfinishedOrigInds(:,ii);
     altCol=data.asl(:,ii);
+    tempCol=data.TEMP(:,ii);
     oneAlts=altCol(find(BBcol>0));
     if ~isempty(oneAlts)
         iceLevInd=find(altCol==min(oneAlts));
         iceLev(ii)=data.asl(iceLevInd,ii);
         if data.elevation(ii)<0 % Pointing down
             BBfinishedOut(1:iceLevInd-1,ii)=20;
-            BBfinishedOut(iceLevInd:end,ii)=10;
+            testTemp=tempCol(iceLevInd:end);
+            if median(testTemp,'omitnan')>0
+                BBfinishedOut(iceLevInd:end,ii)=10;
+            else
+                BBfinishedOut(iceLevInd:end,ii)=20;
+                iceLev(ii)=nan;
+            end
         else % Pointing up
-            BBfinishedOut(1:iceLevInd,ii)=10;
+            testTemp=tempCol(1:iceLevInd);
+            if median(testTemp,'omitnan')>0
+                BBfinishedOut(1:iceLevInd,ii)=10;
+            else
+                BBfinishedOut(1:iceLevInd,ii)=20;
+                iceLev(ii)=nan;
+            end
             BBfinishedOut(iceLevInd+1:end,ii)=20;
         end
     end
@@ -731,13 +744,16 @@ iceLev(iceLevDiff>100)=nan;
 missInds=find(isnan(iceLev));
 
 smoothIce=iceLev;
-smoothIce=fillmissing(smoothIce,'linear','endValues','nearest');
+smoothIce=fillmissing(smoothIce,'linear','endValues','nearest','maxGap',10000);
 
 % Fill in missing
 for ii=1:length(missInds)
     BBfinishedOut(find(data.asl(:,missInds(ii))<smoothIce(missInds(ii))),missInds(ii))=10;
     BBfinishedOut(find(data.asl(:,missInds(ii))>=smoothIce(missInds(ii))),missInds(ii))=20;
 end
+
+% Fill in empty cols
+BBfinishedOut(isnan(BBfinishedOut))=20;
 
 BBfinishedOut(:,oddAngles)=nan;
 BBfinishedOut(data.asl<=0)=nan;
