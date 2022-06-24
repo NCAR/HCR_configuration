@@ -11,10 +11,8 @@ freqData='dummy';
 qcVersion='dummy';
 
 fileList={'20210529_191100_-89.99_229.66.nc';
-    '20210601_194538_-89.95_85.15.nc';
     '20210621_015305_-89.93_353.61.nc';
-    '20210621_015437_-89.78_307.29.nc';
-    '20210621_015840_89.94_315.84.nc'};
+    '20210621_015437_-89.78_307.29.nc'};
 
 outFreq=10; % Desired output frequency in Hz
 timeSpan=1/outFreq;
@@ -72,6 +70,9 @@ for jj=1:length(fileList)
     velDeAliasedSDall=nan(size(data.range,1),beamNum);
     traceReflAll=nan(size(data.range,1),beamNum);
     velAirAll=nan(size(data.range,1),beamNum);
+    velSmallerAll=nan(size(data.range,1),beamNum);
+    velLargerAll=nan(size(data.range,1),beamNum);
+    velMaxAll=nan(size(data.range,1),beamNum);
 
     %% Set up for de-aliasing
 
@@ -102,7 +103,7 @@ for jj=1:length(fileList)
 
         cIQv=winNorm'.*(data.IVc(:,startInd:endInd)+i*data.QVc(:,startInd:endInd))./sqrt(sampleNum);
 
-        %% Calculate vel and refle in time domain
+        %% Calculate vel and refl in time domain
 
         cIQ=cIQv.*sqrt(size(cIQv,2));
 
@@ -191,10 +192,13 @@ for jj=1:length(fileList)
 
         %% Air velocity
 
-        [velAir,traceRefl]=getAirVel(powerAdj,phaseAdj,data.elevation(startInd),sampleNum,lambda,prtThis,data.range,dbz1km_v,noise_v);
+        [velAir,velSmaller,velLarger,velMax,traceRefl]=getAirVel(powerAdj,phaseAdj,data.elevation(startInd),sampleNum,lambda,prtThis,data.range,dbz1km_v,noise_v);
 
         traceReflAll(:,ii)=traceRefl;
         velAirAll(:,ii)=velAir;
+        velSmallerAll(:,ii)=velSmaller;
+        velLargerAll(:,ii)=velLarger;
+        velMaxAll(:,ii)=velMax;
 
         startInd=endInd+1;
         ii=ii+1;
@@ -284,7 +288,7 @@ for jj=1:length(fileList)
     colorbar
     grid on
     box on
-    title('Reflectivity time domain (dBZ)');
+    title('Tracer reflectivity time domain (dBZ)');
 
     s3=subplot(3,1,3);
     surf(timeBeams,asl./1000,velAirAll,'edgecolor','none');
@@ -303,4 +307,51 @@ for jj=1:length(fileList)
 
     set(gcf,'PaperPositionMode','auto')
     print(f1,[figdir,project,'_reflAirVel_',datestr(timeBeams(1),'yyyymmdd_HHMMSS'),'_to_',datestr(timeBeams(end),'yyyymmdd_HHMMSS')],'-dpng','-r0');
+
+    %% Plot max, smaller, and larger vel
+    
+    f1 = figure('Position',[200 500 1000 1200],'DefaultAxesFontSize',12,'visible',showPlot);
+    colormap(colM);
+
+    s1=subplot(3,1,1);
+    surf(timeBeams,asl./1000,velMaxAll,'edgecolor','none');
+    view(2);
+    ylabel('Range (km)');
+    caxis([-16 16]);
+    ylim([0 ylimUpper]);
+    xlim([timeBeams(1),timeBeams(end)]);
+    colorbar
+    grid on
+    box on
+    title('Velocity max peak (m s^{-1})')
+
+    s2=subplot(3,1,2);
+    surf(timeBeams,asl./1000,velLargerAll,'edgecolor','none');
+    view(2);
+    ylabel('Range (km)');
+    caxis([-16 16]);
+    ylim([0 ylimUpper]);
+    xlim([timeBeams(1),timeBeams(end)]);
+    colorbar
+    grid on
+    box on
+    title('Velocity larger vel peak (m s^{-1})')
+
+    s3=subplot(3,1,3);
+    surf(timeBeams,asl./1000,velSmallerAll,'edgecolor','none');
+    view(2);
+    ylabel('Range (km)');
+    caxis([-16 16]);
+    ylim([0 ylimUpper]);
+    xlim([timeBeams(1),timeBeams(end)]);
+    colorbar
+    grid on
+    box on
+    title('Velocity smaller vel peak (m s^{-1})')
+
+    linkaxes([s1 s2 s3],'xy')
+
+    set(gcf,'PaperPositionMode','auto')
+    print(f1,[figdir,project,'_velMaxLargerSmaller_',datestr(timeBeams(1),'yyyymmdd_HHMMSS'),'_to_',datestr(timeBeams(end),'yyyymmdd_HHMMSS')],'-dpng','-r0');
+
 end
