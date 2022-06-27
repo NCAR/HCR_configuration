@@ -9,8 +9,12 @@ traceRefl=nan(size(powerAdj,1),1);
 
 powerLarge=repmat(powerAdj,1,3);
 
+sampleNumOdd=round(sampleNum/6);
+if ~mod(sampleNumOdd,2)
+    sampleNumOdd=sampleNumOdd-1;
+end
 %powerSmooth=movmedian(powerLarge,round(sampleNum/6),2);
-powerSmooth=sgolayfilt(powerLarge,3,round(sampleNum/6),[],2);
+powerSmooth=sgolayfilt(powerLarge,3,sampleNumOdd,[],2);
 powerSmooth=powerSmooth(:,sampleNum+1:2*sampleNum);
 
 for ii=1:length(airVel)
