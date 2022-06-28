@@ -1,4 +1,4 @@
-function [powerAdj,specVelAdj,maxIndsTest]=specPowerDeAlias(powerSpec,velDeAlias,velRay,nyq,sampleNum,prt,lambda,rangeIn)
+function [powerAdj,specVelAdj,maxIndsTest]=specPowerDeAlias_realTime(powerSpec,velDeAlias,sampleNum,prt,lambda,rangeIn,velMasked)
 
 %% Filter
 
@@ -20,39 +20,34 @@ powerSpecSmooth=powerSpecSmoothLarge(:,floor(duplicateSpec/2)*sampleNum+1:end-fl
 %% Find maximum
 
 %minInds=findMinInds(powerSpecSmooth,maskSpec);
-maxInds=findMaxIndsSpec(powerSpecSmooth,velDeAlias);
+maxInds=findMaxIndsSpec(powerSpecSmooth,velMasked);
 
 maxInds=maxInds+floor(duplicateSpec/2)*sampleNum;
 
 %% Adjust maximum based on de-alias mask
 
-deAliasMask=(velDeAlias-velRay)./nyq;
-% if max(deAliasDiff,[],'omitnan')~=0
-%     stop1=1;
-% end
-% 
-% phaseMax=nan(size(maxInds));
-% 
-% for ii=1:length(maxInds)
-%     if ~isnan(maxInds(ii))
-%         phaseMax(ii)=velSpecLarge(maxInds(ii));
-%     end
-% end
-% phaseDeAliased=4*pi*prt*velDeAlias/lambda;
-% 
-% phaseDiff=phaseDeAliased-phaseMax;
-% 
-% deAliasMask=zeros(size(phaseDiff));
-% checkFold=[2,4,6];
-% 
-% for jj=1:3
-%     deAliasMask(phaseDiff>checkFold(jj)*pi-pi)=jj;
-%     deAliasMask(phaseDiff<-(checkFold(jj)*pi-pi))=-jj;
-% end
+phaseMax=nan(size(maxInds));
+
+for ii=1:length(maxInds)
+    if ~isnan(maxInds(ii))
+        phaseMax(ii)=velSpecLarge(maxInds(ii));
+    end
+end
+phaseDeAliased=4*pi*prt*velDeAlias/lambda;
+
+phaseDiff=phaseDeAliased-phaseMax;
+
+deAliasMask=zeros(size(phaseDiff));
+checkFold=[2,4,6];
+
+for jj=1:3
+    deAliasMask(phaseDiff>checkFold(jj)*pi-pi)=jj;
+    deAliasMask(phaseDiff<-(checkFold(jj)*pi-pi))=-jj;
+end
 
 adjMax=maxInds+deAliasMask*sampleNum;
 
-plotYes=0;
+plotYes=1;
 if plotYes
     close all
     f1 = figure('Position',[100 500 1000 1100],'DefaultAxesFontSize',12);
@@ -71,8 +66,8 @@ if plotYes
     caxis([-80 -25])
     colorbar
 
-    scatter(maxInds(~isnan(velRay)),rangeIn(~isnan(velRay))./1000,'black','filled');
-    scatter(adjMax(~isnan(velRay)),rangeIn(~isnan(velRay))./1000,'red','filled');
+    scatter(maxInds(~isnan(velMasked)),rangeIn(~isnan(velMasked))./1000,'black','filled');
+    scatter(adjMax(~isnan(velMasked)),rangeIn(~isnan(velMasked))./1000,'red','filled');
     ax = gca;
     ax.SortMethod = 'childorder';
 end
@@ -96,7 +91,7 @@ for kk=1:size(powerSpec,1)
     end
 end
 
-powerAdj(isnan(velRay),:)=nan;
+powerAdj(isnan(velMasked),:)=nan;
 
 %% Plot waterfall
 

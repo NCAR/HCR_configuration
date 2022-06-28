@@ -25,7 +25,7 @@ outFreq=str2num(freqData(1:freqStr-1)); % Desired output frequency in Hz
 timeSpan=1/outFreq;
 
 showPlot='on';
-ylimUpper=6.5;
+ylimUpper=7.5;
 ylimLower=-0.1;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -71,8 +71,11 @@ for aa=1:length(caseStart)
 
     dataCF.VEL_CORR(isnan(dataCF.VEL_MASKED))=nan;
 
-    %% Prepare processing
-    nyq=dataTS.lambda./(4*dataTS.prt(1));
+    % Find velocity correction for vel_raw to vel
+
+    velCorrection=dataCF.VEL_CORR-dataCF.VEL_RAW;
+    velCorrection(abs(velCorrection)>5)=nan;
+    velCorrection=median(velCorrection,1,'omitnan');
 
     %% Get correct samples
 
@@ -107,7 +110,16 @@ for aa=1:length(caseStart)
 
     beamNum=length(startInds);
 
-    % Initialize
+    %% Prepare processing
+    % Nyquist velocity
+    nyq=dataTS.lambda./(4*dataTS.prt(1));
+    
+    % Window
+    win=window(@hamming,sampleNum);  % Default window is Hamming
+    winWeight=sampleNum/sum(win);
+    winNorm=win*winWeight;
+
+    % Initialize output
     velDeAliasedSDall=nan(size(dataTS.range,1),beamNum);
     traceReflAll=nan(size(dataTS.range,1),beamNum);
     velAirAll=nan(size(dataTS.range,1),beamNum);
@@ -115,26 +127,23 @@ for aa=1:length(caseStart)
     velLargerAll=nan(size(dataTS.range,1),beamNum);
     velMaxAll=nan(size(dataTS.range,1),beamNum);
 
-    %% Set up for de-aliasing
-
-    defaultPrev=nyq;
-
-    velPrev=repmat(defaultPrev,length(dataTS.range),1);
-    prevCount=zeros(size(velPrev));
-    prevKeep=nan(size(velPrev));
-    flipYes=0;
-
     %% Loop through beams
     for ii=1:beamNum
 
+        % Check if all nan       
+        velDeAliased=dataCF.VEL_MASKED(:,ii);
+        
+        if sum(~isnan(velDeAliased))==0
+            continue
+        end
+
+        %% Process spectra
+
+        disp(['Beam ',num2str(ii),' of ',num2str(beamNum)]);
+
+        % Start and end ind
         startInd=startInds(ii);
         endInd=endInds(ii);
-
-        %% Window
-
-        win=window(@hamming,sampleNum);  % Default window is Hamming
-        winWeight=sampleNum/sum(win);
-        winNorm=win*winWeight;
 
         cIQv=winNorm'.*(dataTS.IVc(:,startInd:endInd)+i*dataTS.QVc(:,startInd:endInd))./sqrt(sampleNum);
 
@@ -153,24 +162,17 @@ for aa=1:length(caseStart)
 
         powerSpec=10*log10(powerShifted);
 
-        %% De-alias in spectral domain
-
-        if dataTS.elevation(startInd)>0
-            velRay=-dataCF.VEL_CORR(:,ii);
-        else
-            velRay=dataCF.VEL_CORR(:,ii);
-        end
-        velDeAliased=dataCF.VEL_MASKED(:,ii);
-        if dataTS.elevation(startInd)>0
-            velDeAliased=-velDeAliased;
-            velRay=-velRay;
-        end
+        %% Adjust spectra so max is in the middle
 
         prtThis=mode(dataTS.prt(startInd:endInd));
 
-        [powerAdj,phaseAdj]=specPowerDeAlias(powerSpec,velDeAliased,sampleNum,prtThis,dataTS.lambda,dataTS.range,velRay);
+        [powerAdj,phaseAdj]=adjSpecBounds(powerSpec,velDeAliased,sampleNum);
 
-        %% De-aliased velocity in spectral domain
+        %% Air velocity
+
+        [velAir,velSmaller,velLarger,velMax,traceRefl]=getAirVel(powerAdj,phaseAdj,dataCF.elevation(ii),sampleNum,dataTS.lambda,prtThis,dataTS.range,dataTS.dbz1km_v,dataTS.noise_v);
+
+        %% Velocity in spectral domain
 
         specLin=10.^(powerAdj./10);
 
@@ -178,35 +180,52 @@ for aa=1:length(caseStart)
         sumSpecPhase=sum(specLin.*phaseAdj,2,'omitnan');
 
         meanK=sumSpecPhase./sumSpecLin;
-        velSpecDeAliased=dataTS.lambda/(4*pi.*prtThis).*meanK;
+        velSpec=dataTS.lambda/(4*pi.*prtThis).*meanK;
 
-        velDeAliasedSDall(:,ii)=velSpecDeAliased;
+        %% Correct velocity for aircraft motion and bias
 
-        %% Air velocity
+        velSpec=velSpec+velCorrection(ii);
+        velAir=velAir+velCorrection(ii);
+        velMax=velMax+velCorrection(ii);
+        velLarger=velLarger+velCorrection(ii);
+        velSmaller=velSmaller+velCorrection(ii);
 
-        [velAir,velSmaller,velLarger,velMax,traceRefl]=getAirVel(powerAdj,phaseAdj,dataTS.elevation(startInd),sampleNum,dataTS.lambda,prtThis,dataTS.range,dataTS.dbz1km_v,dataTS.noise_v);
+        %% Find de-alias mask for spectral data
+
+        deAliasDiff=velSpec-velDeAliased;
+
+        deAliasMask=zeros(size(deAliasDiff));
+        checkFold=[2,4,6];
+
+        for jj=1:3
+            deAliasMask(deAliasDiff>checkFold(jj)*nyq-3)=checkFold(jj)*nyq;
+            deAliasMask(deAliasDiff<-(checkFold(jj)*nyq-3))=-checkFold(jj)*nyq;
+        end
+
+        %% Add de-aliasing and add to matrix
+
+        if dataCF.elevation(ii)>0
+            velDeAliasedSDall(:,ii)=-(velSpec-deAliasMask);
+            velAirAll(:,ii)=-(velAir-deAliasMask);
+            velSmallerAll(:,ii)=-(velSmaller-deAliasMask);
+            velLargerAll(:,ii)=-(velLarger-deAliasMask);
+            velMaxAll(:,ii)=-(velMax-deAliasMask);
+        else
+            velDeAliasedSDall(:,ii)=velSpec-deAliasMask;
+            velAirAll(:,ii)=velAir-deAliasMask;
+            velSmallerAll(:,ii)=velSmaller-deAliasMask;
+            velLargerAll(:,ii)=velLarger-deAliasMask;
+            velMaxAll(:,ii)=velMax-deAliasMask;
+        end
 
         traceReflAll(:,ii)=traceRefl;
-        velAirAll(:,ii)=velAir;
-        velSmallerAll(:,ii)=velSmaller;
-        velLargerAll(:,ii)=velLarger;
-        velMaxAll(:,ii)=velMax;
 
     end
 
-    %% Correct velocity
-    velCorrection=dataCF.VEL_CORR-dataCF.VEL_RAW;
-    velCorrection(abs(velCorrection)>5)=nan;
-    velCorrection=mode(velCorrection,1);
-
-    velDeAliasedSDall=velDeAliasedSDall+velCorrection;
-    velAirAll=velAirAll+velCorrection;
-    velMaxAll=velMaxAll+velCorrection;
-    velLargerAll=velLargerAll+velCorrection;
-    velSmallerAll=velSmallerAll+velCorrection;
-
     %% Plot vel
     close all
+
+    dataCF.VEL_MASKED(:,dataCF.elevation>0)=-dataCF.VEL_MASKED(:,dataCF.elevation>0);
 
     f1 = figure('Position',[200 500 1000 1200],'DefaultAxesFontSize',12,'visible',showPlot);
     colM=colormap(velCols);
