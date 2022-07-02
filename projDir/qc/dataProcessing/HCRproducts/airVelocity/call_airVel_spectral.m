@@ -16,7 +16,7 @@ qcVersion='v1.1';
 dataDirTS=HCRdir(project,quality,qcVersion,freqData);
 dataDirCF=HCRdir(project,qualityCF,qcVersion,freqData);
 
-figdir=[dataDirTS,'figsAirVel/'];
+figdir=['/scr/sleet2/rsfdata/projects/spicule/hcr/qc1/cfradial/v1.1_full/figsAirVel/spectral/'];
 
 casefile=['~/git/HCR_configuration/projDir/qc/dataProcessing/HCRproducts/caseFiles/airVel_',project,'.txt'];
 
