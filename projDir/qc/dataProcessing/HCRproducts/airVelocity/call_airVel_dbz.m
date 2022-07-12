@@ -12,6 +12,8 @@ freqData='10hz';
 qcVersion='v1.1';
 
 showPlot='on';
+ylimUpper=7.5;
+ylimLower=-0.1;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -48,10 +50,12 @@ for aa=1:length(caseStart)
     data.DBZ_MASKED=[];
     data.VEL_MASKED=[];
     data.TEMP=[];
+    data.PRESS=[];
+    data.RH=[];
     data.MELTING_LAYER=[];
     data.ICING_LEVEL=[];
     data.ECHO_TYPE_2D=[];
-            
+                
     dataVars=fieldnames(data);
     
     % Load data
@@ -66,16 +70,87 @@ for aa=1:length(caseStart)
     
     dataVars=dataVars(~cellfun('isempty',dataVars));
 
-    ylimUpper=(max(data.asl(~isnan(data.DBZ_MASKED)))./1000)+0.5;
+    %ylimUpper=(max(data.asl(~isnan(data.DBZ_MASKED)))./1000)+0.5;
 
     % Take care of up pointing VEL
     data.VEL_MASKED(:,data.elevation>0)=-data.VEL_MASKED(:,data.elevation>0);
 
     %% Get unweighted fall speed
 
-    [vr,vi]=getInitFallSpeed(data.DBZ_MASKED);
+    [vr,vi]=getInitFallSpeed(data);
 
     %% Get weights
 
-    [wr,wi]=getFallSpeedWeights(data.ECHO_TYPE_2D,data.MELTING_LAYER,data.ICING_LEVEL,data.TEMP,data.asl);
+    [wr,wi]=getFallSpeedWeights(data.ECHO_TYPE_2D,data.ICING_LEVEL,data.MELTING_LAYER,data.TEMP,data.asl);
+
+    %% Fall speed
+    vf=wr.*vr+wi.*vi;
+
+    %% Air vel
+
+    airVel=data.VEL_MASKED-vf;
+
+    %% Plot vel
+    close all
+
+    %data.VEL_MASKED(:,data.elevation>0)=-data.VEL_MASKED(:,data.elevation>0);
+
+    f1 = figure('Position',[200 500 2300 900],'DefaultAxesFontSize',12,'visible',showPlot);
+    colM=colormap(velCols);
+    colormap(colM);
+
+    s1=subplot(2,2,1);
+    surf(data.time,data.asl./1000,data.DBZ_MASKED,'edgecolor','none');
+    view(2);
+    ylabel('Range (km)');
+    caxis([-40 20]);
+    ylim([ylimLower ylimUpper]);
+    xlim([data.time(1),data.time(end)]);
+    colormap(s1,jet);
+    colorbar
+    grid on
+    box on
+    title('Reflectivity (dBZ)');
+
+    s2=subplot(2,2,2);
+    surf(data.time,data.asl./1000,data.VEL_MASKED,'edgecolor','none');
+    view(2);
+    ylabel('Range (km)');
+    caxis([-16 16]);
+    ylim([ylimLower ylimUpper]);
+    xlim([data.time(1),data.time(end)]);
+    colorbar
+    grid on
+    box on
+    title('Velocity (m s^{-1})')
+
+    s3=subplot(2,2,3);
+    surf(data.time,data.asl./1000,vf,'edgecolor','none');
+    view(2);
+    ylabel('Range (km)');
+    caxis([-16 16]);
+    ylim([ylimLower ylimUpper]);
+    xlim([data.time(1),data.time(end)]);
+    colorbar
+    grid on
+    box on
+    title('Particle fall speed (m s^{-1})')
+
+    s4=subplot(2,2,4);
+    surf(data.time,data.asl./1000,airVel,'edgecolor','none');
+    view(2);
+    ylabel('Range (km)');
+    caxis([-16 16]);
+    ylim([ylimLower ylimUpper]);
+    xlim([data.time(1),data.time(end)]);
+    colorbar
+    grid on
+    box on
+    title('Air vel (m s^{-1})')
+
+    linkaxes([s1 s2 s3 s4],'xy')
+
+    set(gcf,'PaperPositionMode','auto')
+    print(f1,[figdir,project,'_fallSpeed_',datestr(data.time(1),'yyyymmdd_HHMMSS'),'_to_',datestr(data.time(end),'yyyymmdd_HHMMSS')],'-dpng','-r0');
+
 end
