@@ -16,7 +16,7 @@ qcVersion='v1.1';
 dataDirTS=HCRdir(project,quality,qcVersion,freqData);
 dataDirCF=HCRdir(project,qualityCF,qcVersion,freqData);
 
-figdir=['/scr/sleet2/rsfdata/projects/spicule/hcr/qc1/cfradial/v1.1_full/figsAirVel/spectral/'];
+figdir=[dataDirCF(1:end-5),'figsAirVel/spectral/'];
 
 casefile=['~/git/HCR_configuration/projDir/qc/dataProcessing/HCRproducts/caseFiles/airVel_',project,'.txt'];
 
@@ -66,8 +66,12 @@ for aa=1:length(caseStart)
     dataCF.VEL_RAW=[];
     dataCF.VEL_CORR=[];
     dataCF.VEL_MASKED=[];
-
+    dataCF.eastward_velocity=[];
+    dataCF.northward_velocity=[];
+    
     dataCF=read_HCR(fileListMoments,dataCF,startTime,endTime);
+
+    dataCF.radar_beam_width_v=ncread(fileListMoments{1},'radar_beam_width_v');
 
     dataCF.VEL_CORR(isnan(dataCF.VEL_MASKED))=nan;
 
@@ -202,17 +206,22 @@ for aa=1:length(caseStart)
             deAliasMask(deAliasDiff<-(checkFold(jj)*nyq-3))=-checkFold(jj)*nyq;
         end
 
-        %% Add de-aliasing and add to matrix
+        %% Account for spectral broadening
+
+        aircraftSpeed=sqrt(dataCF.northward_velocity(ii).^2+dataCF.eastward_velocity(ii).^2);
+        sbCorr=0.3*aircraftSpeed*sind(dataCF.elevation(ii))*deg2rad(dataCF.radar_beam_width_v)/2;
+        
+        %% Add de-aliasing, broadening, and add to matrix
 
         if dataCF.elevation(ii)>0
             velDeAliasedSDall(:,ii)=-(velSpec-deAliasMask);
-            velAirAll(:,ii)=-(velAir-deAliasMask);
+            velAirAll(:,ii)=-(velAir+sbCorr-deAliasMask);
             velSmallerAll(:,ii)=-(velSmaller-deAliasMask);
             velLargerAll(:,ii)=-(velLarger-deAliasMask);
             velMaxAll(:,ii)=-(velMax-deAliasMask);
         else
             velDeAliasedSDall(:,ii)=velSpec-deAliasMask;
-            velAirAll(:,ii)=velAir-deAliasMask;
+            velAirAll(:,ii)=velAir-sbCorr-deAliasMask;
             velSmallerAll(:,ii)=velSmaller-deAliasMask;
             velLargerAll(:,ii)=velLarger-deAliasMask;
             velMaxAll(:,ii)=velMax-deAliasMask;

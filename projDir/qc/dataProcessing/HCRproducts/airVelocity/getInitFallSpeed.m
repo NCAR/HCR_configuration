@@ -8,7 +8,14 @@ b=0.084;
 
 zlin=10.^(data.DBZ_MASKED./10);
 
-vr=a.*zlin.^b;
+% V rain
+% Eqs. 8 and 9 https://doi-org.cuucar.idm.oclc.org/10.1175/1520-0426(1994)011<1656:EOVIPS>2.0.CO;2
+
+mu=0;
+N0=6.4*10^4*exp(3.2*mu);
+innerPar=(zlin./(N0.*10^6.*gamma(7+mu))).^(1/(7+mu));
+outerPar=(1+6.*innerPar).^-(7+mu);
+vr=9.65-10.3.*outerPar;
 
 % V ice
 % https://doi.org/10.1175/2009JAS3132.1
@@ -38,6 +45,7 @@ matInd=sub2ind(size(data.asl),surfInd,1:length(data.time));
 
 rhoSurf=rho(matInd);
 
+vr=vr.*(rhoSurf./rho).^0.45;
 vi=vi.*(rhoSurf./rho).^0.45;
 
 end

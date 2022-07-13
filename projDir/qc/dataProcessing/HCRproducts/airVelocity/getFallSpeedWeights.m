@@ -8,27 +8,46 @@ wi=nan(size(echo));
 % No icing
 icing=icingIn;
 modeMelt=mode(melt,1);
-icing(isnan(icing) & modeMelt<20)=0;
-icing(isnan(icing) & modeMelt>=20)=inf;
+icing(isnan(icing) & modeMelt<20)=inf;
+icing(isnan(icing) & modeMelt>=20)=-inf;
 
 % Below melting layer
 iceMat=repmat(icing,size(asl,1),1);
 wr(asl<iceMat)=1;
 wi(asl<iceMat)=0;
 
-% T < -12 C
-wr(temp<-12)=0;
-wi(temp<-12)=1;
+% Stratiform
+% T < 0 C
+wr(temp<=0 & ~isnan(temp) & echo<35 & echo~=30)=0;
+wi(temp<=0 & ~isnan(temp) & echo<35 & echo~=30)=1;
 
 % Find ht
-htMask=asl;
-htMask(temp>=-12 | isnan(temp))=nan;
-ht=min(htMask,[],1,'omitnan');
+htMaskS=asl;
+htMaskS(temp>0 | isnan(temp))=nan;
+hts=min(htMaskS,[],1,'omitnan');
+hts=fillmissing(hts,'linear','EndValues','nearest');
 
 % Transition stratiform
-%tsInds=find(~isnan(temp) & isnan(wr) & echo<20);
-tsInds=find(~isnan(temp) & isnan(wr));
-wrInit=(ht-asl).^2./(ht-icing).^2;
+tsInds=find(~isnan(temp) & isnan(wr) & echo<35 & echo~=30);
+wrInit=(hts-asl).^2./(hts-icing).^2;
+wiInit=1-wrInit;
+wr(tsInds)=wrInit(tsInds);
+wi(tsInds)=wiInit(tsInds);
+
+% Convective
+% T < -12 C
+wr(temp<-12 & ~isnan(temp) & (echo>35 | echo==30))=0;
+wi(temp<-12 & ~isnan(temp) & (echo>35 | echo==30))=1;
+
+% Find ht
+htMaskC=asl;
+htMaskC(temp>=-12 | isnan(temp))=nan;
+htc=min(htMaskC,[],1,'omitnan');
+htc=fillmissing(htc,'linear','EndValues','nearest');
+
+% Transition convective
+tsInds=find(~isnan(temp) & isnan(wr) & (echo>35 | echo==30));
+wrInit=(htc-asl).^2./(htc-icing).^2;
 wiInit=1-wrInit;
 wr(tsInds)=wrInit(tsInds);
 wi(tsInds)=wiInit(tsInds);
