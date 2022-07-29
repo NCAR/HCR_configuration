@@ -109,7 +109,7 @@ for aa=1:size(caseList,1)
 
     piaHydromet2(piaHydromet2>20)=nan;
     piaHydromet2(piaHydromet2<0)=nan;
-    
+
     %% Divede into only cold and only warm categories
 
     % Find where only warm or only cold clouds
@@ -504,3 +504,42 @@ grid on
 set(gcf,'PaperPositionMode','auto')
 print(f1,[figdir,project,'_ldrVSatt'],'-dpng','-r0')
 
+%% No LDR
+
+noLdrC=find(sum(~isnan(ldrC),1)==0);
+noLdrW=find(sum(~isnan(ldrW),1)==0);
+
+attNoLdrC=attC(noLdrC);
+attNoLdrW=attW(noLdrW);
+
+f1 = figure('Position',[200 700 600 1000],'DefaultAxesFontSize',12);
+
+subplot(2,1,1)
+edgesNoLdr=0:0.1:10;
+
+hC=histcounts(attNoLdrC,edgesNoLdr);
+
+bar(edgesNoLdr(1:end-1)+0.05,hC,1)
+
+xlim([0 10])
+
+title('Hydrometeor attenuation for rays with no LDR, cold')
+ylabel('Ray counts')
+xlabel('Hydrometeor 2 way attenuation (dB)')
+grid on
+
+subplot(2,1,2)
+
+hW=histcounts(attNoLdrW,edgesNoLdr);
+
+bar(edgesNoLdr(1:end-1)+0.05,hW,1)
+
+xlim([0 10])
+
+title('Hydrometeor attenuation for rays with no LDR, warm')
+ylabel('Ray counts')
+xlabel('Hydrometeor 2 way attenuation (dB)')
+grid on
+
+set(gcf,'PaperPositionMode','auto')
+print(f1,[figdir,project,'_noLDRatt'],'-dpng','-r0')
