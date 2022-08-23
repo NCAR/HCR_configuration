@@ -11,204 +11,150 @@ qcVersion='v3.1';
 freqData='10hz'; % 10hz, 100hz, or 2hz
 whichModel='era5';
 
+flight=7;
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
 indir='/scr/snow2/rsfdata/projects/socrates/hcr/qc3/cfradial/v3.0_full/10hz/';
 
-[~,indirCorr]=modelDir(project,whichModel,quality,qcVersion,dataFreq);
+[~,indirCorr]=modelDir(project,whichModel,quality,qcVersion,freqData);
 
-figdir=[indirCorr(1:end-5),'meltLayerPlots/testMat/'];
+figdir=[indir(1:end-5),'velCorrZenithPlots/segments/'];
 
-infileZ=['~/git/HCR_configuration/projDir/qc/dataProcessing/HCRproducts/caseFiles/velCorrZenithSegments_',project,'.txt'];
+infileZ=['~/git/HCR_configuration/projDir/qc/dataProcessing/HCRproducts/caseFiles/velCorrZenithSegments_',project,'_RF',num2str(flight),'.txt'];
 caseListZ = table2array(readtable(infileZ));
 
-infileN=['~/git/HCR_configuration/projDir/qc/dataProcessing/HCRproducts/caseFiles/velCorrNadirSegments_',project,'.txt'];
+infileN=['~/git/HCR_configuration/projDir/qc/dataProcessing/HCRproducts/caseFiles/velCorrNadirSegments_',project,'_RF',num2str(flight),'.txt'];
 caseListN = table2array(readtable(infileN));
 
 %% Load vel
 disp('Loading velCorr ...');
 
-fileIn1=dir([indirCorr,whichModel,'.velCorr.*.Flight13.mat']);
-meltLayerIn=load([indirCorr,fileIn1.name]);
-meltLayerGet=meltLayerIn.meltLayer;
+fileIn1=dir([indirCorr,whichModel,'.velCorr.*.Flight',num2str(flight),'.mat']);
+velCorrIn=load([indirCorr,fileIn1.name]);
+velCorrGet=velCorrIn.velCorr;
 
-% Get zenith pointing
+fileIn2=dir([indirCorr,whichModel,'.time.*.Flight',num2str(flight),'.mat']);
+timeIn=load([indirCorr,fileIn2.name]);
+timeGet=timeIn.timeHCR;
+
+zSegsVEL=[];
+zSegsVELcorr=[];
+zAsl=[];
+nSegsVEL=[];
+nAsl=[];
+
+%% Get zenith pointing
 for aa=1:size(caseListZ,1)
         
     startTime=datetime(caseListZ(aa,1:6));
     endTime=datetime(caseListZ(aa,7:12));
        
-    %% Load vel
-    disp('Loading melt layer.');
-    
-    fileIn1=dir([indirCorr,whichModel,'.velCorr.*.Flight',num2str(aa),'.mat']);
-    meltLayerIn=load([indirCorr,fileIn1.name]);
-    meltLayerGet=meltLayerIn.meltLayer;
+    % Get vel data
+    data=[];
+    data.VEL_MASKED=[];
+   
+    % Make list of files within the specified time frame
+    fileList=makeFileList(indir,startTime,endTime,'xxxxxx20YYMMDDxhhmmss',1);
         
-    %% Plot in hourly increments
-    
-    disp('Plotting ...');
-    
-    startPlot=startTime;
-    
-    while startPlot<endTime
-        
-        close all
-        
-        endPlot=startPlot+minutes(30);
-        timeInds=find(data.time>=startPlot & data.time<=endPlot);
-        
-        dbzPlot=data.DBZ_MASKED(:,timeInds);
-        
-        if sum(sum(~isnan(dbzPlot)))~=0
-                        
-            timeIndsMelt=find(timeMELT>=data.time(timeInds(1)) & timeMELT<=data.time(timeInds(end)));
-            
-            meltPlot=meltLayerGet(:,timeIndsMelt);
-            icePlot=iceLevelGet(timeIndsMelt);
-            
-            %% Get indices
-            
-            elevenInds=find(meltPlot==11);
-            twelveInds=find(meltPlot==12);
-            thirteenInds=find(meltPlot==13);
-            fourteenInds=find(meltPlot==14);
-            
-            twentyoneInds=find(meltPlot==21);
-            twentytwoInds=find(meltPlot==22);
-            twentythreeInds=find(meltPlot==23);
-            twentyfourInds=find(meltPlot==24);
-            
-            %% Plot
-            
-            timeMat=repmat(data.time(:,timeInds),size(data.LDR(:,timeInds),1),1);
-            dbzMasked=data.DBZ_MASKED(:,timeInds);
-            ldrMasked=data.LDR(:,timeInds);
-            velMasked=data.VEL_UNFOLDED(:,timeInds);
-            timeMasked=data.time(timeInds);
-            aslMasked=data.asl(:,timeInds);
-            
-            close all
-            
-            if etime(datevec(endPlot),datevec(startPlot))<=900
-                newInds=1:1:size(timeMat,2);
-            elseif etime(datevec(endPlot),datevec(startPlot))<=3600
-                newInds=1:10:size(timeMat,2);
-            else
-                newInds=1:100:size(timeMat,2);
-            end
-            
-            % Resample for plotting
-            newDBZ=dbzMasked(:,newInds);
-            newLDR=ldrMasked(:,newInds);
-            newVEL=velMasked(:,newInds);
-            newASL=aslMasked(:,newInds);
-            newFindMelt=meltPlot(:,newInds);
-            newTime=timeMasked(newInds);
-            
-            fig1=figure('DefaultAxesFontSize',11,'position',[100,1300,1500,1200],'visible','off');
-            
-            ax1=subplot(4,1,1);
-            hold on;
-            sub1=surf(newTime,newASL./1000,newDBZ,'edgecolor','none');
-            view(2);
-            sub1=colMapDBZ(sub1);
-            scatter(timeMat(twentyoneInds),aslMasked(twentyoneInds)./1000,10,'k','filled');
-            scatter(timeMat(elevenInds),aslMasked(elevenInds)./1000,10,...
-                'MarkerEdgeColor',[0.7 0.7 0.7],'MarkerFaceColor',[0.7 0.7 0.7]);
-            
-            scatter(timeMat(twentyfourInds),aslMasked(twentyfourInds)./1000,10,...
-                'MarkerEdgeColor',[0.45 0.76 0.42],'MarkerFaceColor',[0.45 0.76 0.42]);
-            scatter(timeMat(twentythreeInds),aslMasked(twentythreeInds)./1000,10,...
-                'MarkerEdgeColor',[0.7 0.8 0.87],'MarkerFaceColor',[0.7 0.8 0.87]);
-            scatter(timeMat(twentytwoInds),aslMasked(twentytwoInds)./1000,10,...
-                'MarkerEdgeColor',[0.17 0.45 0.7],'MarkerFaceColor',[0.17 0.45 0.7]);
-            
-            scatter(timeMat(fourteenInds),aslMasked(fourteenInds)./1000,10,'g','filled');
-            scatter(timeMat(thirteenInds),aslMasked(thirteenInds)./1000,10,'c','filled');
-            scatter(timeMat(twelveInds),aslMasked(twelveInds)./1000,10,'b','filled');
-            
-            ax = gca;
-            ax.SortMethod = 'childorder';
-            ylim(ylimits);
-            ylabel('Altitude (km)');
-            xlim([startPlot,endPlot]);
-            title(['Flight ',num2str(aa),': Reflectivity and melting layer'])
-            grid on
-            set(gca,'xticklabel',[])
-            ax1.Position=[0.06 0.765 0.87 0.21];
-            
-            ax2=subplot(4,1,2);
-            hold on;
-            sub1=surf(newTime,newASL./1000,newFindMelt,'edgecolor','none');
-            ax2.Colormap=([1 0 1;1 1 0]);
-            view(2);
-            scatter(timeMat(twentyoneInds),aslMasked(twentyoneInds)./1000,10,'k','filled');
-            scatter(timeMat(elevenInds),aslMasked(elevenInds)./1000,10,...
-                'MarkerEdgeColor',[0.7 0.7 0.7],'MarkerFaceColor',[0.7 0.7 0.7]);
-            
-            scatter(timeMat(twentyfourInds),aslMasked(twentyfourInds)./1000,10,...
-                'MarkerEdgeColor',[0.45 0.76 0.42],'MarkerFaceColor',[0.45 0.76 0.42]);
-            scatter(timeMat(twentythreeInds),aslMasked(twentythreeInds)./1000,10,...
-                'MarkerEdgeColor',[0.7 0.8 0.87],'MarkerFaceColor',[0.7 0.8 0.87]);
-            scatter(timeMat(twentytwoInds),aslMasked(twentytwoInds)./1000,10,...
-                'MarkerEdgeColor',[0.17 0.45 0.7],'MarkerFaceColor',[0.17 0.45 0.7]);
-            
-            scatter(timeMat(fourteenInds),aslMasked(fourteenInds)./1000,10,'g','filled');
-            scatter(timeMat(thirteenInds),aslMasked(thirteenInds)./1000,10,'c','filled');
-            scatter(timeMat(twelveInds),aslMasked(twelveInds)./1000,10,'b','filled');
-            
-            plot(data.time(timeInds),icePlot./1000,'linewidth',1,'color',[0.6 0.6 0.6]);
-            ax = gca;
-            ax.SortMethod = 'childorder';
-  
-            ylim(ylimits);
-            ylabel('Altitude (km)');
-            xlim([startPlot,endPlot]);
-            title('Reflectivity and melting layer')
-            grid on
-            set(gca,'xticklabel',[])
-            ax2.Position=[0.06 0.525 0.87 0.21];
-            
-            
-            %%%%%%%%%%%%%%%%%%%%%%%% LDR%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-            ax3=subplot(4,1,3);
-            hold on;
-            sub3=surf(newTime,newASL./1000,newLDR,'edgecolor','none');
-            view(2);
-            caxis([-25 5]);
-            colorbar
-            ylim(ylimits);
-            ylabel('Altitude (km)');
-            xlim([startPlot,endPlot]);
-            title('LDR')
-            grid on
-            set(gca,'xticklabel',[])
-            ax3.Position=[0.06 0.287 0.87 0.21];
-            
-            ax4=subplot(4,1,4);
-            ax4.Colormap=jet;
-            hold on;
-            sub3=surf(newTime,newASL./1000,newVEL,'edgecolor','none');
-            view(2);
-            caxis([-10 10]);
-            colorbar
-            ylim(ylimits);
-            ylabel('Altitude (km)');
-            xlim([startPlot,endPlot]);
-            title('VEL')
-            grid on
-            ax4.Position=[0.06 0.05 0.87 0.21];
-            
-            linkaxes([ax1 ax2 ax3 ax4],'xy');
-            
-            formatOut = 'yyyymmdd_HHMM';
-            set(gcf,'PaperPositionMode','auto')
-            print([figdir,'meltRefl_',datestr(newTime(1),formatOut),'_to_',datestr(newTime(end),formatOut)],'-dpng','-r0');
-                  
-        end
-        startPlot=endPlot;
-    end
+    % Load data
+    data=read_HCR(fileList,data,startTime,endTime);
+    data.VEL_MASKED=-data.VEL_MASKED;
+
+    % Calculate mean vel over segment
+
+    velCorrInds=find(timeGet>=startTime & timeGet<=endTime);
+    velCorrThis=velCorrGet(:,velCorrInds);
+    velCorrThis(isnan(data.VEL_MASKED))=nan;
+    velCorrThis=-velCorrThis;
+    dataSum=sum(~isnan(data.VEL_MASKED),2);
+
+    meanVel=mean(data.VEL_MASKED,2,'omitnan');
+    meanVel(dataSum<100)=nan;
+    meanVelCorr=mean(velCorrThis,2,'omitnan');
+    meanVelCorr(dataSum<100)=nan;
+
+    zSegsVEL=cat(2,zSegsVEL,meanVel);
+    zSegsVELcorr=cat(2,zSegsVELcorr,meanVelCorr);
+    zAsl=cat(2,zAsl,mean(data.asl,2,'omitnan'));
 end
+
+%% Get nadir pointing
+for aa=1:size(caseListN,1)
+        
+    startTime=datetime(caseListN(aa,1:6));
+    endTime=datetime(caseListN(aa,7:12));
+       
+    % Get vel data
+    data=[];
+    data.VEL_MASKED=[];
+   
+    % Make list of files within the specified time frame
+    fileList=makeFileList(indir,startTime,endTime,'xxxxxx20YYMMDDxhhmmss',1);
+        
+    % Load data
+    data=read_HCR(fileList,data,startTime,endTime);
+
+    % Calculate mean vel over segment
+    dataSum=sum(~isnan(data.VEL_MASKED),2);
+
+    meanVel=mean(data.VEL_MASKED,2,'omitnan');
+    meanVel(dataSum<100)=nan;
+    
+    nSegsVEL=cat(2,nSegsVEL,meanVel);   
+    nAsl=cat(2,nAsl,mean(data.asl,2,'omitnan'));
+end
+
+%% Plot
+
+disp('Plotting ...');
+zcols=winter(size(zSegsVEL,2));
+ncols=autumn(size(nSegsVEL,2));
+
+close all
+
+fig1=figure('DefaultAxesFontSize',11,'position',[100,1300,1500,700],'renderer','painters','visible','on');
+
+% Uncorrected
+subplot(1,2,1)
+hold on
+plot([0,0],[0,10000],'-k','LineWidth',1);
+for ii=1:size(zSegsVEL,2)
+    plot(zSegsVEL(:,ii),zAsl(:,ii),'-','LineWidth',2,'Color',zcols(ii,:));
+end
+
+for ii=1:size(nSegsVEL,2)
+    plot(nSegsVEL(:,ii),nAsl(:,ii),'-','LineWidth',2,'Color',ncols(ii,:));
+end
+
+xlim([-2 2]);
+ylim([0 3000]);
+grid on
+xlabel('Velocity (m s^{-1}')
+ylabel('Altitude (m)')
+title([{['RF',num2str(flight)]};{'Blue: uncorrected zenith. Red: nadir.'}])
+
+% Corrected
+subplot(1,2,2)
+hold on
+plot([0,0],[0,10000],'-k','LineWidth',1);
+for ii=1:size(zSegsVELcorr,2)
+    plot(zSegsVELcorr(:,ii),zAsl(:,ii),'-','LineWidth',2,'Color',zcols(ii,:));
+end
+
+for ii=1:size(nSegsVEL,2)
+    plot(nSegsVEL(:,ii),nAsl(:,ii),'-','LineWidth',2,'Color',ncols(ii,:));
+end
+
+xlim([-2 2]);
+ylim([0 3000]);
+grid on
+xlabel('Velocity (m s^{-1}')
+ylabel('Altitude (m)')
+title([{['RF',num2str(flight)]};{'Blue: corrected zenith. Red: nadir.'}])
+
+set(gcf,'PaperPositionMode','auto')
+print([figdir,'segments_RF',num2str(flight),'.png'],'-dpng','-r0');
+
