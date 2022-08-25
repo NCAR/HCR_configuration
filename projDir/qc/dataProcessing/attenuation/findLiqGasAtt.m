@@ -97,6 +97,9 @@ for aa=1:length(caseStart)
    %% Get reference attenuation
    [sig0measAtt,surfFlag,refSig0,refFlag,sig0model,piaHydromet2]=getRefAtten(data);
 
+   %% Hitschfeld Bordan
+   zHB=hitschfeldBordan(data.dbzMasked,data.range);
+
     %% Plot lines
 
     close all
@@ -151,12 +154,27 @@ for aa=1:length(caseStart)
 
     timeInds=1:5:length(data.time);
 
-    f1 = figure('Position',[200 500 1800 500],'DefaultAxesFontSize',12,'renderer','painters');
+    f1 = figure('Position',[200 500 1800 1000],'DefaultAxesFontSize',12,'renderer','painters');
 
     colormap jet
 
+    subplot(2,1,1)
     hold on
     surf(data.time(:,timeInds),data.asl(:,timeInds)./1000,dbzOrig(:,timeInds),'edgecolor','none');
+    view(2);
+    l1=plot(data.time(:,timeInds),data.altitude(:,timeInds)./1000,'-k','linewidth',2);
+    ylabel('Altitude (km)');
+    caxis([-25 25]);
+    ylim([-0.5 ylimRefl]);
+    xlim([data.time(timeInds(1)),data.time(timeInds(end))]);
+    colorbar
+    grid on
+    legend(l1,'Altitude');
+    title('Reflectivity (dBZ)')
+
+    subplot(2,1,2)
+    hold on
+    surf(data.time(:,timeInds),data.asl(:,timeInds)./1000,zHB(:,timeInds),'edgecolor','none');
     view(2);
     l1=plot(data.time(:,timeInds),data.altitude(:,timeInds)./1000,'-k','linewidth',2);
     ylabel('Altitude (km)');
