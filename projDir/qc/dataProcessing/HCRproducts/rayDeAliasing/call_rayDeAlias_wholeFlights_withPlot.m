@@ -7,22 +7,21 @@ close all
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-project='noreaster'; %socrates, aristo, cset
-quality='qc2'; %field, qc1, or qc2
-qcVersion='v2.0';
+project='socrates'; %socrates, aristo, cset
+quality='qc3'; %field, qc1, or qc2
+qcVersion='v3.1';
 freqData='10hz'; % 10hz, 100hz, 2hz, or combined
 dataFreq=10;
 whichModel='era5';
 
 saveData=1;
-plotData=0;
+plotData=1;
 
 [~,outdir]=modelDir(project,whichModel,quality,qcVersion,freqData);
 
 ylimUpper=13;
 
 indir=HCRdir(project,quality,qcVersion,freqData);
-figdir=[indir(1:end-5),'rayDeAlias/cases/'];
 
 infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_',project,'_data.txt'];
 

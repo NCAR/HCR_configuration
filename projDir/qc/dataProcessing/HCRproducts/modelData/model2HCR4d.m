@@ -4,13 +4,13 @@ close all;
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-project='noreaster'; % socrates, cset, aristo, otrec
-quality='qc2'; % field, qc0, qc1, qc2
-qcVersion='v2.0';
+project='socrates'; % socrates, cset, aristo, otrec
+quality='qc3'; % field, qc0, qc1, qc2
+qcVersion='v3.1';
 freqData='10hz'; % 10hz, 100hz, or 2hz
 whichModel='era5'; % ecmwf or era5 or narr
 
-era5levelFiles=0;
+era5levelFiles=1;
 
 addTopo=0; % Set to 1 if topo data should be added and hasn't been added in separate script.
 getSST=1;
@@ -90,7 +90,7 @@ for ii=1:size(caseList,1)
     disp('Getting model data ...');
     if strcmp(whichModel,'era5')
         if era5levelFiles
-            modelData=read_era5_levelFiles_uv1D(modeldir,data.time(1),data.time(end),getSST);
+            modelData=read_era5_levelFiles(modeldir,data.time(1),data.time(end),getSST);
         else
             modelData=read_era5_oneFile(modeldir,data.time(1),data.time(end),getSST);
         end

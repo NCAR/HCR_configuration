@@ -1,12 +1,12 @@
-% add model data to cfradial files
+% add topo data to cfradial files
 clear all;
 close all;
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-project='noreaster'; % socrates, cset, aristo, otrec
-quality='qc2'; % field, qc1, qc2
-qcVersion='v2.0';
+project='socrates'; % socrates, cset, aristo, otrec
+quality='qc3'; % field, qc1, qc2
+qcVersion='v3.1';
 freqData='10hz';
 whichModel='era5';
 
@@ -42,7 +42,7 @@ for ii=1:size(caseList,1)
         
         % Check if times match
         if size(model.time,2)~=size(model.topo,2)
-            error('Sie of model time and model variable do not match.');
+            error('Size of model time and model variable do not match.');
         end
                 
         %% Loop through HCR data files

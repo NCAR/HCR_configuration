@@ -5,10 +5,10 @@ close all;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Input variables %%%%%%%%%%%%%%%%%%%%%%%%%%
 
-project='noreaster'; %socrates, aristo, cset
-quality='qc2'; %field, qc1, or qc2
+project='socrates'; %socrates, aristo, cset
+quality='qc3'; %field, qc1, or qc2
 freqData='10hz'; % 10hz, 100hz, or 2hz
-qcVersion='v2.0';
+qcVersion='v3.1';
 whichModel='era5';
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));

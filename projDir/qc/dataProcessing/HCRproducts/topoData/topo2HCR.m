@@ -4,9 +4,9 @@ close all;
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-project='noreaster'; % socrates, cset, aristo, otrec
-quality='qc2'; % field, qc0, qc1, qc2
-qcVersion='v2.0';
+project='socrates'; % socrates, cset, aristo, otrec
+quality='qc3'; % field, qc0, qc1, qc2
+qcVersion='v3.1';
 freqData='10hz'; % 10hz, 100hz, or 2hz
 whichModel='era5'; % ecmwf or era5
 
@@ -16,7 +16,7 @@ formatOut = 'yyyymmdd_HHMM';
 
 topodir=topoDir(project);
 
-infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_',project,'.txt'];
+infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_',project,'_data.txt'];
 
 caseList = table2array(readtable(infile));
 

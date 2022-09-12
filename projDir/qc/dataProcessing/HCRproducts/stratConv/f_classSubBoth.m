@@ -1,4 +1,4 @@
-function classSub=f_classSubBoth(classIn,asl,topo,melt,temp,elev,flag)
+function classSub=f_classSubBoth(classIn,asl,topo,meltOrig,temp,elev,flag)
 
 % 14 strat low
 % 16 strat mid
@@ -20,6 +20,13 @@ convAreas=bwconncomp(convMask);
 
 % Calculate distance between asl and topo
 distAslTopo=asl-topo;
+
+% Minimum altitude for low/mid boundary is 2km
+% Minimum altitude for mid/high boundary is 4km
+melt=meltOrig;
+melt(distAslTopo<2000)=10;
+melt(isnan(meltOrig))=nan;
+temp(distAslTopo<4000 & temp<-25)=-25;
 
 for ii=1:convAreas.NumObjects
     % Check if next to aircraft

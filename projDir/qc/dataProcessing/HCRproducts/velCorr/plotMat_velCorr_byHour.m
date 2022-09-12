@@ -20,10 +20,9 @@ infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_
 
 caseList = table2array(readtable(infile));
 
-%indir=HCRdir(project,quality,qcVersion,freqData);
-indir='/scr/snow2/rsfdata/projects/socrates/hcr/qc3/cfradial/v3.0_full/10hz/';
+indir=HCRdir(project,quality,qcVersion,freqData);
 
-figdir='/scr/snow2/rsfdata/projects/socrates/hcr/qc3/cfradial/v3.0_full/velCorrZenithPlots/hourly/';
+figdir=[indir(1:end-5),'velCorrZenithPlots/hourly/'];
 
 polyTimePeriod=15; %Time period for poly fit in seconds
 polyOrder=3; % Order of polynomial fit

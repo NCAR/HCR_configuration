@@ -266,6 +266,11 @@ $PROJ_DIR/qc/dataProcessing/HCRproducts/flag/cfradialVELmasked.m
 # It also needs model input data from eather ecmwf forecasts or
 # era5 reanalysis which are in
 
+# The variables needed are:
+# 3D: Relative humidity, U velocity, V velocity, Temperature, Geopotential, 1000 to 100 hPa
+# 2D: Sea surface temperature, 2 metre dewpoint temperature, 2 metre temperature,
+#     10 metre U wind component, 10 metre V wind component, Surface pressure
+
 cd $DATA_DIR
 cd ../model/era5
 

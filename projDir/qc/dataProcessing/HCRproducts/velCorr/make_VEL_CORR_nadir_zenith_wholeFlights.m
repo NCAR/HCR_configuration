@@ -11,8 +11,8 @@ qcVersion='v3.1';
 freqData='10hz'; % 10hz, 100hz, or 2hz
 whichModel='era5';
 
-saveTime=1;
-plotYes=0;
+saveTime=0;
+plotYes=1;
 
 [~,outdir]=modelDir(project,whichModel,quality,qcVersion,freqData);
 
@@ -20,12 +20,11 @@ infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_
 
 caseList = table2array(readtable(infile));
 
-%indir=HCRdir(project,quality,qcVersion,freqData);
-indir='/scr/snow2/rsfdata/projects/socrates/hcr/qc3/cfradial/v3.0_full/10hz/';
+indir=HCRdir(project,quality,qcVersion,freqData);
 
-figdir='/scr/snow2/rsfdata/projects/socrates/hcr/qc3/cfradial/v3.0_full/velCorrZenithPlots/wholeFlights/';
+figdir=[indir(1:end-5),'velCorrZenithPlots/wholeFlights/'];
 
-polyTimePeriod=15; %Time period for poly fit in seconds
+polyTimePeriod=20; %Time period for poly fit in seconds
 polyOrder=3; % Order of polynomial fit
 
 for kk=1:size(caseList,1)
