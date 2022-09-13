@@ -62,11 +62,11 @@ for ii=1:mixedAreas.NumObjects
             end
             checkCols(firstInd:lastInd,jj)=convCols(firstInd:lastInd,jj);            
         end
-        stratPerc=length(find(checkCols<stratMixed))/length(find(~isnan(checkCols)));
+        %stratPerc=length(find(checkCols<stratMixed))/length(find(~isnan(checkCols)));
 
         medThick=median(sum(~isnan(checkCols),1)); % Median thickness of above melting layer area
 
-        if stratPerc>0.8 & medThick>20
+        if medThick>20% & stratPerc>0.8
             maskMixed(pixInds)=0;
             conv(pixInds)=0;
         elseif median(elev(ucols))<=0 % If pointing down and closest pixel to plane is stratiform and there are a significant number of near plane pixels
@@ -86,7 +86,7 @@ end
 horLarge=imdilate(maskMixed, strel('line', 100,0));
 
 % Enlarge mixedConv
-mixedLarge1=imdilate(maskMixed, strel('disk', 25)); %30
+mixedLarge1=imdilate(maskMixed, strel('disk', 15)); %25
 mixedLarge=imclose(mixedLarge1,strel('disk', 50));
 mixedLarge(isnan(conv))=0;
 mixedLarge=imfill(mixedLarge,'holes');
@@ -121,7 +121,7 @@ maskConv=conv>=mixedConv;
 horLarge2=imdilate(maskConv, strel('line', 100,0));
 
 % Enlarge conv
-convLarge1=imdilate(maskConv, strel('disk', 15)); %30
+convLarge1=imdilate(maskConv, strel('disk', 8)); %15
 convLarge=imclose(convLarge1,strel('disk', 50));
 convLarge(isnan(conv))=0;
 convLarge=imfill(convLarge,'holes');

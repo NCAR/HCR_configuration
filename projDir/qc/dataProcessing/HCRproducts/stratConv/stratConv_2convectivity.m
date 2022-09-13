@@ -5,10 +5,10 @@ close all;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Input variables %%%%%%%%%%%%%%%%%%%%%%%%%%
 
-project='noreaster'; %socrates, aristo, cset, otrec
-quality='qc2'; %field, qc1, or qc2
+project='socrates'; %socrates, aristo, cset, otrec
+quality='qc3'; %field, qc1, or qc2
 freqData='10hz';
-qcVersion='v2.0';
+qcVersion='v3.1';
 
 showPlot='off';
 
@@ -74,7 +74,7 @@ for aa=1:length(caseStart)
     ylimUpper=(max(data.asl(~isnan(data.DBZ_MASKED)))./1000)+0.5;
 
     % Take care of up pointing VEL
-    data.VEL_MASKED(:,data.elevation>0)=-data.VEL_MASKED(:,data.elevation>0);
+    data.VEL_MASKED(:,data.elevation<0)=-data.VEL_MASKED(:,data.elevation<0);
 
     % Remove data where antenna is in transition
     if blockTransition

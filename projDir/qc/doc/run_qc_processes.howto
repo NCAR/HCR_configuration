@@ -294,7 +294,7 @@ $PROJ_DIR/qc/dataProcessing/other/filterHX/cfradialLDRmasked.m
 # Adjust and run
 $PROJ_DIR/qc/dataProcessing/HCRproducts/meltingLayer/call_meltLayer_wholeFlights.m
 
-# To add id to the dataset run
+# To add it to the dataset run
 $PROJ_DIR/qc/dataProcessing/HCRproducts/meltingLayer/cfradialMeltLayer.m
 
 #################################################################

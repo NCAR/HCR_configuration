@@ -34,7 +34,7 @@ infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_
 
 caseList = table2array(readtable(infile));
 
-for aa=1:size(caseList,1)
+for aa=4:size(caseList,1)
     disp(['Flight ',num2str(aa)]);
     disp(['Starting at ',datestr(datetime('now'),'yyyy-mm-dd HH:MM')]);
     disp('Loading data ...');
@@ -76,7 +76,7 @@ for aa=1:size(caseList,1)
     ylimUpper=(max(data.asl(~isnan(data.DBZ_MASKED)))./1000)+0.5;
 
     % Take care of up pointing VEL
-    data.VEL_MASKED(:,data.elevation>0)=-data.VEL_MASKED(:,data.elevation>0);
+    data.VEL_MASKED(:,data.elevation<0)=-data.VEL_MASKED(:,data.elevation<0);
 
     % Remove data where antenna is in transition
     if blockTransition
