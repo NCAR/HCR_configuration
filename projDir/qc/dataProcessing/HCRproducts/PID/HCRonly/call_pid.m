@@ -5,9 +5,9 @@ close all
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-project='noreaster'; %socrates, aristo, cset
-quality='qc2'; %field, qc1, or qc2
-qcVersion='v2.0';
+project='socrates'; %socrates, aristo, cset
+quality='qc3'; %field, qc1, or qc2
+qcVersion='v3.1';
 freqData='10hz'; % 10hz, 100hz, 2hz, or combined
 
 plotIn.plotMR=0;
@@ -77,8 +77,9 @@ for aa=1:length(caseStart)
         pixRadVEL=50;
         velBase=-20;
 
+        data.VEL_MASKED(:,data.elevation<0)=-data.VEL_MASKED(:,data.elevation<0);
         data.VELTEXT=f_velTexture(data.VEL_MASKED,data.elevation,pixRadVEL,velBase);
-
+        
         %% Mask LDR
 
         data.LDR(isnan(data.DBZ_MASKED))=nan;
@@ -101,11 +102,19 @@ for aa=1:length(caseStart)
 
         data.TEMP=tempOrig;
 
-        smallInds=find((data.MELTING_LAYER==20 | (isnan(data.MELTING_LAYER) & data.TEMP<0)) & isnan(data.LDR) & (pid_hcr==3 | pid_hcr==6));
+%         smallInds=find((data.MELTING_LAYER==20 | (isnan(data.MELTING_LAYER) & data.TEMP<0)) & isnan(data.LDR) & (pid_hcr==3 | pid_hcr==6));
+%         pid_hcr(smallInds)=11;
+% 
+%         largeInds=find((data.MELTING_LAYER==20 | (isnan(data.MELTING_LAYER) & data.TEMP<0)) & isnan(data.LDR) & ...
+%             (pid_hcr==1 | pid_hcr==2 | pid_hcr==4 | pid_hcr==5));
+%         pid_hcr(largeInds)=10;
+
+        smallInds=find((data.MELTING_LAYER==20 | (isnan(data.MELTING_LAYER) & data.TEMP<0)) & isnan(data.LDR) & ...
+            (data.DBZ_MASKED<=5 | data.VEL_MASKED<=1));
         pid_hcr(smallInds)=11;
 
         largeInds=find((data.MELTING_LAYER==20 | (isnan(data.MELTING_LAYER) & data.TEMP<0)) & isnan(data.LDR) & ...
-            (pid_hcr==1 | pid_hcr==2 | pid_hcr==4 | pid_hcr==5));
+            (data.DBZ_MASKED>5 & data.VEL_MASKED>1));
         pid_hcr(largeInds)=10;
 
         %% Set low DBZ to cloud liquid

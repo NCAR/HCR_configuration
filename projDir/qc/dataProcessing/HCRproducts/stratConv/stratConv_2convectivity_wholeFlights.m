@@ -34,7 +34,7 @@ infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_
 
 caseList = table2array(readtable(infile));
 
-for aa=4:size(caseList,1)
+for aa=1:size(caseList,1)
     disp(['Flight ',num2str(aa)]);
     disp(['Starting at ',datestr(datetime('now'),'yyyy-mm-dd HH:MM')]);
     disp('Loading data ...');
@@ -58,30 +58,30 @@ for aa=4:size(caseList,1)
     if blockTransition
         data.ANTFLAG=[];
     end
-        
-    dataVars=fieldnames(data);
-    
+            
     % Load data
     data=read_HCR(fileList,data,startTime,endTime);
-    
-    % Check if all variables were found
-    for ii=1:length(dataVars)
-        if ~isfield(data,dataVars{ii})
-            dataVars{ii}=[];
-        end
+
+    %% Truncate to non missing
+    nonMissingInds=findNonMissingInds(data);
+
+    dataInVars=fields(data);
+
+    dataShort=[];
+    for ii=1:length(dataInVars)
+        dataShort.(dataInVars{ii})=data.(dataInVars{ii})(:,nonMissingInds==1);
     end
-    
-    dataVars=dataVars(~cellfun('isempty',dataVars));
-    
-    ylimUpper=(max(data.asl(~isnan(data.DBZ_MASKED)))./1000)+0.5;
+
+    %%        
+    ylimUpper=(max(data.asl(~isnan(dataShort.DBZ_MASKED)))./1000)+0.5;
 
     % Take care of up pointing VEL
-    data.VEL_MASKED(:,data.elevation<0)=-data.VEL_MASKED(:,data.elevation<0);
+    dataShort.VEL_MASKED(:,dataShort.elevation<0)=-dataShort.VEL_MASKED(:,dataShort.elevation<0);
 
     % Remove data where antenna is in transition
     if blockTransition
-        data.DBZ_MASKED(:,data.ANTFLAG==5)=nan;
-        data.VEL_MASKED(:,data.ANTFLAG==5)=nan;
+        dataShort.DBZ_MASKED(:,dataShort.ANTFLAG==5)=nan;
+        dataShort.VEL_MASKED(:,dataShort.ANTFLAG==5)=nan;
     end
 
     %% Texture from reflectivity and velocity
@@ -91,14 +91,14 @@ for aa=4:size(caseList,1)
     pixRadDBZ=50; % Radius over which texture is calculated in pixels. Default is 50.
     dbzBase=-10; % Reflectivity base value which is subtracted from DBZ.
 
-    dbzText=f_reflTexture(data.DBZ_MASKED,pixRadDBZ,dbzBase);
+    dbzText=f_reflTexture(dataShort.DBZ_MASKED,pixRadDBZ,dbzBase);
 
     disp('Calculating velocity texture ...');
 
     pixRadVEL=50;
     velBase=-20; % VEL base value which is subtracted from DBZ.
 
-    velText=f_velTexture(data.VEL_MASKED,data.elevation,pixRadVEL,velBase);
+    velText=f_velTexture(dataShort.VEL_MASKED,dataShort.elevation,pixRadVEL,velBase);
 
     %% Convectivity
 
@@ -107,8 +107,8 @@ for aa=4:size(caseList,1)
 
     convVEL=1/upperLimVEL.*velText;
 
-    convectivity=convDBZ.*convVEL;
-    convectivity(isnan(convectivity))=convDBZ(isnan(convectivity));
+    convectivityShort=convDBZ.*convVEL;
+    convectivityShort(isnan(convectivityShort))=convDBZ(isnan(convectivityShort));
 
     %% Basic classification
 
@@ -117,18 +117,22 @@ for aa=4:size(caseList,1)
     stratMixed=0.4; % Convectivity boundary between strat and mixed.
     mixedConv=0.5; % Convectivity boundary between mixed and conv.
 
-    classBasic=f_classBasicBoth(convectivity,stratMixed,mixedConv,data.MELTING_LAYER,data.elevation);
+    classBasic=f_classBasicBoth(convectivityShort,stratMixed,mixedConv,dataShort.MELTING_LAYER,dataShort.elevation);
 
     %% Sub classification
 
     disp('Sub classification ...');
 
-    classSub=f_classSubBoth(classBasic,data.asl,data.TOPO,data.MELTING_LAYER,data.TEMP,data.elevation,data.FLAG);
+    classSub=f_classSubBoth(classBasic,dataShort.asl,dataShort.TOPO,dataShort.MELTING_LAYER,dataShort.TEMP,dataShort.elevation,dataShort.FLAG);
           
     %% Save
     disp('Saving stratConv field ...')
 
-    convStrat=classSub;
+    convectivity=nan(size(data.DBZ_MASKED));
+    convectivity(:,nonMissingInds==1)=convectivityShort;
+    
+    convStrat=nan(size(data.DBZ_MASKED));
+    convStrat(:,nonMissingInds==1)=classSub;
     convStrat1D=max(convStrat,[],1);
     
     save([outdir,whichModel,'.convectivity.',datestr(data.time(1),'YYYYmmDD_HHMMSS'),'_to_',...

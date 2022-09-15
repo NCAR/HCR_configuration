@@ -2,7 +2,7 @@ function data = preProcessPID(data,convThresh)
 % Remove fields where they are not suitable
 
 %Reverse up pointing vel
-data.VEL_MASKED(:,data.elevation>0)=-data.VEL_MASKED(:,data.elevation>0);
+data.VEL_MASKED=-data.VEL_MASKED;
 
 % Fix melting layer
 data.MELTING_LAYER(~isnan(data.MELTING_LAYER) & data.MELTING_LAYER<20)=10;

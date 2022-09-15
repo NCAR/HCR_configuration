@@ -33,6 +33,12 @@ for ii=1:convAreas.NumObjects
 
     [row1 col1]=ind2sub(size(classIn),convAreas.PixelIdxList{ii});
     planePix=sum(row1==18); % Number of next to plane pixels
+    altDiff=distAslTopo(convAreas.PixelIdxList{ii});
+    altPlanePix=altDiff(row1==18);
+    colsRow18=col1(row1==18);
+    elevPlanePix=elev(colsRow18);
+    altLow=length(find(altPlanePix<500 & elevPlanePix'>0));
+    planePix=planePix-altLow;
 
     % Check if in vicinity of extinct
     extinctY=0;

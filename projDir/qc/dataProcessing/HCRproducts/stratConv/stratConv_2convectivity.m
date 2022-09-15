@@ -45,7 +45,7 @@ for aa=1:length(caseStart)
     fileList=makeFileList(dataDir,startTime,endTime,'xxxxxx20YYMMDDxhhmmss',1);
     
     data=[];
-    
+        
     data.DBZ_MASKED=[];
     data.VEL_MASKED=[];
     data.TOPO=[];
@@ -56,30 +56,30 @@ for aa=1:length(caseStart)
     if blockTransition
         data.ANTFLAG=[];
     end
-        
-    dataVars=fieldnames(data);
-    
+            
     % Load data
     data=read_HCR(fileList,data,startTime,endTime);
     
-    % Check if all variables were found
-    for ii=1:length(dataVars)
-        if ~isfield(data,dataVars{ii})
-            dataVars{ii}=[];
-        end
-    end
-    
-    dataVars=dataVars(~cellfun('isempty',dataVars));
+    %% Truncate to non missing
+    nonMissingInds=findNonMissingInds(data);
 
-    ylimUpper=(max(data.asl(~isnan(data.DBZ_MASKED)))./1000)+0.5;
+    dataInVars=fields(data);
+
+    dataShort=[];
+    for ii=1:length(dataInVars)
+        dataShort.(dataInVars{ii})=data.(dataInVars{ii})(:,nonMissingInds==1);
+    end
+
+    %%
+    ylimUpper=(max(dataShort.asl(~isnan(dataShort.DBZ_MASKED)))./1000)+0.5;
 
     % Take care of up pointing VEL
-    data.VEL_MASKED(:,data.elevation<0)=-data.VEL_MASKED(:,data.elevation<0);
+    dataShort.VEL_MASKED(:,dataShort.elevation<0)=-dataShort.VEL_MASKED(:,dataShort.elevation<0);
 
     % Remove data where antenna is in transition
     if blockTransition
-        data.DBZ_MASKED(:,data.ANTFLAG==5)=nan;
-        data.VEL_MASKED(:,data.ANTFLAG==5)=nan;
+        dataShort.DBZ_MASKED(:,dataShort.ANTFLAG==5)=nan;
+        dataShort.VEL_MASKED(:,dataShort.ANTFLAG==5)=nan;
     end
 
     %% Texture from reflectivity and velocity
@@ -89,14 +89,14 @@ for aa=1:length(caseStart)
     pixRadDBZ=50; % Radius over which texture is calculated in pixels. Default is 50.
     dbzBase=-10; % Reflectivity base value which is subtracted from DBZ.
 
-    dbzText=f_reflTexture(data.DBZ_MASKED,pixRadDBZ,dbzBase);
+    dbzText=f_reflTexture(dataShort.DBZ_MASKED,pixRadDBZ,dbzBase);
 
     disp('Calculating velocity texture ...');
 
     pixRadVEL=50;
     velBase=-20; % VEL base value which is subtracted from DBZ.
 
-    velText=f_velTexture(data.VEL_MASKED,data.elevation,pixRadVEL,velBase);
+    velText=f_velTexture(dataShort.VEL_MASKED,dataShort.elevation,pixRadVEL,velBase);
 
     %% Convectivity
 
@@ -117,30 +117,42 @@ for aa=1:length(caseStart)
     stratMixed=0.4; % Convectivity boundary between strat and mixed.
     mixedConv=0.5; % Convectivity boundary between mixed and conv.
 
-    classBasic=f_classBasicBoth(convBoth,stratMixed,mixedConv,data.MELTING_LAYER,data.elevation);
+    classBasic=f_classBasicBoth(convBoth,stratMixed,mixedConv,dataShort.MELTING_LAYER,dataShort.elevation);
 
     %% Sub classification
 
     disp('Sub classification ...');
 
-    classSub=f_classSubBoth(classBasic,data.asl,data.TOPO,data.MELTING_LAYER,data.TEMP,data.elevation,data.FLAG);
-       
+    classSub=f_classSubBoth(classBasic,dataShort.asl,dataShort.TOPO,dataShort.MELTING_LAYER,dataShort.TEMP,dataShort.elevation,dataShort.FLAG);
+
+    %% Put into original size
+
+    classBasicPlot=nan(size(data.DBZ_MASKED));
+    classBasicPlot(:,nonMissingInds==1)=classBasic;
+    classSubPlot=nan(size(data.DBZ_MASKED));
+    classSubPlot(:,nonMissingInds==1)=classSub;
+    convDBZplot=nan(size(data.DBZ_MASKED));
+    convDBZplot(:,nonMissingInds==1)=convDBZ;
+    convVELplot=nan(size(data.DBZ_MASKED));
+    convVELplot(:,nonMissingInds==1)=convVEL;
+    convBothPlot=nan(size(data.DBZ_MASKED));
+    convBothPlot(:,nonMissingInds==1)=convBoth;
+
     %% Plot strat conv
     
     disp('Plotting conv/strat ...');
     
     close all
     
-    classSubPlot=classSub;
-    classSubPlot(classSub==14)=1;
-    classSubPlot(classSub==16)=2;
-    classSubPlot(classSub==18)=3;
-    classSubPlot(classSub==25)=4;
-    classSubPlot(classSub==30)=5;
-    classSubPlot(classSub==32)=6;
-    classSubPlot(classSub==34)=7;
-    classSubPlot(classSub==36)=8;
-    classSubPlot(classSub==38)=9;
+    classSubPlot(classSubPlot==14)=1;
+    classSubPlot(classSubPlot==16)=2;
+    classSubPlot(classSubPlot==18)=3;
+    classSubPlot(classSubPlot==25)=4;
+    classSubPlot(classSubPlot==30)=5;
+    classSubPlot(classSubPlot==32)=6;
+    classSubPlot(classSubPlot==34)=7;
+    classSubPlot(classSubPlot==36)=8;
+    classSubPlot(classSubPlot==38)=9;
 
     % 1D
     stratConv1D=max(classSubPlot,[],1);
@@ -197,7 +209,7 @@ for aa=1:length(caseStart)
     s3=subplot(5,1,3);
     
     hold on
-    surf(data.time,data.asl./1000,convBoth,'edgecolor','none');
+    surf(data.time,data.asl./1000,convBothPlot,'edgecolor','none');
     view(2);
     ylabel('Altitude (km)');
     caxis([0 1]);
@@ -212,7 +224,7 @@ for aa=1:length(caseStart)
     s4=subplot(5,1,4);
     
     hold on
-    surf(data.time,data.asl./1000,classBasic,'edgecolor','none');
+    surf(data.time,data.asl./1000,classBasicPlot,'edgecolor','none');
     view(2);
     ylabel('Altitude (km)');
     caxis([0.5 3.5]);
@@ -288,7 +300,7 @@ for aa=1:length(caseStart)
     
     s2=subplot(5,1,2);
     hold on
-    surf(data.time,data.asl./1000,convDBZ,'edgecolor','none');
+    surf(data.time,data.asl./1000,convDBZplot,'edgecolor','none');
     view(2);
     ylabel('Altitude (km)');
     caxis([0 1]);
@@ -303,7 +315,7 @@ for aa=1:length(caseStart)
     s3=subplot(5,1,3);
     
     hold on
-    surf(data.time,data.asl./1000,convBoth,'edgecolor','none');
+    surf(data.time,data.asl./1000,convBothPlot,'edgecolor','none');
     view(2);
     ylabel('Altitude (km)');
     caxis([0 0.7]);
@@ -318,7 +330,7 @@ for aa=1:length(caseStart)
     s4=subplot(5,1,4);
     
     hold on
-    surf(data.time,data.asl./1000,convVEL,'edgecolor','none');
+    surf(data.time,data.asl./1000,convVELplot,'edgecolor','none');
     view(2);
     ylabel('Altitude (km)');
     caxis([0 1]);
