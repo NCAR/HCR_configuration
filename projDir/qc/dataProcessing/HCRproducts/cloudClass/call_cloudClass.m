@@ -55,27 +55,28 @@ for aa=1:length(caseStart)
  
     ylimUpper=(max(data.asl(~isnan(data.ECHO_TYPE_2D)))./1000)+0.5;
    
-    %% Join clouds that are separated by missing
+    %% Truncate to non missing
+    nonMissingInds=findNonMissingInds(data);
 
-    missingData=any(data.FLAG>=10,1);
-    joinedEcho=data.ECHO_TYPE_2D(:,missingData==0);
-    joinedTemp=data.TEMP(:,missingData==0);
-    joinedAsl=data.asl(:,missingData==0);
-    joinedElev=data.elevation(missingData==0);
-    joinedTopo=data.TOPO(missingData==0);
+    dataInVars=fields(data);
+
+    dataShort=[];
+    for ii=1:length(dataInVars)
+        dataShort.(dataInVars{ii})=data.(dataInVars{ii})(:,nonMissingInds==1);
+    end
 
     %% Create cloudID
 
     minCloudSizePix=1000;
 
-    cloudID=makeCloudID(joinedEcho,minCloudSizePix);
+    cloudID=makeCloudID(dataShort.ECHO_TYPE_2D,minCloudSizePix);
 
     %% Cloud classification
 
-    cloudClassJoined=findCloudClass(joinedEcho,cloudID,joinedTemp,joinedElev,joinedTopo,joinedAsl);
+    cloudClassJoined=findCloudClass(dataShort.ECHO_TYPE_2D,cloudID,dataShort.TEMP,dataShort.elevation,dataShort.TOPO,dataShort.asl);
 
     cloudClass=nan(size(data.ECHO_TYPE_2D));
-    cloudClass(:,missingData==0)=cloudClassJoined;
+    cloudClass(:,nonMissingInds==1)=cloudClassJoined;
 
     % Fill in small with not classified
     cloudClass(~isnan(data.ECHO_TYPE_2D) & isnan(cloudClass))=0;
@@ -114,18 +115,18 @@ for aa=1:length(caseStart)
         0,204,255;
         51,102,255;
         0,0,180;
-        255,128,128;
-        255,0,0;
-        150,0,0;
         255,204,0;
-        255,153,0;
-        255,102,0];
+        255,102,0;
+        255,0,0;
+        255,153,204;
+        204,153,255;
+        128,0,128];
 
     colmapCC=colmapCC./255;
 
     % Prepare strat conv
     
-    disp('Plotting conv/strat ...');
+    disp('Plotting ...');
     
     close all
     

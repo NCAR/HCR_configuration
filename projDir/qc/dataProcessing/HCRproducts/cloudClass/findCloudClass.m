@@ -77,10 +77,10 @@ for ii=1:max(reshape(cloudID,1,[]))
         convPix=sum(sum(cloudMat>32));
         stratPix=sum(sum(cloudMat<20));
 
-        convFrac=convPix/stratPix;
+        convFrac=convPix/(stratPix+convPix);
 
         % Young
-        if convFrac>0.5
+        if convFrac>0.7
             if max(reshape(cloudMat,1,[]),[],'omitnan')==38 
                 cloudClass(linInds)=23; % Deep
             elseif max(reshape(cloudMat,1,[]),[],'omitnan')==36

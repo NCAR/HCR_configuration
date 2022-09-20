@@ -47,14 +47,15 @@ for aa=1:size(caseList,1)
  
     ylimUpper=(max(data.asl(~isnan(data.ECHO_TYPE_2D)))./1000)+0.5;
    
-    %% Join clouds that are separated by missing
+     %% Truncate to non missing
+    nonMissingInds=findNonMissingInds(data);
 
-    missingData=any(data.FLAG>=10,1);
-    joinedEcho=data.ECHO_TYPE_2D(:,missingData==0);
-    joinedTemp=data.TEMP(:,missingData==0);
-    joinedAsl=data.asl(:,missingData==0);
-    joinedElev=data.elevation(missingData==0);
-    joinedTopo=data.TOPO(missingData==0);
+    dataInVars=fields(data);
+
+    dataShort=[];
+    for ii=1:length(dataInVars)
+        dataShort.(dataInVars{ii})=data.(dataInVars{ii})(:,nonMissingInds==1);
+    end
 
     %% Create cloudID
 
@@ -62,16 +63,16 @@ for aa=1:size(caseList,1)
 
     minCloudSizePix=1000;
 
-    cloudID=makeCloudID(joinedEcho,minCloudSizePix);
+    cloudID=makeCloudID(dataShort.ECHO_TYPE_2D,minCloudSizePix);
 
     %% Cloud classification
 
     disp('Finding cloud class ...')
 
-    cloudClassJoined=findCloudClass(joinedEcho,cloudID,joinedTemp,joinedElev,joinedTopo,joinedAsl);
+    cloudClassJoined=findCloudClass(dataShort.ECHO_TYPE_2D,cloudID,dataShort.TEMP,dataShort.elevation,dataShort.TOPO,dataShort.asl);
 
     cloudClass=nan(size(data.ECHO_TYPE_2D));
-    cloudClass(:,missingData==0)=cloudClassJoined;
+    cloudClass(:,nonMissingInds==1)=cloudClassJoined;
 
     % Fill in small with not classified
     cloudClass(~isnan(data.ECHO_TYPE_2D) & isnan(cloudClass))=0;
