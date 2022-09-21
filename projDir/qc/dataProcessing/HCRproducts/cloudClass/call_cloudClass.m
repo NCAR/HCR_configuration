@@ -30,7 +30,7 @@ caseStart=datetime(caseList.Var1,caseList.Var2,caseList.Var3, ...
 caseEnd=datetime(caseList.Var6,caseList.Var7,caseList.Var8, ...
     caseList.Var9,caseList.Var10,0);
 
-for aa=1:length(caseStart)
+for aa=5:length(caseStart)
     
     disp(['Case ',num2str(aa),' of ',num2str(length(caseStart))]);
     
@@ -56,7 +56,7 @@ for aa=1:length(caseStart)
     ylimUpper=(max(data.asl(~isnan(data.ECHO_TYPE_2D)))./1000)+0.5;
    
     %% Truncate to non missing
-    nonMissingInds=findNonMissingInds(data);
+    nonMissingInds=findNonMissingInds(data,10);
 
     dataInVars=fields(data);
 
@@ -69,7 +69,7 @@ for aa=1:length(caseStart)
 
     minCloudSizePix=1000;
 
-    cloudID=makeCloudID(dataShort.ECHO_TYPE_2D,minCloudSizePix);
+    cloudID=makeCloudID(dataShort.FLAG,minCloudSizePix);
 
     %% Cloud classification
 
@@ -117,8 +117,8 @@ for aa=1:length(caseStart)
         0,0,180;
         255,204,0;
         255,102,0;
-        255,0,0;
-        255,153,204;
+        220,0,0;
+        255,153,220;
         204,153,255;
         128,0,128];
 

@@ -1,4 +1,4 @@
-function nonMissingInds = findNonMissingInds(data)
+function nonMissingInds = findNonMissingInds(data,gapSecs)
 % Fill in missing and NScal
 nonMissingInds=ones(size(data.time));
 
@@ -22,7 +22,7 @@ if ~isempty(holeStart) & ~isempty(holeEnd)
     end
     
     for ii=1:length(holeStart)
-        if etime(datevec(data.time(holeEnd(ii))),datevec(data.time(holeStart(ii))))<10 &...
+        if etime(datevec(data.time(holeEnd(ii))),datevec(data.time(holeStart(ii))))<gapSecs &...
                 sign(data.elevation(holeStart(ii)))==sign(data.elevation(holeEnd(ii)))
             nonMissingInds(holeStart(ii):holeEnd(ii))=0;
         end

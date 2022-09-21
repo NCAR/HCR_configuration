@@ -1,7 +1,7 @@
-function cloudID=makeCloudID(joinedEcho,minCloudSizePix)
+function cloudID=makeCloudID(joinedFlag,minCloudSizePix)
 % Create file with numbered clouds
 
-cloudMask=~isnan(joinedEcho);
+cloudMask=joinedFlag==1;
 cloudMask=bwareaopen(cloudMask,minCloudSizePix);
 
 % Find connected

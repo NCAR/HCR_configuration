@@ -72,16 +72,16 @@ for ii=1:max(reshape(cloudID,1,[]))
 
     %% Convective
     % Check if convective
-    if max(reshape(cloudMat,1,[]),[],'omitnan')>32
-        % Calculate convective fraction
-        convPix=sum(sum(cloudMat>32));
-        stratPix=sum(sum(cloudMat<20));
+    % Calculate convective fraction
+    convPix=sum(sum(cloudMat>32));
+    stratPix=sum(sum(cloudMat<20));
 
-        convFrac=convPix/(stratPix+convPix);
+    convFrac=convPix/(stratPix+convPix);
 
+    if convFrac>0.05
         % Young
         if convFrac>0.7
-            if max(reshape(cloudMat,1,[]),[],'omitnan')==38 
+            if max(reshape(cloudMat,1,[]),[],'omitnan')==38
                 cloudClass(linInds)=23; % Deep
             elseif max(reshape(cloudMat,1,[]),[],'omitnan')==36
                 cloudClass(linInds)=22; % Mid
@@ -99,6 +99,8 @@ for ii=1:max(reshape(cloudID,1,[]))
         end
         %% Stratiform
     else
+        % Set the few convective pixels to low numbers
+        cloudMat(cloudMat>=20)=0;
         %% Check if precipitating
         topoDistMat=topoDist(min(r):max(r),min(c):max(c));
         topoDistMat(isnan(cloudMat))=nan;
