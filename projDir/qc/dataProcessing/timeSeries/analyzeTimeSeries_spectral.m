@@ -2,47 +2,54 @@
 clear all;
 close all;
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Input variables %%%%%%%%%%%%%%%%%%%%%%%%%%
-
 project='spicule'; %socrates, aristo, cset, otrec
 quality='ts'; %field, qc1, or qc2
-freqData='dummy';
-qcVersion='dummy';
+qualityCF='qc1';
+freqData='10hz';
+qcVersion='v1.1';
 
-fileList={'20210601_174228_89.97_114.90.nc';
-    '20210621_015305_-89.93_353.61.nc'};
+dataDirTS=HCRdir(project,quality,qcVersion,freqData);
+dataDirCF=HCRdir(project,qualityCF,qcVersion,freqData);
 
-showPlot='on';
+figdir=[dataDirCF(1:end-5),'figsAirVel/spectral/'];
 
-outFreq=10; % Desired output frequency in Hz
+casefile=['~/git/HCR_configuration/projDir/qc/dataProcessing/HCRproducts/caseFiles/airVel_',project,'.txt'];
 
+freqStr=strfind(freqData,'hz');
+outFreq=str2num(freqData(1:freqStr-1)); % Desired output frequency in Hz
 timeSpan=1/outFreq;
 
-ylimUpper=5.2;
+showPlot='on';
+ylimUpper=7.5;
+ylimLower=-0.1;
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
+% Loop through cases
 
-dataDir=HCRdir(project,quality,qcVersion,freqData);
+caseList=readtable(casefile);
+caseStart=datetime(caseList.Var1,caseList.Var2,caseList.Var3, ...
+    caseList.Var4,caseList.Var5,caseList.Var6);
+caseEnd=datetime(caseList.Var7,caseList.Var8,caseList.Var9, ...
+    caseList.Var10,caseList.Var11,caseList.Var12);
 
-figdir=[dataDir,'figsTS/'];
+for aa=3:length(caseStart)
 
-%% Loop through files
-for jj=1:length(fileList)
-    infile=fileList{jj};
+    disp(['Case ',num2str(aa),' of ',num2str(length(caseStart))]);
 
-    disp(infile);
-    file=[dataDir,infile(1:8),'/',infile];
+    startTime=caseStart(aa);
+    endTime=caseEnd(aa);
 
-    %% Read data
+    %% Load data TS
+    disp("Getting time series data ...");
+
+    fileListTS=makeFileList(dataDirTS,startTime+seconds(1),endTime-seconds(1),'20YYMMDDxhhmmss',1);
 
     data=[];
     data.IVc=[];
-    %data.IHc=[];
     data.QVc=[];
-    %data.QHc=[];
 
-    data=readHCRts(data,file);
+    data=readHCRts(fileListTS,data,startTime,endTime);
 
     %% Calculate moments
     beamNum=ceil(size(data.IVc,2)/(timeSpan*10000));
@@ -56,7 +63,7 @@ for jj=1:length(fileList)
     kurt=nan(size(data.range,1),beamNum);
 
     timeBeams=[];
-   
+
     startInd=1;
     endInd=1;
     ii=1;
@@ -135,7 +142,7 @@ for jj=1:length(fileList)
 
         % WIDTH
         width(:,ii)=(sum(specLin.*(specVelVec-vel(:,ii)).^2,2,'omitnan')./sum(specLin,2,'omitnan')).^0.5;
-        
+
         % SKEWNESS
         skew(:,ii)=sum(specLin.*(specVelVec-vel(:,ii)).^3,2,'omitnan')./(sum(specLin,2,'omitnan').*width(:,ii).^3);
 
@@ -151,15 +158,18 @@ for jj=1:length(fileList)
         end
 
         %% Plot
-        if abs(etime(datevec(data.time(startInd)),datevec(datetime(2021,6,21,1,53,30))))<0.05
+        if abs(etime(datevec(data.time(startInd)),datevec(datetime(2021,6,1,20,19,15))))<0.05
             powerSpec=10*log10(powerShifted);
             powerSpecNew=10*log10(specLin);
 
-            plotRange=3;
+            plotRange=0.5;
             rangeInd=min(find((data.range./1000)>=plotRange));
             figure('Position',[200 500 800 1200],'DefaultAxesFontSize',12,'visible',showPlot);
             plot(powerSpecNew(rangeInd,:),'-b','LineWidth',2);
             ylim([-80 -30])
+
+            set(gcf,'PaperPositionMode','auto')
+            print([figdir,project,'_singleSpec_',datestr(data.time(startInd),'yyyymmdd_HHMMSS'),'_range_',num2str(plotRange),'km'],'-dpng','-r0');
 
             figure('Position',[200 500 800 1200],'DefaultAxesFontSize',12,'visible',showPlot);
             colormap('jet');
@@ -177,6 +187,9 @@ for jj=1:length(fileList)
             if flipYes
                 set(gca, 'YDir','reverse');
             end
+
+            set(gcf,'PaperPositionMode','auto')
+            print([figdir,project,'_waterfall_',datestr(data.time(startInd),'yyyymmdd_HHMMSS')],'-dpng','-r0');
             stopHere=1;
         end
 
@@ -184,9 +197,9 @@ for jj=1:length(fileList)
         startInd=endInd+1;
         ii=ii+1;
     end
-   
+
     vel=vel.*data.lambda/(4*pi*prt);
-       
+
     %% Plot
 
     disp('Plotting ...');
@@ -207,7 +220,7 @@ for jj=1:length(fileList)
     colorbar
     grid on
     title('Power (dB)')
-    
+
     if flipYes
         set(gca, 'YDir','reverse');
     end
@@ -241,7 +254,7 @@ for jj=1:length(fileList)
     colorbar
     grid on
     title('Reflectivity (dBZ)')
-    
+
     if flipYes
         set(gca, 'YDir','reverse');
     end
@@ -275,7 +288,7 @@ for jj=1:length(fileList)
     colorbar
     grid on
     title('Signal to noise ratio (dB)')
-    
+
     if flipYes
         set(gca, 'YDir','reverse');
     end
@@ -292,7 +305,7 @@ for jj=1:length(fileList)
     colorbar
     grid on
     title('Skew (dB)')
-    
+
     if flipYes
         set(gca, 'YDir','reverse');
     end
@@ -309,7 +322,7 @@ for jj=1:length(fileList)
     colorbar
     grid on
     title('Kurtosis (dB)')
-    
+
     if flipYes
         set(gca, 'YDir','reverse');
     end
