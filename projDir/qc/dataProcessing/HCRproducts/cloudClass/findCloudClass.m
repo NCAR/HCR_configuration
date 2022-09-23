@@ -80,7 +80,7 @@ for ii=1:max(reshape(cloudID,1,[]))
 
     if convFrac>0.05
         % Young
-        if convFrac>0.7
+        if convFrac>0.5
             if max(reshape(cloudMat,1,[]),[],'omitnan')==38
                 cloudClass(linInds)=23; % Deep
             elseif max(reshape(cloudMat,1,[]),[],'omitnan')==36
@@ -107,7 +107,7 @@ for ii=1:max(reshape(cloudID,1,[]))
         minDist=min(reshape(topoDistMat,1,[]),[],'omitnan');
         
         % Precipitating
-        if minDist<200
+        if minDist<500
             if max(reshape(cloudMat,1,[]),[],'omitnan')==18 
                 cloudClass(linInds)=13; % Deep
             elseif max(reshape(cloudMat,1,[]),[],'omitnan')==16
