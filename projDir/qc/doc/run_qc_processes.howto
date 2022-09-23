@@ -427,12 +427,6 @@ run_MergeHcrAndHsrl.qc.2hz.cset
 run_MergeHcrAndHsrl.qc.2hz.socrates
 
 #################################################################
-# Add melting layer
-
-# Adjust and run
-$PROJ_DIR/qc/dataProcessing/HCRproducts/meltingLayer/meltLayer_10hzTo2hz_combined.m
-
-#################################################################
 # Add PID
 
 # Adjust and run

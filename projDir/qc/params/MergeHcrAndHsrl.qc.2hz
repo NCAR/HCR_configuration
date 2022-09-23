@@ -305,6 +305,20 @@ hcr_fields = {
   }
   ,
   {
+    input_field_name = "U",
+    output_field_name = "U",
+    apply_flag = FALSE,
+    set_to_missing_if_scanning = FALSE
+  }
+  ,
+  {
+    input_field_name = "V",
+    output_field_name = "V",
+    apply_flag = FALSE,
+    set_to_missing_if_scanning = FALSE
+  }
+  ,
+  {
     input_field_name = "SST",
     output_field_name = "SST",
     apply_flag = FALSE,
@@ -314,20 +328,6 @@ hcr_fields = {
   {
     input_field_name = "TOPO",
     output_field_name = "TOPO",
-    apply_flag = FALSE,
-    set_to_missing_if_scanning = FALSE
-  }
-  ,
-  {
-    input_field_name = "U_SURF",
-    output_field_name = "U_SURF",
-    apply_flag = FALSE,
-    set_to_missing_if_scanning = FALSE
-  }
-  ,
-  {
-    input_field_name = "V_SURF",
-    output_field_name = "V_SURF",
     apply_flag = FALSE,
     set_to_missing_if_scanning = FALSE
   }

@@ -4,11 +4,11 @@ close all;
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-project='cset'; % socrates, cset, aristo, otrec
+project='socrates'; % socrates, cset, aristo, otrec
 quality='qc3'; % field, qc1, qc2, qc3
 freqInData='10hz';
 freqOutData='2hz';
-qcVersion='v3.0';
+qcVersion='v3.1';
 whichModel='era5';
 
 formatOut = 'yyyymmdd';

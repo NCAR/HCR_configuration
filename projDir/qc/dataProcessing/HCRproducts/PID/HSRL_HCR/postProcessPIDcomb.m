@@ -44,4 +44,10 @@ for ii=1:length(goodInds)
     end
 end
 
+% Below -40 C temps
+% SC cloud liquid to cloud
+classOut(data.TEMP<-40 & classOut==6)=11;
+% SC rain and SC drizzle to precip
+classOut(data.TEMP<-40 & (classOut==4 | classOut==2))=10;
+
 end

@@ -31,7 +31,7 @@
 //     DEBUG_EXTRA
 //
 
-debug = DEBUG_OFF;
+debug = DEBUG_NORM;
 
 ///////////// register_with_procmap ///////////////////
 //
@@ -57,7 +57,7 @@ register_with_procmap = TRUE;
 // Type: string
 //
 
-instance = "catalog";
+instance = "2hz_merge.test";
 
 //======================================================================
 //
@@ -192,7 +192,7 @@ archive_start_time = "2018 01 22 22 45 00";
 // Type: string
 //
 
-archive_data_url = "$(DATA_DIR)/$(QC_VERSION)/cfradial/hcr_hsrl_merge/$(QC_SUB_VERSION)/2hz";
+archive_data_url = "/tmp/socrates_test/2hz";
 
 //======================================================================
 //
@@ -315,8 +315,8 @@ color_scale_dir = "$(HOME)/git/HCR_configuration/projDir/display/color_scales";
 
 fields = {
   {
-    label = "HCR_DBZ",
-    raw_name = "HCR_DBZ",
+    label = "DBZ",
+    raw_name = "DBZ",
     filtered_name = "",
     units = "dBZ",
     color_map = "dbz_w.colors",
@@ -324,17 +324,17 @@ fields = {
   }
   ,
   {
-    label = "HCR_VEL",
-    raw_name = "HCR_VEL",
+    label = "VEL",
+    raw_name = "VEL",
     filtered_name = "",
     units = "m/s",
-    color_map = "hcr_vel_blueYellow.colors",
+    color_map = "vel_w_4.colors",
     shortcut = "1"
   }
   ,
   {
-    label = "HCR_WIDTH",
-    raw_name = "HCR_WIDTH",
+    label = "WIDTH",
+    raw_name = "WIDTH",
     filtered_name = "",
     units = "m/s",
     color_map = "width_w.colors",
@@ -342,8 +342,8 @@ fields = {
   }
   ,
   {
-    label = "HCR_LDR",
-    raw_name = "HCR_LDR",
+    label = "LDR",
+    raw_name = "LDR",
     filtered_name = "",
     units = "dB",
     color_map = "ldr.colors",
@@ -351,8 +351,8 @@ fields = {
   }
   ,
   {
-    label = "HCR_NCP",
-    raw_name = "HCR_NCP",
+    label = "NCP",
+    raw_name = "NCP",
     filtered_name = "",
     units = "",
     color_map = "ncp.colors",
@@ -360,8 +360,8 @@ fields = {
   }
   ,
   {
-    label = "HCR_SNR",
-    raw_name = "HCR_SNR",
+    label = "SNR",
+    raw_name = "SNR",
     filtered_name = "",
     units = "dB",
     color_map = "snr.colors",
@@ -369,164 +369,128 @@ fields = {
   }
   ,
   {
-    label = "HCR_DBMVC",
-    raw_name = "HCR_DBMVC",
+    label = "DBMVC",
+    raw_name = "DBMVC",
     filtered_name = "",
     units = "dBm",
     color_map = "dbm.colors",
     shortcut = "6"
   }
+  // ,
+  // {
+  //   label = "HSRL_Backscat_Coeff",
+  //   raw_name = "HSRL_Aerosol_Backscatter_Coefficient",
+  //   filtered_name = "",
+  //   units = "m-1.sr-1",
+  //   color_map = "hsrl_backscat_coeff.colors",
+  //   shortcut = "7"
+  // }
+  // ,
+  // {
+  //   label = "HSRL_Backscat_Ratio",
+  //   raw_name = "HSRL_Backscatter_Ratio",
+  //   filtered_name = "",
+  //   units = "m-1.sr-1",
+  //   color_map = "hsrl_backscatter_ratio.colors",
+  //   shortcut = "8"
+  // }
+  // ,
+  // {
+  //   label = "HSRL_Particle_LDR",
+  //   raw_name = "HSRL_Particle_Linear_Depolarization_Ratio",
+  //   filtered_name = "",
+  //   units = "",
+  //   color_map = "particle_linear_depol.colors",
+  //   shortcut = "9"
+  // }
+  // ,
+  // {
+  //   label = "HSRL_Particle_CDR",
+  //   raw_name = "HSRL_Particle_Depolarization",
+  //   filtered_name = "",
+  //   units = "",
+  //   color_map = "particle_linear_depol.colors",
+  //   shortcut = "0"
+  // }
+  // ,
+  // {
+  //   label = "HSRL_Volume_LDR",
+  //   raw_name = "HSRL_Volume_Linear_Depolarization_Ratio",
+  //   filtered_name = "",
+  //   units = "",
+  //   color_map = "volume_linear_depol.colors",
+  //   shortcut = "a"
+  // }
+  // ,
+  // {
+  //   label = "HSRL_Volume_CDR",
+  //   raw_name = "HSRL_Volume_Depolarization",
+  //   filtered_name = "",
+  //   units = "",
+  //   color_map = "volume_linear_depol.colors",
+  //   shortcut = "b"
+  // }
+  // ,
+  // {
+  //   label = "HSRL_Optical_Depth",
+  //   raw_name = "HSRL_Optical_Depth",
+  //   filtered_name = "",
+  //   units = "",
+  //   color_map = "hsrl_optical_depth.colors",
+  //   shortcut = "c"
+  // }
+  // ,
+  // {
+  //   label = "HSRL_Extinction_Coeff",
+  //   raw_name = "HSRL_Aerosol_Extinction_Coefficient",
+  //   filtered_name = "",
+  //   units = "m-1",
+  //   color_map = "hsrl_extinction_coeff.colors",
+  //   shortcut = "d"
+  // }
+  // ,
+  // {
+  //   label = "HSRL_Copol_Counts",
+  //   raw_name = "HSRL_Merged_Combined_Channel",
+  //   filtered_name = "",
+  //   units = "counts",
+  //   color_map = "hsrl_combined_high.colors",
+  //   shortcut = "e"
+  // }
+  // ,
+  // {
+  //   label = "HSRL_Xpol_Counts",
+  //   raw_name = "HSRL_Raw_Cross_Polarization_Channel",
+  //   filtered_name = "",
+  //   units = "counts",
+  //   color_map = "hsrl_cross_polar.colors",
+  //   shortcut = "f"
+  // }
+  // ,
+  // {
+  //   label = "HSRL_Mol_Counts",
+  //   raw_name = "HSRL_Raw_Molecular_Backscatter_Channel",
+  //   filtered_name = "",
+  //   units = "",
+  //   color_map = "hsrl_molecular.colors",
+  //   shortcut = "g"
+  // }
   ,
   {
-    label = "HCR_MELTING_LAYER",
-    raw_name = "HCR_MELTING_LAYER",
+    label = "PID",
+    raw_name = "PID",
     filtered_name = "",
     units = "",
-    color_map = "hcr_melting_layer.colors",
-    shortcut = "d"
-  }
-  ,
-  {
-    label = "HCR_CONVECTIVITY",
-    raw_name = "HCR_CONVECTIVITY",
-    filtered_name = "",
-    units = "",
-    color_map = "hcr_convectivity.colors",
-    shortcut = "d"
-  }
-  ,
-  {
-    label = "HCR_ECHO_TYPE",
-    raw_name = "HCR_ECHO_TYPE_2D",
-    filtered_name = "",
-    units = "",
-    color_map = "hcr_partition.colors",
-    shortcut = "d"
-  }
-  ,
-  {
-    label = "FLAG",
-    raw_name = "FLAG",
-    filtered_name = "",
-    units = "",
-    color_map = "hcr_flag.colors",
-    shortcut = "d"
-  }
-  ,
-  {
-    label = "HSRL_Backscat_Coeff",
-    raw_name = "HSRL_Aerosol_Backscatter_Coefficient",
-    filtered_name = "",
-    units = "m-1.sr-1",
-    color_map = "hsrl_backscat_coeff.colors",
-    shortcut = "7"
-  }
-  ,
-  {
-    label = "HSRL_Backscat_Ratio",
-    raw_name = "HSRL_Backscatter_Ratio",
-    filtered_name = "",
-    units = "m-1.sr-1",
-    color_map = "hsrl_backscatter_ratio.colors",
-    shortcut = "8"
-  }
-  ,
-  {
-    label = "HSRL_Particle_LDR",
-    raw_name = "HSRL_Particle_Linear_Depolarization_Ratio",
-    filtered_name = "",
-    units = "",
-    color_map = "particle_linear_depol.colors",
-    shortcut = "9"
-  }
-  ,
-  {
-    label = "HSRL_Particle_CDR",
-    raw_name = "HSRL_Particle_Depolarization",
-    filtered_name = "",
-    units = "",
-    color_map = "particle_linear_depol.colors",
-    shortcut = "0"
-  }
-  ,
-  {
-    label = "HSRL_Volume_LDR",
-    raw_name = "HSRL_Volume_Linear_Depolarization_Ratio",
-    filtered_name = "",
-    units = "",
-    color_map = "volume_linear_depol.colors",
-    shortcut = "a"
-  }
-  ,
-  {
-    label = "HSRL_Volume_CDR",
-    raw_name = "HSRL_Volume_Depolarization",
-    filtered_name = "",
-    units = "",
-    color_map = "volume_linear_depol.colors",
-    shortcut = "b"
-  }
-  ,
-  {
-    label = "HSRL_Optical_Depth",
-    raw_name = "HSRL_Optical_Depth",
-    filtered_name = "",
-    units = "",
-    color_map = "hsrl_optical_depth.colors",
-    shortcut = "c"
-  }
-  ,
-  {
-    label = "HSRL_Extinction_Coeff",
-    raw_name = "HSRL_Aerosol_Extinction_Coefficient",
-    filtered_name = "",
-    units = "m-1",
-    color_map = "hsrl_extinction_coeff.colors",
-    shortcut = "d"
-  }
-  ,
-  {
-    label = "HSRL_Copol_Counts",
-    raw_name = "HSRL_Merged_Combined_Channel",
-    filtered_name = "",
-    units = "counts",
-    color_map = "hsrl_combined_high.colors",
-    shortcut = "e"
-  }
-  ,
-  {
-    label = "HSRL_Xpol_Counts",
-    raw_name = "HSRL_Raw_Cross_Polarization_Channel",
-    filtered_name = "",
-    units = "counts",
-    color_map = "hsrl_cross_polar.colors",
-    shortcut = "f"
-  }
-  ,
-  {
-    label = "HSRL_Mol_Counts",
-    raw_name = "HSRL_Raw_Molecular_Backscatter_Channel",
-    filtered_name = "",
-    units = "",
-    color_map = "hsrl_molecular.colors",
-    shortcut = "g"
-  }
-  ,
-  {
-    label = "Temperature",
-    raw_name = "TEMP",
-    filtered_name = "",
-    units = "C",
-    color_map = "hcr_tempC.colors",
+    color_map = "pid.colors",
     shortcut = "h"
   }
   ,
   {
-    label = "Pressure",
-    raw_name = "PRESS",
+    label = "CONVECTIVITY",
+    raw_name = "CONVECTIVITY",
     filtered_name = "",
-    units = "hPa",
-    color_map = "hcr_pressure.colors",
+    units = "",
+    color_map = "interest.colors",
     shortcut = "i"
   }
   ,
@@ -535,34 +499,16 @@ fields = {
     raw_name = "RH",
     filtered_name = "",
     units = "%",
-    color_map = "hcr_rh.colors",
+    color_map = "rh_jet.colors",
     shortcut = "j"
   }
   ,
   {
-    label = "U",
-    raw_name = "U",
-    filtered_name = "",
-    units = "m/s",
-    color_map = "hcr_uv.colors",
-    shortcut = "d"
-  }
-  ,
-  {
-    label = "V",
-    raw_name = "V",
-    filtered_name = "",
-    units = "m/s",
-    color_map = "hcr_uv.colors",
-    shortcut = "d"
-  }
-  ,
-  {
-    label = "PID",
-    raw_name = "PID",
+    label = "FLAG",
+    raw_name = "FLAG",
     filtered_name = "",
     units = "",
-    color_map = "hcr_pid.colors",
+    color_map = "hcr_flag.colors",
     shortcut = "d"
   }
 };
@@ -656,7 +602,7 @@ override_radar_name = TRUE;
 // Type: string
 //
 
-radar_name = "HCR";
+radar_name = "HCR/HSRL - $(PROJECT_NAME)";
 
 ///////////// display_site_name ///////////////////////
 //
@@ -1009,7 +955,7 @@ bscan_min_secs_between_rendering_beams = 0;
 // Type: boolean
 //
 
-bscan_specify_range_limits = FALSE;
+bscan_specify_range_limits = TRUE;
 
 ///////////// bscan_min_range_km //////////////////////
 //
@@ -1033,7 +979,7 @@ bscan_min_range_km = -1;
 // Type: double
 //
 
-bscan_max_range_km = 9;
+bscan_max_range_km = 15;
 
 ///////////// bscan_min_altitude_km ///////////////////
 //
@@ -1043,7 +989,7 @@ bscan_max_range_km = 9;
 // Type: double
 //
 
-bscan_min_altitude_km = $(BSCAN_MIN_ALTITUDE_KM);
+bscan_min_altitude_km = -0.5;
 
 ///////////// bscan_max_altitude_km ///////////////////
 //
@@ -1053,7 +999,7 @@ bscan_min_altitude_km = $(BSCAN_MIN_ALTITUDE_KM);
 // Type: double
 //
 
-bscan_max_altitude_km = $(BSCAN_MAX_ALTITUDE_KM);
+bscan_max_altitude_km = 9.0;
 
 ///////////// bscan_altitude_in_feet //////////////////
 //
@@ -1063,7 +1009,7 @@ bscan_max_altitude_km = $(BSCAN_MAX_ALTITUDE_KM);
 // Type: boolean
 //
 
-bscan_altitude_in_feet = FALSE;
+bscan_altitude_in_feet = TRUE;
 
 ///////////// bscan_range_in_feet /////////////////////
 //
@@ -1524,7 +1470,7 @@ bscan_dwell_stats = DWELL_STATS_MEAN;
 // Type: string
 //
 
-images_output_dir = "$(DATA_DIR)/$(QC_VERSION)/images/hcr_hsrl_merge/$(QC_SUB_VERSION)/catalog15min";
+images_output_dir = "$(DATA_DIR)/$(QC_VERSION)/images/2hz_merge_900.$(PROJECT_NAME)";
 
 ///////////// images_write_to_day_dir /////////////////
 //
@@ -1645,7 +1591,7 @@ images_write_latest_data_info = TRUE;
 // Type: boolean
 //
 
-images_auto_create = TRUE;
+images_auto_create = FALSE;
 
 ///////////// images_creation_mode ////////////////////
 //

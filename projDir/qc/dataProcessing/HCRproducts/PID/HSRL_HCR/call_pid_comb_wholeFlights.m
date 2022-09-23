@@ -5,9 +5,9 @@ close all
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-project='cset'; %socrates, aristo, cset
+project='socrates'; %socrates, aristo, cset
 quality='qc3'; %field, qc1, or qc2
-qcVersion='v3.0';
+qcVersion='v3.1';
 freqData='combined'; % 10hz, 100hz, 2hz, or combined
 whichModel='era5';
 
@@ -81,6 +81,7 @@ for aa=1:size(caseList,1)
         pixRadVEL=10;
         velBase=-20;
 
+        data.HCR_VEL(:,data.elevation<0)=-data.HCR_VEL(:,data.elevation<0);
         data.VELTEXT=f_velTexture(data.HCR_VEL,data.elevation,pixRadVEL,velBase);
 
         %% Mask LDR and HSRL
@@ -107,12 +108,20 @@ for aa=1:size(caseList,1)
 
         data.TEMP=tempOrig;
 
+%         smallInds=find((data.HCR_MELTING_LAYER==20 | (isnan(data.HCR_MELTING_LAYER) & data.TEMP<0)) & isnan(data.HCR_LDR) & isnan(data.HSRL_Particle_Linear_Depolarization_Ratio) & ...
+%             (pid_hcr_hsrl==3 | pid_hcr_hsrl==6));
+%         pid_hcr_hsrl(smallInds)=11;
+% 
+%         largeInds=find((data.HCR_MELTING_LAYER==20 | (isnan(data.HCR_MELTING_LAYER) & data.TEMP<0)) & isnan(data.HCR_LDR) & isnan(data.HSRL_Particle_Linear_Depolarization_Ratio) & ...
+%             (pid_hcr_hsrl==1 | pid_hcr_hsrl==2 | pid_hcr_hsrl==4 | pid_hcr_hsrl==5));
+%         pid_hcr_hsrl(largeInds)=10;
+
         smallInds=find((data.HCR_MELTING_LAYER==20 | (isnan(data.HCR_MELTING_LAYER) & data.TEMP<0)) & isnan(data.HCR_LDR) & isnan(data.HSRL_Particle_Linear_Depolarization_Ratio) & ...
-            (pid_hcr_hsrl==3 | pid_hcr_hsrl==6));
+            (data.HCR_DBZ<=5 | data.HCR_VEL<=1));
         pid_hcr_hsrl(smallInds)=11;
 
         largeInds=find((data.HCR_MELTING_LAYER==20 | (isnan(data.HCR_MELTING_LAYER) & data.TEMP<0)) & isnan(data.HCR_LDR) & isnan(data.HSRL_Particle_Linear_Depolarization_Ratio) & ...
-            (pid_hcr_hsrl==1 | pid_hcr_hsrl==2 | pid_hcr_hsrl==4 | pid_hcr_hsrl==5));
+            (data.HCR_DBZ>5 & data.HCR_VEL>1));
         pid_hcr_hsrl(largeInds)=10;
 
         %% Set low DBZ to cloud liquid

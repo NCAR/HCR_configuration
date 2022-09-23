@@ -2,7 +2,7 @@ function data = preProcessPIDcomb(data,convThresh)
 % Remove fields where they are not suitable
 
 %Reverse up pointing vel
-data.HCR_VEL(:,data.elevation>0)=-data.HCR_VEL(:,data.elevation>0);
+data.HCR_VEL=-data.HCR_VEL;
 
 % Fix melting layer
 data.HCR_MELTING_LAYER(~isnan(data.HCR_MELTING_LAYER) & data.HCR_MELTING_LAYER<20)=10;

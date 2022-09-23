@@ -426,8 +426,8 @@ fields = {
   }
   ,
   {
-    label = "HCR_PARTITION",
-    raw_name = "HCR_PARTITION_2D",
+    label = "HCR_ECHO_TYPE_2D",
+    raw_name = "HCR_ECHO_TYPE_2D",
     filtered_name = "",
     units = "",
     color_map = "hcr_partition.colors",

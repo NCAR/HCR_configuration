@@ -5,9 +5,9 @@ close all;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Input variables %%%%%%%%%%%%%%%%%%%%%%%%%%
 
-project='cset'; %socrates, aristo, cset
+project='socrates'; %socrates, aristo, cset
 quality='qc3'; %field, qc1, or qc2
-qcVersion='v3.0';
+qcVersion='v3.1';
 freqData='combined'; % 10hz, 100hz, 2hz, or combined
 whichModel='era5';
 

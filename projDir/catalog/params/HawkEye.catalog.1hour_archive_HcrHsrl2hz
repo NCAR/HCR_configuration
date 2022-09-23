@@ -315,7 +315,7 @@ color_scale_dir = "$(HOME)/git/HCR_configuration/projDir/display/color_scales";
 
 fields = {
   {
-    label = "HCR_DBZ",
+    label = "1Hr_HCR_DBZ",
     raw_name = "HCR_DBZ",
     filtered_name = "",
     units = "dBZ",
@@ -324,7 +324,7 @@ fields = {
   }
   ,
   {
-    label = "HCR_VEL",
+    label = "1Hr_HCR_VEL",
     raw_name = "HCR_VEL",
     filtered_name = "",
     units = "m/s",
@@ -333,7 +333,7 @@ fields = {
   }
   ,
   {
-    label = "HCR_WIDTH",
+    label = "1Hr_HCR_WIDTH",
     raw_name = "HCR_WIDTH",
     filtered_name = "",
     units = "m/s",
@@ -342,7 +342,7 @@ fields = {
   }
   ,
   {
-    label = "HCR_LDR",
+    label = "1Hr_HCR_LDR",
     raw_name = "HCR_LDR",
     filtered_name = "",
     units = "dB",
@@ -351,7 +351,7 @@ fields = {
   }
   ,
   {
-    label = "HCR_NCP",
+    label = "1Hr_HCR_NCP",
     raw_name = "HCR_NCP",
     filtered_name = "",
     units = "",
@@ -360,7 +360,7 @@ fields = {
   }
   ,
   {
-    label = "HCR_SNR",
+    label = "1Hr_HCR_SNR",
     raw_name = "HCR_SNR",
     filtered_name = "",
     units = "dB",
@@ -369,7 +369,7 @@ fields = {
   }
   ,
   {
-    label = "HCR_DBMVC",
+    label = "1Hr_HCR_DBMVC",
     raw_name = "HCR_DBMVC",
     filtered_name = "",
     units = "dBm",
@@ -378,7 +378,7 @@ fields = {
   }
   ,
   {
-    label = "HCR_MELTING_LAYER",
+    label = "1Hr_HCR_MELTING_LAYER",
     raw_name = "HCR_MELTING_LAYER",
     filtered_name = "",
     units = "",
@@ -387,7 +387,7 @@ fields = {
   }
   ,
   {
-    label = "HCR_CONVECTIVITY",
+    label = "1Hr_HCR_CONVECTIVITY",
     raw_name = "HCR_CONVECTIVITY",
     filtered_name = "",
     units = "",
@@ -396,7 +396,7 @@ fields = {
   }
   ,
   {
-    label = "HCR_ECHO_TYPE",
+    label = "1Hr_HCR_ECHO_TYPE",
     raw_name = "HCR_ECHO_TYPE_2D",
     filtered_name = "",
     units = "",
@@ -405,7 +405,7 @@ fields = {
   }
   ,
   {
-    label = "FLAG",
+    label = "1Hr_FLAG",
     raw_name = "FLAG",
     filtered_name = "",
     units = "",
@@ -414,7 +414,7 @@ fields = {
   }
   ,
   {
-    label = "HSRL_Backscat_Coeff",
+    label = "1Hr_HSRL_Backscat_Coeff",
     raw_name = "HSRL_Aerosol_Backscatter_Coefficient",
     filtered_name = "",
     units = "m-1.sr-1",
@@ -423,7 +423,7 @@ fields = {
   }
   ,
   {
-    label = "HSRL_Backscat_Ratio",
+    label = "1Hr_HSRL_Backscat_Ratio",
     raw_name = "HSRL_Backscatter_Ratio",
     filtered_name = "",
     units = "m-1.sr-1",
@@ -432,7 +432,7 @@ fields = {
   }
   ,
   {
-    label = "HSRL_Particle_LDR",
+    label = "1Hr_HSRL_Particle_LDR",
     raw_name = "HSRL_Particle_Linear_Depolarization_Ratio",
     filtered_name = "",
     units = "",
@@ -441,7 +441,7 @@ fields = {
   }
   ,
   {
-    label = "HSRL_Particle_CDR",
+    label = "1Hr_HSRL_Particle_CDR",
     raw_name = "HSRL_Particle_Depolarization",
     filtered_name = "",
     units = "",
@@ -450,7 +450,7 @@ fields = {
   }
   ,
   {
-    label = "HSRL_Volume_LDR",
+    label = "1Hr_HSRL_Volume_LDR",
     raw_name = "HSRL_Volume_Linear_Depolarization_Ratio",
     filtered_name = "",
     units = "",
@@ -459,7 +459,7 @@ fields = {
   }
   ,
   {
-    label = "HSRL_Volume_CDR",
+    label = "1Hr_HSRL_Volume_CDR",
     raw_name = "HSRL_Volume_Depolarization",
     filtered_name = "",
     units = "",
@@ -468,7 +468,7 @@ fields = {
   }
   ,
   {
-    label = "HSRL_Optical_Depth",
+    label = "1Hr_HSRL_Optical_Depth",
     raw_name = "HSRL_Optical_Depth",
     filtered_name = "",
     units = "",
@@ -477,7 +477,7 @@ fields = {
   }
   ,
   {
-    label = "HSRL_Extinction_Coeff",
+    label = "1Hr_HSRL_Extinction_Coeff",
     raw_name = "HSRL_Aerosol_Extinction_Coefficient",
     filtered_name = "",
     units = "m-1",
@@ -486,7 +486,7 @@ fields = {
   }
   ,
   {
-    label = "HSRL_Copol_Counts",
+    label = "1Hr_HSRL_Copol_Counts",
     raw_name = "HSRL_Merged_Combined_Channel",
     filtered_name = "",
     units = "counts",
@@ -495,7 +495,7 @@ fields = {
   }
   ,
   {
-    label = "HSRL_Xpol_Counts",
+    label = "1Hr_HSRL_Xpol_Counts",
     raw_name = "HSRL_Raw_Cross_Polarization_Channel",
     filtered_name = "",
     units = "counts",
@@ -504,7 +504,7 @@ fields = {
   }
   ,
   {
-    label = "HSRL_Mol_Counts",
+    label = "1Hr_HSRL_Mol_Counts",
     raw_name = "HSRL_Raw_Molecular_Backscatter_Channel",
     filtered_name = "",
     units = "",
@@ -513,7 +513,7 @@ fields = {
   }
   ,
   {
-    label = "Temperature",
+    label = "1Hr_Temperature",
     raw_name = "TEMP",
     filtered_name = "",
     units = "C",
@@ -522,7 +522,7 @@ fields = {
   }
   ,
   {
-    label = "Pressure",
+    label = "1Hr_Pressure",
     raw_name = "PRESS",
     filtered_name = "",
     units = "hPa",
@@ -531,7 +531,7 @@ fields = {
   }
   ,
   {
-    label = "RH",
+    label = "1Hr_RH",
     raw_name = "RH",
     filtered_name = "",
     units = "%",
@@ -540,7 +540,7 @@ fields = {
   }
   ,
   {
-    label = "U",
+    label = "1Hr_U",
     raw_name = "U",
     filtered_name = "",
     units = "m/s",
@@ -549,7 +549,7 @@ fields = {
   }
   ,
   {
-    label = "V",
+    label = "1Hr_V",
     raw_name = "V",
     filtered_name = "",
     units = "m/s",
@@ -558,7 +558,7 @@ fields = {
   }
   ,
   {
-    label = "PID",
+    label = "1Hr_PID",
     raw_name = "PID",
     filtered_name = "",
     units = "",
@@ -917,7 +917,7 @@ rhi_aspect_ratio = 1;
 // Type: double
 //
 
-bscan_time_span_secs = 900;
+bscan_time_span_secs = 3600;
 
 ///////////// bscan_truncate_start_time ///////////////
 //
@@ -1524,7 +1524,7 @@ bscan_dwell_stats = DWELL_STATS_MEAN;
 // Type: string
 //
 
-images_output_dir = "$(DATA_DIR)/$(QC_VERSION)/images/hcr_hsrl_merge/$(QC_SUB_VERSION)/catalog15min";
+images_output_dir = "$(DATA_DIR)/$(QC_VERSION)/images/hcr_hsrl_merge/$(QC_SUB_VERSION)/catalog1hr";
 
 ///////////// images_write_to_day_dir /////////////////
 //
@@ -1686,7 +1686,7 @@ images_creation_mode = CREATE_IMAGES_ON_ARCHIVE_SCHEDULE;
 // Type: int
 //
 
-images_schedule_interval_secs = 900;
+images_schedule_interval_secs = 3600;
 
 ///////////// images_schedule_delay_secs //////////////
 //

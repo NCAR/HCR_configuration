@@ -7,7 +7,7 @@ addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
 project='socrates'; %socrates, aristo, cset
 quality='qc3'; %field, qc1, or qc2
-qcVersion='v3.0';
+qcVersion='v3.1';
 freqData='combined'; % 10hz, 100hz, 2hz, or combined
 
 plotIn.plotMR=0;
@@ -17,12 +17,6 @@ convThresh=4;
 
 whichFilter=0; % 0: no filter, 1: mode filter, 2: coherence filter
 postProcess=1; % 1 if post processing is desired
-
-if strcmp(project,'otrec')
-    indir='/scr/sleet2/rsfdata/projects/otrec/hcr/qc2/cfradial/development/pid/10hz/';
-elseif strcmp(project,'socrates')
-    indir=HCRdir(project,quality,qcVersion,freqData);
-end
 
 figdir=[indir(1:end-4),'pidPlotsComb/cases/'];
 
@@ -79,11 +73,13 @@ for aa=1:length(caseStart)
         ylimits=[0 (max(data.asl(~isnan(data.HCR_DBZ)))./1000)+0.5];
         plotIn.ylimits=ylimits;
 
+        tempOrig=data.TEMP;
         %% Calculate velocity texture
 
         pixRadVEL=10;
         velBase=-20;
 
+        data.HCR_VEL(:,data.elevation<0)=-data.HCR_VEL(:,data.elevation<0);
         data.VELTEXT=f_velTexture(data.HCR_VEL,data.elevation,pixRadVEL,velBase);
 
         %% Mask LDR and HSRL
@@ -110,12 +106,20 @@ for aa=1:length(caseStart)
 
         data.TEMP=tempOrig;
 
+%         smallInds=find((data.HCR_MELTING_LAYER==20 | (isnan(data.HCR_MELTING_LAYER) & data.TEMP<0)) & isnan(data.HCR_LDR) & isnan(data.HSRL_Particle_Linear_Depolarization_Ratio) & ...
+%             (pid_hcr_hsrl==3 | pid_hcr_hsrl==6));
+%         pid_hcr_hsrl(smallInds)=11;
+% 
+%         largeInds=find((data.HCR_MELTING_LAYER==20 | (isnan(data.HCR_MELTING_LAYER) & data.TEMP<0)) & isnan(data.HCR_LDR) & isnan(data.HSRL_Particle_Linear_Depolarization_Ratio) & ...
+%             (pid_hcr_hsrl==1 | pid_hcr_hsrl==2 | pid_hcr_hsrl==4 | pid_hcr_hsrl==5));
+%         pid_hcr_hsrl(largeInds)=10;
+
         smallInds=find((data.HCR_MELTING_LAYER==20 | (isnan(data.HCR_MELTING_LAYER) & data.TEMP<0)) & isnan(data.HCR_LDR) & isnan(data.HSRL_Particle_Linear_Depolarization_Ratio) & ...
-            (pid_hcr_hsrl==3 | pid_hcr_hsrl==6));
+            (data.HCR_DBZ<=5 | data.HCR_VEL<=1));
         pid_hcr_hsrl(smallInds)=11;
 
         largeInds=find((data.HCR_MELTING_LAYER==20 | (isnan(data.HCR_MELTING_LAYER) & data.TEMP<0)) & isnan(data.HCR_LDR) & isnan(data.HSRL_Particle_Linear_Depolarization_Ratio) & ...
-            (pid_hcr_hsrl==1 | pid_hcr_hsrl==2 | pid_hcr_hsrl==4 | pid_hcr_hsrl==5));
+            (data.HCR_DBZ>5 & data.HCR_VEL>1));
         pid_hcr_hsrl(largeInds)=10;
 
         %% Add supercooled
