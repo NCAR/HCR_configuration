@@ -1,7 +1,24 @@
-function cloudID=makeCloudID(joinedFlag,minCloudSizePix)
+function cloudID=makeCloudID(data,minCloudSizePix)
 % Create file with numbered clouds
 
-cloudMask=joinedFlag==1;
+% Join over nadir/zenith edges
+signElev=sign(data.elevation);
+diffSign=diff(signElev);
+switchInds=find(abs(diffSign)==2 | abs(diffSign)==1);
+
+transMask=data.ANTFLAG==5;
+
+
+
+
+
+
+
+
+
+
+
+cloudMask=data.FLAG==1;
 cloudMask=bwareaopen(cloudMask,minCloudSizePix);
 
 % Find connected

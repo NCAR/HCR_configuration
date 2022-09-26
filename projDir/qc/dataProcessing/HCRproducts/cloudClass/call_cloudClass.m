@@ -30,7 +30,7 @@ caseStart=datetime(caseList.Var1,caseList.Var2,caseList.Var3, ...
 caseEnd=datetime(caseList.Var6,caseList.Var7,caseList.Var8, ...
     caseList.Var9,caseList.Var10,0);
 
-for aa=10:length(caseStart)
+for aa=8:length(caseStart)
     
     disp(['Case ',num2str(aa),' of ',num2str(length(caseStart))]);
     
@@ -47,6 +47,7 @@ for aa=10:length(caseStart)
     
     data.ECHO_TYPE_2D=[];
     data.FLAG=[];
+    data.ANTFLAG=[];
     data.TEMP=[];
     data.TOPO=[];
     
@@ -56,27 +57,24 @@ for aa=10:length(caseStart)
     ylimUpper=(max(data.asl(~isnan(data.ECHO_TYPE_2D)))./1000)+0.5;
    
     %% Truncate to non missing
-    nonMissingInds=findNonMissingInds(data,10);
 
-    dataInVars=fields(data);
-
-    dataShort=[];
-    for ii=1:length(dataInVars)
-        dataShort.(dataInVars{ii})=data.(dataInVars{ii})(:,nonMissingInds==1);
-    end
+    gapSecs=10;
+    [data,nonMissingInds]=joinOverMissing(data,gapSecs);
 
     %% Create cloudID
 
     minCloudSizePix=1000;
 
-    cloudID=makeCloudID(dataShort.FLAG,minCloudSizePix);
+    cloudID=makeCloudID(data,minCloudSizePix);
+
+    %% Un-truncate
+
+    data=unJoinOverMissing(data,nonMissingInds);
+
 
     %% Cloud classification
 
-    cloudClassJoined=findCloudClass(dataShort.ECHO_TYPE_2D,cloudID,dataShort.TEMP,dataShort.elevation,dataShort.TOPO,dataShort.asl);
-
-    cloudClass=nan(size(data.ECHO_TYPE_2D));
-    cloudClass(:,nonMissingInds==1)=cloudClassJoined;
+    cloudClass=findCloudClass(data.ECHO_TYPE_2D,cloudID,data.TEMP,data.elevation,data.TOPO,data.asl);
 
     % Fill in small with not classified
     cloudClass(~isnan(data.ECHO_TYPE_2D) & isnan(cloudClass))=0;
