@@ -67,10 +67,15 @@ for aa=8:length(caseStart)
 
     cloudID=makeCloudID(data,minCloudSizePix);
 
+    %% Cloud puzzle
+    % Breaks up really big clouds
+    % Breaks out convective regions that insert into stratiform regions
+
+    
+
     %% Un-truncate
 
     data=unJoinOverMissing(data,nonMissingInds);
-
 
     %% Cloud classification
 
