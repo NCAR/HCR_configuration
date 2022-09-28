@@ -30,7 +30,7 @@ caseStart=datetime(caseList.Var1,caseList.Var2,caseList.Var3, ...
 caseEnd=datetime(caseList.Var6,caseList.Var7,caseList.Var8, ...
     caseList.Var9,caseList.Var10,0);
 
-for aa=1:length(caseStart)
+for aa=2:length(caseStart)
     
     disp(['Case ',num2str(aa),' of ',num2str(length(caseStart))]);
     
@@ -70,8 +70,10 @@ for aa=1:length(caseStart)
     % Breaks up really big clouds
     % Breaks out convective regions that insert into stratiform regions
 
-    data.cloudPuzzle=cloudID;
-    data.cloudPuzzle(data.cloudPuzzle==0)=nan;
+%     data.cloudPuzzle=cloudID;
+%     data.cloudPuzzle(data.cloudPuzzle==0)=nan;
+
+    data.cloudPuzzle=f_cloudPuzzle_echoType(cloudID,data);
 
     uClouds=unique(data.cloudPuzzle(~isnan(data.cloudPuzzle)));
     cloudCount=length(uClouds);
