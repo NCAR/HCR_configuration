@@ -34,6 +34,10 @@ cloudID=double(labelmatrix(connMask));
 % Fill in corner regions
 for ii=1:length(regList)
     thisFlag=data.FLAG(:,regList(ii));
+    flagUp=thisFlag(18:end);
+    reflUp=data.DBZ(18:end,regList(ii));
+    flagUp(isnan(reflUp))=nan;
+    thisFlag(18:end)=flagUp;
     firstNan=min(find(isnan(thisFlag)));
     if isempty(firstNan)
         firstNan=length(thisFlag);

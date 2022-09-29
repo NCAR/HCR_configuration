@@ -30,7 +30,7 @@ caseStart=datetime(caseList.Var1,caseList.Var2,caseList.Var3, ...
 caseEnd=datetime(caseList.Var6,caseList.Var7,caseList.Var8, ...
     caseList.Var9,caseList.Var10,0);
 
-for aa=2:length(caseStart)
+for aa=4:length(caseStart)
     
     disp(['Case ',num2str(aa),' of ',num2str(length(caseStart))]);
     
@@ -70,10 +70,11 @@ for aa=2:length(caseStart)
     % Breaks up really big clouds
     % Breaks out convective regions that insert into stratiform regions
 
-%     data.cloudPuzzle=cloudID;
-%     data.cloudPuzzle(data.cloudPuzzle==0)=nan;
+    %     data.cloudPuzzle=cloudID;
+    %     data.cloudPuzzle(data.cloudPuzzle==0)=nan;
 
-    data.cloudPuzzle=f_cloudPuzzle_echoType(cloudID,data);
+    disp('Getting cloud puzzle ...')
+    data.cloudPuzzle=f_cloudPuzzle_breakLarge(cloudID,data);
 
     uClouds=unique(data.cloudPuzzle(~isnan(data.cloudPuzzle)));
     cloudCount=length(uClouds);
@@ -153,18 +154,22 @@ for aa=2:length(caseStart)
     
     ax3=subplot(3,1,3);
     
-    colMapIn=jet(cloudCount-1);
+    colMapIn=jet(cloudCount);
     % Make order random
-    indsCol=randperm(size(colMapIn,1));
-    colMapInds=cat(2,indsCol',colMapIn);
+    indsCol=nan(cloudCount,1);
+    indsCol(1:2:cloudCount)=1:2:cloudCount;
+    reverse=fliplr(2:2:cloudCount);
+    indsCol(2:2:cloudCount)=reverse;
+    %indsCol=randperm(size(colMapIn,1));
+    colMapInds=cat(2,indsCol,colMapIn);
     colMapInds=sortrows(colMapInds);
-    colMap=cat(1,[0 0 0],colMapInds(:,2:end));
+    colMap=colMapInds(:,2:end);
     
     hold on;
     sub2=surf(plotTime,plotASL./1000,plotPuzzle,'edgecolor','none');
     view(2);
     ax3.Colormap=colMap;
-    caxis([-0.5 cloudCount-1+0.5])
+    caxis([0.5 cloudCount+0.5])
     ylim([-0.2,ylimUpper]);
     ylabel('Altitude (km)');
     xlim([plotTime(1),plotTime(end)]);
