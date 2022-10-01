@@ -30,7 +30,7 @@ caseStart=datetime(caseList.Var1,caseList.Var2,caseList.Var3, ...
 caseEnd=datetime(caseList.Var6,caseList.Var7,caseList.Var8, ...
     caseList.Var9,caseList.Var10,0);
 
-for aa=8:length(caseStart)
+for aa=1:length(caseStart)
     
     disp(['Case ',num2str(aa),' of ',num2str(length(caseStart))]);
     
@@ -45,6 +45,7 @@ for aa=8:length(caseStart)
     
     data=[];
     
+    data.DBZ=[];
     data.ECHO_TYPE_2D=[];
     data.FLAG=[];
     data.ANTFLAG=[];
@@ -56,7 +57,7 @@ for aa=8:length(caseStart)
  
     ylimUpper=(max(data.asl(~isnan(data.ECHO_TYPE_2D)))./1000)+0.5;
    
-    %% Truncate to non missing
+   %% Truncate to non missing
 
     gapSecs=10;
     [data,nonMissingInds]=joinOverMissing(data,gapSecs);
@@ -69,22 +70,39 @@ for aa=8:length(caseStart)
 
     %% Cloud puzzle
     % Breaks up really big clouds
-    % Breaks out convective regions that insert into stratiform regions
-
     
+    disp('Breaking up large ...')
+    data.cloudPuzzle=f_cloudPuzzle_breakLarge(cloudID,data);
+
+    % Breaks out isolated convective that penetrate into stratiform
+    disp('Breaking out isolated conv ...')
+    data.cloudPuzzle_echoType=breakout_isolatedConv(data);
+
+    uClouds=unique(data.cloudPuzzle(~isnan(data.cloudPuzzle)));
+    cloudCount=length(uClouds);
 
     %% Un-truncate
 
+    disp('Adding gaps back in ...')
     data=unJoinOverMissing(data,nonMissingInds);
-
+       
     %% Cloud classification
 
-    cloudClass=findCloudClass(data.ECHO_TYPE_2D,cloudID,data.TEMP,data.elevation,data.TOPO,data.asl);
+    disp('Cloud classification ...')
+    cloudClass=findCloudClass(data.ECHO_TYPE_2D,data.cloudPuzzle_echoType,data.TEMP,data.elevation,data.TOPO,data.asl);
 
     % Fill in small with not classified
     cloudClass(~isnan(data.ECHO_TYPE_2D) & isnan(cloudClass))=0;
        
     %% Plot
+
+    indWant=3000;
+    indSpacing=round(length(data.time)/indWant);
+    getInds=1:indSpacing:length(data.time);
+
+    plotTime=data.time(getInds);
+    plotAsl=data.asl(:,getInds);
+
     % Prepare cloud class
     % Not classified=0
     % stratLow=1
@@ -100,16 +118,16 @@ for aa=8:length(caseStart)
     % convMatureMid=32
     % convMatureDeep=33
 
-    classPlot=cloudClass;
-    classPlot(cloudClass==11)=4;
-    classPlot(cloudClass==12)=5;
-    classPlot(cloudClass==13)=6;
-    classPlot(cloudClass==21)=7;
-    classPlot(cloudClass==22)=8;
-    classPlot(cloudClass==23)=9;
-    classPlot(cloudClass==31)=10;
-    classPlot(cloudClass==32)=11;
-    classPlot(cloudClass==33)=12;
+    classPlot=cloudClass(:,getInds);
+    classPlot(classPlot==11)=4;
+    classPlot(classPlot==12)=5;
+    classPlot(classPlot==13)=6;
+    classPlot(classPlot==21)=7;
+    classPlot(classPlot==22)=8;
+    classPlot(classPlot==23)=9;
+    classPlot(classPlot==31)=10;
+    classPlot(classPlot==32)=11;
+    classPlot(classPlot==33)=12;
 
     colmapCC=[0,0,0;
         204,255,204;
@@ -133,16 +151,16 @@ for aa=8:length(caseStart)
     
     close all
     
-    csSubPlot=data.ECHO_TYPE_2D;
-    csSubPlot(data.ECHO_TYPE_2D==14)=1;
-    csSubPlot(data.ECHO_TYPE_2D==16)=2;
-    csSubPlot(data.ECHO_TYPE_2D==18)=3;
-    csSubPlot(data.ECHO_TYPE_2D==25)=4;
-    csSubPlot(data.ECHO_TYPE_2D==30)=5;
-    csSubPlot(data.ECHO_TYPE_2D==32)=6;
-    csSubPlot(data.ECHO_TYPE_2D==34)=7;
-    csSubPlot(data.ECHO_TYPE_2D==36)=8;
-    csSubPlot(data.ECHO_TYPE_2D==38)=9;
+    csSubPlot=data.ECHO_TYPE_2D(:,getInds);
+    csSubPlot(csSubPlot==14)=1;
+    csSubPlot(csSubPlot==16)=2;
+    csSubPlot(csSubPlot==18)=3;
+    csSubPlot(csSubPlot==25)=4;
+    csSubPlot(csSubPlot==30)=5;
+    csSubPlot(csSubPlot==32)=6;
+    csSubPlot(csSubPlot==34)=7;
+    csSubPlot(csSubPlot==36)=8;
+    csSubPlot(csSubPlot==38)=9;
 
     colmapSC=[0,0.1,0.6;
         0.38,0.42,0.96;
@@ -161,7 +179,7 @@ for aa=8:length(caseStart)
     s1=subplot(2,1,1);
     
     hold on
-    surf(data.time,data.asl./1000,csSubPlot,'edgecolor','none');
+    surf(plotTime,plotAsl./1000,csSubPlot,'edgecolor','none');
     view(2);
     ylabel('Altitude (km)');
     caxis([0 10]);
@@ -180,7 +198,7 @@ for aa=8:length(caseStart)
     s2=subplot(2,1,2);
     
     hold on
-    surf(data.time,data.asl./1000,classPlot,'edgecolor','none');
+    surf(plotTime,plotAsl./1000,classPlot,'edgecolor','none');
     view(2);
     ylabel('Altitude (km)');
     caxis([-1 13]);

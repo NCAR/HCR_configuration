@@ -114,17 +114,17 @@ for ii=1:length(uClouds)
                 if labelRegs.NumObjects>1
                     regSizes=regionprops('table',labelMask,'Area');
                     sizeFrac=regSizes.Area./max(regSizes.Area);
-                    for cc=1:length(sizeFrac)
-                        if sizeFrac<1
+                    for dd=1:length(sizeFrac)
+                        if sizeFrac(dd)<1
                             thisReg=zeros(size(labelMask));
-                            thisReg(labelRegs.PixelIdxList{cc})=1;
-                            largerReg=imdilate(thisReg,strel('disk',1));
+                            thisReg(labelRegs.PixelIdxList{dd})=1;
+                            largerReg=imdilate(thisReg,strel('disk',2));
                             uLabSmall=unique(labelAll(thisReg==1));
                             uLab=unique(labelAll(largerReg==1));
                             uLab(uLab==0)=[];
                             uLab(uLab==uLabSmall)=[];
                             if length(uLab)==1
-                                labelAll(labelRegs.PixelIdxList{cc})=2;
+                                labelAll(labelRegs.PixelIdxList{dd})=uLab;
                             else
                                 disp('Something is wrong with labels.')
                             end
