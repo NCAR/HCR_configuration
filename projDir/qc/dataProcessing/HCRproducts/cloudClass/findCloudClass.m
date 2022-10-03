@@ -1,4 +1,4 @@
-function cloudClass=findCloudClass(jEcho,cloudID,jTemp,jElev,jTopo,jAsl)
+function cloudClass=findCloudClass(jEcho,cloudID,jTemp,jMelt,jElev,jTopo,jAsl)
 % Classify clouds based on their conv/strat properties
 
 % Not classified=0
@@ -17,8 +17,20 @@ function cloudClass=findCloudClass(jEcho,cloudID,jTemp,jElev,jTopo,jAsl)
 
 cloudClass=nan(size(jEcho));
 
-% Set elev to mixed
-jEcho(jEcho==32)=25;
+% Set elev to strat
+% Minimum altitude for low/mid boundary is 2km
+% Minimum altitude for mid/high boundary is 4km
+distAslTopo=jAsl-jTopo;
+melt=jMelt;
+melt(distAslTopo<2000)=10;
+melt(isnan(jMelt))=nan;
+jTemp(distAslTopo<4000 & jTemp<-25)=-25;
+% Low
+jEcho(jEcho==32 & melt<20)=14;
+% Mid
+jEcho(jEcho==32 & melt>=20 & jTemp>=-25)=16;
+% High
+jEcho(jEcho==32 & melt>=20 & jTemp<-25)=18;
 
 % Calculate alt minus topo
 topoDist=jAsl-jTopo;
@@ -78,7 +90,7 @@ for ii=1:max(reshape(cloudID,1,[]))
 
     convFrac=convPix/(stratPix+convPix);
 
-    if convFrac>0.05
+    if convFrac>0.05 | max(cloudMat(:))==38
         % Young
         if convFrac>0.5
             if max(reshape(cloudMat,1,[]),[],'omitnan')==38

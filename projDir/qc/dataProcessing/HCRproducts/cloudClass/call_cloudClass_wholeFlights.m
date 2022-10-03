@@ -47,6 +47,7 @@ for aa=1:size(caseList,1)
     data.FLAG=[];
     data.ANTFLAG=[];
     data.TEMP=[];
+    data.MELTING_LAYER=[];
     data.TOPO=[];
         
     % Load data
@@ -83,7 +84,7 @@ for aa=1:size(caseList,1)
     %% Cloud classification
 
     disp('Cloud classification ...')
-    cloudClass=findCloudClass(data.ECHO_TYPE_2D,data.cloudPuzzle_echoType,data.TEMP,data.elevation,data.TOPO,data.asl);
+    cloudClass=findCloudClass(data.ECHO_TYPE_2D,data.cloudPuzzle_echoType,data.TEMP,data.MELTING_LAYER,data.elevation,data.TOPO,data.asl);
 
     % Fill in small with not classified
     cloudClass(~isnan(data.ECHO_TYPE_2D) & isnan(cloudClass))=0;

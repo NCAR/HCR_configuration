@@ -16,6 +16,14 @@ newInd=1;
 % Loop through clouds
 for ii=1:length(uClouds)
     cloudInds=find(cloudPuzzleTemp==uClouds(ii));
+    
+    % Process only large regions
+    if length(cloudInds)<100000
+        cloudPuzzleOut(cloudInds)=newInd;
+        newInd=newInd+1;
+        continue
+    end
+
     convCheck=echoTypeTemp(cloudInds);
 
     % Find mature convective
