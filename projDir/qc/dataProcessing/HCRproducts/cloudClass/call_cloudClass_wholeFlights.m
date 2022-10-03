@@ -28,7 +28,7 @@ infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_
 
 caseList = table2array(readtable(infile));
 
-for aa=2:size(caseList,1)
+for aa=1:size(caseList,1)
     disp(['Flight ',num2str(aa)]);
     disp(['Starting at ',datestr(datetime('now'),'yyyy-mm-dd HH:MM')]);
     disp('Loading data ...');

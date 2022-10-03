@@ -32,9 +32,6 @@ jEcho(jEcho==32 & melt>=20 & jTemp>=-25)=16;
 % High
 jEcho(jEcho==32 & melt>=20 & jTemp<-25)=18;
 
-% Calculate alt minus topo
-topoDist=jAsl-jTopo;
-
 % Loop through clouds
 for ii=1:max(reshape(cloudID,1,[]))
 
@@ -68,7 +65,14 @@ for ii=1:max(reshape(cloudID,1,[]))
     inCloudFrac=0;
 
     if (min(r))==18
-        inCloudFrac=sum(~isnan(cloudMat(1,:)))./size(cloudMat,2);
+        % Check for low altitude flight legs
+%         altMat=distAslTopo(min(r):max(r),min(c):max(c));
+%         altMat(idMat~=ii)=nan;
+
+        cloudMatAlt=cloudMat(1,:);
+        cloudMatAlt(distAslTopo(18,min(c):max(c))<500 & jElev(min(c):max(c))>0)=nan;
+
+        inCloudFrac=sum(~isnan(cloudMatAlt))./size(cloudMat,2);
         if inCloudFrac>0.3
             % Pointing up
             if median(jElev(min(c):max(c)))>0
@@ -114,7 +118,7 @@ for ii=1:max(reshape(cloudID,1,[]))
         % Set the few convective pixels to low numbers
         cloudMat(cloudMat>=20)=0;
         %% Check if precipitating
-        topoDistMat=topoDist(min(r):max(r),min(c):max(c));
+        topoDistMat=distAslTopo(min(r):max(r),min(c):max(c));
         topoDistMat(isnan(cloudMat))=nan;
         minDist=min(reshape(topoDistMat,1,[]),[],'omitnan');
         
