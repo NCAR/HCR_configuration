@@ -60,6 +60,14 @@ for ii=1:length(uClouds)
 
     for jj=1:convRegs.NumObjects
 
+        % Size check
+        convSize=length(convRegs.PixelIdxList{jj});
+        convSizeFrac=convSize/length(cloudInds);
+
+        if convSizeFrac>0.2 | convSize<50000
+            continue
+        end
+
         thisReg=zeros(size(typeMask));
         thisReg(convRegs.PixelIdxList{jj})=1;
 
@@ -104,6 +112,7 @@ for ii=1:length(uClouds)
                         countUnique(hh)=length(find(borderVals==uLab(hh)));
                     end
                     countUnique(uLab==uLabSmall)=[];
+                    countUnique=unique(countUnique);
                     uLab(uLab==uLabSmall)=[];
                     if ~isempty(uLab)
                         returnInds(labelRegs.PixelIdxList{dd})=uLab(find(countUnique==max(countUnique)));
