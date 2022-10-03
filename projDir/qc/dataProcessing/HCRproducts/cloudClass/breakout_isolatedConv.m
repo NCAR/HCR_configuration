@@ -62,9 +62,8 @@ for ii=1:length(uClouds)
 
         % Size check
         convSize=length(convRegs.PixelIdxList{jj});
-        convSizeFrac=convSize/length(cloudInds);
-
-        if convSizeFrac>0.2 | convSize<50000
+        
+        if convSize<50000
             continue
         end
 
