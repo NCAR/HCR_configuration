@@ -5,15 +5,16 @@ close all;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Input variables %%%%%%%%%%%%%%%%%%%%%%%%%%
 
-project='socrates'; %socrates, aristo, cset, otrec
+project='otrec'; %socrates, aristo, cset, otrec
 quality='qc3'; %field, qc1, or qc2
 freqData='10hz';
 qcVersion='v3.1';
 whichModel='era5';
 
-plotFig=1;
+plotFig=0;
 showPlot='off';
-saveData=1;
+saveCloudClass=1;
+saveCloudPuzzle=1;
 saveTime=0;
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
@@ -210,18 +211,27 @@ for aa=1:size(caseList,1)
 
     %% Saving data
 
-    if saveData
+    if saveCloudClass
 
-        %% Save
         disp('Saving cloudClass field ...')
 
         save([outdir,whichModel,'.cloudClass.',datestr(data.time(1),'YYYYmmDD_HHMMSS'),'_to_',...
             datestr(data.time(end),'YYYYmmDD_HHMMSS'),'.Flight',num2str(aa),'.mat'],'cloudClass');
-
-        if saveTime
-            timeHCR=data.time;
-            save([outdir,whichModel,'.time.',datestr(data.time(1),'YYYYmmDD_HHMMSS'),'_to_',...
-                datestr(data.time(end),'YYYYmmDD_HHMMSS'),'.Flight',num2str(aa),'.mat'],'timeHCR');
-        end
     end
+
+    if saveCloudPuzzle
+
+        disp('Saving cloudPuzzle field ...')
+
+        cloudPuzzle=data.cloudPuzzle_echoType;
+        save([outdir,whichModel,'.cloudPuzzle.',datestr(data.time(1),'YYYYmmDD_HHMMSS'),'_to_',...
+            datestr(data.time(end),'YYYYmmDD_HHMMSS'),'.Flight',num2str(aa),'.mat'],'cloudPuzzle');
+    end
+
+    if saveTime
+        timeHCR=data.time;
+        save([outdir,whichModel,'.time.',datestr(data.time(1),'YYYYmmDD_HHMMSS'),'_to_',...
+            datestr(data.time(end),'YYYYmmDD_HHMMSS'),'.Flight',num2str(aa),'.mat'],'timeHCR');
+    end
+
 end
