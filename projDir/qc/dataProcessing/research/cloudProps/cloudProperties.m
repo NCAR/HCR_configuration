@@ -19,7 +19,7 @@ cfDir=HCRdir(project,quality,qcVersion,freqData);
 
 [~,matDir]=modelDir(project,whichModel,quality,qcVersion,freqData);
 
-figdir=[cfDir(1:end-5),'cloudPuzzleEchoType/wholeFlights/'];
+figdir=[cfDir(1:end-5),'cloudProps/'];
 
 infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_',project,'_data.txt'];
 
@@ -40,6 +40,22 @@ for ii=1:length(classTypes)
     maxConvAll.(classTypes{ii})=[];
     meanConvAll.(classTypes{ii})=[];
     cloudDepthAll.(classTypes{ii})=[];
+    maxTempAll.(classTypes{ii})=[];
+    minTempAll.(classTypes{ii})=[];
+    meanTempAll.(classTypes{ii})=[];
+    maxPressAll.(classTypes{ii})=[];
+    minPressAll.(classTypes{ii})=[];
+    meanPressAll.(classTypes{ii})=[];
+    iceLevAll.(classTypes{ii})=[];
+    if ~strcmp(project,'spicule')
+        sstAll.(classTypes{ii})=[];
+    end
+    upNumAll.(classTypes{ii})=[];
+    upFracAll.(classTypes{ii})=[];
+    upMaxWidthAll.(classTypes{ii})=[];
+    upMaxDepthAll.(classTypes{ii})=[];
+    upMaxStrengthAll.(classTypes{ii})=[];
+    downMaxStrengthAll.(classTypes{ii})=[];
 end
 
 %% Loop through flights
@@ -67,17 +83,32 @@ for aa=1:size(caseList,1)
     data=[];
 
     data.DBZ_MASKED=[];
+    data.VEL_MASKED=[];
     data.CONVECTIVITY=[];
+    data.TEMP=[];
+    data.PRESS=[];
+    data.ICING_LEVEL=[];
+    if ~strcmp(project,'spicule')
+        data.SST=[];
+    end
+    data.eastward_velocity=[];
+    data.northward_velocity=[];
 
     % Load data
     data=read_HCR(fileList,data,startTime,endTime);
+
+    data.CONVECTIVITY(data.CONVECTIVITY>1)=1;
+    data.VEL_MASKED(:,data.elevation>0)=-data.VEL_MASKED(:,data.elevation>0);
+
+    groundSpeed=sqrt(data.eastward_velocity.^2+data.northward_velocity.^2);
+    groundDist=groundSpeed.*etime(datevec(data.time(2)),datevec(data.time(1)));
 
     % Check time
     if ~isequal(size(cloudClass),size(data.DBZ_MASKED))
         error('Times do not match up.')
     end
 
-    %% Loop through clouds
+    %% Prepare cloud Class
 
     cloudClass(cloudClass==11)=4;
     cloudClass(cloudClass==12)=5;
@@ -90,6 +121,8 @@ for aa=1:size(caseList,1)
     cloudClass(cloudClass==33)=12;
 
     uClouds=unique(cloudPuzzle(~isnan(cloudPuzzle)));
+
+    %% Loop through clouds
 
     for ii=1:length(uClouds)
         disp(['Processing cloud ',num2str(ii),' of ',num2str(length(uClouds)),' ...'])
@@ -105,16 +138,36 @@ for aa=1:size(caseList,1)
         meanConv=mean(data.CONVECTIVITY(cloudInds),'omitnan');
 
         % Cloud depth
-        cloudAsl=data.asl(cloudInds);
+        cloudAsl=data.asl(cloudInds)./1000;
         cloudDepth=max(cloudAsl,[],'omitnan')-min(cloudAsl,[],'omitnan');
 
-        % Process mat
+        % Temperature
+        maxTemp=max(data.TEMP(cloudInds),[],'omitnan');
+        minTemp=min(data.TEMP(cloudInds),[],'omitnan');
+        meanTemp=mean(data.TEMP(cloudInds),'omitnan');
+
+        % Pressure
+        maxPress=max(data.PRESS(cloudInds),[],'omitnan');
+        minPress=min(data.PRESS(cloudInds),[],'omitnan');
+        meanPress=mean(data.PRESS(cloudInds),'omitnan');
+
+        % 1D
         [clR,clC]=ind2sub(size(data.DBZ_MASKED),cloudInds);
 
-        maskBig=zeros(size(data.DBZ_MASKED));
-        maskBig(cloudInds)=1;
+        % Icing level
+        iceLev=mean(data.ICING_LEVEL(clC)./1000,'omitnan');
 
-        typeMap=maskBig(min(clR):max(clR),min(clC):max(clC));
+        % Sea surface temperature
+        if ~strcmp(project,'spicule')
+            sst=mean(data.SST(clC),'omitnan');
+        end
+
+        % Velocity
+        velBig=nan(size(data.VEL_MASKED));
+        velBig(cloudInds)=data.VEL_MASKED(cloudInds);
+
+        velMap=velBig(min(clR):max(clR),min(clC):max(clC));
+        [upNum,upFrac,upMaxWidth,upMaxDepth,upMaxStrength,downMaxStrength]=upDownDraft(velMap,data.range(2)-data.range(1),mean(groundDist(clC)));
 
         % Add output
         cloudType=unique(cloudClass(cloudInds));
@@ -128,13 +181,242 @@ for aa=1:size(caseList,1)
         maxConvAll.(classTypes{cloudType})=cat(1,maxConvAll.(classTypes{cloudType}),maxConv);
         meanConvAll.(classTypes{cloudType})=cat(1,meanConvAll.(classTypes{cloudType}),meanConv);
         cloudDepthAll.(classTypes{cloudType})=cat(1,cloudDepthAll.(classTypes{cloudType}),cloudDepth);
+        maxTempAll.(classTypes{cloudType})=cat(1,maxTempAll.(classTypes{cloudType}),maxTemp);
+        minTempAll.(classTypes{cloudType})=cat(1,minTempAll.(classTypes{cloudType}),minTemp);
+        meanTempAll.(classTypes{cloudType})=cat(1,meanTempAll.(classTypes{cloudType}),meanTemp);
+        maxPressAll.(classTypes{cloudType})=cat(1,maxPressAll.(classTypes{cloudType}),maxPress);
+        minPressAll.(classTypes{cloudType})=cat(1,minPressAll.(classTypes{cloudType}),minPress);
+        meanPressAll.(classTypes{cloudType})=cat(1,meanPressAll.(classTypes{cloudType}),meanPress);
+        iceLevAll.(classTypes{cloudType})=cat(1,iceLevAll.(classTypes{cloudType}),iceLev);
+        if ~strcmp(project,'spicule')
+            sstAll.(classTypes{cloudType})=cat(1,sstAll.(classTypes{cloudType}),sst);
+        end
+        upNumAll.(classTypes{cloudType})=cat(1,upNumAll.(classTypes{cloudType}),upNum);
+        upFracAll.(classTypes{cloudType})=cat(1,upFracAll.(classTypes{cloudType}),upFrac);
+        upMaxWidthAll.(classTypes{cloudType})=cat(1,upMaxWidthAll.(classTypes{cloudType}),upMaxWidth);
+        upMaxDepthAll.(classTypes{cloudType})=cat(1,upMaxDepthAll.(classTypes{cloudType}),upMaxDepth);
+        upMaxStrengthAll.(classTypes{cloudType})=cat(1,upMaxStrengthAll.(classTypes{cloudType}),upMaxStrength);
+        downMaxStrengthAll.(classTypes{cloudType})=cat(1,downMaxStrengthAll.(classTypes{cloudType}),downMaxStrength);
     end
 end
 
+%% Save properties
+if ~strcmp(project,'spicule')
+    save([figdir,project,'_cloudProps.mat'],'maxReflAll','meanReflAll','maxConvAll','meanConvAll', ...
+        'cloudDepthAll','maxTempAll','minTempAll','meanTempAll','maxPressAll','minPressAll','meanPressAll', ...
+        'iceLevAll','sstAll','upNumAll','upFracAll','upMaxWidthAll','upMaxDepthAll','upMaxStrengthAll','downMaxStrengthAll');
+else
+    save([figdir,project,'_cloudProps.mat'],'maxReflAll','meanReflAll','maxConvAll','meanConvAll', ...
+        'cloudDepthAll','maxTempAll','minTempAll','meanTempAll','maxPressAll','minPressAll','meanPressAll', ...
+        'iceLevAll','upNumAll','upFracAll','upMaxWidthAll','upMaxDepthAll','upMaxStrengthAll','downMaxStrengthAll');
+end
 %% Plot
-% fig1=figure('DefaultAxesFontSize',11,'position',[100,100,1300,900],'visible',showPlot);
-%
-%
-% formatOut = 'yyyymmdd_HHMM';
-% set(gcf,'PaperPositionMode','auto')
-% print([figdir,project,'_.png'],'-dpng','-r0');
+
+colmapCC=[204,255,204;
+    153,204,0;
+    0,128,0;
+    0,204,255;
+    51,102,255;
+    0,0,180;
+    255,204,0;
+    255,102,0;
+    220,0,0;
+    255,153,220;
+    204,153,255;
+    128,0,128];
+
+colmapCC=colmapCC./255;
+
+close all
+
+%% Max refl
+
+close all
+
+edges=-50:30;
+xlab='Maximum reflectivity (dBZ)';
+figname=[figdir,project,'_maxRefl.png'];
+
+plotStats(maxReflAll,edges,xlab,figname,classTypes,colmapCC);
+
+%% Mean refl
+
+close all
+
+edges=-50:30;
+xlab='Mean reflectivity (dBZ)';
+figname=[figdir,project,'_meanRefl.png'];
+
+plotStats(meanReflAll,edges,xlab,figname,classTypes,colmapCC);
+
+%% Max convectivity
+
+close all
+
+edges=0:0.02:1;
+xlab='Max convectivity';
+figname=[figdir,project,'_maxConv.png'];
+
+plotStats(maxConvAll,edges,xlab,figname,classTypes,colmapCC);
+
+%% Mean convectivity
+
+close all
+
+edges=0:0.02:1;
+xlab='Mean convectivity';
+figname=[figdir,project,'_meanConv.png'];
+
+plotStats(meanConvAll,edges,xlab,figname,classTypes,colmapCC);
+
+%% Cloud depth
+
+close all
+
+edges=0:0.2:15;
+xlab='Cloud depth (km)';
+figname=[figdir,project,'_cloudDepth.png'];
+
+plotStats(cloudDepthAll,edges,xlab,figname,classTypes,colmapCC);
+
+%% Max temperature
+
+close all
+
+edges=-80:2:30;
+xlab='Max temperature (C)';
+figname=[figdir,project,'_maxTemp.png'];
+
+plotStats(maxTempAll,edges,xlab,figname,classTypes,colmapCC);
+
+%% Min temperature
+
+close all
+
+edges=-80:2:30;
+xlab='Min temperature (C)';
+figname=[figdir,project,'_minTemp.png'];
+
+plotStats(minTempAll,edges,xlab,figname,classTypes,colmapCC);
+
+%% Mean temperature
+
+close all
+
+edges=-80:2:30;
+xlab='Mean temperature (C)';
+figname=[figdir,project,'_meanTemp.png'];
+
+plotStats(meanTempAll,edges,xlab,figname,classTypes,colmapCC);
+
+%% Max pressure
+
+close all
+
+edges=100:10:1100;
+xlab='Max pressure (hPa)';
+figname=[figdir,project,'_maxPress.png'];
+
+plotStats(maxPressAll,edges,xlab,figname,classTypes,colmapCC);
+
+%% Min pressure
+
+close all
+
+edges=100:10:1100;
+xlab='Min pressure (hPa)';
+figname=[figdir,project,'_minPress.png'];
+
+plotStats(minPressAll,edges,xlab,figname,classTypes,colmapCC);
+
+%% Mean pressure
+
+close all
+
+edges=100:10:1100;
+xlab='Mean pressure (hPa)';
+figname=[figdir,project,'_meanPress.png'];
+
+plotStats(meanPressAll,edges,xlab,figname,classTypes,colmapCC);
+
+%% Icing level
+
+close all
+
+edges=0:0.1:8;
+xlab='Icing level (km)';
+figname=[figdir,project,'_iceLev.png'];
+
+plotStats(iceLevAll,edges,xlab,figname,classTypes,colmapCC);
+
+%% SST
+
+if ~strcmp(project,'spicule')
+    close all
+
+    edges=-35:1:35;
+    xlab='SST (C)';
+    figname=[figdir,project,'_sst.png'];
+
+    plotStats(sstAll,edges,xlab,figname,classTypes,colmapCC);
+end
+
+%% Updraft number
+
+close all
+
+edges=1:1:30;
+xlab='Number of updrafts';
+figname=[figdir,project,'_upNum.png'];
+
+plotStats(upNumAll,edges,xlab,figname,classTypes,colmapCC);
+
+%% Updraft fraction
+
+close all
+
+edges=0:0.02:1;
+xlab='Updraft fraction';
+figname=[figdir,project,'_upFrac.png'];
+
+plotStats(upFracAll,edges,xlab,figname,classTypes,colmapCC);
+
+%% Maximum width of widest updraft
+
+close all
+
+edges=0:2:100;
+xlab='Max width of widest updraft (km)';
+figname=[figdir,project,'_upMaxWidth.png'];
+
+plotStats(upMaxWidthAll,edges,xlab,figname,classTypes,colmapCC);
+
+%% Maximum depth of deepedst updraft
+
+close all
+
+edges=0:0.1:10;
+xlab='Max depth of deepest updraft (km)';
+figname=[figdir,project,'_upMaxDepth.png'];
+
+plotStats(upMaxDepthAll,edges,xlab,figname,classTypes,colmapCC);
+
+%% Maximum strength of updraft
+
+close all
+
+edges=0:0.5:20;
+xlab='Max up velocity (m s^{-1})';
+figname=[figdir,project,'_upMaxStrength.png'];
+
+plotStats(upMaxStrengthAll,edges,xlab,figname,classTypes,colmapCC);
+
+%% Maximum strength of downdraft
+
+close all
+
+edges=0:0.5:20;
+xlab='Max down velocity (m s^{-1})';
+figname=[figdir,project,'_downMaxStrength.png'];
+
+plotStats(downMaxStrengthAll,edges,xlab,figname,classTypes,colmapCC);

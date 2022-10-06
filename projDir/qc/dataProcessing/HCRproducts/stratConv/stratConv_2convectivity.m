@@ -5,7 +5,7 @@ close all;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Input variables %%%%%%%%%%%%%%%%%%%%%%%%%%
 
-project='socrates'; %socrates, aristo, cset, otrec
+project='otrec'; %socrates, aristo, cset, otrec
 quality='qc3'; %field, qc1, or qc2
 freqData='10hz';
 qcVersion='v3.1';
@@ -108,6 +108,7 @@ for aa=1:length(caseStart)
     convVEL=1/upperLimVEL.*velText;
 
     convBoth=convDBZ.*convVEL;
+    convBoth(convBoth>1)=1;
     convBoth(isnan(convBoth))=convDBZ(isnan(convBoth));
 
     %% Basic classification

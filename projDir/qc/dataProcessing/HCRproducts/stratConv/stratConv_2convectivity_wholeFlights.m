@@ -108,6 +108,7 @@ for aa=1:size(caseList,1)
     convVEL=1/upperLimVEL.*velText;
 
     convectivityShort=convDBZ.*convVEL;
+    convectivityShort(convectivityShort>1)=1;
     convectivityShort(isnan(convectivityShort))=convDBZ(isnan(convectivityShort));
 
     %% Basic classification
