@@ -39,7 +39,7 @@ upProps=regionprops('table',updrafts,'BoundingBox');
 upNum=size(upProps,1);
 
 if upNum>0
-    upMaxWidth=max(upProps.BoundingBox(:,3))*distance/1000;
-    upMaxDepth=max(upProps.BoundingBox(:,4))*rangePix/1000;
+    upMaxWidth=upProps.BoundingBox(:,3).*distance/1000;
+    upMaxDepth=upProps.BoundingBox(:,4).*rangePix/1000;
 end
 end

@@ -5,13 +5,13 @@ close all;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Input variables %%%%%%%%%%%%%%%%%%%%%%%%%%
 
-project='otrec'; %socrates, aristo, cset, otrec
+project='cset'; %socrates, aristo, cset, otrec
 quality='qc3'; %field, qc1, or qc2
 freqData='10hz';
-qcVersion='v3.1';
+qcVersion='v3.0';
 whichModel='era5';
 
-plotFig=0;
+plotFig=1;
 showPlot='off';
 saveCloudClass=1;
 saveCloudPuzzle=1;

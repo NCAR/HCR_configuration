@@ -5,7 +5,7 @@ close all;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Input variables %%%%%%%%%%%%%%%%%%%%%%%%%%
 
-project='otrec'; %socrates, aristo, cset, otrec
+project='cset'; %socrates, aristo, cset, otrec
 quality='qc3'; %field, qc1, or qc2
 freqData='10hz';
 qcVersion='v3.1';
@@ -50,6 +50,8 @@ for ii=1:length(classTypes)
     if ~strcmp(project,'spicule')
         sstAll.(classTypes{ii})=[];
     end
+    lonAll.(classTypes{ii})=[];
+    latAll.(classTypes{ii})=[];
     upNumAll.(classTypes{ii})=[];
     upFracAll.(classTypes{ii})=[];
     upMaxWidthAll.(classTypes{ii})=[];
@@ -162,6 +164,10 @@ for aa=1:size(caseList,1)
             sst=mean(data.SST(clC),'omitnan');
         end
 
+        % Longitude and latitude
+        lon=mean(data.longitude(clC),'omitnan');
+        lat=mean(data.latitude(clC),'omitnan');
+
         % Velocity
         velBig=nan(size(data.VEL_MASKED));
         velBig(cloudInds)=data.VEL_MASKED(cloudInds);
@@ -191,6 +197,8 @@ for aa=1:size(caseList,1)
         if ~strcmp(project,'spicule')
             sstAll.(classTypes{cloudType})=cat(1,sstAll.(classTypes{cloudType}),sst);
         end
+        lonAll.(classTypes{cloudType})=cat(1,lonAll.(classTypes{cloudType}),lon);
+        latAll.(classTypes{cloudType})=cat(1,latAll.(classTypes{cloudType}),lat);
         upNumAll.(classTypes{cloudType})=cat(1,upNumAll.(classTypes{cloudType}),upNum);
         upFracAll.(classTypes{cloudType})=cat(1,upFracAll.(classTypes{cloudType}),upFrac);
         upMaxWidthAll.(classTypes{cloudType})=cat(1,upMaxWidthAll.(classTypes{cloudType}),upMaxWidth);
@@ -201,6 +209,9 @@ for aa=1:size(caseList,1)
 end
 
 %% Save properties
+
+disp('Saving output ...');
+
 if ~strcmp(project,'spicule')
     save([figdir,project,'_cloudProps.mat'],'maxReflAll','meanReflAll','maxConvAll','meanConvAll', ...
         'cloudDepthAll','maxTempAll','minTempAll','meanTempAll','maxPressAll','minPressAll','meanPressAll', ...
@@ -211,6 +222,8 @@ else
         'iceLevAll','upNumAll','upFracAll','upMaxWidthAll','upMaxDepthAll','upMaxStrengthAll','downMaxStrengthAll');
 end
 %% Plot
+
+disp('Plotting ...')
 
 colmapCC=[204,255,204;
     153,204,0;
@@ -360,6 +373,42 @@ if ~strcmp(project,'spicule')
 
     plotStats(sstAll,edges,xlab,figname,classTypes,colmapCC);
 end
+
+%% Longitude
+
+close all
+
+if strcmp(project,'cset')
+    edges=-160:0.5:-120;
+elseif strcmp(project,'socrates')
+    edges=130:0.5:180;
+elseif strcmp(project,'otrec')
+    edges=-95:0.5:-65;
+elseif strcmp(project,'spicule')
+    edges=-140:0.5:-60;
+end
+xlab='Longitude (deg)';
+figname=[figdir,project,'_lon.png'];
+
+plotStats(lonAll,edges,xlab,figname,classTypes,colmapCC);
+
+%% Latitude
+
+close all
+
+if strcmp(project,'cset')
+    edges=15:0.5:50;
+elseif strcmp(project,'socrates')
+    edges=-70:0.5:-30;
+elseif strcmp(project,'otrec')
+    edges=-5:0.5:15;
+elseif strcmp(project,'spicule')
+    edges=20:0.5:55;
+end
+xlab='Latitude (deg)';
+figname=[figdir,project,'_lat.png'];
+
+plotStats(latAll,edges,xlab,figname,classTypes,colmapCC);
 
 %% Updraft number
 
