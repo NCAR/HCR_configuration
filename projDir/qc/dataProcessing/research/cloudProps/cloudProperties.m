@@ -5,7 +5,7 @@ close all;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Input variables %%%%%%%%%%%%%%%%%%%%%%%%%%
 
-project='cset'; %socrates, aristo, cset, otrec
+project='otrec'; %socrates, aristo, cset, otrec
 quality='qc3'; %field, qc1, or qc2
 freqData='10hz';
 qcVersion='v3.1';
@@ -430,22 +430,22 @@ figname=[figdir,project,'_upFrac.png'];
 
 plotStats(upFracAll,edges,xlab,figname,classTypes,colmapCC);
 
-%% Maximum width of widest updraft
+%% Maximum width of updrafts
 
 close all
 
 edges=0:2:100;
-xlab='Max width of widest updraft (km)';
+xlab='Max width of updrafts (km)';
 figname=[figdir,project,'_upMaxWidth.png'];
 
 plotStats(upMaxWidthAll,edges,xlab,figname,classTypes,colmapCC);
 
-%% Maximum depth of deepedst updraft
+%% Maximum depth of updrafts
 
 close all
 
 edges=0:0.1:10;
-xlab='Max depth of deepest updraft (km)';
+xlab='Max depth of updrafts (km)';
 figname=[figdir,project,'_upMaxDepth.png'];
 
 plotStats(upMaxDepthAll,edges,xlab,figname,classTypes,colmapCC);
