@@ -5,10 +5,10 @@ close all;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Input variables %%%%%%%%%%%%%%%%%%%%%%%%%%
 
-project='cset'; %socrates, aristo, cset, otrec
-quality='qc3'; %field, qc1, or qc2
+project='spicule'; %socrates, aristo, cset, otrec
+quality='qc1'; %field, qc1, or qc2
 freqData='10hz';
-qcVersion='v3.0';
+qcVersion='v1.1';
 whichModel='era5';
 
 plotFig=1;
@@ -29,7 +29,7 @@ infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_
 
 caseList = table2array(readtable(infile));
 
-for aa=1:size(caseList,1)
+for aa=5:size(caseList,1)
     disp(['Flight ',num2str(aa)]);
     disp(['Starting at ',datestr(datetime('now'),'yyyy-mm-dd HH:MM')]);
     disp('Loading data ...');
@@ -211,6 +211,8 @@ for aa=1:size(caseList,1)
 
     %% Saving data
 
+    cloudPuzzle=data.cloudPuzzle_echoType;
+
     if saveCloudClass
 
         disp('Saving cloudClass field ...')
@@ -223,7 +225,6 @@ for aa=1:size(caseList,1)
 
         disp('Saving cloudPuzzle field ...')
 
-        cloudPuzzle=data.cloudPuzzle_echoType;
         save([outdir,whichModel,'.cloudPuzzle.',datestr(data.time(1),'YYYYmmDD_HHMMSS'),'_to_',...
             datestr(data.time(end),'YYYYmmDD_HHMMSS'),'.Flight',num2str(aa),'.mat'],'cloudPuzzle');
     end
