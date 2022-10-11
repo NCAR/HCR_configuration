@@ -6,10 +6,14 @@ projects=fields(propIn);
 
 for jj=1:length(classTypes)
     countsPerc=[];
+    medians=[];
+    nums=[];
     for ii=1:length(projects)
         thisVar=propIn.(projects{ii}).(classTypes{jj});
         counts=histcounts(thisVar,edges);
         countsPerc=cat(1,countsPerc,counts./sum(~isnan(thisVar)).*100);
+        medians=cat(1,medians,median(thisVar,'omitnan'));
+        nums=cat(1,nums,sum(~isnan(thisVar)));
     end
 
     s=subplot(4,3,jj);
@@ -26,6 +30,10 @@ for jj=1:length(classTypes)
     ylabel('Percent (%)')
 
     title([classTypes{jj}],'Color',colmapCC(jj,:));
+
+    textBox=TextLocation([num2str(medians,'%.2f'),repmat(' (',length(nums),1),num2str(nums,'%.0f'),repmat(')',length(nums),1)],'Location','best');
+textPos=textBox.Position;
+textBox.Position=[textPos(1),floor(textPos(2)*100)/100,textPos(3),textPos(4)];
 
     spos=s.Position;
 
