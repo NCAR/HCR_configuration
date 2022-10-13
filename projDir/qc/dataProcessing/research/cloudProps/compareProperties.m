@@ -5,7 +5,7 @@ close all;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Input variables %%%%%%%%%%%%%%%%%%%%%%%%%%
 
-project={'cset','socrates','otrec','spicule'}; %socrates, aristo, cset, otrec
+project={'noreaster','cset','socrates','otrec','spicule'}; %socrates, aristo, cset, otrec
 freqData='10hz';
 whichModel='era5';
 
@@ -22,6 +22,9 @@ for ii=1:length(project)
     elseif strcmp(project{ii},'cset')
         qcVersion='v3.0';
         quality='qc3';
+    elseif strcmp(project{ii},'noreaster')
+        qcVersion='v2.0';
+        quality='qc2';
     else
         qcVersion='v3.1';
         quality='qc3';
@@ -74,7 +77,7 @@ close all
 
 close all
 
-edges=-50:2:30;
+edges=-50:5:30;
 xlab='Maximum reflectivity (dBZ)';
 figname=[figdir,'maxRefl.png'];
 
@@ -84,7 +87,7 @@ plotStatsProjects(plotV.maxReflAll,edges,xlab,figname,classTypes,colmapCC);
 
 close all
 
-edges=-50:2:30;
+edges=-50:5:30;
 xlab='Mean reflectivity (dBZ)';
 figname=[figdir,'meanRefl.png'];
 
@@ -94,7 +97,7 @@ plotStatsProjects(plotV.meanReflAll,edges,xlab,figname,classTypes,colmapCC);
 
 close all
 
-edges=0:0.05:1;
+edges=0:0.1:1;
 xlab='Max convectivity';
 figname=[figdir,'maxConv.png'];
 
@@ -104,7 +107,7 @@ plotStatsProjects(plotV.maxConvAll,edges,xlab,figname,classTypes,colmapCC);
 
 close all
 
-edges=0:0.05:1;
+edges=0:0.1:1;
 xlab='Mean convectivity';
 figname=[figdir,'meanConv.png'];
 
@@ -114,7 +117,7 @@ plotStatsProjects(plotV.meanConvAll,edges,xlab,figname,classTypes,colmapCC);
 
 close all
 
-edges=0:0.5:15;
+edges=0:1:15;
 xlab='Cloud depth (km)';
 figname=[figdir,'cloudDepth.png'];
 
@@ -124,7 +127,7 @@ plotStatsProjects(plotV.cloudDepthAll,edges,xlab,figname,classTypes,colmapCC);
 
 close all
 
-edges=-80:5:30;
+edges=-80:10:30;
 xlab='Max temperature (C)';
 figname=[figdir,'maxTemp.png'];
 
@@ -134,7 +137,7 @@ plotStatsProjects(plotV.maxTempAll,edges,xlab,figname,classTypes,colmapCC);
 
 close all
 
-edges=-80:5:30;
+edges=-80:10:30;
 xlab='Min temperature (C)';
 figname=[figdir,'minTemp.png'];
 
@@ -144,7 +147,7 @@ plotStatsProjects(plotV.minTempAll,edges,xlab,figname,classTypes,colmapCC);
 
 close all
 
-edges=-80:5:30;
+edges=-80:10:30;
 xlab='Mean temperature (C)';
 figname=[figdir,'meanTemp.png'];
 
@@ -154,7 +157,7 @@ plotStatsProjects(plotV.meanTempAll,edges,xlab,figname,classTypes,colmapCC);
 
 close all
 
-edges=100:50:1100;
+edges=100:100:1100;
 xlab='Max pressure (hPa)';
 figname=[figdir,'maxPress.png'];
 
@@ -164,7 +167,7 @@ plotStatsProjects(plotV.maxPressAll,edges,xlab,figname,classTypes,colmapCC);
 
 close all
 
-edges=100:50:1100;
+edges=100:100:1100;
 xlab='Min pressure (hPa)';
 figname=[figdir,'minPress.png'];
 
@@ -174,7 +177,7 @@ plotStatsProjects(plotV.minPressAll,edges,xlab,figname,classTypes,colmapCC);
 
 close all
 
-edges=100:50:1100;
+edges=100:100:1100;
 xlab='Mean pressure (hPa)';
 figname=[figdir,'meanPress.png'];
 
@@ -184,7 +187,7 @@ plotStatsProjects(plotV.meanPressAll,edges,xlab,figname,classTypes,colmapCC);
 
 close all
 
-edges=0:0.2:8;
+edges=0:0.5:6;
 xlab='Icing level (km)';
 figname=[figdir,'iceLev.png'];
 
@@ -194,53 +197,17 @@ plotStatsProjects(plotV.iceLevAll,edges,xlab,figname,classTypes,colmapCC);
 
 close all
 
-edges=-35:2:35;
+edges=-5:2:35;
 xlab='SST (C)';
 figname=[figdir,'sst.png'];
 
 plotStatsProjects(plotV.sstAll,edges,xlab,figname,classTypes,colmapCC);
 
-% %% Longitude
-% 
-% close all
-% 
-% if strcmp(project,'cset')
-%     edges=-160:0.5:-120;
-% elseif strcmp(project,'socrates')
-%     edges=130:0.5:180;
-% elseif strcmp(project,'otrec')
-%     edges=-95:0.5:-65;
-% elseif strcmp(project,'spicule')
-%     edges=-140:0.5:-60;
-% end
-% xlab='Longitude (deg)';
-% figname=[figdir,project,'_lon.png'];
-% 
-% plotStats(lonAll,edges,xlab,figname,classTypes,colmapCC);
-% 
-% %% Latitude
-% 
-% close all
-% 
-% if strcmp(project,'cset')
-%     edges=15:0.5:50;
-% elseif strcmp(project,'socrates')
-%     edges=-70:0.5:-30;
-% elseif strcmp(project,'otrec')
-%     edges=-5:0.5:15;
-% elseif strcmp(project,'spicule')
-%     edges=20:0.5:55;
-% end
-% xlab='Latitude (deg)';
-% figname=[figdir,project,'_lat.png'];
-% 
-% plotStats(latAll,edges,xlab,figname,classTypes,colmapCC);
-
 %% Updraft number
 
 close all
 
-edges=1:2:30;
+edges=1:3:30;
 xlab='Number of updrafts';
 figname=[figdir,'upNum.png'];
 
@@ -250,7 +217,7 @@ plotStatsProjects(plotV.upNumAll,edges,xlab,figname,classTypes,colmapCC);
 
 close all
 
-edges=0:0.05:1;
+edges=0:0.1:1;
 xlab='Updraft fraction';
 figname=[figdir,'upFrac.png'];
 
@@ -260,8 +227,8 @@ plotStatsProjects(plotV.upFracAll,edges,xlab,figname,classTypes,colmapCC);
 
 close all
 
-edges=0:5:100;
-xlab='Max width of updrafts (km)';
+edges=0:5:60;
+xlab='Width of updrafts (km)';
 figname=[figdir,'upMaxWidth.png'];
 
 plotStatsProjects(plotV.upMaxWidthAll,edges,xlab,figname,classTypes,colmapCC);
@@ -270,8 +237,8 @@ plotStatsProjects(plotV.upMaxWidthAll,edges,xlab,figname,classTypes,colmapCC);
 
 close all
 
-edges=0:0.5:10;
-xlab='Max depth of updrafts (km)';
+edges=0:1:10;
+xlab='Depth of updrafts (km)';
 figname=[figdir,'upMaxDepth.png'];
 
 plotStatsProjects(plotV.upMaxDepthAll,edges,xlab,figname,classTypes,colmapCC);
@@ -280,7 +247,7 @@ plotStatsProjects(plotV.upMaxDepthAll,edges,xlab,figname,classTypes,colmapCC);
 
 close all
 
-edges=0:1:20;
+edges=0:1:18;
 xlab='Max up velocity (m s^{-1})';
 figname=[figdir,'upMaxStrength.png'];
 
@@ -290,8 +257,11 @@ plotStatsProjects(plotV.upMaxStrengthAll,edges,xlab,figname,classTypes,colmapCC)
 
 close all
 
-edges=0:1:20;
+edges=0:1:18;
 xlab='Max down velocity (m s^{-1})';
 figname=[figdir,'downMaxStrength.png'];
 
 plotStatsProjects(plotV.downMaxStrengthAll,edges,xlab,figname,classTypes,colmapCC);
+
+%% Location plot SOCRATES
+
