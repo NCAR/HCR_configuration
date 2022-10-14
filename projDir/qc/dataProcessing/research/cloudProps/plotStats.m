@@ -8,11 +8,18 @@ for jj=1:length(classTypes)
     countsPerc=counts./sum(~isnan(thisVar)).*100;
 
     subplot(4,3,jj);
-    bar(edges(1:end-1)+(edges(2)-edges(1))/2,countsPerc,1,'FaceColor',colmapCC(jj,:));
+    % Get x-axis right
+    edgeSpace=edges(3)-edges(2);
+    plotEdges=[edges(2)-edgeSpace,edges(2:end-1),edges(end-1)+edgeSpace];
+    b=bar(plotEdges(1:end-1)+edgeSpace/2,countsPerc,1,'FaceColor','flat');
+    for kk=1:size(countsPerc,1)
+        b(kk).CData=cols(kk,:);
+    end
+
     grid on
     box on
 
-    xlim([edges(1),edges(end)]);
+    xlim([plotEdges(1),plotEdges(end)]);
     xlabel(xlab);
     ylabel('Percent (%)')
 

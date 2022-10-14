@@ -5,7 +5,7 @@ close all;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Input variables %%%%%%%%%%%%%%%%%%%%%%%%%%
 
-project={'noreaster','cset','socrates','otrec','spicule'}; %socrates, aristo, cset, otrec
+project={'cset','socrates','otrec'}; %socrates, aristo, cset, otrec
 freqData='10hz';
 whichModel='era5';
 
@@ -203,16 +203,6 @@ figname=[figdir,'sst.png'];
 
 plotStatsProjects(plotV.sstAll,edges,xlab,figname,classTypes,colmapCC);
 
-%% Updraft number
-
-close all
-
-edges=1:3:30;
-xlab='Number of updrafts';
-figname=[figdir,'upNum.png'];
-
-plotStatsProjects(plotV.upNumAll,edges,xlab,figname,classTypes,colmapCC);
-
 %% Updraft fraction
 
 close all
@@ -223,31 +213,11 @@ figname=[figdir,'upFrac.png'];
 
 plotStatsProjects(plotV.upFracAll,edges,xlab,figname,classTypes,colmapCC);
 
-%% Maximum width of updrafts
-
-close all
-
-edges=0:5:60;
-xlab='Width of updrafts (km)';
-figname=[figdir,'upMaxWidth.png'];
-
-plotStatsProjects(plotV.upMaxWidthAll,edges,xlab,figname,classTypes,colmapCC);
-
-%% Maximum depth of updrafts
-
-close all
-
-edges=0:1:10;
-xlab='Depth of updrafts (km)';
-figname=[figdir,'upMaxDepth.png'];
-
-plotStatsProjects(plotV.upMaxDepthAll,edges,xlab,figname,classTypes,colmapCC);
-
 %% Maximum strength of updraft
 
 close all
 
-edges=0:1:18;
+edges=[0:1:14,inf];
 xlab='Max up velocity (m s^{-1})';
 figname=[figdir,'upMaxStrength.png'];
 
@@ -257,11 +227,107 @@ plotStatsProjects(plotV.upMaxStrengthAll,edges,xlab,figname,classTypes,colmapCC)
 
 close all
 
-edges=0:1:18;
+edges=[0:1:14,inf];
 xlab='Max down velocity (m s^{-1})';
 figname=[figdir,'downMaxStrength.png'];
 
 plotStatsProjects(plotV.downMaxStrengthAll,edges,xlab,figname,classTypes,colmapCC);
 
-%% Location plot SOCRATES
+%% Mean strength of updraft
 
+close all
+
+edges=[0:0.2:3.8,inf];
+xlab='Mean up velocity (m s^{-1})';
+figname=[figdir,'upMeanStrength.png'];
+
+plotStatsProjects(plotV.upMeanStrengthAll,edges,xlab,figname,classTypes,colmapCC);
+
+%% Mean strength of downdraft
+
+close all
+
+edges=[0:0.2:3.8,inf];
+xlab='Mean down velocity (m s^{-1})';
+figname=[figdir,'downMeanStrength.png'];
+
+plotStatsProjects(plotV.downMeanStrengthAll,edges,xlab,figname,classTypes,colmapCC);
+
+%% Process regions
+minPixNum=100;
+
+%% Pixel number updraft regions
+
+close all
+
+edges=[0:1000:9000,inf];
+xlab='Pixels in updraft regions';
+figname=[figdir,'upRegPixNum.png'];
+
+plotStatsRegsProjects(plotV.upRegsAll,'numPix',minPixNum,edges,xlab,figname,classTypes,colmapCC);
+
+%% Width of updraft regions
+
+close all
+
+edges=[0:1:14,inf];
+xlab='Width of updraft regions (km)';
+figname=[figdir,'upRegWidth.png'];
+
+plotStatsRegsProjects(plotV.upRegsAll,'width',minPixNum,edges,xlab,figname,classTypes,colmapCC);
+
+%% Depth of updraft regions
+
+close all
+
+edges=[0:0.2:2.8,inf];
+xlab='Depth of updraft regions (km)';
+figname=[figdir,'upRegDepth.png'];
+
+plotStatsRegsProjects(plotV.upRegsAll,'depth',minPixNum,edges,xlab,figname,classTypes,colmapCC);
+
+%% Mean vel of updraft regions
+
+close all
+
+edges=[0:0.2:2.8,inf];
+xlab='Mean velocity of updraft regions (m s^{-1})';
+figname=[figdir,'upRegMeanVel.png'];
+
+plotStatsRegsProjects(plotV.upRegsAll,'meanVel',minPixNum,edges,xlab,figname,classTypes,colmapCC);
+
+%% Max vel of updraft regions
+
+close all
+
+edges=[0:0.5:4.5,inf];
+xlab='Max velocity of updraft regions (m s^{-1})';
+figname=[figdir,'upRegMaxVel.png'];
+
+plotStatsRegsProjects(plotV.upRegsAll,'maxVel',minPixNum,edges,xlab,figname,classTypes,colmapCC);
+
+%% Altitude of updraft regions
+
+close all
+
+edges=[0:1:15];
+xlab='Altitude of updraft regions (km)';
+figname=[figdir,'upRegAsl.png'];
+
+plotStatsRegsProjects(plotV.upRegsAll,'asl',minPixNum,edges,xlab,figname,classTypes,colmapCC);
+
+%% Plot locations
+
+close all
+
+lonLims=[-160,-120;
+    130,165;
+    -95,-75];
+
+latLims=[15,45;
+    -65,-40
+    -0,15];
+
+figname=[figdir,'locations.png'];
+
+plotLocsProjects(plotV.lonAll,plotV.latAll,lonLims,latLims,figname,classTypes,colmapCC);

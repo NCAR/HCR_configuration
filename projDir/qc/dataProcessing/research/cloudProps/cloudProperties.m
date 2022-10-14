@@ -5,10 +5,10 @@ close all;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Input variables %%%%%%%%%%%%%%%%%%%%%%%%%%
 
-project='otrec'; %socrates, aristo, cset, otrec
+project='cset'; %socrates, aristo, cset, otrec
 quality='qc3'; %field, qc1, or qc2
 freqData='10hz';
-qcVersion='v3.1';
+qcVersion='v3.0';
 whichModel='era5';
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -127,9 +127,16 @@ for aa=1:size(caseList,1)
     %% Loop through clouds
 
     for ii=1:length(uClouds)
-        disp(['Processing cloud ',num2str(ii),' of ',num2str(length(uClouds)),' ...'])
-
+        
+        % Check cloud type and size
         cloudInds=find(cloudPuzzle==uClouds(ii));
+        cloudType=unique(cloudClass(cloudInds));
+
+        if cloudType==0 | length(cloudInds)<5000
+            continue
+        end
+
+        disp(['Processing cloud ',num2str(ii),' of ',num2str(length(uClouds)),' ...'])
 
         % Max and average refl
         maxRefl=max(data.DBZ_MASKED(cloudInds),[],'omitnan');
@@ -179,13 +186,9 @@ for aa=1:size(caseList,1)
         aslMap=aslBig(min(clR):max(clR),min(clC):max(clC));
         
         [upRegs,upFrac,upMaxStrength,downMaxStrength,upMeanStrength,downMeanStrength]=upDownDraft(velMap,aslMap,data.range(2)-data.range(1),mean(groundDist(clC)));
+        
         % Add output
-        cloudType=unique(cloudClass(cloudInds));
-
-        if cloudType==0
-            continue
-        end
-
+        
         maxReflAll.(classTypes{cloudType})=cat(1,maxReflAll.(classTypes{cloudType}),maxRefl);
         meanReflAll.(classTypes{cloudType})=cat(1,meanReflAll.(classTypes{cloudType}),meanRefl);
         maxConvAll.(classTypes{cloudType})=cat(1,maxConvAll.(classTypes{cloudType}),maxConv);

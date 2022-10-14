@@ -1,4 +1,4 @@
-function plotStatsProjects(propIn,edges,xlab,figname,classTypes,colmapCC)
+function plotStatsRegsProjects(propIn,varIn,minPixNum,edges,xlab,figname,classTypes,colmapCC)
 
 fig=figure('DefaultAxesFontSize',11,'position',[100,100,1800,1200],'visible','on');
 
@@ -13,7 +13,9 @@ for jj=1:length(classTypes)
     medians=[];
     nums=[];
     for ii=1:length(projects)
-        thisVar=propIn.(projects{ii}).(classTypes{jj});
+        thisTable=propIn.(projects{ii}).(classTypes{jj});
+        thisTable(thisTable.numPix<minPixNum,:)=[];
+        thisVar=thisTable.(varIn);
         thisNum=sum(~isnan(thisVar));
         counts=histcounts(thisVar,edges);
         if thisNum<10
@@ -25,7 +27,10 @@ for jj=1:length(classTypes)
     end
 
     s=subplot(4,3,jj);
-    b=bar(edges(1:end-1)+(edges(2)-edges(1))/2,countsPerc,1,'FaceColor','flat');
+    % Get x-axis right
+    edgeSpace=edges(3)-edges(2);
+    plotEdges=[edges(2)-edgeSpace,edges(2:end-1),edges(end-1)+edgeSpace];
+    b=bar(plotEdges(1:end-1)+edgeSpace/2,countsPerc,1,'FaceColor','flat');
     for kk=1:size(countsPerc,1)
         b(kk).CData=cols(kk,:);
     end
@@ -33,7 +38,7 @@ for jj=1:length(classTypes)
     grid on
     box on
 
-    xlim([edges(1),edges(end)]);
+    xlim([plotEdges(1),plotEdges(end)]);
     xlabel(xlab);
     ylabel('Percent (%)')
 
