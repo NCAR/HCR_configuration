@@ -310,11 +310,11 @@ plotStatsRegsProjects(plotV.upRegsAll,'maxVel',minPixNum,edges,xlab,figname,clas
 
 close all
 
-edges=[0:1:15];
-xlab='Altitude of updraft regions (km)';
-figname=[figdir,'upRegAsl.png'];
+edges=[0:10:100];
+xlab='Altitude percentile of updraft regions (%)';
+figname=[figdir,'upRegAslPerc.png'];
 
-plotStatsRegsProjects(plotV.upRegsAll,'asl',minPixNum,edges,xlab,figname,classTypes,colmapCC);
+plotStatsRegsProjects(plotV.upRegsAll,'cloudAltPerc',minPixNum,edges,xlab,figname,classTypes,colmapCC);
 
 %% Plot locations
 
