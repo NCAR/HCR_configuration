@@ -5,10 +5,10 @@ close all;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Input variables %%%%%%%%%%%%%%%%%%%%%%%%%%
 
-project='socrates'; %socrates, aristo, cset, otrec
+project='cset'; %socrates, aristo, cset, otrec
 quality='qc3'; %field, qc1, or qc2
 freqData='10hz';
-qcVersion='v3.1';
+qcVersion='v3.0';
 whichModel='era5';
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -40,6 +40,9 @@ for ii=1:length(classTypes)
     maxConvAll.(classTypes{ii})=[];
     meanConvAll.(classTypes{ii})=[];
     cloudDepthAll.(classTypes{ii})=[];
+    cloudTopAll.(classTypes{ii})=[];
+    cloudBaseAll.(classTypes{ii})=[];
+    cloudLayersAll.(classTypes{ii})=[];
     maxTempAll.(classTypes{ii})=[];
     minTempAll.(classTypes{ii})=[];
     meanTempAll.(classTypes{ii})=[];
@@ -47,6 +50,7 @@ for ii=1:length(classTypes)
     minPressAll.(classTypes{ii})=[];
     meanPressAll.(classTypes{ii})=[];
     iceLevAll.(classTypes{ii})=[];
+    meltDetAll.(classTypes{ii})=[];
     if ~strcmp(project,'spicule')
         sstAll.(classTypes{ii})=[];
     end
@@ -58,6 +62,7 @@ for ii=1:length(classTypes)
     upMaxStrengthAll.(classTypes{ii})=[];
     downMaxStrengthAll.(classTypes{ii})=[];
     upRegsAll.(classTypes{ii})=[];
+    precShaftsAll.(classTypes{ii})=[];
 end
 
 %% Loop through flights
@@ -90,6 +95,8 @@ for aa=1:size(caseList,1)
     data.TEMP=[];
     data.PRESS=[];
     data.ICING_LEVEL=[];
+    data.MELTING_LAYER=[];
+    data.FLAG=[];
     if ~strcmp(project,'spicule')
         data.SST=[];
     end
@@ -102,8 +109,23 @@ for aa=1:size(caseList,1)
     data.CONVECTIVITY(data.CONVECTIVITY>1)=1;
     data.VEL_MASKED(:,data.elevation>0)=-data.VEL_MASKED(:,data.elevation>0);
 
+    % Get distance traveled
     groundSpeed=sqrt(data.eastward_velocity.^2+data.northward_velocity.^2);
     groundDist=groundSpeed.*etime(datevec(data.time(2)),datevec(data.time(1)));
+
+    % Prepare precip shafts
+    shaftMask=~isnan(data.DBZ_MASKED);
+    shaftMask(data.FLAG==3)=1;
+
+    % Count cloud layers
+    cloudMask=~isnan(cloudPuzzle);
+    numLayers=zeros(1,size(cloudMask,2));
+    for kk=1:size(cloudMask,2)
+        maskRay=cloudMask(:,kk);
+        maskRay=bwareaopen(maskRay,5);
+        cloudsRay=bwconncomp(maskRay);
+        numLayers(kk)=cloudsRay.NumObjects;
+    end
 
     % Check time
     if ~isequal(size(cloudClass),size(data.DBZ_MASKED))
@@ -150,6 +172,17 @@ for aa=1:size(caseList,1)
         cloudAsl=data.asl(cloudInds)./1000;
         cloudDepth=max(cloudAsl,[],'omitnan')-min(cloudAsl,[],'omitnan');
 
+        % Cloud top and base
+        cloudTop=max(cloudAsl,[],'omitnan');
+        cloudBase=nan;
+        if cloudType<=3
+            cloudBase=min(cloudAsl,[],'omitnan');
+        end
+
+        % Melting layer detection
+        meltLayerCloud=data.MELTING_LAYER(cloudInds);
+        meltDet=double(max(ismember([12,22],meltLayerCloud)));
+
         % Temperature
         maxTemp=max(data.TEMP(cloudInds),[],'omitnan');
         minTemp=min(data.TEMP(cloudInds),[],'omitnan');
@@ -175,17 +208,36 @@ for aa=1:size(caseList,1)
         lon=mean(data.longitude(clC),'omitnan');
         lat=mean(data.latitude(clC),'omitnan');
 
+        % Number of cloud layers
+        cloudLayers=median(numLayers(clC));
+
+        % Cloud mask area
+        bigMask=zeros(size(cloudPuzzle));
+        bigMask(cloudInds)=1;
+        smallMask=bigMask(min(clR):max(clR),min(clC):max(clC));
+        smallInds=find(smallMask==1);
+
         % Velocity
-        velBig=nan(size(data.VEL_MASKED));
-        velBig(cloudInds)=data.VEL_MASKED(cloudInds);
+        velMap=nan(size(smallMask));
+        velMap(smallInds)=data.VEL_MASKED(cloudInds);
 
-        aslBig=nan(size(data.asl));
-        aslBig(cloudInds)=data.asl(cloudInds);
-
-        velMap=velBig(min(clR):max(clR),min(clC):max(clC));
-        aslMap=aslBig(min(clR):max(clR),min(clC):max(clC));
+        aslMap=nan(size(smallMask));
+        aslMap(smallInds)=data.asl(cloudInds);
         
-        [upRegs,upFrac,upMaxStrength,downMaxStrength,upMeanStrength,downMeanStrength]=upDownDraft(velMap,aslMap,data.range(2)-data.range(1),mean(groundDist(clC)));
+        [upRegs,upFrac,upMaxStrength,downMaxStrength,upMeanStrength,downMeanStrength]=upDownDraft(velMap,aslMap,data.range(2)-data.range(1),mean(groundDist(clC)),data.longitude(min(clC):max(clC)),data.latitude(min(clC):max(clC)));
+        
+        % Precip shafts
+        shaftMap=zeros(size(smallMask));
+        shaftMap(smallInds)=shaftMask(cloudInds);
+
+        dbzMap=nan(size(smallMask));
+        dbzMap(smallInds)=data.DBZ_MASKED(cloudInds);
+
+        precShafts=table(nan,nan,nan,nan,nan,nan, ...
+            'VariableNames',{'shaftKM','frac','meanRef','maxRefl','meanVel','maxVel'});
+        if cloudType>3
+            precShafts=precipShafts(shaftMap,dbzMap,velMap,aslMap,mean(groundDist(clC)));
+        end
         
         % Add output
         
@@ -194,6 +246,9 @@ for aa=1:size(caseList,1)
         maxConvAll.(classTypes{cloudType})=cat(1,maxConvAll.(classTypes{cloudType}),maxConv);
         meanConvAll.(classTypes{cloudType})=cat(1,meanConvAll.(classTypes{cloudType}),meanConv);
         cloudDepthAll.(classTypes{cloudType})=cat(1,cloudDepthAll.(classTypes{cloudType}),cloudDepth);
+        cloudTopAll.(classTypes{cloudType})=cat(1,cloudTopAll.(classTypes{cloudType}),cloudTop);
+        cloudBaseAll.(classTypes{cloudType})=cat(1,cloudBaseAll.(classTypes{cloudType}),cloudBase);
+        cloudLayersAll.(classTypes{cloudType})=cat(1,cloudLayersAll.(classTypes{cloudType}),cloudLayers);
         maxTempAll.(classTypes{cloudType})=cat(1,maxTempAll.(classTypes{cloudType}),maxTemp);
         minTempAll.(classTypes{cloudType})=cat(1,minTempAll.(classTypes{cloudType}),minTemp);
         meanTempAll.(classTypes{cloudType})=cat(1,meanTempAll.(classTypes{cloudType}),meanTemp);
@@ -201,6 +256,7 @@ for aa=1:size(caseList,1)
         minPressAll.(classTypes{cloudType})=cat(1,minPressAll.(classTypes{cloudType}),minPress);
         meanPressAll.(classTypes{cloudType})=cat(1,meanPressAll.(classTypes{cloudType}),meanPress);
         iceLevAll.(classTypes{cloudType})=cat(1,iceLevAll.(classTypes{cloudType}),iceLev);
+        meltDetAll.(classTypes{cloudType})=cat(1,meltDetAll.(classTypes{cloudType}),meltDet);
         if ~strcmp(project,'spicule')
             sstAll.(classTypes{cloudType})=cat(1,sstAll.(classTypes{cloudType}),sst);
         end
@@ -212,6 +268,7 @@ for aa=1:size(caseList,1)
         upMaxStrengthAll.(classTypes{cloudType})=cat(1,upMaxStrengthAll.(classTypes{cloudType}),upMaxStrength);
         downMaxStrengthAll.(classTypes{cloudType})=cat(1,downMaxStrengthAll.(classTypes{cloudType}),downMaxStrength);
         upRegsAll.(classTypes{cloudType})=cat(1,upRegsAll.(classTypes{cloudType}),upRegs);
+        precShaftsAll.(classTypes{cloudType})=cat(1,precShaftsAll.(classTypes{cloudType}),precShafts);
     end
 end
 
@@ -221,12 +278,12 @@ disp('Saving output ...');
 
 if ~strcmp(project,'spicule')
     save([figdir,project,'_cloudProps.mat'],'maxReflAll','meanReflAll','maxConvAll','meanConvAll', ...
-        'cloudDepthAll','maxTempAll','minTempAll','meanTempAll','maxPressAll','minPressAll','meanPressAll', ...
-        'iceLevAll','sstAll','upFracAll','upRegsAll', ...
+        'cloudDepthAll','cloudTopAll','cloudBaseAll','cloudLayersAll','maxTempAll','minTempAll','meanTempAll','maxPressAll','minPressAll','meanPressAll', ...
+        'iceLevAll','meltDetAll','sstAll','upFracAll','upRegsAll','precShaftsAll', ...
         'upMeanStrengthAll','downMeanStrengthAll','upMaxStrengthAll','downMaxStrengthAll','latAll','lonAll');
 else
     save([figdir,project,'_cloudProps.mat'],'maxReflAll','meanReflAll','maxConvAll','meanConvAll', ...
-        'cloudDepthAll','maxTempAll','minTempAll','meanTempAll','maxPressAll','minPressAll','meanPressAll', ...
-        'iceLevAll','upRegNumAll','upFracAll','upRegsAll', ...
+        'cloudDepthAll','cloudTopAll','cloudBaseAll','cloudLayersAll','maxTempAll','minTempAll','meanTempAll','maxPressAll','minPressAll','meanPressAll', ...
+        'iceLevAll','meltDetAll','upRegNumAll','upFracAll','upRegsAll','precShaftsAll', ...
         'upMeanStrengthAll','downMeanStrengthAll','upMaxStrengthAll','downMaxStrengthAll','latAll','lonAll');
 end

@@ -417,7 +417,7 @@ run_Hsrl2Radx.qc.2hz.socrates
 # HSRL model-based fields.
 #
 # This will write data to:
-#  $DATA_DIR/$QC_VERSION/cfradial/hsrl_merge/v3.0_full/2hz
+#  $DATA_DIR/$QC_VERSION/cfradial/hcr_hsrl_merge/v3.0_full/2hz
 #
 # For example, for socrates:
 #
@@ -432,7 +432,7 @@ run_MergeHcrAndHsrl.qc.2hz.socrates
 # Adjust and run
 $PROJ_DIR/qc/dataProcessing/HCRproducts/PID/HSRL_HCR/call_pid_comb_wholeFlights.m
 
-# To add id to the dataset run
+# To add it to the dataset run
 $PROJ_DIR/qc/dataProcessing/HCRproducts/HSRL_HCR/cfradial_pid_comb.m
 
 #################################################################

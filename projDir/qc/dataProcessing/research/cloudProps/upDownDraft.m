@@ -1,4 +1,4 @@
-function [upRegs,upFrac,upMaxStrength,downMaxStrength,upMeanStrength,downMeanStrength]=upDownDraft(velIn,aslIn,rangePix,distance)
+function [upRegs,upFrac,upMaxStrength,downMaxStrength,upMeanStrength,downMeanStrength]=upDownDraft(velIn,aslIn,rangePix,distance,lon,lat)
 upRegs=[];
 
 % Fill in gaps of missing data
@@ -19,33 +19,36 @@ velSmooth(isnan(velFilled))=nan;
 
 % Overall stats
 upMaxStrength=-(min(velSmooth(velSmooth<0),[],'omitnan'));
+if isempty(upMaxStrength)
+    upMaxStrength=nan;
+end
 downMaxStrength=max(velSmooth(velSmooth>0),[],'omitnan');
+if isempty(downMaxStrength)
+    downMaxStrength=nan;
+end
 upMeanStrength=-(mean(velSmooth(velSmooth<0),'omitnan'));
 downMeanStrength=mean(velSmooth(velSmooth>0),'omitnan');
 
 upFrac=sum(sum(velSmooth<0))/sum(sum(~isnan(velFilled)));
-
-% close all
-% surf(velSmooth,'EdgeColor','none');
-% view(2)
-% colormap('jet');
-% caxis([-5,5]);
 
 % Get updraft regions
 updrafts=velSmooth<0;
 
 updrafts=bwareaopen(updrafts,5);
 
-upProps=regionprops('table',updrafts,'Area','BoundingBox','PixelIdxList');
+upProps=regionprops('table',updrafts,'Area','BoundingBox','PixelIdxList','Centroid');
 upNum=size(upProps,1);
 
 if upNum>0
     upRegWidth=upProps.BoundingBox(:,3).*distance/1000;
     upRegDepth=upProps.BoundingBox(:,4).*rangePix/1000;
-    upRegPix=upProps.Area;
+    pixKM2=distance/1000*rangePix/1000;
+    upRegArea=upProps.Area*pixKM2;
     upRegCloudAltPerc=nan(upNum,1);
     upRegMean=nan(upNum,1);
     upRegMax=nan(upNum,1);
+    upRegLon=lon(round(upProps.Centroid(:,1)))';
+    upRegLat=lat(round(upProps.Centroid(:,1)))';
 
     % Normalized cloud altitude
     aslScaled=aslIn-max(aslIn(:));
@@ -56,6 +59,7 @@ if upNum>0
         upRegMean(ii)=-mean(velSmooth(upProps.PixelIdxList{ii}),'omitnan');
         upRegMax(ii)=-(min(velSmooth(upProps.PixelIdxList{ii}),[],'omitnan'));
     end
-    upRegs=table(upProps.Area,upRegWidth,upRegDepth,upRegMean,upRegMax,upRegCloudAltPerc,'VariableNames',{'numPix','width','depth','meanVel','maxVel','cloudAltPerc'});
+    upRegs=table(upRegArea,upRegWidth,upRegDepth,upRegMean,upRegMax,upRegCloudAltPerc,upRegLon,upRegLat, ...
+        'VariableNames',{'area','width','depth','meanVel','maxVel','cloudAltPerc','lon','lat'});
 end
 end
