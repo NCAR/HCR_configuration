@@ -54,6 +54,6 @@ end
 sgtitle(xlab,'FontSize',14,'FontWeight','bold');
 
 set(gcf,'PaperPositionMode','auto')
-print(figname,'-dpng','-r0');
+print([figname,'.png'],'-dpng','-r0');
 
 end

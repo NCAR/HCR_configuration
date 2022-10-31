@@ -85,8 +85,9 @@ close all
 
 edges=-80:10:30;
 xlab='Max temperature (C)';
-figname=[figdir,'environment/maxTemp.png'];
+figname=[figdir,'environment/maxTemp'];
 plotStatsProjects(plotV.maxTempAll,edges,xlab,figname,classTypes,colmapCC);
+plotStatsProjects_box(plotV.maxTempAll,xlab,figname,classTypes,colmapCC,[edges(1),edges(end)]);
 
 figname=[figdir,'environment/maxTemp_'];
 plotStatsLocs(plotV.maxTempAll,xlab,plotV.lonAll,plotV.latAll,lonLims,latLims,figname,classTypes,colmapCC);
@@ -97,8 +98,9 @@ close all
 
 edges=-80:10:30;
 xlab='Min temperature (C)';
-figname=[figdir,'environment/minTemp.png'];
+figname=[figdir,'environment/minTemp'];
 plotStatsProjects(plotV.minTempAll,edges,xlab,figname,classTypes,colmapCC);
+plotStatsProjects_box(plotV.minTempAll,xlab,figname,classTypes,colmapCC,[edges(1),edges(end)]);
 
 figname=[figdir,'environment/minTemp_'];
 plotStatsLocs(plotV.minTempAll,xlab,plotV.lonAll,plotV.latAll,lonLims,latLims,figname,classTypes,colmapCC);
@@ -109,9 +111,9 @@ close all
 
 edges=-80:10:30;
 xlab='Mean temperature (C)';
-figname=[figdir,'environment/meanTemp.png'];
-
+figname=[figdir,'environment/meanTemp'];
 plotStatsProjects(plotV.meanTempAll,edges,xlab,figname,classTypes,colmapCC);
+plotStatsProjects_box(plotV.meanTempAll,xlab,figname,classTypes,colmapCC,[edges(1),edges(end)]);
 
 figname=[figdir,'environment/meanTemp_'];
 plotStatsLocs(plotV.meanTempAll,xlab,plotV.lonAll,plotV.latAll,lonLims,latLims,figname,classTypes,colmapCC);
@@ -122,8 +124,9 @@ close all
 
 edges=100:100:1100;
 xlab='Max pressure (hPa)';
-figname=[figdir,'environment/maxPress.png'];
+figname=[figdir,'environment/maxPress'];
 plotStatsProjects(plotV.maxPressAll,edges,xlab,figname,classTypes,colmapCC);
+plotStatsProjects_box(plotV.maxPressAll,xlab,figname,classTypes,colmapCC,[edges(1),edges(end)]);
 
 figname=[figdir,'environment/maxPress_'];
 plotStatsLocs(plotV.maxPressAll,xlab,plotV.lonAll,plotV.latAll,lonLims,latLims,figname,classTypes,colmapCC);
@@ -134,8 +137,9 @@ close all
 
 edges=100:100:1100;
 xlab='Min pressure (hPa)';
-figname=[figdir,'environment/minPress.png'];
+figname=[figdir,'environment/minPress'];
 plotStatsProjects(plotV.minPressAll,edges,xlab,figname,classTypes,colmapCC);
+plotStatsProjects_box(plotV.minPressAll,xlab,figname,classTypes,colmapCC,[edges(1),edges(end)]);
 
 figname=[figdir,'environment/minPress_'];
 plotStatsLocs(plotV.minPressAll,xlab,plotV.lonAll,plotV.latAll,lonLims,latLims,figname,classTypes,colmapCC);
@@ -146,8 +150,9 @@ close all
 
 edges=100:100:1100;
 xlab='Mean pressure (hPa)';
-figname=[figdir,'environment/meanPress.png'];
+figname=[figdir,'environment/meanPress'];
 plotStatsProjects(plotV.meanPressAll,edges,xlab,figname,classTypes,colmapCC);
+plotStatsProjects_box(plotV.meanPressAll,xlab,figname,classTypes,colmapCC,[edges(1),edges(end)]);
 
 figname=[figdir,'environment/meanPress_'];
 plotStatsLocs(plotV.meanPressAll,xlab,plotV.lonAll,plotV.latAll,lonLims,latLims,figname,classTypes,colmapCC);
@@ -158,8 +163,9 @@ close all
 
 edges=0:0.5:6;
 xlab='Icing level (km)';
-figname=[figdir,'environment/iceLev.png'];
+figname=[figdir,'environment/iceLev'];
 plotStatsProjects(plotV.iceLevAll,edges,xlab,figname,classTypes,colmapCC);
+plotStatsProjects_box(plotV.iceLevAll,xlab,figname,classTypes,colmapCC,[edges(1),edges(end)]);
 
 figname=[figdir,'environment/iceLev_'];
 plotStatsLocs(plotV.iceLevAll,xlab,plotV.lonAll,plotV.latAll,lonLims,latLims,figname,classTypes,colmapCC);
@@ -170,8 +176,9 @@ close all
 
 edges=-5:2:35;
 xlab='SST (C)';
-figname=[figdir,'environment/sst.png'];
+figname=[figdir,'environment/sst'];
 plotStatsProjects(plotV.sstAll,edges,xlab,figname,classTypes,colmapCC);
+plotStatsProjects_box(plotV.sstAll,xlab,figname,classTypes,colmapCC,[edges(1),edges(end)]);
 
 figname=[figdir,'environment/sst_'];
 plotStatsLocs(plotV.sstAll,xlab,plotV.lonAll,plotV.latAll,lonLims,latLims,figname,classTypes,colmapCC);

@@ -103,8 +103,9 @@ close all
 
 edges=-50:5:30;
 xlab='Maximum reflectivity (dBZ)';
-figname=[figdir,'propsAll/maxRefl.png'];
+figname=[figdir,'propsAll/maxRefl'];
 plotStatsProjects(plotV.maxReflAll,edges,xlab,figname,classTypes,colmapCC);
+plotStatsProjects_box(plotV.maxReflAll,xlab,figname,classTypes,colmapCC,[edges(1),edges(end)]);
 
 figname=[figdir,'propsAll/maxRefl_'];
 plotStatsLocs(plotV.maxReflAll,xlab,plotV.lonAll,plotV.latAll,lonLims,latLims,figname,classTypes,colmapCC);
@@ -115,8 +116,9 @@ close all
 
 edges=-50:5:30;
 xlab='Mean reflectivity (dBZ)';
-figname=[figdir,'propsAll/meanRefl.png'];
+figname=[figdir,'propsAll/meanRefl'];
 plotStatsProjects(plotV.meanReflAll,edges,xlab,figname,classTypes,colmapCC);
+plotStatsProjects_box(plotV.meanReflAll,xlab,figname,classTypes,colmapCC,[edges(1),edges(end)]);
 
 figname=[figdir,'propsAll/meanRefl_'];
 plotStatsLocs(plotV.meanReflAll,xlab,plotV.lonAll,plotV.latAll,lonLims,latLims,figname,classTypes,colmapCC);
@@ -127,8 +129,9 @@ close all
 
 edges=0:0.1:1;
 xlab='Max convectivity';
-figname=[figdir,'propsAll/maxConv.png'];
+figname=[figdir,'propsAll/maxConv'];
 plotStatsProjects(plotV.maxConvAll,edges,xlab,figname,classTypes,colmapCC);
+plotStatsProjects_box(plotV.maxConvAll,xlab,figname,classTypes,colmapCC,[edges(1),edges(end)]);
 
 figname=[figdir,'propsAll/maxConv_'];
 plotStatsLocs(plotV.maxConvAll,xlab,plotV.lonAll,plotV.latAll,lonLims,latLims,figname,classTypes,colmapCC);
@@ -139,8 +142,9 @@ close all
 
 edges=0:0.1:1;
 xlab='Mean convectivity';
-figname=[figdir,'propsAll/meanConv.png'];
+figname=[figdir,'propsAll/meanConv'];
 plotStatsProjects(plotV.meanConvAll,edges,xlab,figname,classTypes,colmapCC);
+plotStatsProjects_box(plotV.meanConvAll,xlab,figname,classTypes,colmapCC,[edges(1),edges(end)]);
 
 figname=[figdir,'propsAll/meanConv_'];
 plotStatsLocs(plotV.meanConvAll,xlab,plotV.lonAll,plotV.latAll,lonLims,latLims,figname,classTypes,colmapCC);
@@ -151,8 +155,9 @@ close all
 
 edges=0:1:15;
 xlab='Cloud depth (km)';
-figname=[figdir,'propsAll/cloudDepth.png'];
+figname=[figdir,'propsAll/cloudDepth'];
 plotStatsProjects(plotV.cloudDepthAll,edges,xlab,figname,classTypes,colmapCC);
+plotStatsProjects_box(plotV.cloudDepthAll,xlab,figname,classTypes,colmapCC,[edges(1),edges(end)]);
 
 figname=[figdir,'propsAll/cloudDepth_'];
 plotStatsLocs(plotV.cloudDepthAll,xlab,plotV.lonAll,plotV.latAll,lonLims,latLims,figname,classTypes,colmapCC);
@@ -163,8 +168,9 @@ close all
 
 edges=0:1:15;
 xlab='Cloud top (km)';
-figname=[figdir,'propsAll/cloudTop.png'];
+figname=[figdir,'propsAll/cloudTop'];
 plotStatsProjects(plotV.cloudTopAll,edges,xlab,figname,classTypes,colmapCC);
+plotStatsProjects_box(plotV.cloudTopAll,xlab,figname,classTypes,colmapCC,[edges(1),edges(end)]);
 
 figname=[figdir,'propsAll/cloudTop_'];
 plotStatsLocs(plotV.cloudTopAll,xlab,plotV.lonAll,plotV.latAll,lonLims,latLims,figname,classTypes,colmapCC);
@@ -175,8 +181,9 @@ close all
 
 edges=0:1:15;
 xlab='Cloud base (km)';
-figname=[figdir,'propsAll/cloudBase.png'];
+figname=[figdir,'propsAll/cloudBase'];
 plotStatsProjects(plotV.cloudBaseAll,edges,xlab,figname,classTypes,colmapCC);
+plotStatsProjects_box(plotV.cloudBaseAll,xlab,figname,classTypes,colmapCC,[edges(1),edges(end)]);
 
 figname=[figdir,'propsAll/cloudBase_'];
 plotStatsLocs(plotV.cloudBaseAll,xlab,plotV.lonAll,plotV.latAll,lonLims,latLims,figname,classTypes,colmapCC);
@@ -187,8 +194,9 @@ close all
 
 edges=0:1:10;
 xlab='Cloud layers';
-figname=[figdir,'propsAll/cloudLayers.png'];
+figname=[figdir,'propsAll/cloudLayers'];
 plotStatsProjects(plotV.cloudLayersAll,edges,xlab,figname,classTypes,colmapCC);
+plotStatsProjects_box(plotV.cloudLayersAll,xlab,figname,classTypes,colmapCC,[edges(1),edges(end)]);
 
 figname=[figdir,'propsAll/cloudLayers_'];
 plotStatsLocs(plotV.cloudLayersAll,xlab,plotV.lonAll,plotV.latAll,lonLims,latLims,figname,classTypes,colmapCC);
@@ -199,8 +207,9 @@ close all
 
 edges=0:0.1:1;
 xlab='Updraft fraction';
-figname=[figdir,'propsAll/upFrac.png'];
+figname=[figdir,'propsAll/upFrac'];
 plotStatsProjects(plotV.upFracAll,edges,xlab,figname,classTypes,colmapCC);
+plotStatsProjects_box(plotV.upFracAll,xlab,figname,classTypes,colmapCC,[edges(1),edges(end)]);
 
 figname=[figdir,'propsAll/upFrac_'];
 plotStatsLocs(plotV.upFracAll,xlab,plotV.lonAll,plotV.latAll,lonLims,latLims,figname,classTypes,colmapCC);
@@ -211,8 +220,9 @@ close all
 
 edges=[0:1:14,inf];
 xlab='Max up velocity (m s^{-1})';
-figname=[figdir,'propsAll/upMaxStrength.png'];
+figname=[figdir,'propsAll/upMaxStrength'];
 plotStatsProjects(plotV.upMaxStrengthAll,edges,xlab,figname,classTypes,colmapCC);
+plotStatsProjects_box(plotV.upMaxStrengthAll,xlab,figname,classTypes,colmapCC,[edges(1),edges(end-1)]);
 
 figname=[figdir,'propsAll/upMaxStrength_'];
 plotStatsLocs(plotV.upMaxStrengthAll,xlab,plotV.lonAll,plotV.latAll,lonLims,latLims,figname,classTypes,colmapCC);
@@ -223,8 +233,9 @@ close all
 
 edges=[0:1:14,inf];
 xlab='Max down velocity (m s^{-1})';
-figname=[figdir,'propsAll/downMaxStrength.png'];
+figname=[figdir,'propsAll/downMaxStrength'];
 plotStatsProjects(plotV.downMaxStrengthAll,edges,xlab,figname,classTypes,colmapCC);
+plotStatsProjects_box(plotV.downMaxStrengthAll,xlab,figname,classTypes,colmapCC,[edges(1),edges(end-1)]);
 
 figname=[figdir,'propsAll/downMaxStrength_'];
 plotStatsLocs(plotV.downMaxStrengthAll,xlab,plotV.lonAll,plotV.latAll,lonLims,latLims,figname,classTypes,colmapCC);
@@ -235,8 +246,9 @@ close all
 
 edges=[0:0.2:3.8,inf];
 xlab='Mean up velocity (m s^{-1})';
-figname=[figdir,'propsAll/upMeanStrength.png'];
+figname=[figdir,'propsAll/upMeanStrength'];
 plotStatsProjects(plotV.upMeanStrengthAll,edges,xlab,figname,classTypes,colmapCC);
+plotStatsProjects_box(plotV.upMeanStrengthAll,xlab,figname,classTypes,colmapCC,[edges(1),edges(end-1)]);
 
 figname=[figdir,'propsAll/upMeanStrength_'];
 plotStatsLocs(plotV.upMeanStrengthAll,xlab,plotV.lonAll,plotV.latAll,lonLims,latLims,figname,classTypes,colmapCC);
@@ -247,8 +259,9 @@ close all
 
 edges=[0:0.2:3.8,inf];
 xlab='Mean down velocity (m s^{-1})';
-figname=[figdir,'propsAll/downMeanStrength.png'];
+figname=[figdir,'propsAll/downMeanStrength'];
 plotStatsProjects(plotV.downMeanStrengthAll,edges,xlab,figname,classTypes,colmapCC);
+plotStatsProjects_box(plotV.downMeanStrengthAll,xlab,figname,classTypes,colmapCC,[edges(1),edges(end-1)]);
 
 figname=[figdir,'propsAll/downMeanStrength_'];
 plotStatsLocs(plotV.downMeanStrengthAll,xlab,plotV.lonAll,plotV.latAll,lonLims,latLims,figname,classTypes,colmapCC);
