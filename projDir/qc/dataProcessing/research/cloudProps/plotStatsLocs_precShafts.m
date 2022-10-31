@@ -1,4 +1,4 @@
-function plotStatsLocs(varIn,varName,lons,lats,lonLims,latLims,figname,classTypes,colmapCC)
+function plotStatsLocs_precShafts(propIn,varIn,minLength,varName,lon,lat,lonLims,latLims,figname,classTypes,colmapCC)
 
 load coastlines
 
@@ -6,23 +6,29 @@ fig=figure('DefaultAxesFontSize',11,'position',[100,100,1800,1200],'renderer','p
 colormap('jet');
 
 % Loop through projects
-projects=fields(lons);
+projects=fields(propIn);
 
 for ii=1:length(projects)
 
     for jj=1:length(classTypes)
+        thisTable=propIn.(projects{ii}).(classTypes{jj});
+
+        thisLons=lon.(projects{ii}).(classTypes{jj});
+        thisLats=lat.(projects{ii}).(classTypes{jj});
+        thisLons(thisTable.shaftKM<minLength,:)=[];
+        thisLats(thisTable.shaftKM<minLength,:)=[];
+
+        thisTable(thisTable.shaftKM<minLength,:)=[];
+        thisVar=thisTable.(varIn);
         s=subplot(4,3,jj);
 
         hold on
 
-        if ~all(isnan(varIn.(projects{ii}).(classTypes{jj})))
-            thisLons=lons.(projects{ii}).(classTypes{jj});
-            thisLats=lats.(projects{ii}).(classTypes{jj});
+        if ~all(isnan(thisVar))
+            scatter(thisLons,thisLats,25,thisVar,'filled');
 
-            scatter(thisLons,thisLats,25,varIn.(projects{ii}).(classTypes{jj}),'filled');
-
-            if length(varIn.(projects{ii}).(classTypes{jj}))>15
-                perc=prctile(varIn.(projects{ii}).(classTypes{jj}),[5,95]);
+            if length(thisVar)>15
+                perc=prctile(thisVar,[5,95]);
                 if length(unique(perc))>1
                     caxis(perc);
                 end

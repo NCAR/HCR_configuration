@@ -157,102 +157,41 @@ plotStatsProjects(plotV.cloudDepthAll,edges,xlab,figname,classTypes,colmapCC);
 figname=[figdir,'propsAll/cloudDepth_'];
 plotStatsLocs(plotV.cloudDepthAll,xlab,plotV.lonAll,plotV.latAll,lonLims,latLims,figname,classTypes,colmapCC);
 
-%% Max temperature
+%% Cloud top
 
 close all
 
-edges=-80:10:30;
-xlab='Max temperature (C)';
-figname=[figdir,'environment/maxTemp.png'];
-plotStatsProjects(plotV.maxTempAll,edges,xlab,figname,classTypes,colmapCC);
+edges=0:1:15;
+xlab='Cloud top (km)';
+figname=[figdir,'propsAll/cloudTop.png'];
+plotStatsProjects(plotV.cloudTopAll,edges,xlab,figname,classTypes,colmapCC);
 
-figname=[figdir,'environment/maxTemp_'];
-plotStatsLocs(plotV.maxTempAll,xlab,plotV.lonAll,plotV.latAll,lonLims,latLims,figname,classTypes,colmapCC);
+figname=[figdir,'propsAll/cloudTop_'];
+plotStatsLocs(plotV.cloudTopAll,xlab,plotV.lonAll,plotV.latAll,lonLims,latLims,figname,classTypes,colmapCC);
 
-%% Min temperature
-
-close all
-
-edges=-80:10:30;
-xlab='Min temperature (C)';
-figname=[figdir,'environment/minTemp.png'];
-plotStatsProjects(plotV.minTempAll,edges,xlab,figname,classTypes,colmapCC);
-
-figname=[figdir,'environment/minTemp_'];
-plotStatsLocs(plotV.minTempAll,xlab,plotV.lonAll,plotV.latAll,lonLims,latLims,figname,classTypes,colmapCC);
-
-%% Mean temperature
+%% Cloud base
 
 close all
 
-edges=-80:10:30;
-xlab='Mean temperature (C)';
-figname=[figdir,'environment/meanTemp.png'];
+edges=0:1:15;
+xlab='Cloud base (km)';
+figname=[figdir,'propsAll/cloudBase.png'];
+plotStatsProjects(plotV.cloudBaseAll,edges,xlab,figname,classTypes,colmapCC);
 
-plotStatsProjects(plotV.meanTempAll,edges,xlab,figname,classTypes,colmapCC);
+figname=[figdir,'propsAll/cloudBase_'];
+plotStatsLocs(plotV.cloudBaseAll,xlab,plotV.lonAll,plotV.latAll,lonLims,latLims,figname,classTypes,colmapCC);
 
-figname=[figdir,'environment/meanTemp_'];
-plotStatsLocs(plotV.meanTempAll,xlab,plotV.lonAll,plotV.latAll,lonLims,latLims,figname,classTypes,colmapCC);
-
-%% Max pressure
-
-close all
-
-edges=100:100:1100;
-xlab='Max pressure (hPa)';
-figname=[figdir,'environment/maxPress.png'];
-plotStatsProjects(plotV.maxPressAll,edges,xlab,figname,classTypes,colmapCC);
-
-figname=[figdir,'environment/maxPress_'];
-plotStatsLocs(plotV.maxPressAll,xlab,plotV.lonAll,plotV.latAll,lonLims,latLims,figname,classTypes,colmapCC);
-
-%% Min pressure
+%% Cloud layers
 
 close all
 
-edges=100:100:1100;
-xlab='Min pressure (hPa)';
-figname=[figdir,'environment/minPress.png'];
-plotStatsProjects(plotV.minPressAll,edges,xlab,figname,classTypes,colmapCC);
+edges=0:1:10;
+xlab='Cloud layers';
+figname=[figdir,'propsAll/cloudLayers.png'];
+plotStatsProjects(plotV.cloudLayersAll,edges,xlab,figname,classTypes,colmapCC);
 
-figname=[figdir,'environment/minPress_'];
-plotStatsLocs(plotV.minPressAll,xlab,plotV.lonAll,plotV.latAll,lonLims,latLims,figname,classTypes,colmapCC);
-
-%% Mean pressure
-
-close all
-
-edges=100:100:1100;
-xlab='Mean pressure (hPa)';
-figname=[figdir,'environment/meanPress.png'];
-plotStatsProjects(plotV.meanPressAll,edges,xlab,figname,classTypes,colmapCC);
-
-figname=[figdir,'environment/meanPress_'];
-plotStatsLocs(plotV.meanPressAll,xlab,plotV.lonAll,plotV.latAll,lonLims,latLims,figname,classTypes,colmapCC);
-
-%% Icing level
-
-close all
-
-edges=0:0.5:6;
-xlab='Icing level (km)';
-figname=[figdir,'environment/iceLev.png'];
-plotStatsProjects(plotV.iceLevAll,edges,xlab,figname,classTypes,colmapCC);
-
-figname=[figdir,'environment/iceLev_'];
-plotStatsLocs(plotV.iceLevAll,xlab,plotV.lonAll,plotV.latAll,lonLims,latLims,figname,classTypes,colmapCC);
-
-%% SST
-
-close all
-
-edges=-5:2:35;
-xlab='SST (C)';
-figname=[figdir,'environment/sst.png'];
-plotStatsProjects(plotV.sstAll,edges,xlab,figname,classTypes,colmapCC);
-
-figname=[figdir,'environment/sst_'];
-plotStatsLocs(plotV.sstAll,xlab,plotV.lonAll,plotV.latAll,lonLims,latLims,figname,classTypes,colmapCC);
+figname=[figdir,'propsAll/cloudLayers_'];
+plotStatsLocs(plotV.cloudLayersAll,xlab,plotV.lonAll,plotV.latAll,lonLims,latLims,figname,classTypes,colmapCC);
 
 %% Updraft fraction
 
@@ -297,8 +236,10 @@ close all
 edges=[0:0.2:3.8,inf];
 xlab='Mean up velocity (m s^{-1})';
 figname=[figdir,'propsAll/upMeanStrength.png'];
-
 plotStatsProjects(plotV.upMeanStrengthAll,edges,xlab,figname,classTypes,colmapCC);
+
+figname=[figdir,'propsAll/upMeanStrength_'];
+plotStatsLocs(plotV.upMeanStrengthAll,xlab,plotV.lonAll,plotV.latAll,lonLims,latLims,figname,classTypes,colmapCC);
 
 %% Mean strength of downdraft
 
@@ -307,68 +248,7 @@ close all
 edges=[0:0.2:3.8,inf];
 xlab='Mean down velocity (m s^{-1})';
 figname=[figdir,'propsAll/downMeanStrength.png'];
-
 plotStatsProjects(plotV.downMeanStrengthAll,edges,xlab,figname,classTypes,colmapCC);
 
-%% Process regions
-minPixNum=1000;
-
-%% Pixel number updraft regions
-
-close all
-
-edges=[0:1000:9000,inf];
-xlab='Pixels in updraft regions';
-figname=[figdir,'upRegs/upRegPixNum_',num2str(minPixNum),'.png'];
-
-plotStatsRegsProjects(plotV.upRegsAll,'numPix',minPixNum,edges,xlab,figname,classTypes,colmapCC);
-
-%% Width of updraft regions
-
-close all
-
-edges=[0:1:14,inf];
-xlab='Width of updraft regions (km)';
-figname=[figdir,'upRegs/upRegWidth_',num2str(minPixNum),'.png'];
-
-plotStatsRegsProjects(plotV.upRegsAll,'width',minPixNum,edges,xlab,figname,classTypes,colmapCC);
-
-%% Depth of updraft regions
-
-close all
-
-edges=[0:0.2:2.8,inf];
-xlab='Depth of updraft regions (km)';
-figname=[figdir,'upRegs/upRegDepth_',num2str(minPixNum),'.png'];
-
-plotStatsRegsProjects(plotV.upRegsAll,'depth',minPixNum,edges,xlab,figname,classTypes,colmapCC);
-
-%% Mean vel of updraft regions
-
-close all
-
-edges=[0:0.2:2.8,inf];
-xlab='Mean velocity of updraft regions (m s^{-1})';
-figname=[figdir,'upRegs/upRegMeanVel_',num2str(minPixNum),'.png'];
-
-plotStatsRegsProjects(plotV.upRegsAll,'meanVel',minPixNum,edges,xlab,figname,classTypes,colmapCC);
-
-%% Max vel of updraft regions
-
-close all
-
-edges=[0:0.5:4.5,inf];
-xlab='Max velocity of updraft regions (m s^{-1})';
-figname=[figdir,'upRegs/upRegMaxVel_',num2str(minPixNum),'.png'];
-
-plotStatsRegsProjects(plotV.upRegsAll,'maxVel',minPixNum,edges,xlab,figname,classTypes,colmapCC);
-
-%% Altitude of updraft regions
-
-close all
-
-edges=[0:10:100];
-xlab='Altitude percentile of updraft regions (%)';
-figname=[figdir,'upRegs/upRegAslPerc_',num2str(minPixNum),'.png'];
-
-plotStatsRegsProjects(plotV.upRegsAll,'cloudAltPerc',minPixNum,edges,xlab,figname,classTypes,colmapCC);
+figname=[figdir,'propsAll/downMeanStrength_'];
+plotStatsLocs(plotV.downMeanStrengthAll,xlab,plotV.lonAll,plotV.latAll,lonLims,latLims,figname,classTypes,colmapCC);

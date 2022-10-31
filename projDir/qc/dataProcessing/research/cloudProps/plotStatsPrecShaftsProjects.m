@@ -1,4 +1,4 @@
-function plotStatsRegsProjects(propIn,varIn,minArea,edges,xlab,figname,classTypes,colmapCC)
+function plotStatsPrecShaftsProjects(propIn,varIn,minlength,edges,xlab,figname,classTypes,colmapCC)
 
 fig=figure('DefaultAxesFontSize',11,'position',[100,100,1800,1200],'visible','on');
 
@@ -14,7 +14,7 @@ for jj=1:length(classTypes)
     nums=[];
     for ii=1:length(projects)
         thisTable=propIn.(projects{ii}).(classTypes{jj});
-        thisTable(thisTable.area<minArea,:)=[];
+        thisTable(thisTable.shaftKM<minlength,:)=[];
         thisVar=thisTable.(varIn);
         thisNum=sum(~isnan(thisVar));
         counts=histcounts(thisVar,edges);
