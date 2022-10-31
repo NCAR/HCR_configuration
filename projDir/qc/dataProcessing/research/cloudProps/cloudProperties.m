@@ -5,10 +5,10 @@ close all;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Input variables %%%%%%%%%%%%%%%%%%%%%%%%%%
 
-project='socrates'; %socrates, aristo, cset, otrec
+project='cset'; %socrates, aristo, cset, otrec
 quality='qc3'; %field, qc1, or qc2
 freqData='10hz';
-qcVersion='v3.1';
+qcVersion='v3.0';
 whichModel='era5';
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -50,6 +50,7 @@ for ii=1:length(classTypes)
     minPressAll.(classTypes{ii})=[];
     meanPressAll.(classTypes{ii})=[];
     iceLevAll.(classTypes{ii})=[];
+    divLevAll.(classTypes{ii})=[];
     meltDetAll.(classTypes{ii})=[];
     if ~strcmp(project,'spicule')
         sstAll.(classTypes{ii})=[];
@@ -199,6 +200,13 @@ for aa=1:size(caseList,1)
         % Icing level
         iceLev=mean(data.ICING_LEVEL(clC)./1000,'omitnan');
 
+        % Divergence level
+        tempCols=data.TEMP(:,clC);
+        aslCols=data.asl(:,clC);
+
+        aslCols(tempCols>-24.8 | tempCols<-25.2 | isnan(tempCols))=nan;
+        divLev=mean(aslCols(:),'omitnan')./1000;
+
         % Sea surface temperature
         if ~strcmp(project,'spicule')
             sst=mean(data.SST(clC),'omitnan');
@@ -256,6 +264,7 @@ for aa=1:size(caseList,1)
         minPressAll.(classTypes{cloudType})=cat(1,minPressAll.(classTypes{cloudType}),minPress);
         meanPressAll.(classTypes{cloudType})=cat(1,meanPressAll.(classTypes{cloudType}),meanPress);
         iceLevAll.(classTypes{cloudType})=cat(1,iceLevAll.(classTypes{cloudType}),iceLev);
+        divLevAll.(classTypes{cloudType})=cat(1,divLevAll.(classTypes{cloudType}),divLev);
         meltDetAll.(classTypes{cloudType})=cat(1,meltDetAll.(classTypes{cloudType}),meltDet);
         if ~strcmp(project,'spicule')
             sstAll.(classTypes{cloudType})=cat(1,sstAll.(classTypes{cloudType}),sst);
@@ -279,11 +288,11 @@ disp('Saving output ...');
 if ~strcmp(project,'spicule')
     save([figdir,project,'_cloudProps.mat'],'maxReflAll','meanReflAll','maxConvAll','meanConvAll', ...
         'cloudDepthAll','cloudTopAll','cloudBaseAll','cloudLayersAll','maxTempAll','minTempAll','meanTempAll','maxPressAll','minPressAll','meanPressAll', ...
-        'iceLevAll','meltDetAll','sstAll','upFracAll','upRegsAll','precShaftsAll', ...
+        'iceLevAll','divLevAll','meltDetAll','sstAll','upFracAll','upRegsAll','precShaftsAll', ...
         'upMeanStrengthAll','downMeanStrengthAll','upMaxStrengthAll','downMaxStrengthAll','latAll','lonAll');
 else
     save([figdir,project,'_cloudProps.mat'],'maxReflAll','meanReflAll','maxConvAll','meanConvAll', ...
         'cloudDepthAll','cloudTopAll','cloudBaseAll','cloudLayersAll','maxTempAll','minTempAll','meanTempAll','maxPressAll','minPressAll','meanPressAll', ...
-        'iceLevAll','meltDetAll','upRegNumAll','upFracAll','upRegsAll','precShaftsAll', ...
+        'iceLevAll','divLevAll','meltDetAll','upRegNumAll','upFracAll','upRegsAll','precShaftsAll', ...
         'upMeanStrengthAll','downMeanStrengthAll','upMaxStrengthAll','downMaxStrengthAll','latAll','lonAll');
 end
