@@ -170,6 +170,19 @@ plotStatsProjects_box(plotV.iceLevAll,xlab,figname,classTypes,colmapCC,[edges(1)
 figname=[figdir,'environment/iceLev_'];
 plotStatsLocs(plotV.iceLevAll,xlab,plotV.lonAll,plotV.latAll,lonLims,latLims,figname,classTypes,colmapCC);
 
+%% Divergence level
+
+close all
+
+edges=0:0.5:10;
+xlab='Divergence level (km)';
+figname=[figdir,'environment/divLev'];
+plotStatsProjects(plotV.divLevAll,edges,xlab,figname,classTypes,colmapCC);
+plotStatsProjects_box(plotV.divLevAll,xlab,figname,classTypes,colmapCC,[edges(1),edges(end)]);
+
+figname=[figdir,'environment/divLev_'];
+plotStatsLocs(plotV.divLevAll,xlab,plotV.lonAll,plotV.latAll,lonLims,latLims,figname,classTypes,colmapCC);
+
 %% SST
 
 close all
