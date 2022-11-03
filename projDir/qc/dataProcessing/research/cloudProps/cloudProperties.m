@@ -5,10 +5,10 @@ close all;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Input variables %%%%%%%%%%%%%%%%%%%%%%%%%%
 
-project='socrates'; %socrates, aristo, cset, otrec
+project='cset'; %socrates, aristo, cset, otrec
 quality='qc3'; %field, qc1, or qc2
 freqData='10hz';
-qcVersion='v3.1';
+qcVersion='v3.0';
 whichModel='era5';
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -40,6 +40,7 @@ for ii=1:length(classTypes)
     maxConvAll.(classTypes{ii})=[];
     meanConvAll.(classTypes{ii})=[];
     cloudDepthAll.(classTypes{ii})=[];
+    cloudLengthAll.(classTypes{ii})=[];
     cloudTopAll.(classTypes{ii})=[];
     cloudBaseAll.(classTypes{ii})=[];
     cloudLayersAll.(classTypes{ii})=[];
@@ -127,6 +128,8 @@ for aa=1:size(caseList,1)
         cloudsRay=bwconncomp(maskRay);
         numLayers(kk)=cloudsRay.NumObjects;
     end
+    numLayers(data.altitude<5000 & data.elevation<0)=nan;
+    numLayers(data.altitude>500 & data.elevation>0)=nan;
 
     % Check time
     if ~isequal(size(cloudClass),size(data.DBZ_MASKED))
@@ -197,6 +200,9 @@ for aa=1:size(caseList,1)
         % 1D
         [clR,clC]=ind2sub(size(data.DBZ_MASKED),cloudInds);
 
+        % Cloud length
+        cloudLength=(mean(groundDist(clC))*(max(clC)-min(clC)))/1000;
+
         % Icing level
         iceLev=mean(data.ICING_LEVEL(clC)./1000,'omitnan');
 
@@ -254,6 +260,7 @@ for aa=1:size(caseList,1)
         maxConvAll.(classTypes{cloudType})=cat(1,maxConvAll.(classTypes{cloudType}),maxConv);
         meanConvAll.(classTypes{cloudType})=cat(1,meanConvAll.(classTypes{cloudType}),meanConv);
         cloudDepthAll.(classTypes{cloudType})=cat(1,cloudDepthAll.(classTypes{cloudType}),cloudDepth);
+        cloudLengthAll.(classTypes{cloudType})=cat(1,cloudLengthAll.(classTypes{cloudType}),cloudLength);
         cloudTopAll.(classTypes{cloudType})=cat(1,cloudTopAll.(classTypes{cloudType}),cloudTop);
         cloudBaseAll.(classTypes{cloudType})=cat(1,cloudBaseAll.(classTypes{cloudType}),cloudBase);
         cloudLayersAll.(classTypes{cloudType})=cat(1,cloudLayersAll.(classTypes{cloudType}),cloudLayers);
@@ -287,12 +294,12 @@ disp('Saving output ...');
 
 if ~strcmp(project,'spicule')
     save([figdir,project,'_cloudProps.mat'],'maxReflAll','meanReflAll','maxConvAll','meanConvAll', ...
-        'cloudDepthAll','cloudTopAll','cloudBaseAll','cloudLayersAll','maxTempAll','minTempAll','meanTempAll','maxPressAll','minPressAll','meanPressAll', ...
+        'cloudDepthAll','cloudLengthAll','cloudTopAll','cloudBaseAll','cloudLayersAll','maxTempAll','minTempAll','meanTempAll','maxPressAll','minPressAll','meanPressAll', ...
         'iceLevAll','divLevAll','meltDetAll','sstAll','upFracAll','upRegsAll','precShaftsAll', ...
         'upMeanStrengthAll','downMeanStrengthAll','upMaxStrengthAll','downMaxStrengthAll','latAll','lonAll');
 else
     save([figdir,project,'_cloudProps.mat'],'maxReflAll','meanReflAll','maxConvAll','meanConvAll', ...
-        'cloudDepthAll','cloudTopAll','cloudBaseAll','cloudLayersAll','maxTempAll','minTempAll','meanTempAll','maxPressAll','minPressAll','meanPressAll', ...
+        'cloudDepthAll','cloudLengthAll','cloudTopAll','cloudBaseAll','cloudLayersAll','maxTempAll','minTempAll','meanTempAll','maxPressAll','minPressAll','meanPressAll', ...
         'iceLevAll','divLevAll','meltDetAll','upRegNumAll','upFracAll','upRegsAll','precShaftsAll', ...
         'upMeanStrengthAll','downMeanStrengthAll','upMaxStrengthAll','downMaxStrengthAll','latAll','lonAll');
 end
