@@ -162,6 +162,18 @@ plotStatsProjects_box(plotV.cloudDepthAll,xlab,figname,classTypes,colmapCC,[edge
 figname=[figdir,'propsAll/cloudDepth_'];
 plotStatsLocs(plotV.cloudDepthAll,xlab,plotV.lonAll,plotV.latAll,lonLims,latLims,figname,classTypes,colmapCC);
 
+%% Cloud length
+
+close all
+
+edges=[0:20:200,inf];
+xlab='Cloud length (km)';
+figname=[figdir,'propsAll/cloudLength'];
+plotStatsProjects(plotV.cloudLengthAll,edges,xlab,figname,classTypes,colmapCC);
+plotStatsProjects_box(plotV.cloudLengthAll,xlab,figname,classTypes,colmapCC,[edges(1),edges(end-1)]);
+
+figname=[figdir,'propsAll/cloudLength_'];
+plotStatsLocs(plotV.cloudLengthAll,xlab,plotV.lonAll,plotV.latAll,lonLims,latLims,figname,classTypes,colmapCC);
 %% Cloud top
 
 close all
