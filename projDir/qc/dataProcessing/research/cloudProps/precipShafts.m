@@ -24,9 +24,9 @@ else
     velFilled=velMap;
 end
 
-% Smooth
-velSmooth=smoothdata(velFilled,2,'movmedian',50,'omitnan');
-velSmooth(isnan(velFilled))=nan;
+% % Smooth
+% velSmooth=smoothdata(velFilled,2,'movmedian',50,'omitnan');
+% velSmooth(isnan(velFilled))=nan;
 
 % Get shaft
 minAsl=min(aslMap(:),[],'omitnan');
@@ -40,8 +40,8 @@ shaftKM=sum(shaft1D)*groundDist/1000;
 shaftFrac=sum(shaft1D)/size(shaftMap,2);
 shaftMeanRefl=mean(dbzFilled(shaftMap==1));
 shaftMaxRefl=max(dbzFilled(shaftMap==1),[],'omitnan');
-shaftMeanVel=mean(velSmooth(shaftMap==1));
-shaftMaxVel=max(velSmooth(shaftMap==1),[],'omitnan');
+shaftMeanVel=mean(velFilled(shaftMap==1));
+shaftMaxVel=max(velFilled(shaftMap==1),[],'omitnan');
 
 precShafts=table(shaftKM,shaftFrac,shaftMeanRefl,shaftMaxRefl,shaftMeanVel,shaftMaxVel, ...
     'VariableNames',{'shaftKM','frac','meanRef','maxRefl','meanVel','maxVel'});

@@ -13,26 +13,26 @@ else
     velFilled=velIn;
 end
 
-% Smooth
-velSmooth=smoothdata(velFilled,2,'movmedian',50,'omitnan');
-velSmooth(isnan(velFilled))=nan;
+% % Smooth
+% velSmooth=smoothdata(velFilled,2,'movmedian',50,'omitnan');
+% velSmooth(isnan(velFilled))=nan;
 
 % Overall stats
-upMaxStrength=-(min(velSmooth(velSmooth<0),[],'omitnan'));
+upMaxStrength=-(min(velFilled(velFilled<0),[],'omitnan'));
 if isempty(upMaxStrength)
     upMaxStrength=nan;
 end
-downMaxStrength=max(velSmooth(velSmooth>0),[],'omitnan');
+downMaxStrength=max(velFilled(velFilled>0),[],'omitnan');
 if isempty(downMaxStrength)
     downMaxStrength=nan;
 end
-upMeanStrength=-(mean(velSmooth(velSmooth<0),'omitnan'));
-downMeanStrength=mean(velSmooth(velSmooth>0),'omitnan');
+upMeanStrength=-(mean(velFilled(velFilled<0),'omitnan'));
+downMeanStrength=mean(velFilled(velFilled>0),'omitnan');
 
-upFrac=sum(sum(velSmooth<0))/sum(sum(~isnan(velFilled)));
+upFrac=sum(sum(velFilled<0))/sum(sum(~isnan(velFilled)));
 
 % Get updraft regions
-updrafts=velSmooth<0;
+updrafts=velFilled<0;
 
 updrafts=bwareaopen(updrafts,5);
 
@@ -56,8 +56,8 @@ if upNum>0
 
     for ii=1:upNum
         upRegCloudAltPerc(ii)=mean(aslNorm(upProps.PixelIdxList{ii}),'omitnan')*100;
-        upRegMean(ii)=-mean(velSmooth(upProps.PixelIdxList{ii}),'omitnan');
-        upRegMax(ii)=-(min(velSmooth(upProps.PixelIdxList{ii}),[],'omitnan'));
+        upRegMean(ii)=-mean(velFilled(upProps.PixelIdxList{ii}),'omitnan');
+        upRegMax(ii)=-(min(velFilled(upProps.PixelIdxList{ii}),[],'omitnan'));
     end
     upRegs=table(upRegArea,upRegWidth,upRegDepth,upRegMean,upRegMax,upRegCloudAltPerc,upRegLon,upRegLat, ...
         'VariableNames',{'area','width','depth','meanVel','maxVel','cloudAltPerc','lon','lat'});

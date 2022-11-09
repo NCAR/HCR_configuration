@@ -111,6 +111,14 @@ for aa=1:size(caseList,1)
     data.CONVECTIVITY(data.CONVECTIVITY>1)=1;
     data.VEL_MASKED(:,data.elevation>0)=-data.VEL_MASKED(:,data.elevation>0);
 
+    % Shrink velocity to remove outliers at the edges
+    VELmask=zeros(size(data.VEL_MASKED));
+    VELmask(~isnan(data.VEL_MASKED))=1;
+
+    VELsmall=imerode(VELmask,strel('disk',5));
+
+    data.VEL_MASKED(VELmask==1 & VELsmall==0)=nan;
+
     % Get distance traveled
     groundSpeed=sqrt(data.eastward_velocity.^2+data.northward_velocity.^2);
     groundDist=groundSpeed.*etime(datevec(data.time(2)),datevec(data.time(1)));
