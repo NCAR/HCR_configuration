@@ -80,7 +80,7 @@ latLims=[15,45;
     -0,15];
 
 %% Process regions
-minArea=0.25;
+minArea=0.1;
 
 %% Area of updraft regions
 
