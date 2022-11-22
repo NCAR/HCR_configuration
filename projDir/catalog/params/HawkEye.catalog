@@ -328,7 +328,7 @@ fields = {
     raw_name = "VEL",
     filtered_name = "",
     units = "m/s",
-    color_map = "vel_w.colors",
+    color_map = "vel_w_8.colors",
     shortcut = "1"
   }
   ,

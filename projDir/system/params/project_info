@@ -6,7 +6,8 @@
 
 setenv PROJECT_NAME               spicule
 
-setenv BSCAN_MAX_ALTITUDE_KM      7.3        # SPICULE (24000 ft.)
+#setenv BSCAN_MAX_ALTITUDE_KM      7.3        # SPICULE (24000 ft.)
+setenv BSCAN_MAX_ALTITUDE_KM      12.2        # SPICULE (40000 ft.)
 setenv BSCAN_MIN_ALTITUDE_KM      -0.5
 
 # previous projects

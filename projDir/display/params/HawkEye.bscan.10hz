@@ -377,15 +377,15 @@ fields = {
     color_map = "vel_w_4.colors",
     shortcut = "2"
   }
-  // ,
-  // {
-  //   label = "VEL8",
-  //   raw_name = "VEL",
-  //   filtered_name = "",
-  //   units = "m/s",
-  //   color_map = "vel_w_8.colors",
-  //   shortcut = "3"
-  // }
+  ,
+  {
+    label = "VEL8",
+    raw_name = "VEL",
+    filtered_name = "",
+    units = "m/s",
+    color_map = "vel_w_8.colors",
+    shortcut = "3"
+  }
   // ,
   // {
   //   label = "VEL_RAW8",
