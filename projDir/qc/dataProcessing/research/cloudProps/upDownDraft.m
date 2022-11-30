@@ -1,4 +1,4 @@
-function [upRegs,upFrac,upMaxStrength,downMaxStrength,upMeanStrength,downMeanStrength]=upDownDraft(velIn,aslIn,rangePix,distance,lon,lat)
+function [upRegs,upFrac,upNum,upMaxStrength,downMaxStrength,upMeanStrength,downMeanStrength]=upDownDraft(velIn,aslIn,rangePix,distance,lon,lat)
 upRegs=[];
 
 % Fill in gaps of missing data
@@ -44,6 +44,7 @@ if upNum>0
     upRegDepth=upProps.BoundingBox(:,4).*rangePix/1000;
     pixKM2=distance/1000*rangePix/1000;
     upRegArea=upProps.Area*pixKM2;
+    upRegCloudAlt=nan(upNum,1);
     upRegCloudAltPerc=nan(upNum,1);
     upRegMean=nan(upNum,1);
     upRegMax=nan(upNum,1);
@@ -55,11 +56,12 @@ if upNum>0
     aslNorm=aslScaled./min(aslScaled(:));
 
     for ii=1:upNum
+        upRegCloudAlt(ii)=mean(aslIn(upProps.PixelIdxList{ii})./1000,'omitnan');
         upRegCloudAltPerc(ii)=mean(aslNorm(upProps.PixelIdxList{ii}),'omitnan')*100;
         upRegMean(ii)=-mean(velFilled(upProps.PixelIdxList{ii}),'omitnan');
         upRegMax(ii)=-(min(velFilled(upProps.PixelIdxList{ii}),[],'omitnan'));
     end
-    upRegs=table(upRegArea,upRegWidth,upRegDepth,upRegMean,upRegMax,upRegCloudAltPerc,upRegLon,upRegLat, ...
-        'VariableNames',{'area','width','depth','meanVel','maxVel','cloudAltPerc','lon','lat'});
+    upRegs=table(upRegArea,upRegWidth,upRegDepth,upRegMean,upRegMax,upRegCloudAlt,upRegCloudAltPerc,upRegLon,upRegLat, ...
+        'VariableNames',{'area','width','depth','meanVel','maxVel','cloudAlt','cloudAltPerc','lon','lat'});
 end
 end

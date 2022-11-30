@@ -1,4 +1,4 @@
-% Call cloud puzzle script
+% Calculate cloud properties
 
 clear all;
 close all;
@@ -53,12 +53,14 @@ for ii=1:length(classTypes)
     iceLevAll.(classTypes{ii})=[];
     divLevAll.(classTypes{ii})=[];
     meltDetAll.(classTypes{ii})=[];
+    coldFracAll.(classTypes{ii})=[];
     if ~strcmp(project,'spicule')
         sstAll.(classTypes{ii})=[];
     end
     lonAll.(classTypes{ii})=[];
     latAll.(classTypes{ii})=[];
     upFracAll.(classTypes{ii})=[];
+    upNumAll.(classTypes{ii})=[];
     upMeanStrengthAll.(classTypes{ii})=[];
     downMeanStrengthAll.(classTypes{ii})=[];
     upMaxStrengthAll.(classTypes{ii})=[];
@@ -195,6 +197,9 @@ for aa=1:size(caseList,1)
         meltLayerCloud=data.MELTING_LAYER(cloudInds);
         meltDet=double(max(ismember([12,22],meltLayerCloud)));
 
+        % Cold fraction
+        coldFrac=length(find(meltLayerCloud>=20))./length(meltLayerCloud);
+
         % Temperature
         maxTemp=max(data.TEMP(cloudInds),[],'omitnan');
         minTemp=min(data.TEMP(cloudInds),[],'omitnan');
@@ -246,7 +251,7 @@ for aa=1:size(caseList,1)
         aslMap=nan(size(smallMask));
         aslMap(smallInds)=data.asl(cloudInds);
         
-        [upRegs,upFrac,upMaxStrength,downMaxStrength,upMeanStrength,downMeanStrength]=upDownDraft(velMap,aslMap,data.range(2)-data.range(1),mean(groundDist(clC)),data.longitude(min(clC):max(clC)),data.latitude(min(clC):max(clC)));
+        [upRegs,upFrac,upNum,upMaxStrength,downMaxStrength,upMeanStrength,downMeanStrength]=upDownDraft(velMap,aslMap,data.range(2)-data.range(1),mean(groundDist(clC)),data.longitude(min(clC):max(clC)),data.latitude(min(clC):max(clC)));
         
         % Precip shafts
         shaftMap=zeros(size(smallMask));
@@ -281,12 +286,14 @@ for aa=1:size(caseList,1)
         iceLevAll.(classTypes{cloudType})=cat(1,iceLevAll.(classTypes{cloudType}),iceLev);
         divLevAll.(classTypes{cloudType})=cat(1,divLevAll.(classTypes{cloudType}),divLev);
         meltDetAll.(classTypes{cloudType})=cat(1,meltDetAll.(classTypes{cloudType}),meltDet);
+        coldFracAll.(classTypes{cloudType})=cat(1,coldFracAll.(classTypes{cloudType}),coldFrac);
         if ~strcmp(project,'spicule')
             sstAll.(classTypes{cloudType})=cat(1,sstAll.(classTypes{cloudType}),sst);
         end
         lonAll.(classTypes{cloudType})=cat(1,lonAll.(classTypes{cloudType}),lon);
         latAll.(classTypes{cloudType})=cat(1,latAll.(classTypes{cloudType}),lat);
         upFracAll.(classTypes{cloudType})=cat(1,upFracAll.(classTypes{cloudType}),upFrac);
+        upNumAll.(classTypes{cloudType})=cat(1,upNumAll.(classTypes{cloudType}),upNum);
         upMeanStrengthAll.(classTypes{cloudType})=cat(1,upMeanStrengthAll.(classTypes{cloudType}),upMeanStrength);
         downMeanStrengthAll.(classTypes{cloudType})=cat(1,downMeanStrengthAll.(classTypes{cloudType}),downMeanStrength);
         upMaxStrengthAll.(classTypes{cloudType})=cat(1,upMaxStrengthAll.(classTypes{cloudType}),upMaxStrength);
@@ -303,11 +310,11 @@ disp('Saving output ...');
 if ~strcmp(project,'spicule')
     save([figdir,project,'_cloudProps.mat'],'maxReflAll','meanReflAll','maxConvAll','meanConvAll', ...
         'cloudDepthAll','cloudLengthAll','cloudTopAll','cloudBaseAll','cloudLayersAll','maxTempAll','minTempAll','meanTempAll','maxPressAll','minPressAll','meanPressAll', ...
-        'iceLevAll','divLevAll','meltDetAll','sstAll','upFracAll','upRegsAll','precShaftsAll', ...
+        'iceLevAll','divLevAll','meltDetAll','coldFracAll','sstAll','upFracAll','upNumAll','upRegsAll','precShaftsAll', ...
         'upMeanStrengthAll','downMeanStrengthAll','upMaxStrengthAll','downMaxStrengthAll','latAll','lonAll');
 else
     save([figdir,project,'_cloudProps.mat'],'maxReflAll','meanReflAll','maxConvAll','meanConvAll', ...
         'cloudDepthAll','cloudLengthAll','cloudTopAll','cloudBaseAll','cloudLayersAll','maxTempAll','minTempAll','meanTempAll','maxPressAll','minPressAll','meanPressAll', ...
-        'iceLevAll','divLevAll','meltDetAll','upRegNumAll','upFracAll','upRegsAll','precShaftsAll', ...
+        'iceLevAll','divLevAll','meltDetAll','coldFracAll','upRegNumAll','upFracAll','upNumAll','upRegsAll','precShaftsAll', ...
         'upMeanStrengthAll','downMeanStrengthAll','upMaxStrengthAll','downMaxStrengthAll','latAll','lonAll');
 end
