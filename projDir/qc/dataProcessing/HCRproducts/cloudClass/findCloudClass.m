@@ -113,13 +113,13 @@ for ii=1:max(reshape(cloudID,1,[]))
             if max(reshape(cloudMat,1,[]),[],'omitnan')==38
                 cloudClass(linInds)=33; % Deep
             elseif max(reshape(cloudMat,1,[]),[],'omitnan')==36
-                if highPix/length(cloudMat)>0.3
+                if highPix/sum(~isnan(cloudMat(:)))>0.25
                     cloudClass(linInds)=0;
                 else
                     cloudClass(linInds)=32; % Mid
                 end
             elseif max(reshape(cloudMat,1,[]),[],'omitnan')==34
-                if highPix>0 | midPix/length(cloudMat)>0.5
+                if highPix>0 | midPix/sum(~isnan(cloudMat(:)))>0.4
                     cloudClass(linInds)=0;
                 else
                     cloudClass(linInds)=31; % Shallow
