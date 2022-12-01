@@ -14,6 +14,9 @@ for ii=1:length(projects)
         thisTable=propIn.(projects{ii}).(classTypes{jj});
         thisTable(thisTable.area<minArea,:)=[];
         thisVar=thisTable.(varIn);
+        if strcmp(varIn,'cloudAltPerc')
+            thisVar=abs(thisVar-100);
+        end
         s=subplot(4,3,jj);
 
         hold on

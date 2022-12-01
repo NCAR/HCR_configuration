@@ -151,6 +151,19 @@ plotStatsLocs_upRegs(plotV.upRegsAll,'maxVel',minArea,xlab,lonLims,latLims,figna
 
 close all
 
+edges=[0:1:15];
+xlab='Altitude of updraft regions (km)';
+figname=[figdir,'upRegs/upRegAsl_',num2str(minArea)];
+plotStatsRegsProjects(plotV.upRegsAll,'cloudAlt',minArea,edges,xlab,figname,classTypes,colmapCC);
+plotStatsRegsProjects_box(plotV.upRegsAll,'cloudAlt',minArea,xlab,figname,classTypes,colmapCC,[edges(1),edges(end)]);
+
+figname=[figdir,'upRegs/upRegAsl_'];
+plotStatsLocs_upRegs(plotV.upRegsAll,'cloudAlt',minArea,xlab,lonLims,latLims,figname,classTypes,colmapCC);
+
+%% Altitude percentile of updraft regions
+
+close all
+
 edges=[0:10:100];
 xlab='Altitude percentile of updraft regions (%)';
 figname=[figdir,'upRegs/upRegAslPerc_',num2str(minArea)];

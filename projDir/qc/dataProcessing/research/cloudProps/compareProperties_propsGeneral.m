@@ -213,6 +213,19 @@ plotStatsProjects_box(plotV.cloudLayersAll,xlab,figname,classTypes,colmapCC,[edg
 figname=[figdir,'propsAll/cloudLayers_'];
 plotStatsLocs(plotV.cloudLayersAll,xlab,plotV.lonAll,plotV.latAll,lonLims,latLims,figname,classTypes,colmapCC);
 
+%% Number of updrafts in one cloud
+
+close all
+
+edges=0:500:5000;
+xlab='Updraft region numbers';
+figname=[figdir,'propsAll/upRegNum'];
+plotStatsProjects(plotV.upNumAll,edges,xlab,figname,classTypes,colmapCC);
+plotStatsProjects_box(plotV.upNumAll,xlab,figname,classTypes,colmapCC,[edges(1),edges(end)]);
+
+figname=[figdir,'propsAll/upRegNum_'];
+plotStatsLocs(plotV.upNumAll,xlab,plotV.lonAll,plotV.latAll,lonLims,latLims,figname,classTypes,colmapCC);
+
 %% Updraft fraction
 
 close all
@@ -277,3 +290,16 @@ plotStatsProjects_box(plotV.downMeanStrengthAll,xlab,figname,classTypes,colmapCC
 
 figname=[figdir,'propsAll/downMeanStrength_'];
 plotStatsLocs(plotV.downMeanStrengthAll,xlab,plotV.lonAll,plotV.latAll,lonLims,latLims,figname,classTypes,colmapCC);
+
+%% Cold fraction
+
+close all
+
+edges=0:0.1:1;
+xlab='Cold fraction';
+figname=[figdir,'propsAll/coldFrac'];
+plotStatsProjects(plotV.coldFracAll,edges,xlab,figname,classTypes,colmapCC);
+plotStatsProjects_box(plotV.coldFracAll,xlab,figname,classTypes,colmapCC,[edges(1),edges(end)]);
+
+figname=[figdir,'propsAll/coldFrac_'];
+plotStatsLocs(plotV.coldFracAll,xlab,plotV.lonAll,plotV.latAll,lonLims,latLims,figname,classTypes,colmapCC);

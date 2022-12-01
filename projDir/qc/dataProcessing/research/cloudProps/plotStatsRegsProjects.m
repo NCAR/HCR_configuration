@@ -16,6 +16,9 @@ for jj=1:length(classTypes)
         thisTable=propIn.(projects{ii}).(classTypes{jj});
         thisTable(thisTable.area<minArea,:)=[];
         thisVar=thisTable.(varIn);
+        if strcmp(varIn,'cloudAltPerc')
+            thisVar=abs(thisVar-100);
+        end
         thisNum=sum(~isnan(thisVar));
         counts=histcounts(thisVar,edges);
         if thisNum<10
