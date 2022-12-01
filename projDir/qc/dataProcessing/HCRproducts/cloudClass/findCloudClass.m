@@ -87,6 +87,11 @@ for ii=1:max(reshape(cloudID,1,[]))
     end
 
     %% Convective
+
+    highPix=length(find(cloudMat==18));
+    midPix=length(find(cloudMat==16));
+    lowPix=length(find(cloudMat==14));
+
     % Check if convective
     % Calculate convective fraction
     convPix=sum(sum(cloudMat>32));
@@ -108,9 +113,17 @@ for ii=1:max(reshape(cloudID,1,[]))
             if max(reshape(cloudMat,1,[]),[],'omitnan')==38
                 cloudClass(linInds)=33; % Deep
             elseif max(reshape(cloudMat,1,[]),[],'omitnan')==36
-                cloudClass(linInds)=32; % Mid
+                if highPix/length(cloudMat)>0.3
+                    cloudClass(linInds)=0;
+                else
+                    cloudClass(linInds)=32; % Mid
+                end
             elseif max(reshape(cloudMat,1,[]),[],'omitnan')==34
-                cloudClass(linInds)=31; % Shallow
+                if highPix>0 | midPix/length(cloudMat)>0.5
+                    cloudClass(linInds)=0;
+                else
+                    cloudClass(linInds)=31; % Shallow
+                end
             end
         end
         %% Stratiform
@@ -134,10 +147,6 @@ for ii=1:max(reshape(cloudID,1,[]))
 
         % Non precipitating
         else
-            highPix=length(find(cloudMat==18));
-            midPix=length(find(cloudMat==16));
-            lowPix=length(find(cloudMat==14));
-
             [maxPix,maxInd]=max([highPix,midPix,lowPix]);
 
             if maxInd==1

@@ -8,6 +8,9 @@ newInd=1;
 % Loop through clouds
 for ii=1:length(uClouds)
     cloudInds=find(cloudID==uClouds(ii));
+    if newInd==254
+        stopHere=1;
+    end
 
     if length(cloudInds)<3000000 % If small, don't break up
         cloudPuzzle(cloudInds)=newInd;
@@ -135,7 +138,7 @@ for ii=1:length(uClouds)
             end
 
             cloudPuzzle(cloudInds)=labelAll(labelAll>0)+newInd-1;
-            newInd=newInd+numObjects;
+            newInd=newInd+double(numObjects);
             disp('Break up successful.')
         end
     end

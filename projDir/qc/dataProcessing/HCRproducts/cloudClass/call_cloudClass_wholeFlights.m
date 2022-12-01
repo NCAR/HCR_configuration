@@ -5,10 +5,10 @@ close all;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Input variables %%%%%%%%%%%%%%%%%%%%%%%%%%
 
-project='noreaster'; %socrates, aristo, cset, otrec
-quality='qc2'; %field, qc1, or qc2
+project='otrec'; %socrates, aristo, cset, otrec
+quality='qc3'; %field, qc1, or qc2
 freqData='10hz';
-qcVersion='v2.0';
+qcVersion='v3.1';
 whichModel='era5';
 
 plotFig=1;
@@ -65,13 +65,13 @@ for aa=1:size(caseList,1)
 
     minCloudSizePix=1000;
 
-    cloudID=makeCloudID(data,minCloudSizePix);
+    cloudIDout=makeCloudID(data,minCloudSizePix);
 
     %% Cloud puzzle
     % Breaks up really big clouds
     
     disp('Breaking up large ...')
-    data.cloudPuzzle=f_cloudPuzzle_breakLarge(cloudID,data);
+    data.cloudPuzzle=f_cloudPuzzle_breakLarge(cloudIDout,data);
 
     % Breaks out isolated convective that penetrate into stratiform
     disp('Breaking out isolated conv ...')
