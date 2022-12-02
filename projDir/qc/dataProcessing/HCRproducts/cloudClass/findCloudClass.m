@@ -45,7 +45,7 @@ for ii=1:max(reshape(cloudID,1,[]))
     %% Sort out clouds we don't classify
 
     % If only convective with no sub class, don't use
-    if any(cloudMat==30)
+    if any(cloudMat(:)==30)
         cloudClass(linInds)=0;
         continue
     end
