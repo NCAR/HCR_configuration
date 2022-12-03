@@ -101,7 +101,7 @@ plotLocsTypes(plotV.lonAll,plotV.latAll,lonLims,latLims,figname,classTypes,colma
 
 close all
 
-edges=-50:5:30;
+edges=-20:5:30;
 xlab='Maximum reflectivity (dBZ)';
 figname=[figdir,'propsAll/maxRefl'];
 plotStatsProjects(plotV.maxReflAll,edges,xlab,figname,classTypes,colmapCC);
@@ -114,7 +114,7 @@ plotStatsLocs(plotV.maxReflAll,xlab,plotV.lonAll,plotV.latAll,lonLims,latLims,fi
 
 close all
 
-edges=-50:5:30;
+edges=-20:5:30;
 xlab='Mean reflectivity (dBZ)';
 figname=[figdir,'propsAll/meanRefl'];
 plotStatsProjects(plotV.meanReflAll,edges,xlab,figname,classTypes,colmapCC);
