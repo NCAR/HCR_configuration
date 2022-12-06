@@ -86,11 +86,11 @@ minArea=0.1;
 
 close all
 
-edges=[0:0.25:5,inf];
+edges=[0:0.1:1,inf];
 xlab='Updraft area (km^2)';
 figname=[figdir,'upRegs/upRegArea_',num2str(minArea)];
 plotStatsRegsProjects(plotV.upRegsAll,'area',minArea,edges,xlab,figname,classTypes,colmapCC);
-plotStatsRegsProjects_box(plotV.upRegsAll,'area',minArea,xlab,figname,classTypes,colmapCC,[edges(1),edges(end)]);
+plotStatsRegsProjects_box(plotV.upRegsAll,'area',minArea,xlab,figname,classTypes,colmapCC,[edges(1),edges(end-1)]);
 
 figname=[figdir,'upRegs/upRegArea_'];
 plotStatsLocs_upRegs(plotV.upRegsAll,'area',minArea,xlab,lonLims,latLims,figname,classTypes,colmapCC);
@@ -99,11 +99,11 @@ plotStatsLocs_upRegs(plotV.upRegsAll,'area',minArea,xlab,lonLims,latLims,figname
 
 close all
 
-edges=[0:1:14,inf];
+edges=[0:0.2:3,inf];
 xlab='Width of updraft regions (km)';
 figname=[figdir,'upRegs/upRegWidth_',num2str(minArea)];
 plotStatsRegsProjects(plotV.upRegsAll,'width',minArea,edges,xlab,figname,classTypes,colmapCC);
-plotStatsRegsProjects_box(plotV.upRegsAll,'width',minArea,xlab,figname,classTypes,colmapCC,[edges(1),edges(end)]);
+plotStatsRegsProjects_box(plotV.upRegsAll,'width',minArea,xlab,figname,classTypes,colmapCC,[edges(1),edges(end-1)]);
 
 figname=[figdir,'upRegs/upRegWidth_'];
 plotStatsLocs_upRegs(plotV.upRegsAll,'width',minArea,xlab,lonLims,latLims,figname,classTypes,colmapCC);
@@ -112,11 +112,11 @@ plotStatsLocs_upRegs(plotV.upRegsAll,'width',minArea,xlab,lonLims,latLims,fignam
 
 close all
 
-edges=[0:0.2:2.8,inf];
+edges=[0:0.2:2,inf];
 xlab='Depth of updraft regions (km)';
 figname=[figdir,'upRegs/upRegDepth_',num2str(minArea)];
 plotStatsRegsProjects(plotV.upRegsAll,'depth',minArea,edges,xlab,figname,classTypes,colmapCC);
-plotStatsRegsProjects_box(plotV.upRegsAll,'depth',minArea,xlab,figname,classTypes,colmapCC,[edges(1),edges(end)]);
+plotStatsRegsProjects_box(plotV.upRegsAll,'depth',minArea,xlab,figname,classTypes,colmapCC,[edges(1),edges(end-1)]);
 
 figname=[figdir,'upRegs/upRegDepth_'];
 plotStatsLocs_upRegs(plotV.upRegsAll,'depth',minArea,xlab,lonLims,latLims,figname,classTypes,colmapCC);
@@ -129,7 +129,7 @@ edges=[0:0.2:2.8,inf];
 xlab='Mean velocity of updraft regions (m s^{-1})';
 figname=[figdir,'upRegs/upRegMeanVel_',num2str(minArea)];
 plotStatsRegsProjects(plotV.upRegsAll,'meanVel',minArea,edges,xlab,figname,classTypes,colmapCC);
-plotStatsRegsProjects_box(plotV.upRegsAll,'meanVel',minArea,xlab,figname,classTypes,colmapCC,[edges(1),edges(end)]);
+plotStatsRegsProjects_box(plotV.upRegsAll,'meanVel',minArea,xlab,figname,classTypes,colmapCC,[edges(1),edges(end-1)]);
 
 figname=[figdir,'upRegs/upRegMeanVel_'];
 plotStatsLocs_upRegs(plotV.upRegsAll,'meanVel',minArea,xlab,lonLims,latLims,figname,classTypes,colmapCC);
@@ -142,7 +142,7 @@ edges=[0:0.5:4.5,inf];
 xlab='Max velocity of updraft regions (m s^{-1})';
 figname=[figdir,'upRegs/upRegMaxVel_',num2str(minArea)];
 plotStatsRegsProjects(plotV.upRegsAll,'maxVel',minArea,edges,xlab,figname,classTypes,colmapCC);
-plotStatsRegsProjects_box(plotV.upRegsAll,'maxVel',minArea,xlab,figname,classTypes,colmapCC,[edges(1),edges(end)]);
+plotStatsRegsProjects_box(plotV.upRegsAll,'maxVel',minArea,xlab,figname,classTypes,colmapCC,[edges(1),edges(end-1)]);
 
 figname=[figdir,'upRegs/upRegMaxVel_'];
 plotStatsLocs_upRegs(plotV.upRegsAll,'maxVel',minArea,xlab,lonLims,latLims,figname,classTypes,colmapCC);

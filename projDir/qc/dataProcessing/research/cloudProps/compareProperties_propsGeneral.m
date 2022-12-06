@@ -217,7 +217,7 @@ plotStatsLocs(plotV.cloudLayersAll,xlab,plotV.lonAll,plotV.latAll,lonLims,latLim
 
 close all
 
-edges=0:500:5000;
+edges=0:25:250;
 xlab='Updraft region numbers';
 figname=[figdir,'propsAll/upRegNum'];
 plotStatsProjects(plotV.upNumAll,edges,xlab,figname,classTypes,colmapCC);

@@ -85,7 +85,7 @@ minLength=2.5;
 
 close all
 
-edges=[2.5:10:100];
+edges=[2.5:10:140];
 xlab='Total length of precip shafts (km)';
 figname=[figdir,'precShafts/precShafts_totLength'];
 plotStatsPrecShaftsProjects(plotV.precShaftsAll,'shaftKM',minLength,edges,xlab,figname,classTypes,colmapCC);
