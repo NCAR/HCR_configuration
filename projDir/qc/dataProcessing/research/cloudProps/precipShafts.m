@@ -40,7 +40,7 @@ shaftKM=sum(shaft1D)*groundDist/1000;
 shaftFrac=sum(shaft1D)/size(shaftMap,2);
 shaftMeanRefl=mean(dbzFilled(shaftMap==1));
 shaftMaxRefl=max(dbzFilled(shaftMap==1),[],'omitnan');
-shaftMeanVel=mean(velFilled(shaftMap==1));
+shaftMeanVel=mean(velFilled(shaftMap==1),'omitnan');
 shaftMaxVel=max(velFilled(shaftMap==1),[],'omitnan');
 
 precShafts=table(shaftKM,shaftFrac,shaftMeanRefl,shaftMaxRefl,shaftMeanVel,shaftMaxVel, ...
