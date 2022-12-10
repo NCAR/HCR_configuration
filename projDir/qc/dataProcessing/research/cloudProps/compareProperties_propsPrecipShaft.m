@@ -141,7 +141,7 @@ edges=[-inf,0:0.5:5,inf];
 xlab='Mean precip velocity (m s^{-1})';
 figname=[figdir,'precShafts/precShafts_meanVel'];
 plotStatsPrecShaftsProjects(plotV.precShaftsAll,'meanVel',minLength,edges,xlab,figname,classTypes,colmapCC);
-plotStatsPrecShaftsProjects_box(plotV.precShaftsAll,'meanVel',minLength,xlab,figname,classTypes,colmapCC,[edges(1),edges(end)]);
+plotStatsPrecShaftsProjects_box(plotV.precShaftsAll,'meanVel',minLength,xlab,figname,classTypes,colmapCC,[edges(2),edges(end-1)]);
 
 figname=[figdir,'precShafts/precShafts_meanVel_'];
 plotStatsLocs_precShafts(plotV.precShaftsAll,'meanVel',minLength,xlab,plotV.lonAll,plotV.latAll,lonLims,latLims,figname,classTypes,colmapCC);
@@ -154,7 +154,7 @@ edges=[-inf,0:1:10,inf];
 xlab='Max precip velocity (m s^{-1})';
 figname=[figdir,'precShafts/precShafts_maxVel'];
 plotStatsPrecShaftsProjects(plotV.precShaftsAll,'maxVel',minLength,edges,xlab,figname,classTypes,colmapCC);
-plotStatsPrecShaftsProjects_box(plotV.precShaftsAll,'maxVel',minLength,xlab,figname,classTypes,colmapCC,[edges(1),edges(end)]);
+plotStatsPrecShaftsProjects_box(plotV.precShaftsAll,'maxVel',minLength,xlab,figname,classTypes,colmapCC,[edges(2),edges(end-1)]);
 
 figname=[figdir,'precShafts/precShafts_maxVel_'];
 plotStatsLocs_precShafts(plotV.precShaftsAll,'maxVel',minLength,xlab,plotV.lonAll,plotV.latAll,lonLims,latLims,figname,classTypes,colmapCC);

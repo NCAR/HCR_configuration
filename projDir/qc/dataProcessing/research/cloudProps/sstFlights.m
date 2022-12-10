@@ -1,4 +1,4 @@
-% Call cloud puzzle script
+% SST on flight path
 
 clear all;
 close all;
