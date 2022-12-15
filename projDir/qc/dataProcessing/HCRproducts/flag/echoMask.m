@@ -213,9 +213,9 @@ else
 end
 altMat=repmat(rightAlt,size(data.range,1),1);
 % Lower limit
-blMask(data.range<(altMat-1000))=0;
+blMask(data.asl<(altMat-1000))=0; % !!!!!! Can probably be significantly reduced after latest bug fix
 % Upper limit
-blMask(data.range>(altMat+600))=0;
+blMask(data.asl>(altMat+600))=0; % !!!!!! Can probably be significantly reduced after latest bug fix
 
 % Only when scanning up
 blMask(:,find(data.elevation<0))=0;
