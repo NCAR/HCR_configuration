@@ -59,7 +59,7 @@ latLims=[15,45;
 close all
 
 
-fig=figure('DefaultAxesFontSize',11,'position',[100,100,1200,900],'visible','on','renderer','painters');
+fig=figure('DefaultAxesFontSize',11,'position',[100,100,1200,1100],'visible','on','renderer','painters');
 
 cols=[0,1,0; ...
     0,0,1; ...
@@ -135,7 +135,6 @@ ylim(latLims(3,:));
 plot(coastlon,coastlat,'-k')
 title('(b) OTREC: cloud base CloudLow (km)');
 
-xlabel('Longitude (deg)')
 ylabel('Latitude (deg)')
 
 grid on
@@ -342,15 +341,15 @@ plot([6.5,6.5],[-20,160],'-k','LineWidth',0.4);
 ylabel('Cloud width (km)');
 title('(e) Cloud width (km)');
 
-text(0.7,83,'CSET','FontSize',12,'Color','g','FontWeight','bold')
-text(0.7,73,'SOCRATES','FontSize',12,'Color','b','FontWeight','bold')
-text(0.7,63,'OTREC','FontSize',12,'Color','r','FontWeight','bold')
+text(0.7,86,'CSET','FontSize',12,'Color','g','FontWeight','bold')
+text(0.7,81,'SOCRATES','FontSize',12,'Color','b','FontWeight','bold')
+text(0.7,76,'OTREC','FontSize',12,'Color','r','FontWeight','bold')
 
 % (f) Cloud length CSET
 
 load coastlines
 
-s4=subplot(3,2,6);
+s6=subplot(3,2,6);
 
 hold on
 
@@ -360,7 +359,7 @@ thisLats=plotV.latAll.cset.CloudLow;
 scatter(thisLons,thisLats,25,plotV.cloudLengthAll.cset.CloudLow,'filled');
 
 caxis([0 20]);
-s4.Colormap=jet;
+s6.Colormap=jet;
 cb2=colorbar;
 
 xlim(lonLims(1,:));
@@ -375,12 +374,15 @@ ylabel('Latitude (deg)')
 grid on
 box on
 
-% s1.Position=[0.04,0.57,0.42,0.39];
-% s2.Position=[0.51,0.57,0.42,0.39];
-% s3.Position=[0.04,0.07,0.42,0.39];
-% s4.Position=[0.51,0.07,0.42,0.39];
+s1.Position=[0.05,0.705,0.42,0.27];
+s2.Position=[0.525,0.705,0.42,0.27];
+s3.Position=[0.05,0.385,0.42,0.27];
+s4.Position=[0.525,0.385,0.42,0.27];
+s5.Position=[0.05,0.045,0.42,0.27];
+s6.Position=[0.525,0.045,0.42,0.27];
 
-cb.Position=[0.95,0.09,0.02,0.85];
+cb.Position=[0.955,0.385,0.02,0.59];
+cb2.Position=[0.955,0.045,0.02,0.27];
 
 set(gcf,'PaperPositionMode','auto')
 print([figdir,'nonpDim.png'],'-dpng','-r0');
