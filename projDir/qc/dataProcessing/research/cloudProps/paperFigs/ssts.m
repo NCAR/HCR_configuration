@@ -52,7 +52,7 @@ latLims=[15,45;
 
 load coastlines
 
-fig=figure('DefaultAxesFontSize',11,'position',[100,100,600,1200],'renderer','painters','visible','on');
+fig=figure('DefaultAxesFontSize',11,'position',[100,100,600,1100],'renderer','painters','visible','on');
 colormap('jet');
 
 % CSET
@@ -75,9 +75,12 @@ plot(coastlon,coastlat,'-k')
 grid on
 box on
 
-colorbar
+cb1=colorbar;
 
-title(['CSET, SST (',char(176),'C)']);
+xlabel('Longitude (deg)');
+ylabel('Latitude (deg)');
+
+title(['(a) CSET, SST (',char(176),'C)']);
 
 % SOCRATES
 
@@ -100,9 +103,12 @@ plot(coastlon,coastlat,'-k')
 grid on
 box on
 
-colorbar
+cb2=colorbar;
 
-title(['SOCRATES, SST (',char(176),'C)']);
+xlabel('Longitude (deg)');
+ylabel('Latitude (deg)');
+
+title(['(b) SOCRATES, SST (',char(176),'C)']);
 
 % OTREC
 
@@ -125,9 +131,20 @@ plot(coastlon,coastlat,'-k')
 grid on
 box on
 
-colorbar
+cb3=colorbar;
 
-title(['OTREC, SST (',char(176),'C)']);
+xlabel('Longitude (deg)');
+ylabel('Latitude (deg)');
+
+title(['(c) OTREC, SST (',char(176),'C)']);
+
+s1.Position=[0.095,0.71,0.8,0.27];
+s2.Position=[0.095,0.377,0.8,0.27];
+s3.Position=[0.095,0.045,0.8,0.27];
+
+cb1.Position=[0.915,0.71,0.035,0.27];
+cb2.Position=[0.915,0.377,0.035,0.27];
+cb3.Position=[0.915,0.045,0.035,0.27];
 
 set(gcf,'PaperPositionMode','auto')
 print([figdir,'sstTracks.png'],'-dpng','-r0');
