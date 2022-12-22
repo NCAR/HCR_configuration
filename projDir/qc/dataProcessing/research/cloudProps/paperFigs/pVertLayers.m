@@ -122,7 +122,7 @@ end
 
 s1=subplot(3,2,1);
 hold on
-boxplot(allVars,groups,'ColorGroup',projects3,'Colors',cols3,'Whisker',1.5,'Symbol','+k');
+boxplot(allVars,groups,'ColorGroup',projects3,'Colors',cols3,'Whisker',1.5,'Symbol','');
 
 bx=findobj('Tag','boxplot');
 set(findobj(bx,'Tag','Box'),'LineWidth',1.5);

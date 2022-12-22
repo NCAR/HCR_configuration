@@ -126,7 +126,7 @@ end
 
 s1=subplot(4,3,1);
 hold on
-boxplot(allVars,groups,'ColorGroup',projects3,'Colors',cols3,'Whisker',1.5,'Symbol','+k');
+boxplot(allVars,groups,'ColorGroup',projects3,'Colors',cols3,'Whisker',1.5,'Symbol','');
 
 bx=findobj('Tag','boxplot');
 set(findobj(bx,'Tag','Box'),'LineWidth',1.5);
@@ -207,7 +207,7 @@ end
 
 s2=subplot(4,3,2);
 hold on
-boxplot(allVars,groups,'ColorGroup',projects3,'Colors',cols3,'Whisker',1.5,'Symbol','+k');
+boxplot(allVars,groups,'ColorGroup',projects3,'Colors',cols3,'Whisker',1.5,'Symbol','');
 
 bx=findobj('Tag','boxplot');
 set(findobj(bx,'Tag','Box'),'LineWidth',1.5);
@@ -284,7 +284,7 @@ end
 
 s3=subplot(4,3,3);
 hold on
-boxplot(allVars,groups,'ColorGroup',projects3,'Colors',cols3,'Whisker',1.5,'Symbol','+k');
+boxplot(allVars,groups,'ColorGroup',projects3,'Colors',cols3,'Whisker',1.5,'Symbol','');
 
 bx=findobj('Tag','boxplot');
 set(findobj(bx,'Tag','Box'),'LineWidth',1.5);
@@ -348,7 +348,7 @@ end
 
 s4=subplot(4,3,4);
 hold on
-boxplot(allVars,groups,'ColorGroup',projects2,'Colors',cols2,'Whisker',1.5,'Symbol','+k');
+boxplot(allVars,groups,'ColorGroup',projects2,'Colors',cols2,'Whisker',1.5,'Symbol','');
 
 text(1:1:6,zeros(1,6)-2.5,num2str(nums),'HorizontalAlignment','center');
 ylim([-5,50]);
@@ -384,7 +384,7 @@ allVars=cat(1,nan,nan,nan,nan,nan,nan,allVars);
 groups=cat(1,{'nan1'},{'nan2'},{'nan3'},{'nan4'},{'nan5'},{'nan6'},groups);
 
 yyaxis right
-boxplot(allVars,groups,'ColorGroup',projects3,'Colors',cols3,'Whisker',1.5,'Symbol','+k');
+boxplot(allVars,groups,'ColorGroup',projects3,'Colors',cols3,'Whisker',1.5,'Symbol','');
 
 bx=findobj('Tag','boxplot');
 set(findobj(bx,'Tag','Box'),'LineWidth',1.5);
@@ -456,7 +456,7 @@ end
 
 s5=subplot(4,3,5);
 hold on
-boxplot(allVars,groups,'ColorGroup',projects2,'Colors',cols2,'Whisker',1.5,'Symbol','+k');
+boxplot(allVars,groups,'ColorGroup',projects2,'Colors',cols2,'Whisker',1.5,'Symbol','');
 
 text(1:1:6,zeros(1,6)-2.5,num2str(nums),'HorizontalAlignment','center');
 ylim([-5,50]);
@@ -492,7 +492,7 @@ allVars=cat(1,nan,nan,nan,nan,nan,nan,allVars);
 groups=cat(1,{'nan1'},{'nan2'},{'nan3'},{'nan4'},{'nan5'},{'nan6'},groups);
 
 yyaxis right
-boxplot(allVars,groups,'ColorGroup',projects3,'Colors',cols3,'Whisker',1.5,'Symbol','+k');
+boxplot(allVars,groups,'ColorGroup',projects3,'Colors',cols3,'Whisker',1.5,'Symbol','');
 
 bx=findobj('Tag','boxplot');
 set(findobj(bx,'Tag','Box'),'LineWidth',1.5);
@@ -564,7 +564,7 @@ end
 
 s6=subplot(4,3,6);
 hold on
-boxplot(allVars,groups,'ColorGroup',projects2,'Colors',cols2,'Whisker',1.5,'Symbol','+k');
+boxplot(allVars,groups,'ColorGroup',projects2,'Colors',cols2,'Whisker',1.5,'Symbol','');
 
 text(1:1:6,zeros(1,6)-2.5,num2str(nums),'HorizontalAlignment','center');
 ylim([-5,50]);
@@ -600,7 +600,7 @@ allVars=cat(1,nan,nan,nan,nan,nan,nan,allVars);
 groups=cat(1,{'nan1'},{'nan2'},{'nan3'},{'nan4'},{'nan5'},{'nan6'},groups);
 
 yyaxis right
-boxplot(allVars,groups,'ColorGroup',projects3,'Colors',cols3,'Whisker',1.5,'Symbol','+k');
+boxplot(allVars,groups,'ColorGroup',projects3,'Colors',cols3,'Whisker',1.5,'Symbol','');
 
 bx=findobj('Tag','boxplot');
 set(findobj(bx,'Tag','Box'),'LineWidth',1.5);
@@ -686,7 +686,7 @@ end
 
 s7=subplot(4,3,7);
 hold on
-boxplot(allVars,groups,'ColorGroup',projects3,'Colors',cols3,'Whisker',1.5,'Symbol','+k');
+boxplot(allVars,groups,'ColorGroup',projects3,'Colors',cols3,'Whisker',1.5,'Symbol','');
 
 bx=findobj('Tag','boxplot');
 set(findobj(bx,'Tag','Box'),'LineWidth',1.5);
@@ -763,7 +763,7 @@ end
 
 s8=subplot(4,3,8);
 hold on
-boxplot(allVars,groups,'ColorGroup',projects3,'Colors',cols3,'Whisker',1.5,'Symbol','+k');
+boxplot(allVars,groups,'ColorGroup',projects3,'Colors',cols3,'Whisker',1.5,'Symbol','');
 
 bx=findobj('Tag','boxplot');
 set(findobj(bx,'Tag','Box'),'LineWidth',1.5);
@@ -840,7 +840,7 @@ end
 
 s9=subplot(4,3,9);
 hold on
-boxplot(allVars,groups,'ColorGroup',projects3,'Colors',cols3,'Whisker',1.5,'Symbol','+k');
+boxplot(allVars,groups,'ColorGroup',projects3,'Colors',cols3,'Whisker',1.5,'Symbol','');
 
 bx=findobj('Tag','boxplot');
 set(findobj(bx,'Tag','Box'),'LineWidth',1.5);
@@ -918,7 +918,7 @@ end
 
 s10=subplot(4,3,10);
 hold on
-boxplot(allVars,groups,'ColorGroup',projects3,'Colors',cols3,'Whisker',1.5,'Symbol','+k');
+boxplot(allVars,groups,'ColorGroup',projects3,'Colors',cols3,'Whisker',1.5,'Symbol','');
 
 bx=findobj('Tag','boxplot');
 set(findobj(bx,'Tag','Box'),'LineWidth',1.5);
@@ -996,7 +996,7 @@ end
 
 s11=subplot(4,3,11);
 hold on
-boxplot(allVars,groups,'ColorGroup',projects3,'Colors',cols3,'Whisker',1.5,'Symbol','+k');
+boxplot(allVars,groups,'ColorGroup',projects3,'Colors',cols3,'Whisker',1.5,'Symbol','');
 
 bx=findobj('Tag','boxplot');
 set(findobj(bx,'Tag','Box'),'LineWidth',1.5);
@@ -1074,7 +1074,7 @@ end
 
 s12=subplot(4,3,12);
 hold on
-boxplot(allVars,groups,'ColorGroup',projects3,'Colors',cols3,'Whisker',1.5,'Symbol','+k');
+boxplot(allVars,groups,'ColorGroup',projects3,'Colors',cols3,'Whisker',1.5,'Symbol','');
 
 bx=findobj('Tag','boxplot');
 set(findobj(bx,'Tag','Box'),'LineWidth',1.5);

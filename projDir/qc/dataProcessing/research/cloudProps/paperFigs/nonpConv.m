@@ -104,7 +104,7 @@ end
 
 s1=subplot(3,2,1);
 hold on
-boxplot(allVars,groups,'ColorGroup',projects3,'Colors',cols3,'Whisker',1.5,'Symbol','+k');
+boxplot(allVars,groups,'ColorGroup',projects3,'Colors',cols3,'Whisker',1.5,'Symbol','');
 
 bx=findobj('Tag','boxplot');
 set(findobj(bx,'Tag','Box'),'LineWidth',1.5);
@@ -178,7 +178,7 @@ end
 
 s2=subplot(3,2,2);
 hold on
-boxplot(allVars,groups,'ColorGroup',projects3,'Colors',cols3,'Whisker',1.5,'Symbol','+k');
+boxplot(allVars,groups,'ColorGroup',projects3,'Colors',cols3,'Whisker',1.5,'Symbol','');
 
 bx=findobj('Tag','boxplot');
 set(findobj(bx,'Tag','Box'),'LineWidth',1.5);
@@ -248,7 +248,7 @@ end
 
 s3=subplot(3,2,3);
 hold on
-boxplot(allVars,groups,'ColorGroup',projects3,'Colors',cols3,'Whisker',1.5,'Symbol','+k');
+boxplot(allVars,groups,'ColorGroup',projects3,'Colors',cols3,'Whisker',1.5,'Symbol','');
 
 bx=findobj('Tag','boxplot');
 set(findobj(bx,'Tag','Box'),'LineWidth',1.5);
@@ -318,7 +318,7 @@ end
 
 s4=subplot(3,2,4);
 hold on
-boxplot(allVars,groups,'ColorGroup',projects3,'Colors',cols3,'Whisker',1.5,'Symbol','+k');
+boxplot(allVars,groups,'ColorGroup',projects3,'Colors',cols3,'Whisker',1.5,'Symbol','');
 
 bx=findobj('Tag','boxplot');
 set(findobj(bx,'Tag','Box'),'LineWidth',1.5);
@@ -388,7 +388,7 @@ end
 
 s5=subplot(3,2,5);
 hold on
-boxplot(allVars,groups,'ColorGroup',projects3,'Colors',cols3,'Whisker',1.5,'Symbol','+k');
+boxplot(allVars,groups,'ColorGroup',projects3,'Colors',cols3,'Whisker',1.5,'Symbol','');
 
 bx=findobj('Tag','boxplot');
 set(findobj(bx,'Tag','Box'),'LineWidth',1.5);
@@ -458,7 +458,7 @@ end
 
 s6=subplot(3,2,6);
 hold on
-boxplot(allVars,groups,'ColorGroup',projects3,'Colors',cols3,'Whisker',1.5,'Symbol','+k');
+boxplot(allVars,groups,'ColorGroup',projects3,'Colors',cols3,'Whisker',1.5,'Symbol','');
 
 bx=findobj('Tag','boxplot');
 set(findobj(bx,'Tag','Box'),'LineWidth',1.5);
@@ -468,8 +468,8 @@ set(findobj(bx,'Tag','Lower Whisker'),'LineWidth',1.5,'LineStyle','-','Color','k
 set(findobj(bx,'Tag','Upper Adjacent Value'),'LineWidth',1.5,'LineStyle','-','Color','k');
 set(findobj(bx,'Tag','Lower Adjacent Value'),'LineWidth',1.5,'LineStyle','-','Color','k');
 
-text(1:1:9,zeros(1,9)-0.25,num2str(nums),'HorizontalAlignment','center');
-ylim([-0.5,5]);
+text(1:1:9,zeros(1,9)-0.2,num2str(nums),'HorizontalAlignment','center');
+ylim([-0.4,4]);
 xlim([0.5,9.5]);
 
 set(gca, 'YGrid', 'on', 'XGrid', 'off')

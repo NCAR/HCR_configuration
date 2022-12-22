@@ -104,7 +104,7 @@ end
 
 s1=subplot(3,3,1);
 hold on
-boxplot(allVars,groups,'ColorGroup',projects3,'Colors',cols3,'Whisker',1.5,'Symbol','+k');
+boxplot(allVars,groups,'ColorGroup',projects3,'Colors',cols3,'Whisker',1.5,'Symbol','');
 
 bx=findobj('Tag','boxplot');
 set(findobj(bx,'Tag','Box'),'LineWidth',1.5);
@@ -174,7 +174,7 @@ end
 
 s2=subplot(3,3,2);
 hold on
-boxplot(allVars,groups,'ColorGroup',projects3,'Colors',cols3,'Whisker',1.5,'Symbol','+k');
+boxplot(allVars,groups,'ColorGroup',projects3,'Colors',cols3,'Whisker',1.5,'Symbol','');
 
 bx=findobj('Tag','boxplot');
 set(findobj(bx,'Tag','Box'),'LineWidth',1.5);
@@ -244,7 +244,7 @@ end
 
 s3=subplot(3,3,3);
 hold on
-boxplot(allVars,groups,'ColorGroup',projects3,'Colors',cols3,'Whisker',1.5,'Symbol','+k');
+boxplot(allVars,groups,'ColorGroup',projects3,'Colors',cols3,'Whisker',1.5,'Symbol','');
 
 bx=findobj('Tag','boxplot');
 set(findobj(bx,'Tag','Box'),'LineWidth',1.5);
@@ -318,15 +318,15 @@ end
 
 s4=subplot(3,3,4);
 hold on
-boxplot(allVars,groups,'ColorGroup',projects3,'Colors',cols3,'Whisker',1.5,'Symbol','+k');
+boxplot(allVars,groups,'ColorGroup',projects3,'Colors',cols3,'Whisker',1.5,'Symbol','');
 
 bx=findobj('Tag','boxplot');
 set(findobj(bx,'Tag','Box'),'LineWidth',1.5);
-set(findobj(bx,'Tag','Median'),'LineWidth',1.5,'Color','k');
-set(findobj(bx,'Tag','Upper Whisker'),'LineWidth',1.5,'LineStyle','-','Color','k');
-set(findobj(bx,'Tag','Lower Whisker'),'LineWidth',1.5,'LineStyle','-','Color','k');
-set(findobj(bx,'Tag','Upper Adjacent Value'),'LineWidth',1.5,'LineStyle','-','Color','k');
-set(findobj(bx,'Tag','Lower Adjacent Value'),'LineWidth',1.5,'LineStyle','-','Color','k');
+%set(findobj(bx,'Tag','Median'),'LineWidth',1.5,'Color','');
+%set(findobj(bx,'Tag','Upper Whisker'),'LineWidth',1.5,'LineStyle','-','Color','k');
+%set(findobj(bx,'Tag','Lower Whisker'),'LineWidth',1.5,'LineStyle','-','Color','k');
+%set(findobj(bx,'Tag','Upper Adjacent Value'),'LineWidth',1.5,'LineStyle','-','Color','k');
+%set(findobj(bx,'Tag','Lower Adjacent Value'),'LineWidth',1.5,'LineStyle','-','Color','k');
 
 text(1:1:9,zeros(1,9)-0.05,num2str(nums),'HorizontalAlignment','center');
 ylim([-0.1,1]);
@@ -343,6 +343,7 @@ plot([6.5,6.5],[-2,6],'-k','LineWidth',0.4);
 
 ylabel('Convectivity');
 title('(d) Maximum convectivity ConvYoung');
+hold off
 
 % (e) Max convectivity ConvMature
 
@@ -388,15 +389,15 @@ end
 
 s5=subplot(3,3,5);
 hold on
-boxplot(allVars,groups,'ColorGroup',projects3,'Colors',cols3,'Whisker',1.5,'Symbol','+k');
+boxplot(allVars,groups,'ColorGroup',projects3,'Colors',cols3,'Whisker',1.5,'Symbol','');
 
 bx=findobj('Tag','boxplot');
-set(findobj(bx,'Tag','Box'),'LineWidth',1.5);
-set(findobj(bx,'Tag','Median'),'LineWidth',1.5,'Color','k');
-set(findobj(bx,'Tag','Upper Whisker'),'LineWidth',1.5,'LineStyle','-','Color','k');
-set(findobj(bx,'Tag','Lower Whisker'),'LineWidth',1.5,'LineStyle','-','Color','k');
-set(findobj(bx,'Tag','Upper Adjacent Value'),'LineWidth',1.5,'LineStyle','-','Color','k');
-set(findobj(bx,'Tag','Lower Adjacent Value'),'LineWidth',1.5,'LineStyle','-','Color','k');
+% set(findobj(bx,'Tag','Box'),'LineWidth',1.5);
+% set(findobj(bx,'Tag','Median'),'LineWidth',1.5,'Color','k');
+% set(findobj(bx,'Tag','Upper Whisker'),'LineWidth',1.5,'LineStyle','-','Color','k');
+% set(findobj(bx,'Tag','Lower Whisker'),'LineWidth',1.5,'LineStyle','-','Color','k');
+% set(findobj(bx,'Tag','Upper Adjacent Value'),'LineWidth',1.5,'LineStyle','-','Color','k');
+% set(findobj(bx,'Tag','Lower Adjacent Value'),'LineWidth',1.5,'LineStyle','-','Color','k');
 
 text(1:1:9,zeros(1,9)-0.05,num2str(nums),'HorizontalAlignment','center');
 ylim([-0.1,1]);
@@ -458,15 +459,15 @@ end
 
 s6=subplot(3,3,6);
 hold on
-boxplot(allVars,groups,'ColorGroup',projects3,'Colors',cols3,'Whisker',1.5,'Symbol','+k');
+boxplot(allVars,groups,'ColorGroup',projects3,'Colors',cols3,'Whisker',1.5,'Symbol','');
 
 bx=findobj('Tag','boxplot');
-set(findobj(bx,'Tag','Box'),'LineWidth',1.5);
-set(findobj(bx,'Tag','Median'),'LineWidth',1.5,'Color','k');
-set(findobj(bx,'Tag','Upper Whisker'),'LineWidth',1.5,'LineStyle','-','Color','k');
-set(findobj(bx,'Tag','Lower Whisker'),'LineWidth',1.5,'LineStyle','-','Color','k');
-set(findobj(bx,'Tag','Upper Adjacent Value'),'LineWidth',1.5,'LineStyle','-','Color','k');
-set(findobj(bx,'Tag','Lower Adjacent Value'),'LineWidth',1.5,'LineStyle','-','Color','k');
+% set(findobj(bx,'Tag','Box'),'LineWidth',1.5);
+% set(findobj(bx,'Tag','Median'),'LineWidth',1.5,'Color','k');
+% set(findobj(bx,'Tag','Upper Whisker'),'LineWidth',1.5,'LineStyle','-','Color','k');
+% set(findobj(bx,'Tag','Lower Whisker'),'LineWidth',1.5,'LineStyle','-','Color','k');
+% set(findobj(bx,'Tag','Upper Adjacent Value'),'LineWidth',1.5,'LineStyle','-','Color','k');
+% set(findobj(bx,'Tag','Lower Adjacent Value'),'LineWidth',1.5,'LineStyle','-','Color','k');
 
 text(1:1:9,zeros(1,9)-0.05,num2str(nums),'HorizontalAlignment','center');
 ylim([-0.1,1]);
@@ -528,15 +529,15 @@ end
 
 s7=subplot(3,3,7);
 hold on
-boxplot(allVars,groups,'ColorGroup',projects3,'Colors',cols3,'Whisker',1.5,'Symbol','+k');
+boxplot(allVars,groups,'ColorGroup',projects3,'Colors',cols3,'Whisker',1.5,'Symbol','');
 
 bx=findobj('Tag','boxplot');
-set(findobj(bx,'Tag','Box'),'LineWidth',1.5);
-set(findobj(bx,'Tag','Median'),'LineWidth',1.5,'Color','k');
-set(findobj(bx,'Tag','Upper Whisker'),'LineWidth',1.5,'LineStyle','-','Color','k');
-set(findobj(bx,'Tag','Lower Whisker'),'LineWidth',1.5,'LineStyle','-','Color','k');
-set(findobj(bx,'Tag','Upper Adjacent Value'),'LineWidth',1.5,'LineStyle','-','Color','k');
-set(findobj(bx,'Tag','Lower Adjacent Value'),'LineWidth',1.5,'LineStyle','-','Color','k');
+% set(findobj(bx,'Tag','Box'),'LineWidth',1.5);
+% set(findobj(bx,'Tag','Median'),'LineWidth',1.5,'Color','k');
+% set(findobj(bx,'Tag','Upper Whisker'),'LineWidth',1.5,'LineStyle','-','Color','k');
+% set(findobj(bx,'Tag','Lower Whisker'),'LineWidth',1.5,'LineStyle','-','Color','k');
+% set(findobj(bx,'Tag','Upper Adjacent Value'),'LineWidth',1.5,'LineStyle','-','Color','k');
+% set(findobj(bx,'Tag','Lower Adjacent Value'),'LineWidth',1.5,'LineStyle','-','Color','k');
 
 text(1:1:9,zeros(1,9)-32.5,num2str(nums),'HorizontalAlignment','center');
 ylim([-35,30]);
@@ -598,15 +599,15 @@ end
 
 s8=subplot(3,3,8);
 hold on
-boxplot(allVars,groups,'ColorGroup',projects3,'Colors',cols3,'Whisker',1.5,'Symbol','+k');
+boxplot(allVars,groups,'ColorGroup',projects3,'Colors',cols3,'Whisker',1.5,'Symbol','');
 
 bx=findobj('Tag','boxplot');
-set(findobj(bx,'Tag','Box'),'LineWidth',1.5);
-set(findobj(bx,'Tag','Median'),'LineWidth',1.5,'Color','k');
-set(findobj(bx,'Tag','Upper Whisker'),'LineWidth',1.5,'LineStyle','-','Color','k');
-set(findobj(bx,'Tag','Lower Whisker'),'LineWidth',1.5,'LineStyle','-','Color','k');
-set(findobj(bx,'Tag','Upper Adjacent Value'),'LineWidth',1.5,'LineStyle','-','Color','k');
-set(findobj(bx,'Tag','Lower Adjacent Value'),'LineWidth',1.5,'LineStyle','-','Color','k');
+% set(findobj(bx,'Tag','Box'),'LineWidth',1.5);
+% set(findobj(bx,'Tag','Median'),'LineWidth',1.5,'Color','k');
+% set(findobj(bx,'Tag','Upper Whisker'),'LineWidth',1.5,'LineStyle','-','Color','k');
+% set(findobj(bx,'Tag','Lower Whisker'),'LineWidth',1.5,'LineStyle','-','Color','k');
+% set(findobj(bx,'Tag','Upper Adjacent Value'),'LineWidth',1.5,'LineStyle','-','Color','k');
+% set(findobj(bx,'Tag','Lower Adjacent Value'),'LineWidth',1.5,'LineStyle','-','Color','k');
 
 text(1:1:9,zeros(1,9)-32.5,num2str(nums),'HorizontalAlignment','center');
 ylim([-35,30]);
@@ -668,15 +669,15 @@ end
 
 s9=subplot(3,3,9);
 hold on
-boxplot(allVars,groups,'ColorGroup',projects3,'Colors',cols3,'Whisker',1.5,'Symbol','+k');
+boxplot(allVars,groups,'ColorGroup',projects3,'Colors',cols3,'Whisker',1.5,'Symbol','');
 
-bx=findobj('Tag','boxplot');
-set(findobj(bx,'Tag','Box'),'LineWidth',1.5);
-set(findobj(bx,'Tag','Median'),'LineWidth',1.5,'Color','k');
-set(findobj(bx,'Tag','Upper Whisker'),'LineWidth',1.5,'LineStyle','-','Color','k');
-set(findobj(bx,'Tag','Lower Whisker'),'LineWidth',1.5,'LineStyle','-','Color','k');
-set(findobj(bx,'Tag','Upper Adjacent Value'),'LineWidth',1.5,'LineStyle','-','Color','k');
-set(findobj(bx,'Tag','Lower Adjacent Value'),'LineWidth',1.5,'LineStyle','-','Color','k');
+bx1=findobj('Tag','boxplot');
+set(findobj(bx1,'Tag','Box'),'LineWidth',1.5);
+set(findobj(bx1,'Tag','Median'),'LineWidth',1.5,'Color','k');
+set(findobj(bx1,'Tag','Upper Whisker'),'LineWidth',1.5,'LineStyle','-','Color','k');
+set(findobj(bx1,'Tag','Lower Whisker'),'LineWidth',1.5,'LineStyle','-','Color','k');
+set(findobj(bx1,'Tag','Upper Adjacent Value'),'LineWidth',1.5,'LineStyle','-','Color','k');
+set(findobj(bx1,'Tag','Lower Adjacent Value'),'LineWidth',1.5,'LineStyle','-','Color','k');
 
 text(1:1:9,zeros(1,9)-32.5,num2str(nums),'HorizontalAlignment','center');
 ylim([-35,30]);
@@ -693,6 +694,22 @@ plot([6.5,6.5],[-100,100],'-k','LineWidth',0.4);
 
 s9.YTickLabel=[];
 title('(i) Maximum reflectivity Strat');
+
+lines = s4.Children;
+box4m=findobj(bx1,'Tag','Median');
+box4b=findobj(bx1,'Tag','Box');
+box4m(54).Color=[0,1,0];
+box4b(54).Color=[0,1,0];
+box4m(53).Color=[0,0,1];
+box4b(53).Color=[0,0,1];
+box4m(52).Color=[1,0,0];
+box4b(52).Color=[1,0,0];
+box4m(50).Color=[0,0,1];
+box4b(50).Color=[0,0,1];
+box4m(49).Color=[1,0,0];
+box4b(49).Color=[1,0,0];
+box4m(46).Color=[1,0,0];
+box4b(46).Color=[1,0,0];
 
 s1.Position=[0.05,0.69,0.31,0.28];
 s2.Position=[0.365,0.69,0.31,0.28];
