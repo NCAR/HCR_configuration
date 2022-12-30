@@ -150,7 +150,7 @@ plot([3.5,3.5],[-100,100],'-k','LineWidth',0.4);
 plot([6.5,6.5],[-100,100],'-k','LineWidth',0.4);
 
 ylabel('Fraction');
-title('(a) Precipitation fraction ConvYoung');
+title('(a) Precipitation fraction Conv');
 
 text(0.7,0.17,'CSET','FontSize',12,'Color','g','FontWeight','bold')
 text(0.7,0.1,'SOCRATES','FontSize',12,'Color','b','FontWeight','bold')
@@ -231,7 +231,7 @@ plot([3.5,3.5],[-100,100],'-k','LineWidth',0.4);
 plot([6.5,6.5],[-100,100],'-k','LineWidth',0.4);
 
 yticklabels('');
-title('(b) Precipitation fraction ConvMature');
+title('(b) Precipitation fraction ConvStrat');
 
 % (c) Precipitation fraction strat
 
@@ -413,7 +413,7 @@ plot([3.5,3.5],[-100,500],'-k','LineWidth',0.4);
 plot([6.5,6.5],[-100,500],'-k','LineWidth',0.4);
 plot([6.6,6.6],[-100,500],'-k','LineWidth',0.4);
 
-title('(d) Shaft length ConvYoung');
+title('(d) Shaft length Conv');
 
 ax = gca;
 ax.YColor = 'k';
@@ -521,7 +521,7 @@ plot([3.5,3.5],[-100,500],'-k','LineWidth',0.4);
 plot([6.5,6.5],[-100,500],'-k','LineWidth',0.4);
 plot([6.6,6.6],[-100,500],'-k','LineWidth',0.4);
 
-title('(e) Shaft length ConvMature');
+title('(e) Shaft length ConvStrat');
 
 ax = gca;
 ax.YColor = 'k';
@@ -710,7 +710,7 @@ plot([3.5,3.5],[-100,100],'-k','LineWidth',0.4);
 plot([6.5,6.5],[-100,100],'-k','LineWidth',0.4);
 
 ylabel('Reflectivity (dBZ)');
-title('(g) Mean reflectivity ConvYoung');
+title('(g) Mean reflectivity Conv');
 
 % (h) Mean ref ConvMature
 
@@ -787,7 +787,7 @@ plot([3.5,3.5],[-100,100],'-k','LineWidth',0.4);
 plot([6.5,6.5],[-100,100],'-k','LineWidth',0.4);
 
 yticklabels('');
-title('(h) Mean reflectivity ConvMature');
+title('(h) Mean reflectivity ConvStrat');
 
 % (i) Mean refl strat
 
@@ -943,7 +943,7 @@ plot([3.5,3.5],[-100,100],'-k','LineWidth',0.4);
 plot([6.5,6.5],[-100,100],'-k','LineWidth',0.4);
 
 ylabel('Velocity (m s^{-1})');
-title('(j) Mean velocity ConvYoung');
+title('(j) Mean velocity Conv');
 
 % (k) Mean vel ConvMature
 
@@ -1021,7 +1021,7 @@ plot([3.5,3.5],[-100,100],'-k','LineWidth',0.4);
 plot([6.5,6.5],[-100,100],'-k','LineWidth',0.4);
 
 yticklabels('');
-title('(k) Mean velocity ConvMature');
+title('(k) Mean velocity ConvStrat');
 
 % (l) Mean vel strat
 
@@ -1118,4 +1118,4 @@ s11.Position=[0.37,0.024,0.31,0.205];
 s12.Position=[0.685,0.024,0.31,0.205];
 
 set(gcf,'PaperPositionMode','auto')
-print([figdir,'shafts1.png'],'-dpng','-r0');
+print([figdir,'shafts.png'],'-dpng','-r0');

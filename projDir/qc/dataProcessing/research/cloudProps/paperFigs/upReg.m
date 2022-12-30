@@ -57,13 +57,13 @@ projectsAll={'CloudLowS','CloudLowO','ConvShallowC','ConvShallowS','ConvShallowO
 
 close all
 
-fig=figure('DefaultAxesFontSize',11,'position',[100,100,1200,800],'visible','on','renderer','painters');
+fig=figure('DefaultAxesFontSize',11,'position',[100,100,1200,1000],'visible','on','renderer','painters');
 
 % (a) Alt percentile
 varName='cloudAltPerc';
 [allVars,groups,nums]=getVarUpRegs(plotV,varName);
 
-s1=subplot(4,1,1);
+s1=subplot(5,1,1);
 hold on
 boxplot(allVars,groups,'ColorGroup',projectsAll,'Colors',colsAll,'Whisker',1.5,'Symbol','');
 
@@ -73,8 +73,8 @@ xticklabels(xLab);
 xtickangle(0)
 set(gca,'TickLength',[0 .01]);
 
-ylim([-10,100]);
-text(1:1:21,zeros(1,21)-5,num2str(nums),'HorizontalAlignment','center');
+ylim([-15,100]);
+text(1:1:21,zeros(1,21)-7.5,num2str(nums),'HorizontalAlignment','center');
 yticks(0:25:100);
 ylabel('Percent (%)');
 
@@ -98,7 +98,7 @@ title('(a) Altitude percentile');
 varName='area';
 [allVars,groups,nums]=getVarUpRegs(plotV,varName);
 
-s2=subplot(4,1,2);
+s2=subplot(5,1,2);
 hold on
 boxplot(allVars,groups,'ColorGroup',projectsAll,'Colors',colsAll,'Whisker',1.5,'Symbol','');
 
@@ -133,7 +133,7 @@ title('(b) Area (km^2)');
 varName='width';
 [allVars,groups,nums]=getVarUpRegs(plotV,varName);
 
-s3=subplot(4,1,3);
+s3=subplot(5,1,3);
 hold on
 boxplot(allVars,groups,'ColorGroup',projectsAll,'Colors',colsAll,'Whisker',1.5,'Symbol','');
 
@@ -143,8 +143,8 @@ xticklabels(xLab);
 xtickangle(0)
 set(gca,'TickLength',[0 .01]);
 
-ylim([-0.6,4]);
-text(1:1:21,zeros(1,21)-0.3,num2str(nums),'HorizontalAlignment','center');
+ylim([-0.5,4]);
+text(1:1:21,zeros(1,21)-0.25,num2str(nums),'HorizontalAlignment','center');
 yticks(0:4);
 ylabel('Width (km)');
 
@@ -166,11 +166,11 @@ title('(c) Width (km)');
 
 % (d) Depth
 varName='depth';
-[allVars,groups,nums]=getVarUpRegs(plotV,varName);
+[allVars2,groups2,nums2]=getVarUpRegs(plotV,varName);
 
-s4=subplot(4,1,4);
+s4=subplot(5,1,4);
 hold on
-boxplot(allVars,groups,'ColorGroup',projectsAll,'Colors',colsAll,'Whisker',1.5,'Symbol','');
+boxplot(allVars2,groups2,'ColorGroup',projectsAll,'Colors',colsAll,'Whisker',1.5,'Symbol','');
 
 xlim([0.5,21.5]);
 xticks(xTickLoc);
@@ -178,8 +178,8 @@ xticklabels(xLab);
 xtickangle(0)
 set(gca,'TickLength',[0 .01]);
 
-ylim([-0.2,2]);
-text(1:1:21,zeros(1,21)-0.1,num2str(nums),'HorizontalAlignment','center');
+ylim([-0.3,2]);
+text(1:1:21,zeros(1,21)-0.15,num2str(nums2),'HorizontalAlignment','center');
 yticks(0:0.5:2);
 ylabel('Depth (km)');
 
@@ -199,6 +199,41 @@ plot([20.5,20.5],[-100,1000],'-k','LineWidth',0.4);
 
 title('(d) Depth (km)');
 
+% (e) Depth/width
+varName='depth';
+[allVars2,groups2,nums2]=getVarUpRegs(plotV,varName);
+
+s5=subplot(5,1,5);
+hold on
+boxplot(allVars2./allVars,groups2,'ColorGroup',projectsAll,'Colors',colsAll,'Whisker',1.5,'Symbol','');
+
+xlim([0.5,21.5]);
+xticks(xTickLoc);
+xticklabels(xLab);
+xtickangle(0)
+set(gca,'TickLength',[0 .01]);
+
+ylim([-0.3,2.2]);
+text(1:1:21,zeros(1,21)-0.15,num2str(nums2),'HorizontalAlignment','center');
+yticks(0:0.5:2);
+ylabel('Depth fraction');
+
+set(gca, 'YGrid', 'on', 'XGrid', 'off')
+box on
+
+plot([2.5,2.5],[-100,1000],'-k','LineWidth',0.4);
+plot([5.5,5.5],[-100,1000],'-k','LineWidth',0.4);
+plot([7.5,7.5],[-100,1000],'-k','LineWidth',0.4);
+plot([9.5,9.5],[-100,1000],'-k','LineWidth',0.4);
+plot([11.5,11.5],[-100,1000],'-k','LineWidth',0.4);
+plot([13.5,13.5],[-100,1000],'-k','LineWidth',0.4);
+plot([15.5,15.5],[-100,1000],'-k','LineWidth',0.4);
+plot([18.5,18.5],[-100,1000],'-k','LineWidth',0.4);
+plot([19.5,19.5],[-100,1000],'-k','LineWidth',0.4);
+plot([20.5,20.5],[-100,1000],'-k','LineWidth',0.4);
+
+title('(e) Depth/width');
+
 bx=findobj('Tag','boxplot');
 set(findobj(bx,'Tag','Box'),'LineWidth',1.2);
 set(findobj(bx,'Tag','Median'),'LineWidth',1.5,'Color','k');
@@ -207,10 +242,11 @@ set(findobj(bx,'Tag','Lower Whisker'),'LineWidth',1.2,'LineStyle','-','Color','k
 set(findobj(bx,'Tag','Upper Adjacent Value'),'LineWidth',1.2,'LineStyle','-','Color','k');
 set(findobj(bx,'Tag','Lower Adjacent Value'),'LineWidth',1.2,'LineStyle','-','Color','k');
 
-s1.Position=[0.045,0.78,0.945,0.185];
-s2.Position=[0.045,0.53,0.945,0.185];
-s3.Position=[0.045,0.28,0.945,0.185];
-s4.Position=[0.045,0.03,0.945,0.185];
+s1.Position=[0.045,0.825,0.945,0.15];
+s2.Position=[0.045,0.625,0.945,0.15];
+s3.Position=[0.045,0.425,0.945,0.15];
+s4.Position=[0.045,0.225,0.945,0.15];
+s5.Position=[0.045,0.025,0.945,0.15];
 
 set(gcf,'PaperPositionMode','auto')
 print([figdir,'upRegs.png'],'-dpng','-r0');
