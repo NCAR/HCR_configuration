@@ -46,8 +46,8 @@ classTypes={'CloudLow','CloudMid','CloudHigh',...
     'ConvMatureShallow','ConvMatureMid','ConvMatureDeep'};
 
 classTypeNames={'(a) CloudLow','(b) CloudMid','(e) CloudHigh',...
-    '(d) StratShallow','(k) StratMid','(l) StratDeep',...
-    '(b) ConvShallow','(e) ConvMid','(f) ConvDeep',...
+    '(b) StratShallow','(k) StratMid','(l) StratDeep',...
+    '(d) ConvShallow','(e) ConvMid','(f) ConvDeep',...
     '(c) ConvStratShallow','(h) ConvStratMid','(i) ConvStratDeep'};
 
 close all
@@ -91,7 +91,7 @@ latSteps=latLims(bb,1):gridStep:latLims(bb,2);
 
 plotNum=num2str(1:12);
 
-nums=[1,7,10,4,3];
+nums=[1,4,10,7,3];
 
 for aa=1:length(nums)
     hourGrid=zeros(latLength,lonLength);
