@@ -5,10 +5,10 @@ close all;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Input variables %%%%%%%%%%%%%%%%%%%%%%%%%%
 
-project='otrec'; %socrates, aristo, cset, otrec
+project='cset'; %socrates, aristo, cset, otrec
 quality='qc3'; %field, qc1, or qc2
 freqData='10hz';
-qcVersion='v3.1';
+qcVersion='v3.0';
 
 showPlot='on';
 ylimRefl=15;
@@ -74,7 +74,15 @@ for aa=1:length(caseStart)
 
     data.frq=ncread(fileList{1},'frequency');
 
-    %% Remove all up pointing data
+     %% Correct for gaseous attenuation
+
+    disp('Calculating gaseous attenuation ...');
+    [gasAttClear,gasAttCloud,gasAttClearMat,gasAttCloudMat]=get_gas_atten(data);
+    piaMat2=cumsum(gasAttCloudMat,1).*2;
+
+    data.DBZcorrGas=data.DBZ+piaMat2;
+
+    %% Remove all up pointing and unsuitable data
 
     dbzOrig=data.DBZ;
 
@@ -94,11 +102,14 @@ for aa=1:length(caseStart)
     data.dbzMasked=data.DBZ;
     data.dbzMasked(data.FLAG>1)=nan;
 
-   %% Get reference attenuation
-   [sig0measAtt,surfFlag,refSig0,refFlag,sig0model,piaHydromet2]=getRefAtten(data);
+    data.dbzMaskedCorrGas=data.DBZcorrGas;
+    data.dbzMaskedCorrGas(data.FLAG>1)=nan;
 
-   %% Hitschfeld Bordan
-   zHB=hitschfeldBordan(data.dbzMasked,data.range);
+   %% Get reference attenuation
+   [sig0measAtt,surfFlag,refSig0,refFlag,sig0model,piaHydromet2]=getRefAtten_fromGasCorr(data);
+   
+   %% Hitschfeld Bordan from surface up
+   zHB=hitschfeldBordan_surfUp(data.dbzMaskedCorrGas,piaHydromet2,data.range);
 
     %% Plot lines
 
@@ -110,8 +121,7 @@ for aa=1:length(caseStart)
     sig0measCloud(surfFlag==1)=sig0measAtt(surfFlag==1);
 
     refSig0(upInds)=nan;
-    data.PATH_INTEGRATED_GASEOUS_ATTENUATION_2WAY(upInds)=nan;
-
+    
     sig0refMeas=nan(size(data.time));
     sig0refMeas(refFlag==1)=refSig0(refFlag==1);
     sig0refInt=nan(size(data.time));
@@ -132,7 +142,7 @@ for aa=1:length(caseStart)
     ylim([0 20]);
 
     yyaxis right
-    l6=plot(data.time,data.PATH_INTEGRATED_GASEOUS_ATTENUATION_2WAY,'-k','linewidth',1);
+    l6=plot(data.time,gasAttCloud*2,'-k','linewidth',1);
     l7=plot(data.time,piaHydromet2,'-g','linewidth',1);
     ylabel('Atten. (dB)');
     ylim([-5 15]);
