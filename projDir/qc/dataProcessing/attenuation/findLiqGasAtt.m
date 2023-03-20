@@ -11,7 +11,6 @@ freqData='10hz';
 qcVersion='v3.0';
 
 showPlot='on';
-ylimRefl=15;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -109,7 +108,8 @@ for aa=1:length(caseStart)
    [sig0measAtt,surfFlag,refSig0,refFlag,sig0model,piaHydromet2]=getRefAtten_fromGasCorr(data);
    
    %% Hitschfeld Bordan from surface up
-   zHB=hitschfeldBordan_surfUp(data.dbzMaskedCorrGas,piaHydromet2,data.range);
+   piaHydromet1=piaHydromet2/2;
+   zHB=hitschfeldBordan_surfUp(data.dbzMaskedCorrGas,piaHydromet1,data.range);
 
     %% Plot lines
 
@@ -162,42 +162,52 @@ for aa=1:length(caseStart)
         
     %% Plot refl
 
-    timeInds=1:5:length(data.time);
+    timeInds=1:round(length(data.time)/3000):length(data.time);
+
+    ylimRefl=ceil(max(data.asl(~isnan(zHB)))./1000);
 
     f1 = figure('Position',[200 500 1800 1000],'DefaultAxesFontSize',12,'renderer','painters');
 
     colormap jet
 
-    subplot(2,1,1)
+    subplot(3,1,1)
     hold on
     surf(data.time(:,timeInds),data.asl(:,timeInds)./1000,dbzOrig(:,timeInds),'edgecolor','none');
     view(2);
-    l1=plot(data.time(:,timeInds),data.altitude(:,timeInds)./1000,'-k','linewidth',2);
     ylabel('Altitude (km)');
     caxis([-25 25]);
-    ylim([-0.5 ylimRefl]);
+    ylim([-0.1 ylimRefl]);
     xlim([data.time(timeInds(1)),data.time(timeInds(end))]);
     colorbar
     grid on
-    legend(l1,'Altitude');
     title('Reflectivity (dBZ)')
 
-    subplot(2,1,2)
+    subplot(3,1,2)
+    hold on
+    surf(data.time(:,timeInds),data.asl(:,timeInds)./1000,data.dbzMaskedCorrGas(:,timeInds),'edgecolor','none');
+    view(2);
+    ylabel('Altitude (km)');
+    caxis([-25 25]);
+    ylim([-0.1 ylimRefl]);
+    xlim([data.time(timeInds(1)),data.time(timeInds(end))]);
+    colorbar
+    grid on
+    title('Reflectivity corrected for gaseous attenuation (dBZ)')
+
+    subplot(3,1,3)
     hold on
     surf(data.time(:,timeInds),data.asl(:,timeInds)./1000,zHB(:,timeInds),'edgecolor','none');
     view(2);
-    l1=plot(data.time(:,timeInds),data.altitude(:,timeInds)./1000,'-k','linewidth',2);
     ylabel('Altitude (km)');
     caxis([-25 25]);
-    ylim([-0.5 ylimRefl]);
+    ylim([-0.1 ylimRefl]);
     xlim([data.time(timeInds(1)),data.time(timeInds(end))]);
     colorbar
     grid on
-    legend(l1,'Altitude');
-    title('Reflectivity (dBZ)')
+    title('Reflectivity corrected for gaseous and liquid attenuation (dBZ)')
 
     set(gcf,'PaperPositionMode','auto')
-        print(f1,[figdir,project,'_dbz_',...
-            datestr(data.time(1),'yyyymmdd_HHMMSS'),'_to_',datestr(data.time(end),'yyyymmdd_HHMMSS')],'-dpng','-r0')
+    print(f1,[figdir,project,'_dbz_',...
+        datestr(data.time(1),'yyyymmdd_HHMMSS'),'_to_',datestr(data.time(end),'yyyymmdd_HHMMSS')],'-dpng','-r0')
         
 end
