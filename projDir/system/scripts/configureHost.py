@@ -54,17 +54,17 @@ def main():
     # debug print
 
     if (options.debug):
-        print >>sys.stderr, "Running script: ", os.path.basename(__file__)
-        print >>sys.stderr, ""
-        print >>sys.stderr, "  Options:"
-        print >>sys.stderr, "    Debug: ", options.debug
-        print >>sys.stderr, "    Verbose: ", options.verbose
-        print >>sys.stderr, "    homeDir: ", homeDir
-        print >>sys.stderr, "    projDir: ", projDir
-        print >>sys.stderr, "    controlDir: ", controlDir
-        print >>sys.stderr, "    gitDir: ", options.gitDir
-        print >>sys.stderr, "    gitProjDir: ", gitProjDir
-        print >>sys.stderr, "    gitSystemDir: ", gitSystemDir
+        print("Running script: ", os.path.basename(__file__), file=sys.stderr)
+        print("", file=sys.stderr)
+        print("  Options:", file=sys.stderr)
+        print("    Debug: ", options.debug, file=sys.stderr)
+        print("    Verbose: ", options.verbose, file=sys.stderr)
+        print("    homeDir: ", homeDir, file=sys.stderr)
+        print("    projDir: ", projDir, file=sys.stderr)
+        print("    controlDir: ", controlDir, file=sys.stderr)
+        print("    gitDir: ", options.gitDir, file=sys.stderr)
+        print("    gitProjDir: ", gitProjDir, file=sys.stderr)
+        print("    gitSystemDir: ", gitSystemDir, file=sys.stderr)
 
     # read current host type if previously set
 
@@ -75,7 +75,7 @@ def main():
         prevHostType = hostTypeFile.read()
         prevHostType = prevHostType.strip(string.whitespace)
     if (options.debug):
-        print >>sys.stderr, "    prevHostType: ", prevHostType
+        print("    prevHostType: ", prevHostType, file=sys.stderr)
 
     # get the host type interactively
 
