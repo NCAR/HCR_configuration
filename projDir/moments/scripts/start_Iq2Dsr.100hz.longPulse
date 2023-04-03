@@ -1,0 +1,12 @@
+#! /bin/csh -f
+
+source ~/projDir/system/params/project_info
+
+cd $PROJ_DIR/moments/params
+
+running "Iq2Dsr -params Iq2Dsr.100hz.longPulse"
+if ($status == 1) then
+  Iq2Dsr -params Iq2Dsr.100hz.longPulse -debug |& \
+    LogFilter -d $ERRORS_LOG_DIR -p Iq2Dsr -i 100hz.longPulse &
+endif
+

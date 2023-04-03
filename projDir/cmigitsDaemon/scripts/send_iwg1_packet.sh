@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # Send 20 IWG1 packets to multicast address 239.0.0.1 on port 7071.
 # This packet has lat/lon/alt 39.9/-105.1/1700, heading 89.9, and tas 0.0,

@@ -4,7 +4,7 @@ cd ~hcr/git/HCR_instrument/src/fireflyd
 
 running "fireflyd"
 if ($status == 1) then
-  ./fireflyd --devName /dev/ttyS2 --instance ops |& \
+  ./fireflyd --devName /dev/ttyS4 --instance ops |& \
 	LogFilter -d $ERRORS_LOG_DIR -p fireflyd -i ops >& /dev/null &
 endif
 

@@ -141,10 +141,6 @@ if ($?prompt) then
 
   setenv EDITOR emacs
   setenv PAGER less
-  #setenv LESS "-cMe"
-  setenv LESS "-cM"
-  setenv LESSOPEN "|lesspipe.sh %s"
-  setenv LESSCHARSET latin1
 
   alias h history
   alias ssh 'ssh -X'
