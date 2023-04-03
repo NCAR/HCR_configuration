@@ -6,6 +6,7 @@
 #
 # ========================================================================== #
 
+from __future__ import print_function
 import os
 import sys
 from optparse import OptionParser
@@ -80,12 +81,15 @@ def main():
 
     hostTypes = [ 'archiver', 'drx' ]
 
-    print ""
-    print "Choose host type from the following list"
-    print "       or hit enter to use host type shown:"
+    print("", file=sys.stdout)
+    print("Choose host type from the following list", file=sys.stdout)
+    print("       or hit enter to use host type shown:", file=sys.stdout)
     for hostType in hostTypes:
-        print "     ", hostType
-    hostType = raw_input('    ............. (' + prevHostType + ')? ')
+        print("     ", hostType, file=sys.stdout)
+    if (sys.version_info > (3, 0)):
+        hostType = input('    ............. (' + prevHostType + ')? ')
+    else:
+        hostType = raw_input('    ............. (' + prevHostType + ')? ')
     if (len(hostType) < 4):
         hostType = prevHostType
     else:
@@ -94,7 +98,7 @@ def main():
             if (hostType == htype):
                 typeIsValid = True
         if (typeIsValid != True):
-            print >>sys.stderr, "ERROR - invalid host type: ", hostType
+            print("ERROR - invalid host type: ", hostType, file=sys.stderr)
             sys.exit(1)
 
     gitProjDir = os.path.join(options.gitDir, "projDir")
@@ -107,17 +111,17 @@ def main():
 
     # banner
 
-    print " "
-    print "*********************************************************************"
-    print
-    print "  configure HCR"
-    print
-    print "  runtime: " + str(datetime.datetime.now())
-    print
-    print "  host type: ", hostType
-    print
-    print "*********************************************************************"
-    print " "
+    print(" ", file=sys.stdout)
+    print("*********************************************************************", file=sys.stdout)
+    print()
+    print("  configure HCR", file=sys.stdout)
+    print()
+    print("  runtime: " + str(datetime.datetime.now()), file=sys.stdout)
+    print()
+    print("  host type: ", hostType, file=sys.stdout)
+    print()
+    print("*********************************************************************", file=sys.stdout)
+    print(" ", file=sys.stdout)
 
     # make links to the dotfiles in git projDir
     
@@ -157,7 +161,7 @@ def main():
     installDataDir = os.path.join(options.dataDir, dataSubDir)
 
     if (options.debug):
-        print >>sys.stderr, "Install data dir: ", installDataDir
+        print("Install data dir: ", installDataDir, file=sys.stderr)
 
     # create symlink to data if it does not already exist
 
@@ -208,10 +212,10 @@ def removeSymlink(dir, linkName):
 
     if (os.path.exists(linkName)):
         # link name exists but is not a link
-        print >>sys.stderr, "ERROR - trying to remove symbolic link"
-        print >>sys.stderr, "  dir: ", dir
-        print >>sys.stderr, "  linkName: ", linkName
-        print >>sys.stderr, "This is NOT A LINK"
+        print("ERROR - trying to remove symbolic link", file=sys.stderr)
+        print("  dir: ", dir, file=sys.stderr)
+        print("  linkName: ", linkName, file=sys.stderr)
+        print("This is NOT A LINK", file=sys.stderr)
         sys.exit(1)
 
 ########################################################################
@@ -220,17 +224,17 @@ def removeSymlink(dir, linkName):
 def runCommand(cmd):
 
     if (options.debug == True):
-        print >>sys.stderr, "running cmd:",cmd
+        print("running cmd:",cmd, file=sys.stderr)
 
     try:
         retcode = subprocess.call(cmd, shell=True)
         if retcode < 0:
-            print >>sys.stderr, "Child was terminated by signal: ", -retcode
+            print("Child was terminated by signal: ", -retcode, file=sys.stderr)
         else:
             if (options.verbose == True):
-                print >>sys.stderr, "Child returned code: ", retcode
-    except OSError, e:
-        print >>sys.stderr, "Execution failed:", e
+                print("Child returned code: ", retcode, file=sys.stderr)
+    except OSError as e:
+        print("Execution failed:", e, file=sys.stderr)
 
 ########################################################################
 # Run - entry point
