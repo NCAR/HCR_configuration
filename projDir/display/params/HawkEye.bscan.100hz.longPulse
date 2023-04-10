@@ -688,7 +688,7 @@ main_window_start_x = 0;
 // Type: int
 //
 
-main_window_start_y = 0;
+main_window_start_y = 600;
 
 ///////////// color_scale_width ///////////////////////
 //
