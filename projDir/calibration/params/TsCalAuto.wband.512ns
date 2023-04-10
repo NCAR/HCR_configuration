@@ -410,7 +410,7 @@ k_squared = 0.711;
 // Type: double
 //
 
-xmitPowerDbmH = 59.56;
+xmitPowerDbmH = 60.45;
 
 ///////////// xmitPowerDbmV ///////////////////////////
 //
@@ -422,7 +422,7 @@ xmitPowerDbmH = 59.56;
 // Type: double
 //
 
-xmitPowerDbmV = 59.91;
+xmitPowerDbmV = 60.27;
 
 ///////////// pulseWidthUs ////////////////////////////
 //
@@ -722,7 +722,7 @@ output_dir = "$(PROJ_DIR)/calibration/data/wband_512ns";
 // Type: string
 //
 
-output_file_label = "Wband-HCR-512ns;
+output_file_label = "Wband-HCR-512ns";
 
 ///////////// plot_script /////////////////////////////
 //
@@ -735,7 +735,7 @@ output_file_label = "Wband-HCR-512ns;
 // Type: string
 //
 
-plot_script = "../scripts/do_calplot.dyn_range";
+plot_script = "do_calplot.dyn_range";
 
 //======================================================================
 //

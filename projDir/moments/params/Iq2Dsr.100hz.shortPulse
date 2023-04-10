@@ -1004,7 +1004,7 @@ moments_params = {
 // Type: int
 //
 
-min_n_samples = 512;
+min_n_samples = 256;
 
 ///////////// max_n_samples ///////////////////////////
 //
@@ -1048,7 +1048,7 @@ specify_pulse_width = TRUE;
 // Type: double
 //
 
-fixed_pulse_width_us = 0.512;
+fixed_pulse_width_us = 0.256;
 
 ///////////// control_beam_indexing_from_time_series //
 //
@@ -1345,7 +1345,7 @@ spectrum_width_method = WIDTH_METHOD_R0R1;
 // Type: string
 //
 
-startup_cal_file = "$(PROJ_DIR)/moments/params/fallback_cal.xml";
+startup_cal_file = "$(PROJ_DIR)/moments/params/cal_256ns/hcr_cal_256ns_20140825_223302.xml";
 
 ///////////// set_cal_by_pulse_width //////////////////
 //
