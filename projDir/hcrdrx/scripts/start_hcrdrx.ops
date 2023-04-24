@@ -5,7 +5,7 @@ cd /home/hcr/git/HCR_instrument/src/hcrdrx
 
 # check if already running
 
-set cmd = "./hcrdrx --instance ops"
+set cmd = "./hcrdrx --instance ops hcrdrx.ops"
 running "$cmd"
 if ($status == 0) then
     exit 0
