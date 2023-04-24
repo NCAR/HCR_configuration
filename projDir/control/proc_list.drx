@@ -17,7 +17,7 @@ HcrExecutive           ops   start_HcrExecutive.ops         stop_HcrExecutive
 #
 ###############################################################################
 # COPY TIME SERIES TO ARCHIVER
-Fmq2Fmq       time_series  start_Fmq2Fmq.time_series  snuff_inst
+#Fmq2Fmq       time_series  start_Fmq2Fmq.time_series  snuff_inst
 #
 ###############################################################################
 # Max power for safety monitor
