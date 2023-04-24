@@ -20,6 +20,7 @@ umask 002
 setenv DATA_HOST archiver
 setenv PROJ_DIR ~/projDir
 setenv LROSE_INSTALL_DIR ~/lrose
+setenv NAVBSP ~/git/HCR_instrument/src/Navigator_xx821/BSP_2.4	# Pentek Navigator BSP dir
 setenv DATA_DIR $PROJ_DIR/data
 setenv TMP_DIR $DATA_DIR/tmp
 setenv LOG_DIR $DATA_DIR/logs
