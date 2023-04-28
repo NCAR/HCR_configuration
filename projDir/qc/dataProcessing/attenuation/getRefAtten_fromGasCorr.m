@@ -1,11 +1,4 @@
 function [sig0measAtt,surfFlag,refSig0,refFlag,sig0model,piaHydromet2]=getRefAtten_fromGasCorr(data)
-% Calculate surface reference attenuation
-% %% One way and two way gaseous attenuation
-% 
-% disp('Calculating gaseous attenuation ...');
-% 
-% [~,gasAttCloud,~,~]=get_gas_atten(data);
-% piaGas2=2*gasAttCloud';
 
 %% Calculate sigma0 from model and from reflectivity
 
@@ -18,8 +11,6 @@ disp('Calculating sig0 ...');
 data.surfRefl=data.DBZcorrGas(linInd);
 sig0measAtt=calc_sig0_surfGasCorr(data);
 
-sig0measAtt(data.elevation>-85)=nan;
-
 % sig0 from models
 sig0modelAll=calc_sig0_model(data);
 %sig0model=sig0modelAll(2,:); % Freilich Vanhoff
@@ -28,7 +19,7 @@ sig0model=sig0modelAll(8,:); % Cox Munk
 
 clear sig0modelAll
 %% Create ocean surface mask
-% 0 extinct or not usable
+% 0 extinct
 % 1 cloud
 % 2 clear air
 

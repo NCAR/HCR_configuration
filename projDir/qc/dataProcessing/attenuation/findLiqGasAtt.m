@@ -53,8 +53,9 @@ for aa=1:length(caseStart)
     data.RH=[];
     data.TOPO=[];
     data.FLAG=[];
+    data.ANTFLAG=[];
     data.rotation=[];
-    data.MELTING_LAYER=[];
+    %data.MELTING_LAYER=[];
     data.pulse_width=[];
 
     dataVars=fieldnames(data);
@@ -62,47 +63,42 @@ for aa=1:length(caseStart)
     % Load data
     data=read_HCR(fileList,data,startTime,endTime);
 
-    % Check if all variables were found
-    for ii=1:length(dataVars)
-        if ~isfield(data,dataVars{ii})
-            dataVars{ii}=[];
-        end
-    end
-
-    dataVars=dataVars(~cellfun('isempty',dataVars));
-
     data.frq=ncread(fileList{1},'frequency');
 
      %% Correct for gaseous attenuation
 
     disp('Calculating gaseous attenuation ...');
     [gasAttClear,gasAttCloud,gasAttClearMat,gasAttCloudMat]=get_gas_atten(data);
-    piaMat2=cumsum(gasAttCloudMat,1).*2;
+    piaGasMat2=cumsum(gasAttCloudMat,1).*2;
 
-    data.DBZcorrGas=data.DBZ+piaMat2;
+    data.DBZcorrGas=data.DBZ+piaGasMat2;
 
     %% Remove all up pointing and unsuitable data
 
     dbzOrig=data.DBZ;
 
-    upInds=find(data.elevation>-85);
-    upInds=cat(2,upInds,find(any(data.FLAG>9,1)),find(any(data.FLAG==3,1)));
+    % Noise source cal (10), missing (11)
+    badInds=find(any(data.FLAG>9,1));
+    % Extinct
+    % badInds=cat(2,badInds,find(any(data.FLAG==3,1)));
+    % Zenith (2), pointing (3), scanning (4), transision (5), failure (6)
+    badInds=cat(2,badInds,find(data.ANTFLAG>1));
 
     infields=fields(data);
     for bb=1:length(infields)
         if strcmp(infields{bb},'DBZ') | strcmp(infields{bb},'FLAG') | ...
                 strcmp(infields{bb},'rotation') | strcmp(infields{bb},'elevation')
             currfield=data.(infields{bb});
-            currfield(:,upInds)=nan;
+            currfield(:,badInds)=nan;
             data.(infields{bb})=currfield;
         end
     end
 
     data.dbzMasked=data.DBZ;
-    data.dbzMasked(data.FLAG>1)=nan;
+    data.dbzMasked(data.FLAG~=1)=nan;
 
     data.dbzMaskedCorrGas=data.DBZcorrGas;
-    data.dbzMaskedCorrGas(data.FLAG>1)=nan;
+    data.dbzMaskedCorrGas(data.FLAG~=1)=nan;
 
    %% Get reference attenuation
    [sig0measAtt,surfFlag,refSig0,refFlag,sig0model,piaHydromet2]=getRefAtten_fromGasCorr(data);
@@ -120,7 +116,7 @@ for aa=1:length(caseStart)
     sig0measCloud=nan(size(data.time));
     sig0measCloud(surfFlag==1)=sig0measAtt(surfFlag==1);
 
-    refSig0(upInds)=nan;
+    refSig0(badInds)=nan;
     
     sig0refMeas=nan(size(data.time));
     sig0refMeas(refFlag==1)=refSig0(refFlag==1);

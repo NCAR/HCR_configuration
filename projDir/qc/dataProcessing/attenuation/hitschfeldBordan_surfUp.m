@@ -3,6 +3,9 @@ function zOut=hitschfeldBordan_surfUp(zIn,pia,rangeIn)
 % solution.
 % Fairall et al. (2018) https://doi.org/10.1175/JTECH-D-17-0025.1
 
+pia(isnan(pia))=0;
+pia(pia<0)=0;
+
 zInLin=10.^(zIn./10);
 
 alpha=0.05;

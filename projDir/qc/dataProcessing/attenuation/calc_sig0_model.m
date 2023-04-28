@@ -12,8 +12,8 @@ if max(~isnan(surfWind))~=0
         
     sig0model=nan(9,size(data.elevation,2));
     
-    c = 3.0e8;
-    lambda = c/data.frq;
+    c=3.0e8;
+    lambda=c/data.frq;
     
     n=f_refractiveIndex_MeissnerWentz(data.SST,salinity,data.frq);
     
