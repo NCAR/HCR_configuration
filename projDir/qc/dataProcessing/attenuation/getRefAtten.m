@@ -12,7 +12,7 @@ piaGas2=2*gasAttCloud';
 disp('Calculating sig0 ...');
 
 % Find ocean surface gate
-[linInd,maxGate,rangeToSurf]=hcrSurfInds(data);
+[linInd,~,~]=hcrSurfInds(data);
 
 % Measured sig0 from surface reflectivity
 data.surfRefl=data.DBZ(linInd);
@@ -33,7 +33,7 @@ clear sig0modelAll
 % 1 cloud
 % 2 clear air
 
-[surfFlag1,atmFrac]=makeSurfFlag(data,linInd);
+[surfFlag1,~]=makeSurfFlag(data,linInd);
 
 clear gasAttCloudMat
 %% Create field with reference sig0
