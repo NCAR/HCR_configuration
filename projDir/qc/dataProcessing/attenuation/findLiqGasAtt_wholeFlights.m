@@ -106,6 +106,9 @@ for aa=1:size(caseList,1)
     % Noise source cal (10), missing (11)
     badInds=find(any(data.FLAG>9,1));
 
+    % Land surface
+    badInds=cat(2,badInds,find(any(data.FLAG==8,1)));
+
     % Zenith (2), pointing (3), scanning (4), transision (5), failure (6)
     badInds=cat(2,badInds,find(data.ANTFLAG>1));
 

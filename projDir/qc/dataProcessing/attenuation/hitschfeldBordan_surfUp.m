@@ -8,6 +8,9 @@ zInLin=10.^(zIn./10);
 alpha=0.05;
 beta=1;
 
+% alpha=0.0002851;
+% beta=0.7923;
+
 As=10.^(-pia./10);
 
 q=0.2*beta*log(10);
