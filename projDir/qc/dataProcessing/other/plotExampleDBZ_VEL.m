@@ -3,24 +3,21 @@
 clear all;
 close all;
 
-project='spicule'; %socrates, aristo, cset
-quality='qc1'; %field, qc1, or qc2
-qcVersion='v1.0';
+project='noreaster'; %socrates, aristo, cset
+quality='qc2'; %field, qc1, or qc2
+qcVersion='v2.0';
 freqData='10hz'; % 10hz, 100hz, or 2hz
 
 % Determines plot zoom.
-ylimits=[1 13.5];
+ylimits=[0 8];
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-figdir=['/scr/sci/romatsch/HCR/other/'];
-%figdir=['/home/romatsch/plots/HCR/meltingLayer/selected/',project,'/'];
-
-
 indir=HCRdir(project,quality,qcVersion,freqData);
+figdir=[indir(1:end-5)];
 
-startTime=datetime(2021,6,21,1,6,0);
-endTime=datetime(2021,6,21,1,21,0);
+startTime=datetime(2015,2,2,18,57,0);
+endTime=datetime(2015,2,2,19,8,0);
 
 %% Load data
 
@@ -56,7 +53,7 @@ dataVars=dataVars(~cellfun('isempty',dataVars));
 %% Plot
 
 close all
-fig1=figure('DefaultAxesFontSize',11,'position',[100,100,1300,800]);
+fig1=figure('DefaultAxesFontSize',13,'position',[100,100,1300,800]);
 
 s1=subplot(2,1,1);
 colormap(jet);
@@ -70,14 +67,13 @@ xlim([data.time(1),data.time(end)]);
 title('Reflectivity (dBZ)')
 grid on
 box on
-colorbar
-caxis([-40 30])
+cb1=colorbar;
+caxis([-20 15])
 
 s2=subplot(2,1,2);
-s2.Colormap=flipud(jet);
 
 hold on;
-sub1=surf(data.time,data.asl/1000,data.VEL_MASKED,'edgecolor','none');
+sub2=surf(data.time,data.asl/1000,data.VEL_MASKED,'edgecolor','none');
 view(2);
 ylim(ylimits);
 ylabel('Altitude (km)');
@@ -85,8 +81,16 @@ xlim([data.time(1),data.time(end)]);
 title('Radial velocity (m s^{-1})')
 grid on
 box on
-colorbar
-caxis([-12 12])
+s2.Colormap=velCols;
+caxis([-5 5]);
+cb2=colorbar;
+cb2.Ticks=-5:5;
+
+s1.Position=[0.04,0.56,0.9,0.4];
+s2.Position=[0.04,0.07,0.9,0.4];
+
+cb1.Position=[0.95,0.56,0.0164,0.4];
+cb2.Position=[0.95,0.07,0.0164,0.4];
 
 formatOut = 'yyyymmdd_HHMM';
 set(gcf,'PaperPositionMode','auto')
