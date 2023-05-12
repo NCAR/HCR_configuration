@@ -15,6 +15,45 @@ set autologout=0
 
 umask 002
 
+# Set the build environment
+
+setenv LANG C
+
+# Note: options for HOST_OS environment variable are
+#  LINUX
+#  LINUX_64
+#  LINUX_64_32MODE
+#  DARWIN
+#  CYGWIN
+
+setenv HOST_OS LINUX_LROSE
+
+setenv LROSE_CORE_DIR $HOME/git/lrose-core
+setenv LROSE_INSTALL_DIR $HOME/lrose
+
+setenv HCRDIR "/opt/hcr"
+
+# --- OTHER BUILD SETTINGS
+
+setenv QTDIR /usr/lib64/qt5
+
+setenv FC gfortran
+setenv GCC_WARNINGS -Wall
+
+## --- LD library path --
+#
+#setenv LD_LIBRARY_PATH ${QTDIR}/lib:${LROSE_INSTALL_DIR}/lib:/home/hcr/ReadyFlow/7142_428/linux/1.0/x86_64/lib
+
+# --- NCAR GRAPHICS ---
+
+setenv NCARG_ROOT /usr/local/ncarg
+
+# --- JAVA ---
+
+setenv JAVA_HOME /usr/java/latest
+setenv ANT_HOME /usr/local/ant
+setenv CLASSPATH .:/home/hcr/cvs/lib/sysview.jar:$HOME/cvs/java/ext_lib/jdom/jdom-1.0/jdom.jar:$HOME/cvs/java/ext_lib/jai/jai-1_1_1_01/jai_codec.jar:$HOME/cvs/java/src:$HOME/cvs/java/src/junit3.8.1/junit.jar
+
 # --- RUNTIME ---
 
 setenv DATA_HOST archiver
