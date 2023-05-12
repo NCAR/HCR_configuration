@@ -103,7 +103,7 @@ if ( -d $LROSE_INSTALL_DIR/bin ) then
   set path = ($path $LROSE_INSTALL_DIR/bin)
 endif
 
-set savehist=0
+set savehist=500
 
 set path = ($path /usr/lib64/qt5/bin $HOME/anaconda2/bin)
 

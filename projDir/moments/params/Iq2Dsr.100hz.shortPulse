@@ -1020,7 +1020,7 @@ min_n_samples = 256;
 // Type: int
 //
 
-max_n_samples = 2048;
+max_n_samples = 100;
 
 ///////////// specify_pulse_width /////////////////////
 //
@@ -3975,7 +3975,7 @@ output_fmq_url = "/tmp/fmq/moments/100hz.shortPulse/shmem_20140";
 // Type: boolean
 //
 
-output_moments_in_radx_format = FALSE;
+output_moments_in_radx_format = TRUE;
 
 ///////////// output_fmq_size /////////////////////////
 //
