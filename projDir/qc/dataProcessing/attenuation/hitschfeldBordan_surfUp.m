@@ -1,12 +1,15 @@
 function zOut=hitschfeldBordan_surfUp(zIn,pia,rangeIn)
 % Calculate attenuation corrected reflectivity with the Hitschfeld Bordan
 % solution.
-% Fairall et al. (2018) https://doi.org/10.1175/JTECH-D-17-0025.1
+% Fairall et al. (2018) https://doi.org/10.1175/JTECH-D-17-0025.1 (Eqs. 20-22)
 
 zInLin=10.^(zIn./10);
 
 alpha=0.05;
 beta=1;
+
+% alpha=0.0002851;
+% beta=0.7923;
 
 As=10.^(-pia./10);
 

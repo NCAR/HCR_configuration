@@ -1,24 +1,15 @@
-function [sig0measAtt,surfFlag,refSig0,refFlag,sig0model,piaHydromet2]=getRefAtten_fromGasCorr(data)
-% Calculate surface reference attenuation
-% %% One way and two way gaseous attenuation
-% 
-% disp('Calculating gaseous attenuation ...');
-% 
-% [~,gasAttCloud,~,~]=get_gas_atten(data);
-% piaGas2=2*gasAttCloud';
+function [sig0measAtt,surfFlag,refSig0,sig0model,piaHydromet2]=getRefAtten_fromGasCorr(data)
 
 %% Calculate sigma0 from model and from reflectivity
 
 disp('Calculating sig0 ...');
 
 % Find ocean surface gate
-[linInd,maxGate,rangeToSurf]=hcrSurfInds(data);
+[linInd,~,~]=hcrSurfInds(data);
 
 % Measured sig0 from surface reflectivity
 data.surfRefl=data.DBZcorrGas(linInd);
 sig0measAtt=calc_sig0_surfGasCorr(data);
-
-sig0measAtt(data.elevation>-85)=nan;
 
 % sig0 from models
 sig0modelAll=calc_sig0_model(data);
@@ -28,7 +19,7 @@ sig0model=sig0modelAll(8,:); % Cox Munk
 
 clear sig0modelAll
 %% Create ocean surface mask
-% 0 extinct or not usable
+% 0 extinct
 % 1 cloud
 % 2 clear air
 
@@ -40,7 +31,7 @@ clear sig0modelAll
 % 2 interpolated
 % 3 model
 
-[refSig0,surfFlag,refFlag]=makeRefSig0(sig0measAtt,sig0model,surfFlag1);
+[refSig0,surfFlag]=makeRefSig0(sig0measAtt,sig0model,surfFlag1);
 
 % Find surfFlag values that have previously been clear air but are now
 % not

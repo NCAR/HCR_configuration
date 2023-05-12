@@ -52,11 +52,40 @@ latLims=[15,45;
 
 load coastlines
 
-fig=figure('DefaultAxesFontSize',11,'position',[100,100,600,1100],'renderer','painters','visible','on');
+fig=figure('DefaultAxesFontSize',11,'position',[100,100,1200,900],'renderer','painters','visible','on');
 colormap('jet');
 
+% WORLD
+s1=subplot(2,2,1);
+hold on
+
+xlim([-180,180]);
+ylim([-90,90]);
+
+colsAll=[0,1,0;0,0,1;1,0,0];
+
+plot(coastlon,coastlat,'-k')
+for aa=1:3
+    plot(lonLims(aa,:),[latLims(aa,1),latLims(aa,1)],'-','Color',colsAll(aa,:),'LineWidth',2);
+    plot(lonLims(aa,:),[latLims(aa,2),latLims(aa,2)],'-','Color',colsAll(aa,:),'LineWidth',2);
+    plot([lonLims(aa,1),lonLims(aa,1)],latLims(aa,:),'-','Color',colsAll(aa,:),'LineWidth',2);
+    plot([lonLims(aa,2),lonLims(aa,2)],latLims(aa,:),'-','Color',colsAll(aa,:),'LineWidth',2);
+end
+
+text(lonLims(1,1),latLims(1,1)-8,'CSET','Color','g','FontSize',12,'FontWeight','bold');
+text(lonLims(2,1)-40,latLims(2,1)-8,'SOCRATES','Color','b','FontSize',12,'FontWeight','bold');
+text(lonLims(3,1)-20,latLims(3,1)-8,'OTREC','Color','r','FontSize',12,'FontWeight','bold');
+
+grid on
+box on
+
+xlabel('Longitude (deg)');
+ylabel('Latitude (deg)');
+
+title(['(a) Project locations']);
+
 % CSET
-s1=subplot(3,1,1);
+s2=subplot(2,2,2);
 hold on
 
 inds=1:100:length(in.cset.latAll);
@@ -75,16 +104,16 @@ plot(coastlon,coastlat,'-k')
 grid on
 box on
 
-cb1=colorbar;
+cb2=colorbar;
 
 xlabel('Longitude (deg)');
 ylabel('Latitude (deg)');
 
-title(['(a) CSET, SST (',char(176),'C)']);
+title(['(b) CSET, SST (',char(176),'C)']);
 
 % SOCRATES
 
-s2=subplot(3,1,2);
+s3=subplot(2,2,3);
 hold on
 
 inds=1:100:length(in.socrates.latAll);
@@ -103,16 +132,16 @@ plot(coastlon,coastlat,'-k')
 grid on
 box on
 
-cb2=colorbar;
+cb3=colorbar;
 
 xlabel('Longitude (deg)');
 ylabel('Latitude (deg)');
 
-title(['(b) SOCRATES, SST (',char(176),'C)']);
+title(['(c) SOCRATES, SST (',char(176),'C)']);
 
 % OTREC
 
-s3=subplot(3,1,3);
+s4=subplot(2,2,4);
 hold on
 
 inds=1:100:length(in.otrec.latAll);
@@ -128,23 +157,39 @@ ylim(latLims(3,:));
 
 plot(coastlon,coastlat,'-k')
 
+plot([-94.8,-84.5],[2.5,2.5],'-k','LineWidth',2);
+plot([-94.8,-84.5],[13.5,13.5],'-k','LineWidth',2);
+plot([-94.8,-94.8],[2.5,13.5],'-k','LineWidth',2);
+plot([-84.5,-84.5],[2.5,13.5],'-k','LineWidth',2);
+
+plot([-81.7,-77.5],[2.5,2.5],'-k','LineWidth',2);
+plot([-81.7,-77.5],[8,8],'-k','LineWidth',2);
+plot([-81.7,-81.7],[2.5,8],'-k','LineWidth',2);
+plot([-77.5,-77.5],[2.5,8],'-k','LineWidth',2);
+
+plot([-83.4,-77.5],[9.1,9.1],'-k','LineWidth',2);
+plot([-83.4,-77.5],[13.8,13.8],'-k','LineWidth',2);
+plot([-77.5,-77.5],[9.1,13.8],'-k','LineWidth',2);
+plot([-83.4,-83.4],[9.1,13.8],'-k','LineWidth',2);
+
+text(-91.2,14.3,'ITCZ region','FontSize',12,'FontWeight','bold');
+text(-83.9,14.5,'Caribbean region','FontSize',12,'FontWeight','bold');
+text(-82.3,1.5,[{'Colombian'};{'coastal region'}],'FontSize',12,'FontWeight','bold');
+
 grid on
 box on
 
-cb3=colorbar;
+cb4=colorbar;
 
 xlabel('Longitude (deg)');
 ylabel('Latitude (deg)');
 
-title(['(c) OTREC, SST (',char(176),'C)']);
+title(['(d) OTREC, SST (',char(176),'C)']);
 
-s1.Position=[0.095,0.71,0.8,0.27];
-s2.Position=[0.095,0.377,0.8,0.27];
-s3.Position=[0.095,0.045,0.8,0.27];
-
-cb1.Position=[0.915,0.71,0.035,0.27];
-cb2.Position=[0.915,0.377,0.035,0.27];
-cb3.Position=[0.915,0.045,0.035,0.27];
+s1.Position=[0.05,0.56,0.43,0.41];
+s2.Position=[0.54,0.56,0.38,0.41];
+s3.Position=[0.05,0.06,0.38,0.41];
+s4.Position=[0.54,0.06,0.38,0.41];
 
 set(gcf,'PaperPositionMode','auto')
 print([figdir,'sstTracks.png'],'-dpng','-r0');
