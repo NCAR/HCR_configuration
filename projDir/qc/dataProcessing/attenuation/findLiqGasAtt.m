@@ -30,7 +30,7 @@ caseStart=datetime(caseList.Var1,caseList.Var2,caseList.Var3, ...
 caseEnd=datetime(caseList.Var6,caseList.Var7,caseList.Var8, ...
     caseList.Var9,caseList.Var10,0);
 
-for aa=5:length(caseStart)
+for aa=1:length(caseStart)
 
     disp(['Case ',num2str(aa),' of ',num2str(length(caseStart))]);
 
@@ -55,7 +55,7 @@ for aa=5:length(caseStart)
     data.FLAG=[];
     data.ANTFLAG=[];
     data.rotation=[];
-    %data.MELTING_LAYER=[];
+    data.MELTING_LAYER=[];
     data.pulse_width=[];
 
     dataVars=fieldnames(data);
@@ -143,7 +143,7 @@ for aa=5:length(caseStart)
    piaHydrometInt(~cloudInds)=nan;
    piaHydrometInt(badInds)=nan;
 
-   zHB=hitschfeldBordan_surfUp(data.dbzMaskedCorrGas,piaHydrometInt,data.range);
+   zHB=hitschfeldBordan_surfUp(data.dbzMaskedCorrGas,piaHydrometInt,data.range,data.MELTING_LAYER);
 
    %% Check result
 % 
