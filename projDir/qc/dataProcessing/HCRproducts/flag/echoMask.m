@@ -1,4 +1,4 @@
-function [echoMask antStat] = echoMask(data)
+function [echoMask,antStat] = echoMask(data)
 
 %% Antenna status (down=1, up=2, pointing=3, scanning=4, transition=5, failure=6)
 disp('Working on antenna status ...');
@@ -7,7 +7,7 @@ antStat=nan(size(data.time));
 
 % Find transition areas
 % Find areas with large standard deviation
-movStd=movstd(data.elevation,100);
+movStd=movstd(data.elevation,101);
 stdFake=zeros(size(movStd));
 stdFake(movStd>5)=movStd(movStd>5);
 
@@ -16,24 +16,24 @@ stdFake(movStd>5)=movStd(movStd>5);
 % Broaden the peaks
 broadPeak=nan(size(stdFake));
 broadPeak(locs)=1;
-broadPeak=movmean(broadPeak,50,'omitnan');
+broadPeak=movmean(broadPeak,51,'omitnan');
 
 % Find areas with lots of antenna movement around std peaks
 antDiff=diff(data.elevation);
 antDiff=cat(2,0,antDiff);
-findTrans=abs(movmean(antDiff,10));
+findTrans=abs(movmean(antDiff,11));
 
 % Transision zones
 antStat(findTrans>0.2 & broadPeak==1)=5;
 
 % Small scale moving std
-movStdSmall=movstd(data.elevation,40);
+movStdSmall=movstd(data.elevation,41);
 
 smoothIndsIn=double(movStdSmall<0.25);
 smoothIndsIn(smoothIndsIn==0)=nan;
 % Fill holes
-smoothIndsLarge=movmean(smoothIndsIn,20,'omitnan');
-smoothIndsSmall=movmean(smoothIndsLarge,20,'includenan');
+smoothIndsLarge=movmean(smoothIndsIn,21,'omitnan');
+smoothIndsSmall=movmean(smoothIndsLarge,21,'includenan');
 % Remove short
 smoothIndsSmall(isnan(smoothIndsSmall))=0;
 smoothInds=bwareaopen(smoothIndsSmall,10);
@@ -211,11 +211,14 @@ elseif isfield(data,'TOPO')
 else
     rightAlt=data.altitude*2;
 end
+
+rightAlt=rightAlt+data.TOPO;
+
 altMat=repmat(rightAlt,size(data.range,1),1);
 % Lower limit
-blMask(data.asl<(altMat-1000))=0; % !!!!!! Can probably be significantly reduced after latest bug fix
+blMask(data.asl<(altMat-200))=0; % Default before bug fix was 1000
 % Upper limit
-blMask(data.asl>(altMat+600))=0; % !!!!!! Can probably be significantly reduced after latest bug fix
+blMask(data.asl>(altMat+600))=0; % Default before bug fix was 600
 
 % Only when scanning up
 blMask(:,find(data.elevation<0))=0;
