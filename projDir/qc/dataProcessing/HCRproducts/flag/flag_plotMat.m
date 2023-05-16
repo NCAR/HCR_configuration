@@ -33,7 +33,7 @@ infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_
 
 caseList = table2array(readtable(infile));
 
-for aa=1:size(caseList,1)
+for aa=3:size(caseList,1)
     disp(['Flight ',num2str(aa)]);
     disp('Loading HCR data.')
     disp(['Starting at ',datestr(datetime('now'),'yyyy-mm-dd HH:MM')]);
@@ -99,13 +99,20 @@ for aa=1:size(caseList,1)
         1,0.6,0];
     
     startPlot=startTime;
+    emptyInds=0;
     
     while startPlot<endTime
-        
+
         close all
-        
+
         endPlot=startPlot+minutes(60);
         timeIndsAll=find(data.time>=startPlot & data.time<=endPlot);
+
+        if isempty(timeIndsAll)
+            startPlot=endPlot;
+            continue
+        end
+
         getInd=1:20:length(timeIndsAll);
         timeInds=timeIndsAll(getInd);
                 
