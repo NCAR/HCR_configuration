@@ -49,7 +49,7 @@ for mm=1:size(caseList,1)
     
     disp('Making flag field.')
     
-    [maskData antStat]=echoMask(data);
+    [maskData,antStat]=echoMask(data);
     
     
     %% Save
