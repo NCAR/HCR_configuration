@@ -5,11 +5,11 @@ close all;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Input variables %%%%%%%%%%%%%%%%%%%%%%%%%%
 
-project='spicule'; %socrates, aristo, cset, otrec
-quality='qc0'; %field, qc0, qc1, or qc2
-qcVersion='v0.1';
+project='socrates'; %socrates, aristo, cset, otrec
+quality='qc3'; %field, qc0, qc1, or qc2
+qcVersion='v3.2';
 dataFreq='10hz';
-whichModel='ecmwf';
+whichModel='era5';
 
 if strcmp(project,'otrec')
     ylimUpper=15;
@@ -17,15 +17,17 @@ else
     ylimUpper=10;
 end
 
+showPlot='off';
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
 dataDir=HCRdir(project,quality,qcVersion,dataFreq);
 
-[modelNC modeldir]=modelDir(project,whichModel,dataFreq);
+[modelNC modeldir]=modelDir(project,whichModel,quality,qcVersion,dataFreq);
 
-figdir=['/scr/sleet2/rsfdata/projects/spicule/hcr/qc0/cfradial/v0.1/flagPlots/'];
+figdir=[dataDir(1:end-5),'flagPlots/wholeFlights/'];
 
 infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_',project,'_data.txt'];
 
@@ -79,11 +81,11 @@ for aa=1:size(caseList,1)
     %% Plot in hourly increments
     
     disp('Plotting ...');
-    
+
     ytickLabels={'Cloud (1)';'Speckle (2)';'Extinct (3)';'Backlobe (4)';'Out of range (5)';...
         'Bang (6)';'Water (7)';'Land (8)';'Below surf. (9)';...
-        'NS cal (10)';'Ant. trans. (11)';'Missing (12)'};
-    
+        'NS cal (10)';'Missing (11)'};
+
     colMask=[0.4,0.8,1;
         0,0,0;
         0.5,0,0.5;
@@ -94,7 +96,6 @@ for aa=1:size(caseList,1)
         0.7065,0.4415,0.2812;
         0.5,0.5,0.5;
         0.9290,0.8940,0.1250;
-        1,0,1;
         1,0.6,0];
     
     startPlot=startTime;
@@ -124,7 +125,7 @@ for aa=1:size(caseList,1)
         dbzMaskedPlot=dbzPlot;
         dbzMaskedPlot(flagPlot>1)=nan;
                         
-        f1 = figure('Position',[200 500 1500 1200],'DefaultAxesFontSize',12);
+        f1 = figure('Position',[200 500 1500 1200],'DefaultAxesFontSize',12,'visible',showPlot);
         
         s1=subplot(4,1,1);
         
@@ -148,8 +149,8 @@ for aa=1:size(caseList,1)
         hold on
         surf(timePlot,aslPlot./1000,flagPlot,'edgecolor','none');
         view(2);
+        caxis([1 11]);
         ylabel('Altitude (km)');
-        caxis([1 12]);
         ylim([0 ylimUpper]);
         xlim([timePlot(1),timePlot(end)]);
         grid on
@@ -161,7 +162,7 @@ for aa=1:size(caseList,1)
         
         s2.Colormap=colMask;
         hcb=colorbar;
-        hcb.Ticks=[1.5:0.91:12.5];
+        hcb.Ticks=[1.5:0.9:11.5];
         hcb.TickLabels=ytickLabels;
                
         s3=subplot(4,1,3);
@@ -177,25 +178,24 @@ for aa=1:size(caseList,1)
         grid on
         box on
         title('Masked reflectivity (dBZ)')
-                        
+
         s4=subplot(4,1,4);
-        
+
         hold on
         plot(timePlot,antstatPlot,'-b','linewidth',2);
-        ylim([-1 5]);
-        yticks(-1:5);
         xlim([timePlot(1),timePlot(end)]);
         grid on
         box on
-        
+
         ylabel('Ant. Stat.');
-        yticks(0:4)
-        yticklabels({'Down (0)','Up (1)','Pointing (2)','Scanning (3)','Transition (4)'})
-        
+        yticks(1:6)
+        yticklabels({'Down (1)','Up (2)','Pointing (3)','Scanning (4)','Transition (5)','Failure(6)'})
+        ylim([0 7])
+
         title('Antenna status')
-       
+
         s4pos=s4.Position;
-        s4.Position=[s4pos(1) s4pos(2) s1pos(3) s4pos(4)];
+        s4.Position=[s4pos(1),s4pos(2),s1pos(3),s4pos(4)];
                 
         set(gcf,'PaperPositionMode','auto')
         print(f1,[figdir,project,'_Flight',num2str(aa),'_flag_',datestr(timePlot(1),'yyyymmdd_HHMMSS'),'_to_',datestr(timePlot(end),'yyyymmdd_HHMMSS')],'-dpng','-r0')
