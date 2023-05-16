@@ -5,7 +5,7 @@ close all;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Input variables %%%%%%%%%%%%%%%%%%%%%%%%%%
 
-project='socrates'; %socrates, aristo, cset
+project='cset'; %socrates, aristo, cset
 quality='qc3'; %field, qc1, or qc2
 freqData='10hz'; % 10hz, 100hz, or 2hz
 qcVersion='v3.1';
@@ -38,28 +38,12 @@ for mm=1:size(caseList,1)
     data.WIDTH=[];
     data.DBMVC=[];
     data.TOPO=[];
-        
-    dataVars=fieldnames(data);
-    
+           
     % Make list of files within the specified time frame
     fileList=makeFileList(directories.dataDir,startTime,endTime,'xxxxxx20YYMMDDxhhmmss',1);
-    
-    if length(fileList)==0
-        disp('No data files found.');
-        return
-    end
-    
+      
     % Load data
     data=read_HCR(fileList,data,startTime,endTime);
-    
-    % Check if all variables were found
-    for ii=1:length(dataVars)
-        if ~isfield(data,dataVars{ii})
-            dataVars{ii}=[];
-        end
-    end
-    
-    dataVars=dataVars(~cellfun('isempty',dataVars));
     
     %% Mask data
     

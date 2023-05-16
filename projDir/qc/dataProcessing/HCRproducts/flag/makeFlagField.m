@@ -8,10 +8,10 @@ close all;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Input variables %%%%%%%%%%%%%%%%%%%%%%%%%%
 
-project='cset'; %socrates, aristo, cset
-quality='qc3'; %field, qc1, or qc2
+project='spicule'; %socrates, aristo, cset
+quality='qc1'; %field, qc1, or qc2
 freqData='10hz'; % 10hz, 100hz, or 2hz
-qcVersion='v3.0';
+qcVersion='v1.1';
 
 showPlot='off';
 
@@ -54,26 +54,12 @@ for aa=1:length(caseStart)
     % Make list of files within the specified time frame
     fileList=makeFileList(indir,startTime,endTime,'xxxxxx20YYMMDDxhhmmss',1);
 
-    if length(fileList)==0
-        disp('No data files found.');
-        return
-    end
-
     % Load data
     data=read_HCR(fileList,data,startTime,endTime);
 
-    % Check if all variables were found
-    for ii=1:length(dataVars)
-        if ~isfield(data,dataVars{ii})
-            dataVars{ii}=[];
-        end
-    end
-
-    dataVars=dataVars(~cellfun('isempty',dataVars));
-
     %% Mask data
 
-    [maskData antStat]=echoMask(data);
+    [maskData,antStat]=echoMask(data);
 
     refl=data.DBZ;
     refl(maskData>1)=nan;
@@ -150,9 +136,9 @@ for aa=1:length(caseStart)
         '-dpng','-r0');
 
     %% Plot antenna status
-    figure('DefaultAxesFontSize',11,'position',[1,100,1200,400],'renderer','painters','Visible',showPlot);
+    figure('DefaultAxesFontSize',11,'position',[1,100,1200,700],'renderer','painters','Visible',showPlot);
 
-    s1=subplot(1,1,1);
+    s1=subplot(2,1,1);
     plot(data.time,antStat,'linewidth',2)
     xlim([data.time(1),data.time(end)]);
     title('Antenna status')
@@ -163,6 +149,20 @@ for aa=1:length(caseStart)
     s1pos=s1.Position;
 
     s1.Position=[s1pos(1),s1pos(2),ax3pos(3),s1pos(4)];
+    grid on
+    box on
+
+    s2=subplot(2,1,2);
+    plot(data.time,data.elevation,'linewidth',1.5)
+    xlim([data.time(1),data.time(end)]);
+    title('Elevation angle')
+    ylabel('Elevation (deg)')
+    ylims=s2.YLim;
+    ylim([ylims(1)-2,ylims(2)+2]);
+    
+    s2pos=s2.Position;
+
+    s2.Position=[s2pos(1),s2pos(2),ax3pos(3),s2pos(4)];
     grid on
     box on
 

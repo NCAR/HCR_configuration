@@ -213,12 +213,14 @@ else
 end
 
 rightAlt=rightAlt+data.TOPO;
-
-altMat=repmat(rightAlt,size(data.range,1),1);
+altMat=rightAlt;
+%altMat=repmat(rightAlt,size(data.range,1),1);
 % Lower limit
 blMask(data.asl<(altMat-200))=0; % Default before bug fix was 1000
-% Upper limit
-blMask(data.asl>(altMat+600))=0; % Default before bug fix was 600
+% Upper limit land
+blMask(data.asl>(altMat+600) & data.TOPO>0)=0; % Default before bug fix was 600
+% Upper limit ocean
+blMask(data.asl>(altMat+200) & data.TOPO==0)=0; % Default before bug fix was 600
 
 % Only when scanning up
 blMask(:,find(data.elevation<0))=0;
