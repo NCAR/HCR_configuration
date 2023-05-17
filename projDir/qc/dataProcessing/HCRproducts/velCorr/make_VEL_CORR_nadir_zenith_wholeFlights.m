@@ -5,7 +5,7 @@ close all
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-project='socrates'; % socrates, cset, aristo, otrec
+project='cset'; % socrates, cset, aristo, otrec
 quality='qc3'; % field, qc1, qc2
 qcVersion='v3.1';
 freqData='10hz'; % 10hz, 100hz, or 2hz
@@ -13,6 +13,7 @@ whichModel='era5';
 
 saveTime=0;
 plotYes=1;
+showPlot='on';
 
 [~,outdir]=modelDir(project,whichModel,quality,qcVersion,freqData);
 
@@ -27,7 +28,7 @@ figdir=[indir(1:end-5),'velCorrZenithPlots/wholeFlights/'];
 polyTimePeriod=20; %Time period for poly fit in seconds
 polyOrder=3; % Order of polynomial fit
 
-for kk=1:size(caseList,1)
+for kk=3:size(caseList,1)
     
     disp(['Flight ',num2str(kk)]);
     disp('Loading HCR data.')
@@ -132,7 +133,7 @@ for kk=1:size(caseList,1)
 
             close all
 
-            f1=figure('Position',[200 500 1500 1200],'DefaultAxesFontSize',12);
+            f1=figure('Position',[200 500 1500 1200],'DefaultAxesFontSize',12,'visible',showPlot);
 
             s1=subplot(4,1,1);
             hold on

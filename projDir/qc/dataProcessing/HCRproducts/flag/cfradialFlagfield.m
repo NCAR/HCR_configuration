@@ -4,9 +4,9 @@ close all;
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-project='socrates'; % socrates, cset, aristo, otrec
-quality='qc3'; % field, qc1, qc2
-qcVersion='v3.2';
+project='noreaster'; % socrates, cset, aristo, otrec
+quality='qc2'; % field, qc1, qc2
+qcVersion='v2.1';
 freqData='10hz';
 whichModel='era5';
 

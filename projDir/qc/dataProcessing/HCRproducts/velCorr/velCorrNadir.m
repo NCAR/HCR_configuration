@@ -29,17 +29,17 @@ surfVel(isnan(surfDBZlin))=nan;
 surfVel(isnan(rowInd))=nan;
 
 % Calculate standard deviation
-surfStd=movstd(surfVel,100,'includenan'); % Sets to nan when there is at least one nan
+surfStd=movstd(surfVel,101,'includenan'); % Sets to nan when there is at least one nan
 
 % Enlarge missing data areas
-surfTemp=movmean(surfVel,100,'includenan'); % Sets to nan when there is at least one nan
+surfTemp=movmean(surfVel,101,'includenan'); % Sets to nan when there is at least one nan
 surfVel(isnan(surfTemp))=nan;
 
 % standard deviation is too high
 surfVel(surfDBZlin<10000 & surfStd>0.5)=nan;
 
 % Fill in the missing data with moving average from before the gap
-surfMean=movmedian(surfVel,100,'omitnan'); % Ignores nans and uses the rest of the data
+surfMean=movmedian(surfVel,101,'omitnan'); % Ignores nans and uses the rest of the data
 surfMean(isnan(surfVel))=nan;
 
 aboveGround=data.altitude-data.TOPO;
@@ -60,7 +60,7 @@ disp('Making fit.');
 velSmoothPorig=vel2vel_corr_testPoly(surfVel,data.time,polyTimePeriod,polyOrder);
 
 % Fill in data where we don't have polyfit data
-velSmoothP=movmedian(surfVelOrig,100,'omitnan');
+velSmoothP=movmedian(surfVelOrig,101,'omitnan');
 velSmoothP(~isnan(velSmoothPorig))=velSmoothPorig(~isnan(velSmoothPorig));
 
 end
