@@ -50,24 +50,10 @@ for kk=3:size(caseList,1)
         data.ANTFLAG=[];
         
         dataVars=fieldnames(data);
-        
-        if length(fileList)==0
-            disp('No data files found.');
-            return
-        end
-        
+              
         % Load data
         data=read_HCR(fileList,data,startTime,endTime);
-        
-        % Check if all variables were found
-        for ii=1:length(dataVars)
-            if ~isfield(data,dataVars{ii})
-                dataVars{ii}=[];
-            end
-        end
-        
-        dataVars=dataVars(~cellfun('isempty',dataVars));
-            
+                    
         %% Correct nadir pointing vel
         disp('Nadir correction')
         [nadirCorrection,surfInd]=velCorrNadir(data,polyTimePeriod,polyOrder);
