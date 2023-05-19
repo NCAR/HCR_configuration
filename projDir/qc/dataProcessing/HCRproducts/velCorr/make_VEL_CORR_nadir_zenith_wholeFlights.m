@@ -32,7 +32,7 @@ else
 end
 polyOrder=3; % Order of polynomial fit
 
-for kk=11:size(caseList,1)
+for kk=1:size(caseList,1)
     
     disp(['Flight ',num2str(kk)]);
     disp('Loading HCR data.')
@@ -100,7 +100,7 @@ for kk=11:size(caseList,1)
         if plotYes
 
             disp('Plotting.');
-            
+
             plotInds=1:10:length(data.time);
             plotVelMasked=data.VEL;
             plotVelMasked(data.FLAG~=1)=nan;
