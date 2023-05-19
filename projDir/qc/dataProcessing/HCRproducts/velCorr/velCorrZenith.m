@@ -1,6 +1,6 @@
-function [zenithCorrection,medCloudVelNadir,medCloudVelZenith,smoothfactor,velZenithCorrSmooth]=velCorrZenith(data,velNadirCorr)
+function [zenithCorrection,smoothfactor]=velCorrZenith(data,velNadirCorr)
 
-%% Get cloud Top vel
+%% Clean up input data
 % Mask non-cloud data
 velMasked=velNadirCorr;
 velMasked(data.FLAG~=1)=nan;
@@ -11,32 +11,37 @@ velMasked(:,data.elevation>0)=-velMasked(:,data.elevation>0);
 
 % Remove small clouds
 maskVel=~isnan(velMasked);
-maskVel=bwareaopen(maskVel,1000);
+maskVel=bwareaopen(maskVel,5000);
+velMasked(maskVel==0)=nan;
 
 % Join clouds that are close
 maskVel=imdilate(maskVel,strel('disk',9));
+
+% Create label mat with individual clouds
 labs=bwlabel(maskVel);
 labs(labs==0)=nan;
 labs(isnan(velMasked))=nan;
 
-% Find cloud top vel
+%% Find cloud top vel
+% 2D mat with cloud top velocities
 cloudTopVel=nan(size(velMasked));
+% 2D mat with altitudes of cloud tops
 cloudTopAlts=nan(size(velMasked));
 for mm=1:size(velMasked,2)
-    if mm==116155
+    if mm==137342
         stophere=1;
     end
 
+    % Create column vectors
     labCol=labs(:,mm);
     if all(isnan(labCol))
         continue
     end
     velCol=velMasked(:,mm);
-    altCol=data.asl(:,mm);
-    
-    % Find individual clouds
+        
+    % Find individual cloud pieces in col vectors
     cloudMask=~isnan(labCol);
-    % Remove small clouds
+    % Remove small cloud pieces
     cloudMask=bwareaopen(cloudMask,10);
     if sum(cloudMask)==0
         continue
@@ -44,197 +49,229 @@ for mm=1:size(velMasked,2)
     labCol(cloudMask==0)=nan;
     velCol(cloudMask==0)=nan;
 
-    % Loop through individual clouds
-%     cloudTops=[];
-%     cloudAlts=[];
     clouds=unique(labCol);
     clouds(isnan(clouds))=[];
-    %clouds=bwconncomp(cloudMask);
+    
+    % Loop through cloud pieces to get top vel and altitude of top
     for nn=1:length(clouds)
         thisCloud=nan(size(cloudMask));
         thisCloud(labCol==clouds(nn))=velCol(labCol==clouds(nn));
         
-        % Check for many strong updraft pixels
+        % Check for many strong updraft pixels and exclude cloud if found
         extVel=sum(thisCloud<-1);
         if extVel/sum(~isnan(thisCloud))>0.1
             continue
         end
 
         % Collect cloud top data
-        if data.elevation(mm)<=0
+        if data.elevation(mm)<=0 % nadir
             % Check if in cloud
             if ~isempty(intersect(find(labCol==clouds(nn)),22))
                 continue
             end
             firstIndFirst=min(find(~isnan(thisCloud)));
+            % Remove noise pixels (i.e. pixels with high vels at cloud edge)
             thisCloud(abs(thisCloud)>2)=nan;
             newMask=~isnan(thisCloud);
             newMask=bwareaopen(newMask,10);
             thisCloud(newMask==0)=nan;
+            % Top index
             firstInd=min(find(~isnan(thisCloud)));
+            % Check if noise remove step removed pixels too far away from the edge
             if abs(firstIndFirst-firstInd)>15
                 continue
             end
+            % Take vels of top three
             cloudTopVel(firstInd,mm)=median(thisCloud(firstInd:firstInd+2),1,'omitnan');
             cloudTopAlts(firstInd,mm)=data.asl(firstInd,mm);
-%             cloudTops=cat(1,cloudTops,thisCloud(firstInd:firstInd+2));
-%             cloudAlts=cat(1,cloudAlts,altCol(firstInd:firstInd+2));
-        else
+        else % zenith
             lastIndFirst=max(find(~isnan(thisCloud)));
+            % Remove noise pixels (i.e. pixels with high vels at cloud edge)
             thisCloud(abs(thisCloud)>2)=nan;
             newMask=~isnan(thisCloud);
             newMask=bwareaopen(newMask,10);
             thisCloud(newMask==0)=nan;
+            % Top index
             lastInd=max(find(~isnan(thisCloud)));
+            % Check if noise remove step removed pixels too far away from the edge
             if abs(lastIndFirst-lastInd)>15
                 continue
             end
             % Check if near surface
             cloudAsl=data.asl(lastInd-2:lastInd,mm);
-            if max(cloudAsl,'omitnan')<1000
+            if max(cloudAsl,'omitnan')<500
                 continue
             end
+            % Take vels of top three
             cloudTopVel(lastInd,mm)=median(thisCloud(lastInd-2:lastInd),1,'omitnan');
             cloudTopAlts(lastInd,mm)=data.asl(lastInd,mm);
-%             cloudTops=cat(1,cloudTops,thisCloud(lastInd-2:lastInd));
-%             cloudAlts=cat(1,cloudAlts,altCol(lastInd-2:lastInd));
         end
     end
-%     if isempty(cloudTops)
-%         continue
-%     elseif all(~isnan(cloudTops))
-%         altRound=round(cloudAlts./1000).*1000;
-%         cloudTopAlts(mm)=mode(altRound);
-%         cloudTops(abs(altRound-cloudTopAlts(mm))>3000)=[];
-%         cloudTopVel(mm)=median(cloudTops,1,'omitnan');
-%     end
 end
 
-%% Loop through clouds
+%% Collect cloud top vels and altitudes in altitude bins of 1 km
 
 ulabs=unique(labs);
 ulabs(isnan(ulabs))=[];
 
+% Absolute maximum altitude
 allAsls=data.asl(~isnan(cloudTopAlts));
+% Initiate altitude bin mat
 velLayers=nan(ceil(max(allAsls)/1000),size(velMasked,2));
 
+% Loop through clouds and put cloud top vels in altitude bin mat
 for ii=1:length(ulabs)
+    % Indices of cloud
     labInds=find(labs==ulabs(ii));
+    % Remove non cloud top indices
     velTopLabInds=cloudTopVel(labInds);
     labInds(isnan(velTopLabInds))=[];
     velTopLabInds(isnan(velTopLabInds))=[];
     if isempty(velTopLabInds)
         continue
     end
+    % Find altitude bin by calculating median altitude of cloud tops
     medAltCl=median(data.asl(labInds),'omitnan');
-    medAltRound=round(medAltCl/1000);
+    medAltRound=max([round(medAltCl/1000),1]);
 
-    [labR,labC]=ind2sub(size(velMasked),labInds);
-
+    % Put cloud top vel in correct altitude bin
+    [~,labC]=ind2sub(size(velMasked),labInds);
     velLayers(medAltRound,labC)=velTopLabInds;
 end
 
-nadirInds=find(data.elevation<0);
-zenithInds=find(data.elevation>=0);
-% 
-% nonNanInds=find(any(~isnan(velLayers),1));
-% nadirCloudInds=intersect(nadirInds,nonNanInds);
-% zenithCloudInds=intersect(zenithInds,nonNanInds);
-
+%% Separate altitude bin vels in nadir and zenith
 velDown=velLayers;
-velDown(:,zenithInds)=nan;
+velDown(:,data.elevation>=0)=nan;
 velUp=velLayers;
-velUp(:,nadirInds)=nan;
+velUp(:,data.elevation<0)=nan;
 
-smoothfactor=10001;
-se=strel('rectangle',[1,smoothfactor]);
+%% Connect altitudes in alt bin mat that are close together (nadir)
+
+% Spread the alt bin mat data out mostly horizontally, but also vertically,
+% so close-by regions connect
+smoothfactor=round(hcrTimeToPix(30,etime(datevec(data.time(2)),datevec(data.time(1))))+1);
+se=strel('rectangle',[1,round(smoothfactor/2)]);
 
 velDownMask=~isnan(velDown);
 velDownMask=imdilate(velDownMask,se);
 connDown=bwconncomp(velDownMask);
-velDownGood=nan(size(velDown));
 
+% Find separate levels of cloud tops
+velDownLayers=nan(1,size(velDown,2));
+altDownLayers=nan(1,size(velDown,2));
+
+% Loop through clouds
 for ii=1:connDown.NumObjects
-    thisReg=nan(size(velLayers));
-    thisReg(connDown.PixelIdxList{ii})=velDown(connDown.PixelIdxList{ii});
-    thisRegVel=median(thisReg,1,'omitnan');
+    thisRegVel=nan(size(velLayers));
+    thisRegVel(connDown.PixelIdxList{ii})=velDown(connDown.PixelIdxList{ii});
+    % Vertical mean over top three pixels
+    thisRegVel=median(thisRegVel,1,'omitnan');
+    % Smooth
     thisVelSmooth=movmedian(thisRegVel,smoothfactor,'omitnan');
     thisVelSmooth(isnan(thisRegVel))=nan;
-    thisVelInt=fillmissing(thisVelSmooth,'linear','EndValues','nearest');
-    [rthis,cthis]=ind2sub(size(velLayers),connDown.PixelIdxList{ii});
-    uc=unique(cthis);
-    for jj=1:length(uc)
-        velDownGood(find(velDownMask(:,uc(jj))>0),uc(jj))=thisVelInt(uc(jj));
+
+    % Find altitude
+    [rthis,~]=ind2sub(size(velLayers),connDown.PixelIdxList{ii});
+    meanAlt=mean(rthis); % Altitude of this cloud
+    if ii==1
+        altDownLayers(~isnan(thisVelSmooth))=meanAlt;
+        velDownLayers=thisVelSmooth;
+    else
+        % Compare with existing cloud levels
+        diffAlts=abs(allMeanAltDown-meanAlt);
+        [minDiffAlt,minInd]=min(diffAlts);
+        if minDiffAlt<=3 % If altitude differenc is small, add to existing level
+            altDownLayers(minInd,~isnan(thisVelSmooth))=meanAlt;
+            velDownLayers(minInd,~isnan(thisVelSmooth))=thisVelSmooth(~isnan(thisVelSmooth));
+        else % Otherwise create new level
+            altAddRow=nan(1,size(velDown,2));
+            altAddRow(~isnan(thisVelSmooth))=meanAlt;
+            altDownLayers=cat(1,altDownLayers,altAddRow);
+            velDownLayers=cat(1,velDownLayers,thisVelSmooth);
+        end
     end
+    allMeanAltDown=mean(altDownLayers,2,'omitnan');
 end
 
+%% Repeat with zenith
+
+% Spread the alt bin mat data out mostly horizontally, but also vertically,
+% so close-by regions connect
 velUpMask=~isnan(velUp);
 velUpMask=imdilate(velUpMask,se);
 connUp=bwconncomp(velUpMask);
-%velUpGood=nan(size(velUp));
+
+% Find separate levels of cloud tops
+velUpLayers=nan(1,size(velUp,2));
+altUpLayers=nan(1,size(velUp,2));
 
 for ii=1:connUp.NumObjects
-    thisReg=nan(size(velLayers));
-    thisReg(connUp.PixelIdxList{ii})=velUp(connUp.PixelIdxList{ii});
-    thisRegVel=median(thisReg,1,'omitnan');
+    thisRegVel=nan(size(velLayers));
+    thisRegVel(connUp.PixelIdxList{ii})=velUp(connUp.PixelIdxList{ii});
+    % Vertical mean over top three pixels
+    thisRegVel=median(thisRegVel,1,'omitnan');
+    % Smooth
     thisVelSmooth=movmedian(thisRegVel,smoothfactor,'omitnan');
     thisVelSmooth(isnan(thisRegVel))=nan;
-    thisVelInt=fillmissing(thisVelSmooth,'linear','EndValues','nearest');
+
+    % Find altitude
     [rthis,cthis]=ind2sub(size(velLayers),connUp.PixelIdxList{ii});
-
-    % Find closest nadir region
-    minRow=min(rthis);
-    maxRow=max(rthis);
-
-%     uc=unique(cthis);
-%     for jj=1:length(uc)
-%         velUpGood(find(velUpMask(:,uc(jj))>0),uc(jj))=thisVelInt(uc(jj));
-%     end
+    meanAlt=mean(rthis);
+    if ii==1
+        altUpLayers(~isnan(thisVelSmooth))=meanAlt;
+        velUpLayers=thisVelSmooth;
+    else % Compare with existing cloud levels
+        diffAlts=abs(allMeanAltUp-meanAlt);
+        [minDiffAlt,minInd]=min(diffAlts);
+        if minDiffAlt<=3
+            altUpLayers(minInd,~isnan(thisVelSmooth))=meanAlt;
+            velUpLayers(minInd,~isnan(thisVelSmooth))=thisVelSmooth(~isnan(thisVelSmooth));
+        else % Otherwise create new level
+            altAddRow=nan(1,size(velUp,2));
+            altAddRow(~isnan(thisVelSmooth))=meanAlt;
+            altUpLayers=cat(1,altUpLayers,altAddRow);
+            velUpLayers=cat(1,velUpLayers,thisVelSmooth);
+        end
+    end
+    allMeanAltUp=mean(altUpLayers,2,'omitnan');
 end
 
+%% Create correction
+% Remove small
+maskDown=movmean(velDownLayers,5,2,'omitnan');
+maskDown=movmean(maskDown,25,2,'includenan');
+velDownLayers(isnan(maskDown))=nan;
+maskUp=movmean(velUpLayers,5,2,'omitnan');
+maskUp=movmean(maskUp,25,2,'includenan');
+velUpLayers(isnan(maskUp))=nan;
 
-%% Make sure we are at the right altitude
-smoothfactor=10001;
-cloudTopRemove=cloudTopAlts;
-cloudTopRemove(isnan(cloudTopVel))=nan;
-cloudTopRemove(data.elevation>0)=nan;
-movAlt=movmedian(cloudTopRemove,smoothfactor,'omitnan');
-% movAlt(isnan(cloudTopVel))=nan;
-% movAlt(data.elevation>0)=nan;
-movAlt=fillmissing(movAlt,'linear','EndValues','nearest');
+% Connect cloud top vels horizontally in the different levels
+downInt=fillmissing(velDownLayers,'linear',2,'EndValues','nearest');
+upInt=fillmissing(velUpLayers,'linear',2,'EndValues','nearest');
+% For zenith data, do not use data that is too far away
+smoothMins=60;
+smoothPix=hcrTimeToPix(smoothMins,etime(datevec(data.time(2)),datevec(data.time(1))))+1;
+maskZenithInt=movmean(velUpLayers,smoothPix,2,'omitnan');
+upInt(isnan(maskZenithInt))=nan;
 
-%% Calc things
+% Compare level altitudes between nadir and zenith and if they are close,
+% calculate correction
+zenithCorrectionRaw=[];
+for ii=1:length(allMeanAltDown)
+    for jj=1:length(allMeanAltUp)
+        if abs(allMeanAltUp(jj)-allMeanAltDown(ii))<=3
+            zenithCorrectionRaw=cat(1,zenithCorrectionRaw,downInt(ii,:)-upInt(jj,:));
+        end
+    end
+end
 
-cloudTopVelInds=find(~isnan(cloudTopVel));
-cloudTopNadirInds=find(data.elevation<=0);
-cloudTopZenithInds=find(data.elevation>0);
-
-cloudTopVelIndsNadir=intersect(cloudTopVelInds,cloudTopNadirInds);
-cloudTopVelShrunkNadir=cloudTopVel(cloudTopVelIndsNadir);
-
-medCloudVelShrunkNadir=movmedian(cloudTopVelShrunkNadir,smoothfactor,'omitnan');
-medCloudVelNadir=nan(size(cloudTopVel));
-medCloudVelNadir(cloudTopVelIndsNadir)=medCloudVelShrunkNadir;
-medCloudVelNadirInt=fillmissing(medCloudVelNadir,'linear','EndValues','nearest');
-
-cloudTopVelIndsZenith=intersect(cloudTopVelInds,cloudTopZenithInds);
-cloudTopVelOnlyZenith=nan(size(cloudTopVel));
-cloudTopVelOnlyZenith(cloudTopVelIndsZenith)=cloudTopVel(cloudTopVelIndsZenith);
-
-% Remove isolated
-ctvelz=movmean(cloudTopVelOnlyZenith,101,'omitnan');
-ctMask=~isnan(ctvelz);
-ctMask=bwareaopen(ctMask,180);
-cloudTopVelOnlyZenith(ctMask==0)=nan;
-
-% Remove those that were collected at the wrong altitude
-cloudTopVelOnlyZenith(abs(cloudTopAlts-movAlt)>3000)=nan;
-
-medCloudVelZenith=movmedian(cloudTopVelOnlyZenith,smoothfactor*2+1,'omitnan');
-medCloudVelZenith(isnan(cloudTopVelOnlyZenith))=nan;
-
-zenithCorrection=medCloudVelNadirInt-medCloudVelZenith;
-zenithCorrection=fillmissing(zenithCorrection,'linear','EndValues','nearest');
-zenithCorrection(data.elevation<=0)=nan;
-velZenithCorrSmooth=movmedian(cloudTopVelOnlyZenith,smoothfactor,'omitnan')+zenithCorrection;
+% Average corrections over all levels
+zenithCorrectionRaw=mean(zenithCorrectionRaw,1,'omitnan');
+% If no correction was found, set it to zero everywhere
+zenithCorrectionRaw(isnan(zenithCorrectionRaw))=0;
+% Only up
+zenithCorrectionRaw(data.elevation<=0)=nan;
+% Smooth once more
+zenithCorrection=movmean(zenithCorrectionRaw,smoothfactor,'omitnan');
+zenithCorrection(isnan(zenithCorrectionRaw))=nan;
 end
