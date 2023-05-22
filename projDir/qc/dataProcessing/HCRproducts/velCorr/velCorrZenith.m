@@ -201,6 +201,12 @@ velUpMask=~isnan(velUp);
 velUpMask=imdilate(velUpMask,se);
 connUp=bwconncomp(velUpMask);
 
+if connUp.NumObjects==0
+    zenithCorrection=zeros(1,size(velNadirCorr,2));
+    disp('No zenith correction found.');
+    return
+end
+
 % Find separate levels of cloud tops
 velUpLayers=nan(1,size(velUp,2));
 altUpLayers=nan(1,size(velUp,2));
