@@ -28,7 +28,7 @@ figdir=[indir(1:end-5),'velCorrZenithPlots/wholeFlights/'];
 if strcmp(project,'socrates')
     polyTimePeriod=20; %Time period for poly fit in seconds
 else
-    polyTimePeriod=10; %Time period for poly fit in seconds
+    polyTimePeriod=15; %Time period for poly fit in seconds
 end
 polyOrder=3; % Order of polynomial fit
 

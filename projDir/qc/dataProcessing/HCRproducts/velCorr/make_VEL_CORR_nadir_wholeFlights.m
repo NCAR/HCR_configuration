@@ -19,7 +19,11 @@ caseList = table2array(readtable(infile));
 
 indir=HCRdir(project,quality,qcVersion,freqData);
 
-polyTimePeriod=15; %Time period for poly fit in seconds
+if strcmp(project,'socrates')
+    polyTimePeriod=20; %Time period for poly fit in seconds
+else
+    polyTimePeriod=15; %Time period for poly fit in seconds
+end
 polyOrder=3; % Order of polynomial fit
 
 for kk=1:size(caseList,1)

@@ -222,8 +222,12 @@ $PROJ_DIR/qc/dataProcessing/HCRproducts/flag/cfradialDBZmasked.m
 # Find out which poly order to use by running
 $PROJ_DIR/qc/dataProcessing/HCRproducts/velCorr/plotVelCorr_findPoly.m
 
-# To make the VEL_CORR field, modify and run
+# To make the VEL_CORR field
+# If nadir and zenith pointing correction is desired run
 $PROJ_DIR/qc/dataProcessing/HCRproducts/velCorr/make_VEL_CORR_nadir_zenith_wholeFlights.m
+# If only nadir correction is desired run
+$PROJ_DIR/qc/dataProcessing/HCRproducts/velCorr/make_VEL_CORR_nadir_wholeFlights.m
+
 # The filter lenght can be adjusted in this file. To test out 
 # different filter lenghts, run
 $PROJ_DIR/qc/dataProcessing/HCRproducts/velCorr/plotVelCorr_findPoly.m
