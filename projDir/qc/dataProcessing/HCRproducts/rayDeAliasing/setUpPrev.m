@@ -26,7 +26,7 @@ else
         velForPrevMask(~isnan(velPrev))=1;
 
         % Create new velPrev
-        velPrev=movmedian(finalRay,20,'omitnan');
+        velPrev=movmedian(finalRay,21,'omitnan');
         velPrev(isnan(finalRay))=nan;
         velPrev(~velForPrevMask)=nan;
     end
@@ -41,7 +41,7 @@ else
     velPrev(isnan(velPrev))=prevKeep(isnan(velPrev));
 
     % Interpolate prev
-    prevMedLarge=movmedian(velPrev,50,'omitnan');
+    prevMedLarge=movmedian(velPrev,51,'omitnan');
 
     velPrev(isnan(prevMedLarge))=defaultPrev;
     velPrev=fillmissing(velPrev,'linear','EndValues','nearest');
