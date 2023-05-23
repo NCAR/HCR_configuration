@@ -242,14 +242,11 @@ $PROJ_DIR/qc/dataProcessing/HCRproducts/velCorr/cfradialVelCorr.m
 # To de-alias velocity and mask out and non-cloud
 # data run either (!!!)
 
-$PROJ_DIR/qc/dataProcessing/HCRproducts/VELdeAliasing/call_VELdeAlias_wholeFlights.m
-
-or (!!!)
 
 $PROJ_DIR/qc/dataProcessing/HCRproducts/rayDeAliasing/call_rayDeAlias_wholeFlights_withPlot.m
 
 # To add it to the dataset run
-$PROJ_DIR/qc/dataProcessing/HCRproducts/VELdeAliasing/cfradialVELunfolded.m
+$PROJ_DIR/qc/dataProcessing/HCRproducts/rayDeAliasing/cfradialVELunfolded.m
 
 #################################################################
 # Mask out non vertical angles in VEL
