@@ -108,7 +108,7 @@ set(gca,'TickLength',[0 .01]);
 ylim([-25,250]);
 text(1:1:16,zeros(1,16)-12.5,num2str(nums),'HorizontalAlignment','center');
 yticks(0:50:250);
-ylabel('Length (km)');
+ylabel('Width (km)');
 
 set(gca, 'YGrid', 'on', 'XGrid', 'off')
 box on
@@ -121,7 +121,7 @@ plot([13.5,13.5],[-100,1000],'-k','LineWidth',0.4);
 plot([15.5,15.5],[-100,1000],'-k','LineWidth',0.4);
 plot([14.5,14.5],[-100,1000],'-k','LineWidth',0.4);
 
-title('(b) Shaft length (km)');
+title('(b) Shaft width (km)');
 
 % (c) Mean reflecitivy
 varName='meanRef';
