@@ -7,7 +7,7 @@ addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
 project='spicule'; %socrates, aristo, cset
 quality='qc1'; %field, qc1, or qc2
-qcVersion='v1.1';
+qcVersion='v1.2';
 freqData='10hz'; % 10hz, 100hz, 2hz, or combined
 dataFreq=10;
 
@@ -71,7 +71,7 @@ for aa=1:length(caseStart)
     
     close all
     
-    f1=figure('DefaultAxesFontSize',12,'Position',[0 300 1700 1200],'visible','on');
+    f1=figure('DefaultAxesFontSize',12,'Position',[0 300 1700 1200],'visible','off');
     
     s1=subplot(2,1,1);
     h1=surf(data.time,data.asl./1000,velMasked,'edgecolor','none');

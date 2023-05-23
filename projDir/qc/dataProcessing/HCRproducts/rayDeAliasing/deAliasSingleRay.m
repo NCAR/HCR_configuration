@@ -43,7 +43,7 @@ else
     %% Moving median test
 
     movMedRay=timeConsRay;
-    medTimeCons=movmedian(movMedRay,51,'omitnan');
+    medTimeCons=movmedian(movMedRay,75,'omitnan'); % Was 50
     diffMed=movMedRay-medTimeCons;
     movMedRay(diffMed>nyq*0.8)=movMedRay(diffMed>nyq*0.8)-2*nyq;
     movMedRay(diffMed<-(nyq*0.8))=movMedRay(diffMed<-(nyq*0.8))+2*nyq;
