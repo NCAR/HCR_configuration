@@ -93,6 +93,9 @@ plot([22.5,22.5],[-100,1000],'-k','LineWidth',0.4);
 plot([23.5,23.5],[-100,1000],'-k','LineWidth',0.4);
 
 title('(a) Mean convectivity');
+text(19.07,1.13,'CSET','FontWeight','bold','EdgeColor','g','Margin',1);
+text(20.5,1.13,'SOCRATES','FontWeight','bold','EdgeColor','b','Margin',1);
+text(22.8,1.13,'OTREC','FontWeight','bold','EdgeColor','r','Margin',1);
 
 % (b) Max convectivity
 varName='maxConvAll';

@@ -93,6 +93,9 @@ plot([19.5,19.5],[-100,1000],'-k','LineWidth',0.4);
 plot([20.5,20.5],[-100,1000],'-k','LineWidth',0.4);
 
 title('(a) Altitude percentile');
+text(16.07,110,'CSET','FontWeight','bold','EdgeColor','g','Margin',1);
+text(17.5,110,'SOCRATES','FontWeight','bold','EdgeColor','b','Margin',1);
+text(19.8,110,'OTREC','FontWeight','bold','EdgeColor','r','Margin',1);
 
 % (b) Area
 varName='area';

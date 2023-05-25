@@ -90,6 +90,9 @@ plot([15.5,15.5],[-100,1000],'-k','LineWidth',0.4);
 plot([14.5,14.5],[-100,1000],'-k','LineWidth',0.4);
 
 title('(a) Precipitation fraction');
+text(13.3,1.13,'CSET','FontWeight','bold','EdgeColor','g','Margin',1);
+text(14.0,1.13,'SOCRATES','FontWeight','bold','EdgeColor','b','Margin',1);
+text(15.3,1.13,'OTREC','FontWeight','bold','EdgeColor','r','Margin',1);
 
 % (b) Length
 varName='shaftKM';
