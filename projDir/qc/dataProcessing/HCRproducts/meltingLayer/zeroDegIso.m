@@ -1,12 +1,10 @@
-function [layerAlts,layerInds,layerAltsAdj,layerIndsAdj,tempDataY]=zeroDegIso(data,zeroAdjustMeters,oneGate,oddAngles)
+function [layerAltsOut,layerIndsOut]=zeroDegIso(data)
 % Find zero degree isotherms
+oddAngles=find(data.elevation>-70 & data.elevation<70);
 
-tempTemp=data.TEMP;
-tempTemp(:,oddAngles)=nan;
-signTemp=sign(tempTemp);
+data.TEMP(:,oddAngles)=nan;
+signTemp=sign(data.TEMP);
 zeroDeg=diff(signTemp,1);
-
-clear tempTemp signTemp
 
 zeroDeg(isnan(zeroDeg))=0;
 zeroDeg=cat(1,zeroDeg,zeros(size(data.time)));
@@ -14,12 +12,11 @@ zeroDeg(zeroDeg~=0)=1;
 
 zeroSum=sum(zeroDeg,1);
 tempDataY=find(zeroSum~=0);
-zeroSum=zeroSum(tempDataY);
 zeroDeg=zeroDeg(:,tempDataY);
 
 zeroAlt=nan(size(zeroDeg));
-aslTemp=data.asl(:,tempDataY);
-zeroAlt(zeroDeg==1)=aslTemp(zeroDeg==1);
+data.asl=data.asl(:,tempDataY);
+zeroAlt(zeroDeg==1)=data.asl(zeroDeg==1);
 
 %% Connect zero degree layers
 
@@ -77,19 +74,23 @@ for ii=1:length(tempDataY)
     end
 end
 
-%% Add adjusted layers
-zeroAdjustGates=round(zeroAdjustMeters/oneGate);
+layerAltsOut=nan(size(layerAlts,1),length(data.time));
+layerAltsOut(:,tempDataY)=layerAlts;
 
-layerIndsAdj=nan(size(layerInds));
-layerAltsAdj=nan(size(layerAlts));
+layerIndsOut=nan(size(layerInds,1),length(data.time));
+layerIndsOut(:,tempDataY)=layerInds;
 
-elevTemp=data.elevation(tempDataY);
+% %% Add adjustment
+% zeroAdjustGates=round(zeroAdjustMeters/oneGate);
+% 
+% layerIndsAdj=nan(size(layerInds));
+% layerAltsAdj=nan(size(layerAlts));
+% 
+% data.elevation=data.elevation(tempDataY);
+% 
+% layerIndsAdj(:,data.elevation<0)=layerInds(:,data.elevation<0)-zeroAdjustGates;
+% layerIndsAdj(:,data.elevation>=0)=layerInds(:,data.elevation>=0)+zeroAdjustGates;
+% 
+% layerAltsAdj=layerAlts+zeroAdjustMeters;
 
-for kk=1:length(tempDataY)
-    if elevTemp(kk)<0
-        layerIndsAdj(:,kk)=layerInds(:,kk)-zeroAdjustGates;
-    else
-        layerIndsAdj(:,kk)=layerInds(:,kk)+zeroAdjustGates;
-    end
-    layerAltsAdj(:,kk)=layerAlts(:,kk)+zeroAdjustMeters;
 end
