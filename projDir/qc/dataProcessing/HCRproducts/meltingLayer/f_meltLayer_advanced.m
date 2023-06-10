@@ -33,41 +33,46 @@ end
 
 %% Prepare VEL data
 
-% Reverse sign in zenith and remove upward motion
-dataShort.VEL_MASKED(:,dataShort.elevation>0)=-dataShort.VEL_MASKED(:,dataShort.elevation>0);
-dataShort.VEL_MASKED(dataShort.VEL_MASKED<0)=nan;
-
 % Median filter
 dataShort.VEL_MASKED=medfilt2(dataShort.VEL_MASKED,[3,7]);
 
+upInds=find(dataShort.elevation>=0);
+downInds=find(dataShort.elevation<0);
+
+velNoNeg=dataShort.VEL_MASKED;
+velNoNeg(:,upInds)=-velNoNeg(:,upInds);
+velNoNeg(velNoNeg<=0)=nan;
+velNoNeg(:,upInds)=-velNoNeg(:,upInds);
+
 %% Velocity derivative
-velDiff=diff(dataShort.VEL_MASKED,1);
-velDiff=cat(1,nan(size(dataShort.time)),velDiff);
+velDiffShort=diff(velNoNeg,1);
+velDiffUp=velDiffShort(:,upInds);
+velDiffUp=cat(1,nan(1,size(velDiffUp,2)),velDiffUp);
+velDiffDown=velDiffShort(:,downInds);
+velDiffDown=cat(1,velDiffDown,nan(1,size(velDiffDown,2)));
+velDiff=nan(size(dataShort.VEL_MASKED));
+velDiff(:,upInds)=velDiffUp;
+velDiff(:,downInds)=velDiffDown;
 
 %% Fuzzy logic to determine where melting layer is likely
 
 meltProb=findMeltProb(dataShort,velDiff);
-meltProbThresh=0.6;
+meltProbThreshHigh=0.7;
+meltProbThreshLow=0.55;
+meltProb(isnan(dataShort.DBZ_MASKED))=nan;
+
+maskHigh=meltProb>meltProbThreshHigh;
+maskHigh=bwareaopen(maskHigh,35);
 
 %% Input fields
 velField=velDiff;
-velField(meltProb<meltProbThresh)=nan;
+velField(maskHigh==0)=nan;
 ldrField=dataShort.LDR;
-ldrField(meltProb<meltProbThresh)=nan;
-
-%% Mask
-maskFields=(~isnan(velField) | ~isnan(ldrField));
-maskFields=bwareaopen(maskFields,5);
-
-velField(maskFields==0)=nan;
-ldrField(maskFields==0)=nan;
+ldrField(maskHigh==0)=nan;
 
 %% Maxima
 [velMax,velMaxInd]=max(velField,[],1,'omitnan');
-%velMaxInd(isnan(velMax))=nan;
-
 [ldrMax,ldrMaxInd]=max(ldrField,[],1,'omitnan');
-%ldrMaxInd(isnan(ldrMax))=nan;
 
 %% Get altitudes of max
 velMaxPlotInd=velMaxInd(~isnan(velMax));
@@ -82,20 +87,47 @@ colldr(isnan(ldrMax))=[];
 linldr=sub2ind(size(dataShort.LDR),ldrMaxPlotInd,colldr);
 maxLdrAlt=dataShort.asl(linldr);
 
-%% Max mask, medians and stds
+%% Medians and stds
 smoothVal=201;
 maxVelAltNan=nan(size(dataShort.time));
 maxVelAltNan(colvel)=maxVelAlt;
-medVel=movmedian(maxVelAltNan,smoothVal,'omitnan');
+% Std
 stdVel=movstd(maxVelAltNan,smoothVal,'omitnan');
+stdVel(isnan(maxVelAltNan))=nan;
+maxVelAltNan(stdVel>100)=nan;
+% Median
+medVel=movmedian(maxVelAltNan,smoothVal,'omitnan');
+medVel(isnan(maxVelAltNan))=nan;
 
 maxLdrAltNan=nan(size(dataShort.time));
 maxLdrAltNan(colldr)=maxLdrAlt;
-medLdr=movmedian(maxLdrAltNan,smoothVal,'omitnan');
+% Std
 stdLdr=movstd(maxLdrAltNan,smoothVal,'omitnan');
+stdLdr(isnan(maxLdrAltNan))=nan;
+maxLdrAltNan(stdLdr>100)=nan;
+% Median
+medLdr=movmedian(maxLdrAltNan,smoothVal,'omitnan');
+medLdr(isnan(maxLdrAltNan))=nan;
+% Combine median and connect
+medComb=mean([medVel;medLdr],1,'omitnan');
+medFilled=fillmissing(medComb,'linear');
 
-%% Plot 1
+% Keep only in close proximity
+medMask=~isnan(medComb);
+medMask=imdilate(medMask,strel('line',5000,0));
+medFilled(medMask==0)=nan;
 
+%% Melting layer mask
+medFilledMat=repmat(medFilled,size(dataShort.DBZ_MASKED,1),1);
+goodAlts=dataShort.asl-medFilledMat;
+goodAlts(abs(goodAlts)>150)=nan;
+
+meltMask=(meltProb>meltProbThreshLow & ~isnan(goodAlts));
+meltMask=imclose(meltMask,strel('disk',15));
+meltMask=imfill(meltMask,'holes');
+meltMask=bwareaopen(meltMask,35);
+
+%% Plot
 disp('Plotting ...')
 ylimits=[0,5];
 
@@ -103,165 +135,7 @@ showPlot='off';
 
 close all
 
-newInds=1:round(length(dataShort.time)/2000):length(dataShort.time);
-
-% Resample for plotting
-newDBZ=dataShort.DBZ_MASKED(:,newInds);
-newLDR=dataShort.LDR(:,newInds);
-newVEL=dataShort.VEL_MASKED(:,newInds);
-newVELdiff=velDiff(:,newInds);
-newASL=dataShort.asl(:,newInds);
-newTime=dataShort.time(newInds);
-
-maskPlot=double(maskFields);
-maskPlot(maskPlot==0)=nan;
-newMask=maskPlot(:,newInds);
-newProb=meltProb(:,newInds);
-newProb(newProb<0.1)=nan;
-
-fig1=figure('DefaultAxesFontSize',11,'position',[100,1300,1500,1200],'visible',showPlot);
-
-ax1=subplot(4,1,1);
-hold on;
-sub1=surf(newTime,newASL./1000,newDBZ,'edgecolor','none');
-view(2);
-colMapDBZ(sub1);
-scatter(dataShort.time(~isnan(velMax)),maxVelAlt./1000,3.5,'filled','MarkerFaceColor','c');
-scatter(dataShort.time(~isnan(ldrMax)),maxLdrAlt./1000,3.5,'filled','MarkerFaceColor','g');
-ylim(ylimits);
-ylabel('Altitude (km)');
-xlim([dataShort.time(1),dataShort.time(end)]);
-title('Reflectivity and melting layer')
-grid on
-set(gca,'xticklabel',[])
-ax1.Position=[0.06 0.765 0.87 0.21];
-ax1.SortMethod='childorder';
-
-% LDR
-
-ax2=subplot(4,1,2);
-hold on;
-surf(newTime,newASL./1000,newLDR,'edgecolor','none');
-view(2);
-caxis([-25 -5]);
-ax2.Colormap=jet;
-colorbar
-ylim(ylimits);
-ylabel('Altitude (km)');
-xlim([dataShort.time(1),dataShort.time(end)]);
-title('LDR')
-grid on
-set(gca,'xticklabel',[])
-ax2.Position=[0.06 0.525 0.87 0.21];
-
-% VEL
-
-ax3=subplot(4,1,3);
-hold on;
-surf(newTime,newASL./1000,newVEL,'edgecolor','none');
-view(2);
-ax3.Colormap=jet;
-caxis([0 6]);
-colorbar
-ylim(ylimits);
-ylabel('Altitude (km)');
-xlim([dataShort.time(1),dataShort.time(end)]);
-title('VEL')
-grid on
-set(gca,'xticklabel',[])
-ax3.Position=[0.06 0.287 0.87 0.21];
-
-linkaxes([ax1 ax2 ax2 ax3],'xy');
-
-% Diff VEL
-ax4=subplot(4,1,4);
-hold on;
-surf(newTime,newASL./1000,newVELdiff,'edgecolor','none');
-view(2);
-ax4.Colormap=jet;
-caxis([0 0.6]);
-colorbar
-ylim(ylimits);
-ylabel('Altitude (km)');
-xlim([dataShort.time(1),dataShort.time(end)]);
-title('VEL diff')
-grid on
-ax4.Position=[0.06 0.05 0.87 0.21];
-
-linkaxes([ax1 ax2 ax2 ax3 ax4],'xy');
-
-formatOut = 'yyyymmdd_HHMM';
-set(gcf,'PaperPositionMode','auto')
-print([figdir,'meltLayer1_',datestr(dataShort.time(1),formatOut),'_to_',datestr(dataShort.time(end),formatOut)],'-dpng','-r0');
-
-%% Plot 2
-
-fig2=figure('DefaultAxesFontSize',11,'position',[100,1300,1500,1200],'visible',showPlot);
-
-ax1=subplot(4,1,1);
-hold on;
-sub1=surf(newTime,newASL./1000,newMask,'edgecolor','none');
-view(2);
-%scatter(dataShort.time(~isnan(velMax)),dataShort.asl(linvel)./1000,3.5,'filled','MarkerFaceColor','m');
-%scatter(dataShort.time(~isnan(ldrMax)),dataShort.asl(linldr)./1000,3.5,'filled','MarkerFaceColor','g');
-ylim(ylimits);
-ylabel('Altitude (km)');
-xlim([dataShort.time(1),dataShort.time(end)]);
-title('Mask')
-grid on
-set(gca,'xticklabel',[])
-ax1.Position=[0.06 0.765 0.87 0.21];
-ax1.SortMethod='childorder';
-
-% Melt probability
-
-ax2=subplot(4,1,2);
-hold on;
-surf(newTime,newASL./1000,newProb,'edgecolor','none');
-view(2);
-caxis([0 1]);
-ax2.Colormap=turbo(20);
-colorbar
-ylim(ylimits);
-ylabel('Altitude (km)');
-xlim([dataShort.time(1),dataShort.time(end)]);
-title('MeltProb')
-grid on
-set(gca,'xticklabel',[])
-ax2.Position=[0.06 0.525 0.87 0.21];
-
-% Medians
-
-ax3=subplot(4,1,3);
-hold on;
-scatter(dataShort.time(~isnan(velMax)),maxVelAlt./1000,3.5,'filled','MarkerFaceColor','b');
-scatter(dataShort.time(~isnan(ldrMax)),maxLdrAlt./1000,3.5,'filled','MarkerFaceColor','g');
-plot(dataShort.time,medVel./1000,'-m','LineWidth',1.5);
-plot(dataShort.time,medLdr./1000,'-r','LineWidth',1.5);
-ylim(ylimits);
-ylabel('Altitude (km)');
-xlim([dataShort.time(1),dataShort.time(end)]);
-title('Medians')
-grid on
-set(gca,'xticklabel',[])
-ax3.Position=[0.06 0.287 0.87 0.21];
-
-% Diff VEL
-ax4=subplot(4,1,4);
-hold on;
-plot(dataShort.time,stdVel,'-m','LineWidth',1.5);
-plot(dataShort.time,stdLdr,'-r','LineWidth',1.5);
-ylim([0,400]);
-ylabel('Altitude (km)');
-xlim([dataShort.time(1),dataShort.time(end)]);
-title('Standard devs')
-grid on
-ax4.Position=[0.06 0.05 0.87 0.21];
-
-%linkaxes([ax1 ax2 ax2 ax3 ax4],'xy');
-
-formatOut = 'yyyymmdd_HHMM';
-set(gcf,'PaperPositionMode','auto')
-print([figdir,'meltLayer2_',datestr(dataShort.time(1),formatOut),'_to_',datestr(dataShort.time(end),formatOut)],'-dpng','-r0');
+meltTestPlot1;
+meltTestPlot2;
 
 end
