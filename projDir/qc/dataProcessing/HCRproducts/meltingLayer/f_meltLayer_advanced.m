@@ -154,7 +154,7 @@ data.meltMask(:,nonMissingInds==1)=meltMask;
 data.meltProb=nan(size(data.DBZ_MASKED));
 data.meltProb(:,nonMissingInds==1)=meltProb;
 
-plotMedStd=1;
+plotMedStd=0;
 if plotMedStd
     ylimits=[0,8];
     meltTestPlot3;
