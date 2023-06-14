@@ -3,9 +3,9 @@
 clear all;
 close all;
 
-project='spicule'; %socrates, aristo, cset
-quality='qc1'; %field, qc1, or qc2
-qcVersion='v1.2';
+project='noreaster'; %socrates, aristo, cset
+quality='qc2'; %field, qc1, or qc2
+qcVersion='v2.1';
 freqData='10hz'; % 10hz, 100hz, or 2hz
 
 plotYes=1;
@@ -13,8 +13,8 @@ showPlot='off';
 
 saveData=0;
 
-thresholds.meltProbLow=0.55;
-thresholds.meltProbHigh=0.7;
+thresholds.meltProbLow=0.4;
+thresholds.meltProbHigh=0.55;
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
