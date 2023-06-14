@@ -3,9 +3,9 @@
 clear all;
 close all;
 
-project='noreaster'; %socrates, aristo, cset
-quality='qc2'; %field, qc1, or qc2
-qcVersion='v2.1';
+project='spicule'; %socrates, aristo, cset
+quality='qc1'; %field, qc1, or qc2
+qcVersion='v1.2';
 freqData='10hz'; % 10hz, 100hz, or 2hz
 
 plotYes=1;
@@ -76,6 +76,12 @@ for aa=1:size(caseList,1)
 
     data.LDR(data.FLAG~=1)=nan;
 
+    % SPICULE has noisy LDR data that needs to be pre-processed
+    if strcmp(project,'spicule')
+        disp('Pre-processing LDR ...');
+        data.LDR=preProcessLDR(data.LDR);
+    end
+
     %% Find melting layer
 
     disp('Finding melting layer ...')
@@ -129,6 +135,7 @@ for aa=1:size(caseList,1)
                 timeForMask=data.time(timeInds);
                 aslForMask=data.asl(:,timeInds);
                 maskForPlot=data.meltMask(:,timeInds);
+                timeMat=repmat(timeForMask,size(data.DBZ_MASKED,1),1);
 
                 close all
 
