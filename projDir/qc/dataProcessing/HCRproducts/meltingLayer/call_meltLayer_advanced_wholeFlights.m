@@ -122,9 +122,10 @@ for aa=1:size(caseList,1)
 
                 newLDR=data.LDR(:,newInds);
                 velPlot=data.VEL_MASKED;
-                velPlot(data.elevation>0)=-velPlot(data.elevation>0);
+                velPlot(:,data.elevation>0)=-velPlot(:,data.elevation>0);
                 newVEL=velPlot(:,newInds);
                 newVELdiff=data.velDiff(:,newInds);
+                newDBZdiff=data.dbzDiff(:,newInds);
                 newASL=data.asl(:,newInds);
                 newTime=data.time(newInds);
 
