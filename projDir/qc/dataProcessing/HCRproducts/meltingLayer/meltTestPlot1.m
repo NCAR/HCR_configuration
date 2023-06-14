@@ -41,7 +41,7 @@ hold on;
 surf(newTime,newASL./1000,newVEL,'edgecolor','none');
 view(2);
 ax3.Colormap=velCols;
-caxis([-6 6]);
+caxis([-8 8]);
 colorbar
 ylim(ylimits);
 ylabel('Altitude (km)');
@@ -52,26 +52,22 @@ box on
 set(gca,'xticklabel',[])
 ax3.Position=[0.06 0.287 0.87 0.21];
 
-linkaxes([ax1 ax2 ax2 ax3],'xy');
-
-% Diff VEL
 ax4=subplot(4,1,4);
 hold on;
-surf(newTime,newASL./1000,newVELdiff,'edgecolor','none');
+surf(newTime,newASL./1000,newVEL,'edgecolor','none');
 view(2);
-colDiff1=winter(4);
-colDiff2=spring(20);
-colDiff=cat(1,flipud(colDiff1),colDiff2);
-ax4.Colormap=colDiff;
-caxis([0 0.6]);
+ax4.Colormap=velCols;
+caxis([-8 8]);
+scatter(timeMat(maskForPlot==1),aslForMask(maskForPlot==1)./1000,2.5,'filled','MarkerFaceColor','k');
 colorbar
 ylim(ylimits);
 ylabel('Altitude (km)');
 xlim([newTime(1),newTime(end)]);
-title('VEL diff')
+title('Melting layer')
 grid on
 box on
 ax4.Position=[0.06 0.05 0.87 0.21];
+ax4.SortMethod='childorder';
 
 linkaxes([ax1 ax2 ax2 ax3 ax4],'xy');
 

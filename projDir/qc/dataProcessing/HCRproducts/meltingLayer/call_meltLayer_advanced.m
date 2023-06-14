@@ -11,8 +11,8 @@ freqData='10hz'; % 10hz, 100hz, or 2hz
 plotYes=1;
 showPlot='off';
 
-thresholds.meltProbLow=0.55;
-thresholds.meltProbHigh=0.7;
+thresholds.meltProbLow=0.4; %0.55
+thresholds.meltProbHigh=0.55; %0.7
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
@@ -91,9 +91,10 @@ for aa=1:length(caseStart)
         newDBZ=data.DBZ_MASKED(:,newInds);
         newLDR=data.LDR(:,newInds);
         velPlot=data.VEL_MASKED;
-        velPlot(data.elevation>0)=-velPlot(data.elevation>0);
+        velPlot(:,data.elevation>0)=-velPlot(:,data.elevation>0);
         newVEL=velPlot(:,newInds);
         newVELdiff=data.velDiff(:,newInds);
+        newDBZdiff=data.dbzDiff(:,newInds);
         newASL=data.asl(:,newInds);
         newTime=data.time(newInds);
 
@@ -104,6 +105,7 @@ for aa=1:length(caseStart)
         timeForMask=data.time(timeInds);
         aslForMask=data.asl(:,timeInds);
         maskForPlot=data.meltMask(:,timeInds);
+        timeMat=repmat(timeForMask,size(data.DBZ_MASKED,1),1);
 
         close all
 

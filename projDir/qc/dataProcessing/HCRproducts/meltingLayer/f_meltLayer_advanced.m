@@ -15,7 +15,7 @@ function data=f_meltLayer_advanced(data,thresholds,figdir)
 % 
 % [layerAlts,layerInds]=zeroDegIso(data);
 
-%% Truncate to non missing and regions with sub deg temps
+%% Truncate to non missing and regions with sub 7 deg temps
 gapSecs=10;
 tempMax=7;
 nonMissingInds=findNonMissingInds(data,gapSecs);
@@ -31,10 +31,7 @@ for ii=1:length(dataInVars)
     dataShort.(dataInVars{ii})=data.(dataInVars{ii})(:,nonMissingInds==1);
 end
 
-%% Prepare VEL data
-
-% Median filter to smoth data
-dataShort.VEL_MASKED=medfilt2(dataShort.VEL_MASKED,[3,7]);
+%% Velocity derivative
 
 % Remove upward motion to limit false detections
 upInds=find(dataShort.elevation>=0);
@@ -45,7 +42,10 @@ velNoNeg(:,upInds)=-velNoNeg(:,upInds);
 velNoNeg(velNoNeg<=0)=nan;
 velNoNeg(:,upInds)=-velNoNeg(:,upInds);
 
-%% Velocity derivative
+% Median filter to smoth data
+velNoNeg=medfilt2(velNoNeg,[3,7]);
+
+% Derivative
 velDiffShort=diff(velNoNeg,1);
 
 % Add row of nans to make number of gates match with other variables
@@ -57,16 +57,39 @@ velDiff=nan(size(dataShort.VEL_MASKED));
 velDiff(:,upInds)=velDiffUp;
 velDiff(:,downInds)=velDiffDown;
 
+%% Reflectivity derivative
+
+% Median filter to smoth data
+dataShort.DBZ_MASKED=medfilt2(dataShort.DBZ_MASKED,[3,7]);
+
+% Erode in the vertical to get rid of edges
+dbzMask=~isnan(dataShort.DBZ_MASKED);
+dbzMask=imerode(dbzMask,strel('line',15,90));
+dbzEroded=dataShort.DBZ_MASKED;
+dbzEroded(dbzMask==0)=nan;
+
+% Derivative
+dbzDiffShort=diff(dbzEroded,1);
+
+% Add row of nans to make number of gates match with other variables
+dbzDiffUp=dbzDiffShort(:,upInds);
+dbzDiffUp=cat(1,nan(1,size(dbzDiffUp,2)),dbzDiffUp);
+dbzDiffDown=dbzDiffShort(:,downInds);
+dbzDiffDown=cat(1,dbzDiffDown,nan(1,size(dbzDiffDown,2)));
+dbzDiff=nan(size(dataShort.DBZ_MASKED));
+dbzDiff(:,upInds)=dbzDiffUp;
+dbzDiff(:,downInds)=dbzDiffDown;
+
+% Reverse sign in upward
+dbzDiff(:,upInds)=-dbzDiff(:,upInds);
+
 %% Fuzzy logic to determine where melting layer is likely
 
 % Get melting layer probability
-meltProb=findMeltProb(dataShort,velDiff);
+meltProb=findMeltProb(dataShort,velDiff,dbzDiff);
 meltProb(isnan(dataShort.DBZ_MASKED))=nan;
-
-% Threshold for almost certain
-thresholds.meltProbHigh=0.7;
-% Threshold to fill in areas
-thresholds.meltProbLow=0.55;
+% Hard censor on temperature
+meltProb(dataShort.TEMP<-1 | dataShort.TEMP>7)=nan;
 
 %% Find areas where melting layer is very likely
 maskHigh=meltProb>thresholds.meltProbHigh;
@@ -74,64 +97,41 @@ maskHigh=bwareaopen(maskHigh,35); % Remove small
 
 %% Find high quality maxima
 % Input fields for finding range gate with maximum
-velField=velDiff;
-velField(maskHigh==0)=nan;
-ldrField=dataShort.LDR;
-ldrField(maskHigh==0)=nan;
+probHigh=meltProb;
+probHigh(maskHigh==0)=nan;
 
 % Maxima
-[velMax,velMaxInd]=max(velField,[],1,'omitnan');
-[ldrMax,ldrMaxInd]=max(ldrField,[],1,'omitnan');
+[probMax,probMaxInd]=max(probHigh,[],1,'omitnan');
 
 % Get altitudes of maxima
-velMaxPlotInd=velMaxInd(~isnan(velMax));
-colvel=1:length(dataShort.time);
-colvel(isnan(velMax))=[];
-linvel=sub2ind(size(dataShort.VEL_MASKED),velMaxPlotInd,colvel);
-maxVelAlt=dataShort.asl(linvel);
-
-ldrMaxPlotInd=ldrMaxInd(~isnan(ldrMax));
-colldr=1:length(dataShort.time);
-colldr(isnan(ldrMax))=[];
-linldr=sub2ind(size(dataShort.LDR),ldrMaxPlotInd,colldr);
-maxLdrAlt=dataShort.asl(linldr);
+probMaxGetInd=probMaxInd(~isnan(probMax));
+colprob=1:length(dataShort.time);
+colprob(isnan(probMax))=[];
+linprob=sub2ind(size(dataShort.VEL_MASKED),probMaxGetInd,colprob);
+maxProbAlt=dataShort.asl(linprob);
 
 %% Medians and stds of maxima to clean them up
 smoothVal=201;
-stdThresh=100;
-maxVelAltNan=nan(size(dataShort.time));
-maxVelAltNan(colvel)=maxVelAlt;
+stdThresh=50;
+maxProbAltNan=nan(size(dataShort.time));
+maxProbAltNan(colprob)=maxProbAlt;
 
-% Std vel
-stdVel=movstd(maxVelAltNan,smoothVal,'omitnan');
-stdVel(isnan(maxVelAltNan))=nan;
+% Std
+stdProb=movstd(maxProbAltNan,smoothVal,'omitnan');
+stdProb(isnan(maxProbAltNan))=nan;
 % Remove regions with high stds
-maxVelAltNan(stdVel>stdThresh)=nan;
+maxProbAltNan(stdProb>stdThresh)=nan;
 
-% Median vel
-medVel=movmedian(maxVelAltNan,smoothVal,'omitnan');
-medVel(isnan(maxVelAltNan))=nan;
-
-maxLdrAltNan=nan(size(dataShort.time));
-maxLdrAltNan(colldr)=maxLdrAlt;
-
-% Std ldr
-stdLdr=movstd(maxLdrAltNan,smoothVal,'omitnan');
-stdLdr(isnan(maxLdrAltNan))=nan;
-% Remove regions with high stds
-maxLdrAltNan(stdLdr>stdThresh)=nan;
-
-% Median ldr
-medLdr=movmedian(maxLdrAltNan,smoothVal,'omitnan');
-medLdr(isnan(maxLdrAltNan))=nan;
+% Median
+medProb=movmedian(maxProbAltNan,smoothVal,'omitnan');
+medProb(isnan(maxProbAltNan))=nan;
 
 %% Find high quality melt layer altitude
-% Combine vel and ldr medians and connect
-medComb=mean([medVel;medLdr],1,'omitnan');
-medFilled=fillmissing(medComb,'linear');
+% Connect medians
+medFilled=fillmissing(medProb,'linear');
 
 % Keep only in close proximity
-medMask=~isnan(medComb);
+medMask=~isnan(medProb);
 medMask=imdilate(medMask,strel('line',5000,0));
 medFilled(medMask==0)=nan;
 
@@ -148,13 +148,16 @@ meltMask=imfill(meltMask,'holes');
 data.velDiff=nan(size(data.DBZ_MASKED));
 data.velDiff(:,nonMissingInds==1)=velDiff;
 
+data.dbzDiff=nan(size(data.DBZ_MASKED));
+data.dbzDiff(:,nonMissingInds==1)=dbzDiff;
+
 data.meltMask=zeros(size(data.DBZ_MASKED));
 data.meltMask(:,nonMissingInds==1)=meltMask;
 
 data.meltProb=nan(size(data.DBZ_MASKED));
 data.meltProb(:,nonMissingInds==1)=meltProb;
 
-plotMedStd=0;
+plotMedStd=1;
 if plotMedStd
     ylimits=[0,8];
     meltTestPlot3;
