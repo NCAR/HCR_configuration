@@ -22,7 +22,7 @@ indir=HCRdir(project,quality,qcVersion,freqData);
 
 figdir=[indir(1:end-5),'meltLayer/cases/'];
 
-if ~exist(figdir, 'dir')
+if ~exist(figdir,'dir')
     mkdir(figdir)
 end
 
@@ -112,5 +112,4 @@ for aa=1:length(caseStart)
         meltTestPlot1;
         meltTestPlot2;
     end
-
 end
