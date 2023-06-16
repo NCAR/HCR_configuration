@@ -4,6 +4,8 @@
 % 2=warm
 function data=f_meltLayer_advanced(data,thresholds,figdir)
 
+disp('Preparing fields ...')
+
 %% Truncate to non missing and regions with sub 7 deg temps
 gapSecs=10;
 tempMax=7;
@@ -74,6 +76,8 @@ dbzDiff(:,upIndsS)=-dbzDiff(:,upIndsS);
 
 %% Fuzzy logic to determine where melting layer is likely
 
+disp('Fuzzy logic ...')
+
 % Get melting layer probability
 meltProb=findMeltProb(dataShort,velDiff,dbzDiff);
 meltProb(isnan(dataShort.DBZ_MASKED))=nan;
@@ -82,7 +86,7 @@ meltProb(dataShort.TEMP<-1 | dataShort.TEMP>7)=nan;
 
 %% Find areas where melting layer is very likely
 maskHigh=meltProb>thresholds.meltProbHigh;
-maskHigh=bwareaopen(maskHigh,35); % Remove small
+maskHigh=bwareaopen(maskHigh,40); % Remove small
 
 %% Find high quality maxima
 % Input fields for finding range gate with maximum
@@ -113,6 +117,7 @@ maxProbAltNan(stdProb>stdThresh)=nan;
 
 % Median
 medProb=movmedian(maxProbAltNan,smoothVal,'omitnan');
+maxProbAltNan(abs(medProb-maxProbAltNan)>1000)=nan;
 medProb(isnan(maxProbAltNan))=nan;
 
 %% Find high quality melt layer altitude
@@ -180,10 +185,13 @@ maxAltInt(nonMissingInds==1)=maxAltIntShort;
 
 %% Find warm and cold regions
 
-disp('Finding top freezing level altitude ...')
+disp('Finding warm and cold regions of troposphere ...')
 [warmCold,zeroAltsAdj,meltOnly]=findWarmCold(data);
 
 %% Merge interpolated melt alt and adjusted freezing levels
+
+disp('Matching found melting layers with zero deg layers ...')
+
 % Only keep zero alts that go from cold to warm
 zeroAltMelt=zeroAltsAdj;
 zeroAltMelt(meltOnly==0,:)=nan;
@@ -250,9 +258,9 @@ if plotYes
     ax.SortMethod='childorder';
 end
 
-disp('Creating melting layer ...')
-
 %% Icing level
+
+disp('Creating icing level and melting layer output ...')
 
 iceLev=min(zeroAltReal,[],1,'omitnan');
 largeMed=movmedian(iceLev,3000,'omitnan');
@@ -287,13 +295,18 @@ for ll=1:length(data.time)
     end
 end
 
+% Clean up small areas
+coldMask=meltLayerOut==0;
+coldMask=bwareaopen(coldMask,200000);
+meltLayerOut(coldMask==0)=2;
+
 meltLayerOut(data.meltMask==1)=1;
 data.meltLayer=meltLayerOut;
 %data.meltLayer(data.FLAG~=1)=nan;
 data.meltLayer(isnan(data.TEMP) )=nan;
 
 %% Testing plot for stds and medians
-plotMedStd=0;
+plotMedStd=1;
 if plotMedStd
     ylimits=[0,8];
     meltTestPlot3;

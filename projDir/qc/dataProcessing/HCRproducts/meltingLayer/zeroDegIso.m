@@ -4,7 +4,7 @@ oddAngles=find(data.elevation>-70 & data.elevation<70);
 
 data.TEMP(:,oddAngles)=nan;
 tempOut=data.TEMP>0;
-tempOut=imclose(tempOut,strel('disk',3));
+%tempOut=imclose(tempOut,strel('disk',3));
 tempOut=double(tempOut);
 tempOut(tempOut==0)=-1;
 tempOut(isnan(data.TEMP))=nan;
