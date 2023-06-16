@@ -126,6 +126,7 @@ for aa=1:size(caseList,1)
                 newVEL=velPlot(:,newInds);
                 newVELdiff=data.velDiff(:,newInds);
                 newDBZdiff=data.dbzDiff(:,newInds);
+                newMeltLayer=data.meltLayer(:,newInds);
                 newASL=data.asl(:,newInds);
                 newTime=data.time(newInds);
 

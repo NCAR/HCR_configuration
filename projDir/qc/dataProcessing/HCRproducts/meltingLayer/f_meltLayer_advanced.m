@@ -1,19 +1,8 @@
 % Flag melting layer
-% 0=zero degree altitude
-% 1=melting layer detected
-% 2=melting layer interpolated
-% 3=melting layer defined as zero degree altitude
+% 0=cold
+% 1=melting
+% 2=warm
 function data=f_meltLayer_advanced(data,thresholds,figdir)
-
-%debugFig=0;
-
-%% Find zero degree altitude altitudes and indices
-
-% disp('Searching zero degree altitude ...');
-% 
-% oneGate=data.range(2)-data.range(1);
-% 
-% [layerAlts,layerInds]=zeroDegIso(data);
 
 %% Truncate to non missing and regions with sub 7 deg temps
 gapSecs=10;
@@ -34,13 +23,13 @@ end
 %% Velocity derivative
 
 % Remove upward motion to limit false detections
-upInds=find(dataShort.elevation>=0);
-downInds=find(dataShort.elevation<0);
+upIndsS=find(dataShort.elevation>=0);
+downIndsS=find(dataShort.elevation<0);
 
 velNoNeg=dataShort.VEL_MASKED;
-velNoNeg(:,upInds)=-velNoNeg(:,upInds);
+velNoNeg(:,upIndsS)=-velNoNeg(:,upIndsS);
 velNoNeg(velNoNeg<=0)=nan;
-velNoNeg(:,upInds)=-velNoNeg(:,upInds);
+velNoNeg(:,upIndsS)=-velNoNeg(:,upIndsS);
 
 % Median filter to smoth data
 velNoNeg=medfilt2(velNoNeg,[3,7]);
@@ -49,13 +38,13 @@ velNoNeg=medfilt2(velNoNeg,[3,7]);
 velDiffShort=diff(velNoNeg,1);
 
 % Add row of nans to make number of gates match with other variables
-velDiffUp=velDiffShort(:,upInds);
+velDiffUp=velDiffShort(:,upIndsS);
 velDiffUp=cat(1,nan(1,size(velDiffUp,2)),velDiffUp);
-velDiffDown=velDiffShort(:,downInds);
+velDiffDown=velDiffShort(:,downIndsS);
 velDiffDown=cat(1,velDiffDown,nan(1,size(velDiffDown,2)));
 velDiff=nan(size(dataShort.VEL_MASKED));
-velDiff(:,upInds)=velDiffUp;
-velDiff(:,downInds)=velDiffDown;
+velDiff(:,upIndsS)=velDiffUp;
+velDiff(:,downIndsS)=velDiffDown;
 
 %% Reflectivity derivative
 
@@ -72,16 +61,16 @@ dbzEroded(dbzMask==0)=nan;
 dbzDiffShort=diff(dbzEroded,1);
 
 % Add row of nans to make number of gates match with other variables
-dbzDiffUp=dbzDiffShort(:,upInds);
+dbzDiffUp=dbzDiffShort(:,upIndsS);
 dbzDiffUp=cat(1,nan(1,size(dbzDiffUp,2)),dbzDiffUp);
-dbzDiffDown=dbzDiffShort(:,downInds);
+dbzDiffDown=dbzDiffShort(:,downIndsS);
 dbzDiffDown=cat(1,dbzDiffDown,nan(1,size(dbzDiffDown,2)));
 dbzDiff=nan(size(dataShort.DBZ_MASKED));
-dbzDiff(:,upInds)=dbzDiffUp;
-dbzDiff(:,downInds)=dbzDiffDown;
+dbzDiff(:,upIndsS)=dbzDiffUp;
+dbzDiff(:,downIndsS)=dbzDiffDown;
 
 % Reverse sign in upward
-dbzDiff(:,upInds)=-dbzDiff(:,upInds);
+dbzDiff(:,upIndsS)=-dbzDiff(:,upIndsS);
 
 %% Fuzzy logic to determine where melting layer is likely
 
@@ -135,62 +124,43 @@ medMask=~isnan(medProb);
 medMask=imdilate(medMask,strel('line',5000,0));
 medFilled(medMask==0)=nan;
 
-%% Melting layer mask, first guess
+%% Melting layer mask
 medFilledMat=repmat(medFilled,size(dataShort.DBZ_MASKED,1),1);
 goodAlts=dataShort.asl-medFilledMat;
 goodAlts(abs(goodAlts)>150)=nan;
 
-meltMaskInit=(meltProb>thresholds.meltProbLow & ~isnan(goodAlts));
-meltMaskInit=bwareaopen(meltMaskInit,35);
+meltMask=(meltProb>thresholds.meltProbLow & ~isnan(goodAlts));
 
-%% Find top and bottom altitudes
-meltMaskTurned=meltMaskInit';
-mFirst=size(meltMaskTurned,2);
-[valFirst,locFirst]=max(meltMaskTurned,[],2);
-kFirst=mFirst+1-locFirst;
-kFirst(valFirst==0)=nan;
-kFirst=abs(size(meltMaskInit,1)-kFirst);
-linFirst=sub2ind(size(meltMaskInit),kFirst',1:size(meltMaskInit,2));
-linFirst(isnan(linFirst))=[];
-altFirstNoNan=dataShort.asl(linFirst);
-altFirst=nan(size(dataShort.time));
-altFirst(~isnan(kFirst))=altFirstNoNan;
+meltMask=bwareaopen(meltMask,35); % Remove small
+meltMask=imclose(meltMask,strel('disk',25)); % Smooth and join
+meltMask=imfill(meltMask,'holes'); % Remove holes
 
-mLast=size(meltMaskTurned,2);
-[valLast,locLast]=max(fliplr(meltMaskTurned),[],2);
-kLast=mLast+1-locLast;
-kLast(valLast==0)=nan;
-linLast=sub2ind(size(meltMaskInit),kLast',1:size(meltMaskInit,2));
-linLast(isnan(linLast))=[];
-altLastNoNan=dataShort.asl(linLast);
-altLast=nan(size(dataShort.time));
-altLast(~isnan(kLast))=altLastNoNan;
+%% Interpolate melting layer altitude
+% Get max probability within mask
+probMask=meltProb;
+probMask(meltMask==0)=nan;
+noNan=any(~isnan(probMask),1);
+[~,maxInd2]=max(probMask,[],1,'omitnan');
+maxInd2lin=sub2ind(size(probMask),maxInd2,1:size(probMask,2));
+maxInd2lin(noNan==0)=[];
+
+% Get altitude of maximum
+maxAlt2noNan=dataShort.asl(maxInd2lin);
+maxAlt2=nan(size(dataShort.time));
+maxAlt2(noNan==1)=maxAlt2noNan;
 
 % Smooth slightly
-smoothVal2=15;
-altFirstS=movmedian(altFirst,smoothVal2,'omitnan');
-altLastS=movmedian(altLast,smoothVal2,'omitnan');
+maxAltS=movmedian(maxAlt2,15,'omitnan');
+maxAltS(isnan(maxAlt2))=nan;
 
-% Remove edges
-flMask=~isnan(altFirst);
-flMask=imclose(flMask,strel('line',5,0));
-altFirstS(flMask==0)=nan;
-altLastS(flMask==0)=nan;
-
-%% Final mask
-maskInds=find(flMask==1);
-meltMask=zeros(size(meltMaskInit));
-for jj=1:length(maskInds)
-    altCol=dataShort.asl(:,maskInds(jj));
-    if dataShort.elevation(maskInds(jj))>=0
-        rightInds=find(altCol<=altLastS(maskInds(jj)) & altCol>=altFirstS(maskInds(jj)));
-    else
-        rightInds=find(altCol>=altLastS(maskInds(jj)) & altCol<=altFirstS(maskInds(jj)));
-    end
-    meltMask(rightInds,maskInds(jj))=1;
-end
-
-%meltMask=imfill(meltMask,'holes');
+% Connect
+maxAltIntShort=fillmissing(maxAltS,'linear','EndValues','nearest');
+% Only in close proximity
+transLength=1800; % 3 minutes (1800 1/10 seconds)
+largerNoNan=imdilate(noNan,strel('line',transLength,0)); % 1.5 minutes, imdilate makes it half
+% Interpolate over holes that are twice the transition length
+largerNoNan=imclose(largerNoNan,strel('line',round(transLength+transLength/2),0)); % 3 minutes, imclose takes whole, plus one 1.5 mins
+maxAltIntShort(largerNoNan==0)=nan;
 
 %% Add censored data back in
 data.velDiff=nan(size(data.DBZ_MASKED));
@@ -205,6 +175,124 @@ data.meltMask(:,nonMissingInds==1)=meltMask;
 data.meltProb=nan(size(data.DBZ_MASKED));
 data.meltProb(:,nonMissingInds==1)=meltProb;
 
+maxAltInt=nan(size(data.time));
+maxAltInt(nonMissingInds==1)=maxAltIntShort;
+
+%% Find warm and cold regions
+
+disp('Finding top freezing level altitude ...')
+[warmCold,zeroAltsAdj,meltOnly]=findWarmCold(data);
+
+%% Merge interpolated melt alt and adjusted freezing levels
+% Only keep zero alts that go from cold to warm
+zeroAltMelt=zeroAltsAdj;
+zeroAltMelt(meltOnly==0,:)=nan;
+
+% Handle max alt prep
+% Find connected
+maxAltIntMask=~isnan(maxAltInt);
+maxAltRegAll=bwconncomp(maxAltIntMask);
+
+% Even larger mask
+noNan2=imdilate(maxAltIntMask,strel('line',transLength,0));
+
+% Initiate output
+zeroAltReal=nan(size(zeroAltsAdj)); % Zero deg
+zeroAltReal(:,noNan2==1)=nan; % Nan where melting layer was found
+
+% Loop through individual found melting layers, put zero deg and found
+% melting layer together with some distance in-between
+for jj=1:maxAltRegAll.NumObjects
+    maxAltReg=maxAltInt(maxAltRegAll.PixelIdxList{jj}); % Found altitude
+    zeroMeltReg=zeroAltMelt(:,maxAltRegAll.PixelIdxList{jj}); % Zero deg alt
+    % Horizontal median to find the correct zero deg alt index
+    maxMed=median(maxAltReg,'omitnan');
+    zeroMed=median(zeroMeltReg,2,'omitnan');
+    diffAlt=zeroMed-maxMed;
+    % Find inxex
+    [~,rightInd]=min(abs(diffAlt));
+    if ~isnan(rightInd) & diffAlt(rightInd)<0
+        % In theory, melting layer should be below zero deg
+        warning(['Melting layer is ',num2str(abs(diffAlt(rightInd))),' above zero deg isotherm!']);
+    end
+    % Add found melting layer
+    zeroAltReal(rightInd,maxAltRegAll.PixelIdxList{jj})=maxAltReg;
+end
+
+% Combine and extend for climbs and descents
+for kk=1:size(zeroAltsAdj,1)
+    % Close wholes
+    thisAlt=zeroAltReal(kk,:);
+    thisMask=~isnan(thisAlt);
+    thisMask=imdilate(thisMask,strel('line',transLength,0));
+    thisAlt=fillmissing(thisAlt,'linear','EndValues','nearest');
+    % But only in vicinity
+    thisAlt(thisMask==0)=nan;
+    % Add zero deg back in when large holes, to extend in climbs and
+    % descents
+    thisMask=~isnan(thisAlt);
+    thisMask=imdilate(thisMask,strel('line',transLength,0));
+    thisAlt(thisMask==0)=zeroAltsAdj(kk,thisMask==0);
+    thisMask=~isnan(thisAlt);
+    thisMask=imdilate(thisMask,strel('line',500,0));
+    thisAlt(thisMask==0)=zeroAltsAdj(kk,thisMask==0);
+    thisAltFilled=fillmissing(thisAlt,'linear','EndValues','nearest');
+    thisAltFilled(thisMask==0)=nan;
+    zeroAltReal(kk,:)=thisAltFilled;
+end
+
+plotYes=0;
+if plotYes
+    for ii=1:size(zeroAltsAdj,1)
+        plot(data.time,zeroAltReal./1000,'-m','LineWidth',2);
+    end
+    ax=gca;
+    ax.SortMethod='childorder';
+end
+
+disp('Creating melting layer ...')
+
+%% Icing level
+
+iceLev=min(zeroAltReal,[],1,'omitnan');
+largeMed=movmedian(iceLev,3000,'omitnan');
+iceLev(abs(iceLev-largeMed)>300)=nan;
+iceLev=fillmissing(iceLev,'linear','EndValues','nearest');
+iceLev(isnan(largeMed))=nan;
+cloudCols=any(data.FLAG==1,1);
+iceLev(cloudCols==0)=nan;
+data.iceLev=iceLev;
+
+%% Create warm/cold/melting mat
+
+meltLayerOut=warmCold;
+for ll=1:length(data.time)
+    colAlts=[zeroAltReal(:,ll),meltOnly];
+    colAlts(isnan(colAlts(:,1)),:)=[];
+    if isempty(colAlts)
+        continue
+    end
+    altCol=data.asl(:,ll);
+    meltCol=nan(size(altCol));
+    colAltsSort=sortrows(colAlts);
+    colAltsSort=cat(1,[0,0],colAltsSort);
+    colAltsSort=cat(1,colAltsSort,[20000,abs(colAltsSort(end,2)-1)]);
+    for mm=1:size(colAltsSort,1)-1
+        if colAltsSort(mm+1,2)==1
+            meltCol(altCol>=colAltsSort(mm,1) & altCol<=colAltsSort(mm+1,1))=2;
+        elseif colAltsSort(mm+1,2)==0
+            meltCol(altCol>=colAltsSort(mm,1) & altCol<=colAltsSort(mm+1,1))=0;
+        end
+        meltLayerOut(:,ll)=meltCol;
+    end
+end
+
+meltLayerOut(data.meltMask==1)=1;
+data.meltLayer=meltLayerOut;
+%data.meltLayer(data.FLAG~=1)=nan;
+data.meltLayer(isnan(data.TEMP) )=nan;
+
+%% Testing plot for stds and medians
 plotMedStd=0;
 if plotMedStd
     ylimits=[0,8];

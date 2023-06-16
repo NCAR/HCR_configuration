@@ -95,6 +95,7 @@ for aa=1:length(caseStart)
         newVEL=velPlot(:,newInds);
         newVELdiff=data.velDiff(:,newInds);
         newDBZdiff=data.dbzDiff(:,newInds);
+        newMeltLayer=data.meltLayer(:,newInds);
         newASL=data.asl(:,newInds);
         newTime=data.time(newInds);
 

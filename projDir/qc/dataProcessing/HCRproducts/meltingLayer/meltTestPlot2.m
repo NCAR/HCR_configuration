@@ -1,6 +1,6 @@
 %% Plot 2
 
-fig2=figure('DefaultAxesFontSize',11,'position',[1700,1300,1500,900],'visible',showPlot);
+fig2=figure('DefaultAxesFontSize',11,'position',[1700,1300,1500,1200],'visible',showPlot);
 
 % Diff VEL
 ax1=subplot(3,1,1);
@@ -20,31 +20,27 @@ title('VEL diff')
 grid on
 box on
 set(gca,'xticklabel',[])
-ax1.Position=[0.06 0.69 0.87 0.27];
+ax1.Position=[0.06 0.765 0.87 0.21];
 
 % Diff DBZ
-ax2=subplot(3,1,2);
+ax2=subplot(4,1,2);
 hold on;
 surf(newTime,newASL./1000,newDBZdiff,'edgecolor','none');
 view(2);
-% colDiff1=winter(4);
-% colDiff2=spring(20);
-% colDiff=cat(1,flipud(colDiff1),colDiff2);
-% ax2.Colormap=colDiff;
 ax2.Colormap=jet;
 caxis([-1 4]);
 colorbar
 ylim(ylimits);
 ylabel('Altitude (km)');
 xlim([newTime(1),newTime(end)]);
-title('VEL diff')
+title('DBZ diff')
 grid on
 box on
 set(gca,'xticklabel',[])
-ax2.Position=[0.06 0.375 0.87 0.27];
+ax2.Position=[0.06 0.525 0.87 0.21];
 
 % Melt probability
-ax3=subplot(3,1,3);
+ax3=subplot(4,1,3);
 hold on;
 surf(newTime,newASL./1000,newProb,'edgecolor','none');
 view(2);
@@ -61,9 +57,28 @@ xlim([newTime(1),newTime(end)]);
 title('MeltProb')
 grid on
 box on
-ax3.Position=[0.06 0.06 0.87 0.27];
+set(gca,'xticklabel',[])
+ax3.Position=[0.06 0.287 0.87 0.21];
 
-linkaxes([ax1,ax2,ax3],'xy');
+% Melting layer
+ax4=subplot(4,1,4);
+hold on;
+surf(newTime,newASL./1000,newMeltLayer,'edgecolor','none');
+view(2);
+ax4.Colormap=[0,1,1;0,0,0;1,0,1];
+caxis([-0.5,2.5]);
+cb=colorbar;
+cb.Ticks=[0,1,2];
+cb.TickLabels={'Cold','Melting','Warm'};
+ylim(ylimits);
+ylabel('Altitude (km)');
+xlim([newTime(1),newTime(end)]);
+title('Melting layer')
+grid on
+box on
+ax4.Position=[0.06 0.05 0.87 0.21];
+
+linkaxes([ax1,ax2,ax3,ax4],'xy');
 
 formatOut = 'yyyymmdd_HHMM';
 set(gcf,'PaperPositionMode','auto')
