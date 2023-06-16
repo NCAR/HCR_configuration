@@ -3,13 +3,13 @@
 clear all;
 close all;
 
-project='noreaster'; %socrates, aristo, cset
-quality='qc2'; %field, qc1, or qc2
-qcVersion='v2.1';
+project='socrates'; %socrates, aristo, cset
+quality='qc3'; %field, qc1, or qc2
+qcVersion='v3.2';
 freqData='10hz'; % 10hz, 100hz, or 2hz
 
 plotYes=1;
-showPlot='on';
+showPlot='off';
 
 thresholds.meltProbLow=0.4; %0.55
 thresholds.meltProbHigh=0.55; %0.7
@@ -34,7 +34,7 @@ caseStart=datetime(caseList.Var1,caseList.Var2,caseList.Var3, ...
 caseEnd=datetime(caseList.Var6,caseList.Var7,caseList.Var8, ...
     caseList.Var9,caseList.Var10,0);
 
-for aa=2:length(caseStart)
+for aa=1:length(caseStart)
     
     disp(['Case ',num2str(aa),' of ',num2str(length(caseStart))]);
     

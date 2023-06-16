@@ -84,6 +84,13 @@ meltProb(isnan(dataShort.DBZ_MASKED))=nan;
 % Hard censor on temperature
 meltProb(dataShort.TEMP<-1 | dataShort.TEMP>7)=nan;
 
+% Remove small temp strips
+tempMaskIn=dataShort.TEMP>0;
+tempMask=imclose(tempMaskIn,strel('line',7,90));
+tempMask=~(bwareaopen(~tempMask,50000));
+tempMask=double(tempMask);
+meltProb(tempMaskIn==0 & tempMask==1)=nan;
+
 %% Find areas where melting layer is very likely
 maskHigh=meltProb>thresholds.meltProbHigh;
 maskHigh=bwareaopen(maskHigh,40); % Remove small
@@ -201,15 +208,13 @@ zeroAltMelt(meltOnly==0,:)=nan;
 maxAltIntMask=~isnan(maxAltInt);
 maxAltRegAll=bwconncomp(maxAltIntMask);
 
-% Even larger mask
-noNan2=imdilate(maxAltIntMask,strel('line',transLength,0));
-
 % Initiate output
-zeroAltReal=nan(size(zeroAltsAdj)); % Zero deg
-zeroAltReal(:,noNan2==1)=nan; % Nan where melting layer was found
+zeroAltReal=zeroAltsAdj; % Zero deg
 
 % Loop through individual found melting layers, put zero deg and found
 % melting layer together with some distance in-between
+rightIndAll=[];
+zeroAltAdd=nan(size(zeroAltReal));
 for jj=1:maxAltRegAll.NumObjects
     maxAltReg=maxAltInt(maxAltRegAll.PixelIdxList{jj}); % Found altitude
     zeroMeltReg=zeroAltMelt(:,maxAltRegAll.PixelIdxList{jj}); % Zero deg alt
@@ -217,33 +222,42 @@ for jj=1:maxAltRegAll.NumObjects
     maxMed=median(maxAltReg,'omitnan');
     zeroMed=median(zeroMeltReg,2,'omitnan');
     diffAlt=zeroMed-maxMed;
-    % Find inxex
+    % Find index
     [~,rightInd]=min(abs(diffAlt));
     if ~isnan(rightInd) & diffAlt(rightInd)<0
         % In theory, melting layer should be below zero deg
         warning(['Melting layer is ',num2str(abs(diffAlt(rightInd))),' above zero deg isotherm!']);
     end
+    if ~isnan(rightInd)
+        rightIndAll=[rightIndAll;rightInd];
+    end
+    % Make room for detected
+    minPixReg=max([1,min(maxAltRegAll.PixelIdxList{jj})-transLength]);
+    maxPixReg=min([max(maxAltRegAll.PixelIdxList{jj})+transLength,size(zeroAltReal,2)]);
+    zeroAltReal(rightInd,minPixReg:maxPixReg)=nan;
     % Add found melting layer
-    zeroAltReal(rightInd,maxAltRegAll.PixelIdxList{jj})=maxAltReg;
+    zeroAltAdd(rightInd,maxAltRegAll.PixelIdxList{jj})=maxAltReg;
 end
 
-% Combine and extend for climbs and descents
-for kk=1:size(zeroAltsAdj,1)
+zeroAltReal(~isnan(zeroAltAdd))=zeroAltAdd(~isnan(zeroAltAdd));
+
+% Combine
+for kk=1:length(rightIndAll)
     % Close wholes
-    thisAlt=zeroAltReal(kk,:);
+    thisAlt=zeroAltReal(rightIndAll(kk),:);
     thisMask=~isnan(thisAlt);
     thisMask=imdilate(thisMask,strel('line',transLength,0));
     thisAlt=fillmissing(thisAlt,'linear','EndValues','nearest');
     % But only in vicinity
     thisAlt(thisMask==0)=nan;
-    % Add zero deg back in when large holes, to extend in climbs and
-    % descents
-    thisMask=~isnan(thisAlt);
-    thisMask=imdilate(thisMask,strel('line',transLength,0));
-    thisAlt(thisMask==0)=zeroAltsAdj(kk,thisMask==0);
+    zeroAltReal(rightIndAll(kk),:)=thisAlt;
+end
+
+% Extend in climbs and descents
+for kk=1:size(zeroAltReal,1)
+    thisAlt=zeroAltReal(kk,:);
     thisMask=~isnan(thisAlt);
     thisMask=imdilate(thisMask,strel('line',500,0));
-    thisAlt(thisMask==0)=zeroAltsAdj(kk,thisMask==0);
     thisAltFilled=fillmissing(thisAlt,'linear','EndValues','nearest');
     thisAltFilled(thisMask==0)=nan;
     zeroAltReal(kk,:)=thisAltFilled;
@@ -252,7 +266,7 @@ end
 plotYes=0;
 if plotYes
     for ii=1:size(zeroAltsAdj,1)
-        plot(data.time,zeroAltReal./1000,'-m','LineWidth',2);
+        plot(data.time,zeroAltReal(ii,:)./1000,'-m','LineWidth',2);
     end
     ax=gca;
     ax.SortMethod='childorder';
@@ -295,18 +309,31 @@ for ll=1:length(data.time)
     end
 end
 
+% Sanity check
+meltLayerOut(data.TEMP<-1)=0;
+meltLayerOut(data.TEMP>7)=2;
+
 % Clean up small areas
 coldMask=meltLayerOut==0;
 coldMask=bwareaopen(coldMask,200000);
+coldMask=imclose(coldMask,strel('disk',1));
 meltLayerOut(coldMask==0)=2;
+meltLayerOut(coldMask==1)=0;
 
+warmMask=meltLayerOut==2;
+warmMask=bwareaopen(warmMask,200000);
+warmMask=imclose(warmMask,strel('disk',1));
+meltLayerOut(warmMask==0)=0;
+meltLayerOut(warmMask==1)=2;
+
+% Add melting areas
 meltLayerOut(data.meltMask==1)=1;
 data.meltLayer=meltLayerOut;
 %data.meltLayer(data.FLAG~=1)=nan;
 data.meltLayer(isnan(data.TEMP) )=nan;
 
 %% Testing plot for stds and medians
-plotMedStd=1;
+plotMedStd=0;
 if plotMedStd
     ylimits=[0,8];
     meltTestPlot3;
