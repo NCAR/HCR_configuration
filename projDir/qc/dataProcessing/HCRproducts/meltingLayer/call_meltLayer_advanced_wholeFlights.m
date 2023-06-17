@@ -7,6 +7,7 @@ project='otrec'; %socrates, aristo, cset
 quality='qc3'; %field, qc1, or qc2
 qcVersion='v3.2';
 freqData='10hz'; % 10hz, 100hz, or 2hz
+whichModel='era5';
 
 plotYes=1;
 showPlot='off';
