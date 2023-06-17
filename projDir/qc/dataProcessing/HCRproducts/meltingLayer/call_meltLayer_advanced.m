@@ -3,7 +3,7 @@
 clear all;
 close all;
 
-project='socrates'; %socrates, aristo, cset
+project='otrec'; %socrates, aristo, cset
 quality='qc3'; %field, qc1, or qc2
 qcVersion='v3.2';
 freqData='10hz'; % 10hz, 100hz, or 2hz
@@ -83,7 +83,7 @@ for aa=1:length(caseStart)
     %% Plot
     if plotYes
         disp('Plotting ...')
-        ylimits=[0,5];
+        ylimits=[0,6];
 
         newInds=1:round(length(data.time)/2000):length(data.time);
 

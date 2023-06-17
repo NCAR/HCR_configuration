@@ -19,7 +19,10 @@ for ii=1:size(layerAltsOut,1)
     zeroVelMask=~isnan(zeroVel);
     zeroVelMask=bwareaopen(zeroVelMask,15);
     zeroVel(zeroVelMask==0)=nan;
-    zeroVel(isnan(zeroVel))=zeroVelNan;
+    zeroVelMask=imclose(zeroVelMask,strel('line',25,0));
+    zeroVelMask=imdilate(zeroVelMask,strel('line',25,0));
+    zeroVel(zeroVelMask==0)=zeroVelNan;
+    zeroVel=fillmissing(zeroVel,'linear','EndValues','nearest');
     zeroVel(isnan(zeroAlt))=nan;
 
     % Offset

@@ -3,7 +3,7 @@
 clear all;
 close all;
 
-project='socrates'; %socrates, aristo, cset
+project='otrec'; %socrates, aristo, cset
 quality='qc3'; %field, qc1, or qc2
 qcVersion='v3.2';
 freqData='10hz'; % 10hz, 100hz, or 2hz
@@ -11,7 +11,7 @@ freqData='10hz'; % 10hz, 100hz, or 2hz
 plotYes=1;
 showPlot='off';
 
-saveData=0;
+saveData=1;
 
 thresholds.meltProbLow=0.4;
 thresholds.meltProbHigh=0.55;
@@ -88,14 +88,16 @@ for aa=1:size(caseList,1)
     data=f_meltLayer_advanced(data,thresholds,figdir);
 
     %% Save
-
     if saveData
-        disp('Saving melting layer field.')
+        disp('Saving meltLayer field ...')
 
-        %         velUnfolded=velDeAliased;
-        %
-        %         save([outdir,whichModel,'.velUnfolded.',datestr(data.time(1),'YYYYmmDD_HHMMSS'),'_to_',...
-        %             datestr(data.time(end),'YYYYmmDD_HHMMSS'),'.Flight',num2str(aa),'.mat'],'velUnfolded');
+        meltLayer=data.meltLayer;
+        save([outdir,whichModel,'.meltLayer.',datestr(data.time(1),'YYYYmmDD_HHMMSS'),'_to_',...
+            datestr(data.time(end),'YYYYmmDD_HHMMSS'),'.Flight',num2str(aa),'.mat'],'meltLayer');
+
+        iceLev=data.iceLev;
+        save([outdir,whichModel,'.iceLevel.',datestr(data.time(1),'YYYYmmDD_HHMMSS'),'_to_',...
+            datestr(data.time(end),'YYYYmmDD_HHMMSS'),'.Flight',num2str(aa),'.mat'],'iceLev');
     end
 
     %% Plot in hourly increments

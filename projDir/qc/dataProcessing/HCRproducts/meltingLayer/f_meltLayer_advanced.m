@@ -143,6 +143,18 @@ goodAlts(abs(goodAlts)>150)=nan;
 
 meltMask=(meltProb>thresholds.meltProbLow & ~isnan(goodAlts));
 
+% Remove small over extinct
+extinctMask=any(dataShort.FLAG==3,1);
+extinctMask=imclose(extinctMask,strel('line',15,0));
+extinctMask=imdilate(extinctMask,strel('line',55,0));
+
+meltMask1D=any(meltMask==1,1);
+meltMask1D=imclose(meltMask1D,strel('line',55,0));
+meltMask1D=bwareaopen(meltMask1D,500);
+
+meltMask(:,(extinctMask==1 & meltMask1D==0))=0;
+
+% Clean up
 meltMask=bwareaopen(meltMask,35); % Remove small
 meltMask=imclose(meltMask,strel('disk',25)); % Smooth and join
 meltMask=imfill(meltMask,'holes'); % Remove holes
@@ -224,10 +236,6 @@ for jj=1:maxAltRegAll.NumObjects
     diffAlt=zeroMed-maxMed;
     % Find index
     [~,rightInd]=min(abs(diffAlt));
-    if ~isnan(rightInd) & diffAlt(rightInd)<0
-        % In theory, melting layer should be below zero deg
-        warning(['Melting layer is ',num2str(abs(diffAlt(rightInd))),' above zero deg isotherm!']);
-    end
     if ~isnan(rightInd)
         rightIndAll=[rightIndAll;rightInd];
     end
@@ -277,12 +285,10 @@ end
 disp('Creating icing level and melting layer output ...')
 
 iceLev=min(zeroAltReal,[],1,'omitnan');
-largeMed=movmedian(iceLev,3000,'omitnan');
-iceLev(abs(iceLev-largeMed)>300)=nan;
-iceLev=fillmissing(iceLev,'linear','EndValues','nearest');
-iceLev(isnan(largeMed))=nan;
-cloudCols=any(data.FLAG==1,1);
-iceLev(cloudCols==0)=nan;
+% largeMed=movmedian(iceLev,3000,'omitnan');
+% iceLev(abs(iceLev-largeMed)>300)=nan;
+% iceLev=fillmissing(iceLev,'linear','EndValues','nearest');
+% iceLev(isnan(largeMed))=nan;
 data.iceLev=iceLev;
 
 %% Create warm/cold/melting mat
@@ -329,7 +335,7 @@ meltLayerOut(warmMask==1)=2;
 % Add melting areas
 meltLayerOut(data.meltMask==1)=1;
 data.meltLayer=meltLayerOut;
-%data.meltLayer(data.FLAG~=1)=nan;
+data.meltLayer(data.FLAG~=1)=nan;
 data.meltLayer(isnan(data.TEMP) )=nan;
 
 %% Testing plot for stds and medians
