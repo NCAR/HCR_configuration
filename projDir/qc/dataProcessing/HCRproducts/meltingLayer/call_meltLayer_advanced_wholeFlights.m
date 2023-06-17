@@ -24,6 +24,8 @@ caseList = table2array(readtable(infile));
 
 indir=HCRdir(project,quality,qcVersion,freqData);
 
+[~,outdir]=modelDir(project,whichModel,quality,qcVersion,freqData);
+
 figdir=[indir(1:end-5),'meltLayer/wholeFlights/'];
 
 if ~exist(figdir, 'dir')
