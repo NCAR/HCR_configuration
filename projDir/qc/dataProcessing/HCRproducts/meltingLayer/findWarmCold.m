@@ -14,9 +14,13 @@ zeroAltsAdj=nan(size(layerAltsOut));
 for ii=1:size(layerAltsOut,1)
     zeroAlt=layerAltsOut(ii,:);
     zeroVel=layerVelsOut(ii,:);
+    zeroVelMask=~isnan(zeroVel);
 
     % Find offset
-    zeroVelMask=~isnan(zeroVel);
+    % Smooth
+    zeroVel=movmedian(zeroVel,181,'omitnan');
+    zeroVel(zeroVelMask==0)=nan;
+
     zeroVelMask=bwareaopen(zeroVelMask,15);
     zeroVel(zeroVelMask==0)=nan;
     zeroVelMask=imclose(zeroVelMask,strel('line',25,0));
@@ -29,9 +33,9 @@ for ii=1:size(layerAltsOut,1)
     offset=a.*zeroVel-b;
     %offset(offset<0)=0;
 
-    offsetSmooth=movmedian(offset,25,'omitnan');
-    offsetSmooth(isnan(offset))=nan;
-    zeroAltsAdj(ii,:)=zeroAlt-offsetSmooth;
+    %offsetSmooth=movmedian(offset,25,'omitnan');
+    %offsetSmooth(isnan(offset))=nan;
+    zeroAltsAdj(ii,:)=zeroAlt-offset;
 end
 
 %% Mat with warm and cold regions

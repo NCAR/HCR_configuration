@@ -3,7 +3,7 @@
 clear all;
 close all;
 
-project='otrec'; %socrates, aristo, cset
+project='socrates'; %socrates, aristo, cset
 quality='qc3'; %field, qc1, or qc2
 qcVersion='v3.2';
 freqData='10hz'; % 10hz, 100hz, or 2hz
@@ -97,10 +97,6 @@ for aa=1:size(caseList,1)
         meltLayer=data.meltLayer;
         save([outdir,whichModel,'.meltLayer.',datestr(data.time(1),'YYYYmmDD_HHMMSS'),'_to_',...
             datestr(data.time(end),'YYYYmmDD_HHMMSS'),'.Flight',num2str(aa),'.mat'],'meltLayer');
-
-        iceLev=data.iceLev;
-        save([outdir,whichModel,'.iceLevel.',datestr(data.time(1),'YYYYmmDD_HHMMSS'),'_to_',...
-            datestr(data.time(end),'YYYYmmDD_HHMMSS'),'.Flight',num2str(aa),'.mat'],'iceLev');
     end
 
     %% Plot in hourly increments

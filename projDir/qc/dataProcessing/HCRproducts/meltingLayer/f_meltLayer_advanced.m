@@ -202,6 +202,9 @@ data.meltProb(:,nonMissingInds==1)=meltProb;
 maxAltInt=nan(size(data.time));
 maxAltInt(nonMissingInds==1)=maxAltIntShort;
 
+maxAltSall=nan(size(data.time));
+maxAltSall(nonMissingInds==1)=maxAltS;
+
 %% Find warm and cold regions
 
 disp('Finding warm and cold regions of troposphere ...')
@@ -280,18 +283,9 @@ if plotYes
     ax.SortMethod='childorder';
 end
 
-%% Icing level
-
-disp('Creating icing level and melting layer output ...')
-
-iceLev=min(zeroAltReal,[],1,'omitnan');
-% largeMed=movmedian(iceLev,3000,'omitnan');
-% iceLev(abs(iceLev-largeMed)>300)=nan;
-% iceLev=fillmissing(iceLev,'linear','EndValues','nearest');
-% iceLev(isnan(largeMed))=nan;
-data.iceLev=iceLev;
-
 %% Create warm/cold/melting mat
+
+disp('Creating melting layer output ...')
 
 meltLayerOut=warmCold;
 for ll=1:length(data.time)
@@ -332,11 +326,27 @@ warmMask=imclose(warmMask,strel('disk',1));
 meltLayerOut(warmMask==0)=0;
 meltLayerOut(warmMask==1)=2;
 
+% Final numbers
+meltLayerOut(meltLayerOut==0)=21;
+meltLayerOut(meltLayerOut==2)=9;
+
+% Split melt mask into warm and cold
+meltMaskAlt=data.asl;
+meltMaskAlt(data.meltMask==0)=nan;
+
+maxMat=repmat(maxAltSall,size(data.DBZ_MASKED,1),1);
+meltMaskDiff=meltMaskAlt-maxMat;
+
+meltMaskSplit=nan(size(data.meltMask));
+meltMaskSplit(meltMaskDiff>=0)=19;
+meltMaskSplit(meltMaskDiff<0)=11;
+
 % Add melting areas
-meltLayerOut(data.meltMask==1)=1;
+meltLayerOut(~isnan(meltMaskSplit))=meltMaskSplit(~isnan(meltMaskSplit));
 data.meltLayer=meltLayerOut;
+
+data.meltLayer(isnan(data.TEMP))=nan;
 data.meltLayer(data.FLAG~=1)=nan;
-data.meltLayer(isnan(data.TEMP) )=nan;
 
 %% Testing plot for stds and medians
 plotMedStd=0;

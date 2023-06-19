@@ -61,15 +61,21 @@ set(gca,'xticklabel',[])
 ax3.Position=[0.06 0.287 0.87 0.21];
 
 % Melting layer
+meltPlot=nan(size(newMeltLayer));
+meltPlot(newMeltLayer==9)=3;
+meltPlot(newMeltLayer==11)=2;
+meltPlot(newMeltLayer==19)=1;
+meltPlot(newMeltLayer==21)=0;
+
 ax4=subplot(4,1,4);
 hold on;
-surf(newTime,newASL./1000,newMeltLayer,'edgecolor','none');
+surf(newTime,newASL./1000,meltPlot,'edgecolor','none');
 view(2);
-ax4.Colormap=[0,1,1;0,0,0;1,0,1];
-caxis([-0.5,2.5]);
+ax4.Colormap=[0,1,1;0.5,0.5,0.5;0,0,0;1,0,1];
+caxis([-0.5,3.5]);
 cb=colorbar;
-cb.Ticks=[0,1,2];
-cb.TickLabels={'Cold','Melting','Warm'};
+cb.Ticks=[0,1,2,3];
+cb.TickLabels={'Cold','Melting cold','Melting warm','Warm'};
 ylim(ylimits);
 ylabel('Altitude (km)');
 xlim([newTime(1),newTime(end)]);

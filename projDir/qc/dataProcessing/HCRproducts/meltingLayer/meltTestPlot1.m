@@ -59,7 +59,7 @@ view(2);
 ax4.Colormap=velCols;
 caxis([-8 8]);
 scatter(timeMat(maskForPlot==1),aslForMask(maskForPlot==1)./1000,2.5,'filled','MarkerFaceColor','k');
-scatter(data.time,data.iceLev./1000,4,'filled','MarkerFaceColor','g');
+%scatter(data.time,data.iceLev./1000,4,'filled','MarkerFaceColor','g');
 colorbar
 ylim(ylimits);
 ylabel('Altitude (km)');
