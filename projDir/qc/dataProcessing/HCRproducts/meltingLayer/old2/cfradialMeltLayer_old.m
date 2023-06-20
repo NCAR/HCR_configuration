@@ -1,4 +1,4 @@
-% add topo data to cfradial files
+% add model data to cfradial files
 clear all;
 close all;
 
@@ -6,7 +6,7 @@ addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
 project='socrates'; % socrates, cset, aristo, otrec
 quality='qc3'; % field, qc1, qc2
-qcVersion='v3.2';
+qcVersion='v3.1';
 freqData='10hz';
 whichModel='era5';
 
@@ -35,31 +35,17 @@ for ii=1:size(caseList,1)
     if ~isempty(fileList)
         
         % Get model data
-        model.topo=[];
-                
+        model.meltLayer=[];
+        model.iceLevel=[];
+        
         model=read_model(model,modeldir,startTime,endTime);
         timeModelNum=datenum(model.time);
         
-        % Check if times match
-        if size(model.time,2)~=size(model.topo,2)
-            error('Size of model time and model variable do not match.');
-        end
-                
         %% Loop through HCR data files
         for jj=1:length(fileList)
             infile=fileList{jj};
             
             disp(infile);
-
-            % Check if variable exists
-            try
-                meltIn=ncread(infile,'TOPO');
-            end
-            if exist('meltIn')
-                warning('Variable already exists. Skipping file.')
-                clear('meltIn');
-                continue
-            end
             
             % Find times that are equal
             startTimeIn=ncread(infile,'time_coverage_start')';
@@ -83,9 +69,10 @@ for ii=1:size(caseList,1)
             modVars=fields(model);
             
             for kk=1:length(modVars)
-                if ~strcmp((modVars{kk}),'time') & ~strcmp((modVars{kk}),'asl')
+                if ~strcmp((modVars{kk}),'time')
                     modOut.(modVars{kk})=model.(modVars{kk})(:,ib);
                     modOut.(modVars{kk})(isnan(modOut.(modVars{kk})))=fillVal;
+                    modOut.(modVars{kk})=modOut.(modVars{kk});
                 end
             end
             
@@ -95,22 +82,37 @@ for ii=1:size(caseList,1)
             
             % Get dimensions
             dimtime = netcdf.inqDimID(ncid,'time');
-                        
+            dimrange = netcdf.inqDimID(ncid,'range');
+            
             % Define variables
             netcdf.reDef(ncid);
-            varidTOPO = netcdf.defVar(ncid,'TOPO','NC_FLOAT',[dimtime]);
-            netcdf.defVarFill(ncid,varidTOPO,false,fillVal);
+            varidML = netcdf.defVar(ncid,'MELTING_LAYER','NC_SHORT',[dimrange dimtime]);
+            netcdf.defVarFill(ncid,varidML,false,fillVal);
+            varidIL = netcdf.defVar(ncid,'ICING_LEVEL','NC_FLOAT',[dimtime]);
+            netcdf.defVarFill(ncid,varidIL,false,fillVal);
             netcdf.endDef(ncid);
             
             % Write variables
-            netcdf.putVar(ncid,varidTOPO,modOut.topo);
-            
+            netcdf.putVar(ncid,varidML,modOut.meltLayer);
+            netcdf.putVar(ncid,varidIL,modOut.iceLevel);
+                       
             netcdf.close(ncid);
             
-            % Write attributes          
-            ncwriteatt(infile,'TOPO','long_name','terrain_height_above_mean_sea_level');
-            ncwriteatt(infile,'TOPO','units','m');
-            ncwriteatt(infile,'TOPO','coordinates','time');
+            % Write attributes
+            ncwriteatt(infile,'MELTING_LAYER','long_name','melting_layer_and_zero_degree_level');
+            ncwriteatt(infile,'MELTING_LAYER','standard_name','melting_layer_and_zero_degree_level');
+            ncwriteatt(infile,'MELTING_LAYER','units','');
+            ncwriteatt(infile,'MELTING_LAYER','flag_values',[10, 11, 12, 13, 14, 20, 21, 22, 23, 24]);
+            ncwriteatt(infile,'MELTING_LAYER','flag_meanings',...
+                'below_iceLev ERA5_zeroDeg_below_iceLev meltLayer_detected_below/at_iceLev meltLayer_interpolated_below/at_iceLev meltLayer_estimated_below/at_iceLev above_iceLev ERA5_zeroDeg_above_iceLev meltLayer_detected_above_iceLev meltLayer_interpolated_above_iceLev meltLayer_estimated_above_iceLev');
+            ncwriteatt(infile,'MELTING_LAYER','is_discrete','true');
+            ncwriteatt(infile,'MELTING_LAYER','grid_mapping','grid_mapping');
+            ncwriteatt(infile,'MELTING_LAYER','coordinates','time range');
+                        
+            ncwriteatt(infile,'ICING_LEVEL','long_name','icing_level');
+            ncwriteatt(infile,'ICING_LEVEL','standard_name','icing_level');
+            ncwriteatt(infile,'ICING_LEVEL','units','m');
+            ncwriteatt(infile,'ICING_LEVEL','coordinates','time');
         end
     end
 end

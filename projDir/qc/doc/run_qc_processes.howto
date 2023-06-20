@@ -225,8 +225,8 @@ $PROJ_DIR/qc/dataProcessing/HCRproducts/velCorr/plotVelCorr_findPoly.m
 # To make the VEL_CORR field
 # If nadir and zenith pointing correction is desired run
 $PROJ_DIR/qc/dataProcessing/HCRproducts/velCorr/make_VEL_CORR_nadir_zenith_wholeFlights.m
-# If only nadir correction is desired run
-$PROJ_DIR/qc/dataProcessing/HCRproducts/velCorr/make_VEL_CORR_nadir_wholeFlights.m
+# If only nadir correction is desired run (not recommended!!!)
+$PROJ_DIR/qc/dataProcessing/HCRproducts/velCorr/notUsed2/make_VEL_CORR_nadir_wholeFlights.m
 
 # The filter lenght can be adjusted in this file. To test out 
 # different filter lenghts, run
@@ -240,8 +240,7 @@ $PROJ_DIR/qc/dataProcessing/HCRproducts/velCorr/cfradialVelCorr.m
 # De-alias velocity
 
 # To de-alias velocity and mask out and non-cloud
-# data run either (!!!)
-
+# data run
 
 $PROJ_DIR/qc/dataProcessing/HCRproducts/rayDeAliasing/call_rayDeAlias_wholeFlights_withPlot.m
 

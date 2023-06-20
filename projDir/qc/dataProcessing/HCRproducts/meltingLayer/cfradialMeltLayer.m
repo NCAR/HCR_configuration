@@ -4,9 +4,9 @@ close all;
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-project='socrates'; % socrates, cset, aristo, otrec
+project='otrec'; % socrates, cset, aristo, otrec
 quality='qc3'; % field, qc1, qc2
-qcVersion='v3.1';
+qcVersion='v3.2';
 freqData='10hz';
 whichModel='era5';
 
@@ -36,8 +36,7 @@ for ii=1:size(caseList,1)
         
         % Get model data
         model.meltLayer=[];
-        model.iceLevel=[];
-        
+               
         model=read_model(model,modeldir,startTime,endTime);
         timeModelNum=datenum(model.time);
         
@@ -46,7 +45,17 @@ for ii=1:size(caseList,1)
             infile=fileList{jj};
             
             disp(infile);
-            
+
+            % Check if variable exists
+            try
+                meltIn=ncread(infile,'MELTING_LAYER');
+            end
+            if exist('meltIn')
+                warning('Variable already exists. Skipping file.')
+                clear('meltIn');
+                continue
+            end
+
             % Find times that are equal
             startTimeIn=ncread(infile,'time_coverage_start')';
             startTimeFile=datetime(str2num(startTimeIn(1:4)),str2num(startTimeIn(6:7)),str2num(startTimeIn(9:10)),...
@@ -88,31 +97,23 @@ for ii=1:size(caseList,1)
             netcdf.reDef(ncid);
             varidML = netcdf.defVar(ncid,'MELTING_LAYER','NC_SHORT',[dimrange dimtime]);
             netcdf.defVarFill(ncid,varidML,false,fillVal);
-            varidIL = netcdf.defVar(ncid,'ICING_LEVEL','NC_FLOAT',[dimtime]);
-            netcdf.defVarFill(ncid,varidIL,false,fillVal);
             netcdf.endDef(ncid);
             
             % Write variables
             netcdf.putVar(ncid,varidML,modOut.meltLayer);
-            netcdf.putVar(ncid,varidIL,modOut.iceLevel);
-                       
+                                  
             netcdf.close(ncid);
             
             % Write attributes
-            ncwriteatt(infile,'MELTING_LAYER','long_name','melting_layer_and_zero_degree_level');
-            ncwriteatt(infile,'MELTING_LAYER','standard_name','melting_layer_and_zero_degree_level');
+            ncwriteatt(infile,'MELTING_LAYER','long_name','melting_layer');
+            ncwriteatt(infile,'MELTING_LAYER','standard_name','melting_layer');
             ncwriteatt(infile,'MELTING_LAYER','units','');
-            ncwriteatt(infile,'MELTING_LAYER','flag_values',[10, 11, 12, 13, 14, 20, 21, 22, 23, 24]);
+            ncwriteatt(infile,'MELTING_LAYER','flag_values',[9,11,19,21]);
             ncwriteatt(infile,'MELTING_LAYER','flag_meanings',...
-                'below_iceLev ERA5_zeroDeg_below_iceLev meltLayer_detected_below/at_iceLev meltLayer_interpolated_below/at_iceLev meltLayer_estimated_below/at_iceLev above_iceLev ERA5_zeroDeg_above_iceLev meltLayer_detected_above_iceLev meltLayer_interpolated_above_iceLev meltLayer_estimated_above_iceLev');
+                'warm melting_warm melting_cold cold');
             ncwriteatt(infile,'MELTING_LAYER','is_discrete','true');
             ncwriteatt(infile,'MELTING_LAYER','grid_mapping','grid_mapping');
             ncwriteatt(infile,'MELTING_LAYER','coordinates','time range');
-                        
-            ncwriteatt(infile,'ICING_LEVEL','long_name','icing_level');
-            ncwriteatt(infile,'ICING_LEVEL','standard_name','icing_level');
-            ncwriteatt(infile,'ICING_LEVEL','units','m');
-            ncwriteatt(infile,'ICING_LEVEL','coordinates','time');
         end
     end
 end

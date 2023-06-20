@@ -50,6 +50,16 @@ for ii=1:size(caseList,1)
             infile=fileList{jj};
             
             disp(infile);
+
+            % Check if variable exists
+            try
+                meltIn=ncread(infile,'VEL_UNFOLDED');
+            end
+            if exist('meltIn')
+                warning('Variable already exists. Skipping file.')
+                clear('meltIn');
+                continue
+            end
             
             % Find times that are equal
             startTimeIn=ncread(infile,'time_coverage_start')';

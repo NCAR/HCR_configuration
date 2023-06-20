@@ -327,8 +327,8 @@ meltLayerOut(warmMask==0)=0;
 meltLayerOut(warmMask==1)=2;
 
 % Final numbers
-meltLayerOut(meltLayerOut==0)=21;
-meltLayerOut(meltLayerOut==2)=9;
+meltLayerOut(meltLayerOut==0)=21; % Cold
+meltLayerOut(meltLayerOut==2)=9; % Warm
 
 % Split melt mask into warm and cold
 meltMaskAlt=data.asl;
@@ -338,8 +338,8 @@ maxMat=repmat(maxAltSall,size(data.DBZ_MASKED,1),1);
 meltMaskDiff=meltMaskAlt-maxMat;
 
 meltMaskSplit=nan(size(data.meltMask));
-meltMaskSplit(meltMaskDiff>=0)=19;
-meltMaskSplit(meltMaskDiff<0)=11;
+meltMaskSplit(meltMaskDiff>=0)=19; % Melting cold
+meltMaskSplit(meltMaskDiff<0)=11; % Melting warm
 
 % Add melting areas
 meltLayerOut(~isnan(meltMaskSplit))=meltMaskSplit(~isnan(meltMaskSplit));
