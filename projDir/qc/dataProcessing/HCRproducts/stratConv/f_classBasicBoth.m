@@ -27,7 +27,7 @@ mixedAreas=bwconncomp(maskMixed);
 for ii=1:mixedAreas.NumObjects
     pixInds=mixedAreas.PixelIdxList{ii};
     meltArea=melt(pixInds);
-    belowFrac=sum(meltArea<20)./length(pixInds);
+    belowFrac=sum(meltArea<15)./length(pixInds);
     if belowFrac>0.8
         thisMat=zeros(size(conv));
         thisMat(pixInds)=1;
@@ -45,8 +45,8 @@ for ii=1:mixedAreas.NumObjects
         for jj=1:length(ucols);
             meltCol=meltCols(:,jj);
             checkCol=convCols(:,jj);
-            meltCol(1:min(find(~isnan(meltCol))))=10;
-            firstInd=min(find(meltCol>=20));
+            meltCol(1:min(find(~isnan(meltCol))))=9;
+            firstInd=min(find(meltCol>=19));
             checkCol(1:firstInd)=1;
             lastInd=min(find(isnan(checkCol)))-1;
             if isempty(lastInd)
