@@ -8,7 +8,7 @@ close all;
 project='socrates'; %socrates, aristo, cset, otrec
 quality='qc3'; %field, qc1, or qc2
 freqData='10hz';
-qcVersion='v3.1';
+qcVersion='v3.2';
 whichModel='era5';
 
 if strcmp(project,'otrec')
@@ -27,6 +27,10 @@ indir=HCRdir(project,quality,qcVersion,freqData);
 
 figdir=[indir(1:end-5),'convStratPlots/wholeFlights/'];
 
+if ~exist(figdir, 'dir')
+    mkdir(figdir)
+end
+
 infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_',project,'_data.txt'];
 
 caseList = table2array(readtable(infile));
@@ -41,7 +45,7 @@ colmapSC=[0,0.1,0.6;
     0.99,0.77,0.22;
     0.7,0,0];
 
-for aa=2:size(caseList,1)
+for aa=1:size(caseList,1)
     disp(['Flight ',num2str(aa)]);
     disp('Loading HCR data.')
     disp(['Starting at ',datestr(datetime('now'),'yyyy-mm-dd HH:MM')]);
