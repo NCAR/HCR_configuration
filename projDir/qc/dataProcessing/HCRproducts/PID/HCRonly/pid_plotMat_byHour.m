@@ -8,7 +8,7 @@ close all;
 project='socrates'; %socrates, aristo, cset, otrec
 quality='qc3'; %field, qc1, or qc2
 freqData='10hz';
-qcVersion='v3.1';
+qcVersion='v3.2';
 whichModel='era5';
 
 if strcmp(project,'otrec')
@@ -26,6 +26,10 @@ indir=HCRdir(project,quality,qcVersion,freqData);
 [~,modeldir]=modelDir(project,whichModel,quality,qcVersion,freqData);
 
 figdir=[indir(1:end-5),'pidPlots/wholeFlights/'];
+
+if ~exist(figdir,'dir')
+    mkdir(figdir)
+end
 
 infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_',project,'_data.txt'];
 
