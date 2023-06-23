@@ -5,9 +5,9 @@ close all
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-project='socrates'; %socrates, aristo, cset
+project='cset'; %socrates, aristo, cset
 quality='qc3'; %field, qc1, or qc2
-qcVersion='v3.2';
+qcVersion='v3.1';
 freqData='10hz'; % 10hz, 100hz, 2hz, or combined
 whichModel='era5';
 
@@ -99,7 +99,7 @@ for aa=1:size(caseList,1)
     pixRadVEL=50;
     velBase=-20; % VEL base value which is subtracted from DBZ.
 
-    velText=f_velTexture(dataShort.VEL_MASKED,dataShort.elevation,pixRadVEL,velBase);
+    velText=f_velTexture(dataShort.VEL_MASKED,pixRadVEL,velBase);
 
     %% Convectivity
 

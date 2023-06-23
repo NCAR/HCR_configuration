@@ -82,7 +82,7 @@ for aa=1:size(caseList,1)
         velBase=-20;
 
         data.HCR_VEL(:,data.elevation<0)=-data.HCR_VEL(:,data.elevation<0);
-        data.VELTEXT=f_velTexture(data.HCR_VEL,data.elevation,pixRadVEL,velBase);
+        data.VELTEXT=f_velTexture(data.HCR_VEL,pixRadVEL,velBase);
 
         %% Mask LDR and HSRL
 
@@ -108,25 +108,20 @@ for aa=1:size(caseList,1)
 
         data.TEMP=tempOrig;
 
-%         smallInds=find((data.HCR_MELTING_LAYER==20 | (isnan(data.HCR_MELTING_LAYER) & data.TEMP<0)) & isnan(data.HCR_LDR) & isnan(data.HSRL_Particle_Linear_Depolarization_Ratio) & ...
-%             (pid_hcr_hsrl==3 | pid_hcr_hsrl==6));
-%         pid_hcr_hsrl(smallInds)=11;
-% 
-%         largeInds=find((data.HCR_MELTING_LAYER==20 | (isnan(data.HCR_MELTING_LAYER) & data.TEMP<0)) & isnan(data.HCR_LDR) & isnan(data.HSRL_Particle_Linear_Depolarization_Ratio) & ...
-%             (pid_hcr_hsrl==1 | pid_hcr_hsrl==2 | pid_hcr_hsrl==4 | pid_hcr_hsrl==5));
-%         pid_hcr_hsrl(largeInds)=10;
-
-        smallInds=find((data.HCR_MELTING_LAYER==20 | (isnan(data.HCR_MELTING_LAYER) & data.TEMP<0)) & isnan(data.HCR_LDR) & isnan(data.HSRL_Particle_Linear_Depolarization_Ratio) & ...
+        smallInds=find((data.HCR_MELTING_LAYER>15 | (isnan(data.HCR_MELTING_LAYER) & data.TEMP<0)) & isnan(data.HCR_LDR) & isnan(data.HSRL_Particle_Linear_Depolarization_Ratio) & ...
             (data.HCR_DBZ<=5 | data.HCR_VEL<=1));
         pid_hcr_hsrl(smallInds)=11;
 
-        largeInds=find((data.HCR_MELTING_LAYER==20 | (isnan(data.HCR_MELTING_LAYER) & data.TEMP<0)) & isnan(data.HCR_LDR) & isnan(data.HSRL_Particle_Linear_Depolarization_Ratio) & ...
+        largeInds=find((data.HCR_MELTING_LAYER>15 | (isnan(data.HCR_MELTING_LAYER) & data.TEMP<0)) & isnan(data.HCR_LDR) & isnan(data.HSRL_Particle_Linear_Depolarization_Ratio) & ...
             (data.HCR_DBZ>5 & data.HCR_VEL>1));
         pid_hcr_hsrl(largeInds)=10;
 
         %% Set low DBZ to cloud liquid
 
         pid_hcr_hsrl(pid_hcr_hsrl>9 & data.HCR_DBZ<=-30)=3;
+
+        %% Set Melting to melting
+        pid_hcr_hsrl(data.HCR_MELTING_LAYER==11 | data.HCR_MELTING_LAYER==19)=4;
 
         %% Add supercooled
 

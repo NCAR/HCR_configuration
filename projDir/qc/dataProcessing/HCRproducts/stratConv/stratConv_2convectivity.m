@@ -101,7 +101,7 @@ for aa=1:length(caseStart)
     pixRadVEL=50;
     velBase=-20; % VEL base value which is subtracted from DBZ.
 
-    velText=f_velTexture(dataShort.VEL_MASKED,dataShort.elevation,pixRadVEL,velBase);
+    velText=f_velTexture(dataShort.VEL_MASKED,pixRadVEL,velBase);
 
     %% Convectivity
 

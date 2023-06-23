@@ -10,7 +10,7 @@ w=[22 16 16 16 14 16];
 %  1 Rain
 %  2 Drizzle
 %  3 Cloud liquid
-%  4 Melting (is added in post processing)
+%  4 Mixed phase
 %  5 Large frozen
 %  6 Small frozen
 
@@ -61,6 +61,22 @@ if plotIn.plotMR
     plotMresult(data,m,result(3,:,:),'CloudLiquid',plotIn);
 end
 
+%  Membership functions for mixed phase
+m=nan(6,size(data.HCR_DBZ,1),size(data.HCR_DBZ,2));
+%m(1,:,:)=smf(data.HCR_DBZ,[dbz.mixed(1),dbz.mixed(2)]);
+m(1,:,:)=1;
+m(2,:,:)=trapmf(data.HCR_LDR,[hcrldr.mixed(1),hcrldr.mixed(2),hcrldr.mixed(3),hcrldr.mixed(4)]);
+m(3,:,:)=smf(data.HCR_VEL,[vel.mixed(1),vel.mixed(2)]);
+m(4,:,:)=trapmf(data.TEMP,[temp.mixed(1),temp.mixed(2),temp.mixed(3),temp.mixed(4)]);
+m(5,:,:)=0;
+m(6,:,:)=zmf(data.HSRL_Particle_Linear_Depolarization_Ratio,[hsrlldr.mixed(1),hsrlldr.mixed(2)]);
+
+result(4,:,:)=sum(m.*w',1);
+
+if plotIn.plotMR
+    plotMresult(data,m,result(4,:,:),'MixedPhase',plotIn);
+end
+
 %  Membership functions for large frozen
 m=nan(6,size(data.HCR_DBZ,1),size(data.HCR_DBZ,2));
 m(1,:,:)=smf(data.HCR_DBZ,[dbz.lfrozen(1),dbz.lfrozen(2)]); 
@@ -70,10 +86,10 @@ m(4,:,:)=zmf(data.TEMP,[0,6]);
 m(5,:,:)=zmf(data.HSRL_Aerosol_Backscatter_Coefficient,[back.lfrozen(1),back.lfrozen(2)]);
 m(6,:,:)=smf(data.HSRL_Particle_Linear_Depolarization_Ratio,[hsrlldr.lfrozen(1),hsrlldr.lfrozen(2)]);
 
-result(4,:,:)=sum(m.*w',1);
+result(5,:,:)=sum(m.*w',1);
 
 if plotIn.plotMR
-    plotMresult(data,m,result(4,:,:),'LargeFrozen',plotIn);
+    plotMresult(data,m,result(5,:,:),'LargeFrozen',plotIn);
 end
 
 %  Membership functions for small frozen
@@ -85,10 +101,10 @@ m(4,:,:)=zmf(data.TEMP,[temp.sfrozen(1),temp.sfrozen(2)]);
 m(5,:,:)=zmf(data.HSRL_Aerosol_Backscatter_Coefficient,[back.sfrozen(1),back.sfrozen(2)]);
 m(6,:,:)=smf(data.HSRL_Particle_Linear_Depolarization_Ratio,[hsrlldr.sfrozen(1),hsrlldr.sfrozen(2)]);
 
-result(5,:,:)=sum(m.*w',1);
+result(6,:,:)=sum(m.*w',1);
 
 if plotIn.plotMR
-    plotMresult(data,m,result(5,:,:),'SmallFrozen',plotIn);
+    plotMresult(data,m,result(6,:,:),'SmallFrozen',plotIn);
 end
 
 clear m
@@ -104,6 +120,4 @@ if plotIn.plotMax
     plotResMax(data,result,maxAll,plotIn);
 end
 
-classOut(classOut==5)=6;
-classOut(classOut==4)=5;
 end
