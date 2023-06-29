@@ -5,13 +5,13 @@ close all;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Input variables %%%%%%%%%%%%%%%%%%%%%%%%%%
 
-project='noreaster'; %socrates, aristo, cset, otrec
-quality='qc2'; %field, qc1, or qc2
+project='otrec'; %socrates, aristo, cset, otrec
+quality='qc3'; %field, qc1, or qc2
 freqData='10hz';
-qcVersion='v2.1';
+qcVersion='v3.2';
 whichModel='era5';
 
-if strcmp(project,'otrec')
+if strcmp(project,'otrec') | strcmp(project,'spicule')
     ylimUpper=15;
 else
     ylimUpper=12;
