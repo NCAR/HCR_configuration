@@ -1,0 +1,37 @@
+#! /bin/csh -f
+
+# HCR QC processing
+#
+# Run RadxDwellCombine
+# Reads 10 hz data in CfRadial files, combines into 2 hz dwells
+# Writes 2hz CfRadial data
+
+source ~/git/HCR_configuration/projDir/system/params/project_info.cset
+
+cd $PROJ_DIR/qc/params
+
+# run for cset
+
+# entire project
+
+#RadxDwellCombine -params RadxDwellCombine.qc.2hz -debug -start "2018 01 15 00 00 00" -end "2018 02 25 00 00 00" >& $LOG_DIR/RadxDwellCombine.qc.2hz.cset.log &
+#tail -f $LOG_DIR/RadxDwellCombine.qc.2hz.cset.log
+
+# flight by flight
+
+RadxDwellCombine -params RadxDwellCombine.qc.2hz -debug -start "2015 07 01 16 50 00" -end "2015 07 01 22 25 00" >& $LOG_DIR/RadxDwellCombine.rf01.2hz.log &
+RadxDwellCombine -params RadxDwellCombine.qc.2hz -debug -start "2015 07 07 13 50 00" -end "2015 07 07 21 15 00" >& $LOG_DIR/RadxDwellCombine.rf02.2hz.log &
+RadxDwellCombine -params RadxDwellCombine.qc.2hz -debug -start "2015 07 09 16 20 00" -end "2015 07 09 23 35 00" >& $LOG_DIR/RadxDwellCombine.rf03.2hz.log &
+RadxDwellCombine -params RadxDwellCombine.qc.2hz -debug -start "2015 07 12 13 50 00" -end "2015 07 12 21 15 00" >& $LOG_DIR/RadxDwellCombine.rf04.2hz.log &
+RadxDwellCombine -params RadxDwellCombine.qc.2hz -debug -start "2015 07 14 15 15 00" -end "2015 07 15 00 00 00" >& $LOG_DIR/RadxDwellCombine.rf05.2hz.log &
+RadxDwellCombine -params RadxDwellCombine.qc.2hz -debug -start "2015 07 17 14 50 00" -end "2015 07 17 21 50 00" >& $LOG_DIR/RadxDwellCombine.rf06.2hz.log &
+RadxDwellCombine -params RadxDwellCombine.qc.2hz -debug -start "2015 07 19 16 15 00" -end "2015 07 20 00 05 00" >& $LOG_DIR/RadxDwellCombine.rf07.2hz.log &
+RadxDwellCombine -params RadxDwellCombine.qc.2hz -debug -start "2015 07 22 13 50 00" -end "2015 07 22 22 05 00" >& $LOG_DIR/RadxDwellCombine.rf08.2hz.log &
+RadxDwellCombine -params RadxDwellCombine.qc.2hz -debug -start "2015 07 24 14 55 00" -end "2015 07 25 00 20 00" >& $LOG_DIR/RadxDwellCombine.rf09.2hz.log &
+RadxDwellCombine -params RadxDwellCombine.qc.2hz -debug -start "2015 07 27 14 35 00" -end "2015 07 27 22 10 00" >& $LOG_DIR/RadxDwellCombine.rf10.2hz.log &
+RadxDwellCombine -params RadxDwellCombine.qc.2hz -debug -start "2015 07 29 15 40 00" -end "2015 07 30 00 00 00" >& $LOG_DIR/RadxDwellCombine.rf11.2hz.log &
+RadxDwellCombine -params RadxDwellCombine.qc.2hz -debug -start "2015 08 01 14 40 00" -end "2015 08 01 22 30 00" >& $LOG_DIR/RadxDwellCombine.rf12.2hz.log &
+RadxDwellCombine -params RadxDwellCombine.qc.2hz -debug -start "2015 08 03 16 15 00" -end "2015 08 03 23 30 00" >& $LOG_DIR/RadxDwellCombine.rf13.2hz.log &
+RadxDwellCombine -params RadxDwellCombine.qc.2hz -debug -start "2015 08 07 14 50 00" -end "2015 08 07 21 55 00" >& $LOG_DIR/RadxDwellCombine.rf14.2hz.log &
+RadxDwellCombine -params RadxDwellCombine.qc.2hz -debug -start "2015 08 09 15 55 00" -end "2015 08 09 23 35 00" >& $LOG_DIR/RadxDwellCombine.rf15.2hz.log &
+RadxDwellCombine -params RadxDwellCombine.qc.2hz -debug -start "2015 08 12 15 15 00" -end "2015 08 12 22 00 00" >& $LOG_DIR/RadxDwellCombine.rf16.2hz.log &
