@@ -368,11 +368,6 @@ $PROJ_DIR/qc/scripts/run_RadxDwellCombine.qc.2hz.socrates
 $PROJ_DIR/qc/params/RadxDwellCombine.qc.2hz
 
 #################################################################
-# Add melting layer
-
-$PROJ_DIR/qc/dataProcessing/HCRproducts/meltingLayer/meltLayer_10hzTo2hz_combined.m
-
-#################################################################
 # Copy HSRL moments data into HCR QC data area - 2Hz data
 #
 # The HSRL moments are computed using pythons scripts in the
