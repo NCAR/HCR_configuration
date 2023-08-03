@@ -41,7 +41,7 @@ debug = DEBUG_NORM;
 // Type: string
 //
 
-instance = "wband_256ns.v_only";
+instance = "wband_256ns.v_only.into_pentek";
 
 ///////////// register_with_procmap ///////////////////
 //
@@ -751,7 +751,7 @@ snr_for_mds = -6;
 // Type: string
 //
 
-output_dir = "$(PROJ_DIR)/calibration/data/wband_256ns/v_only_if";
+output_dir = "$(PROJ_DIR)/calibration/data/wband_256ns/v_only_into_pentek";
 
 ///////////// output_file_label ///////////////////////
 //
