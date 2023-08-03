@@ -434,6 +434,15 @@ fields = {
   }
   ,
   {
+    label = "LDR_MASKED",
+    raw_name = "LDR_MASKED",
+    filtered_name = "",
+    units = "dB",
+    color_map = "ldr.colors",
+    shortcut = "f"
+  }
+  ,
+  {
     label = "SNR",
     raw_name = "SNR",
     filtered_name = "",
@@ -528,7 +537,7 @@ fields = {
     raw_name = "MELTING_LAYER",
     filtered_name = "",
     units = "",
-    color_map = "hcr_melting_layer.colors",
+    color_map = "hcr_melting_layer_new.colors",
     shortcut = "d"
   }
   ,

@@ -4,9 +4,9 @@ close all;
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-project='socrates'; % socrates, cset, aristo, otrec
+project='otrec'; % socrates, cset, aristo, otrec
 quality='qc3'; % field, qc1, qc2
-qcVersion='v3.1';
+qcVersion='v3.2';
 freqData='10hz';
 whichModel='era5';
 
@@ -50,6 +50,16 @@ for ii=1:size(caseList,1)
             infile=fileList{jj};
             
             disp(infile);
+
+            % Check if variable exists
+            try
+                meltIn=ncread(infile,'VEL_UNFOLDED');
+            end
+            if exist('meltIn')
+                warning('Variable already exists. Skipping file.')
+                clear('meltIn');
+                continue
+            end
             
             % Find times that are equal
             startTimeIn=ncread(infile,'time_coverage_start')';

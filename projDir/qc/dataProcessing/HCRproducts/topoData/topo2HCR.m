@@ -6,7 +6,7 @@ addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
 project='socrates'; % socrates, cset, aristo, otrec
 quality='qc3'; % field, qc0, qc1, qc2
-qcVersion='v3.1';
+qcVersion='v3.2';
 freqData='10hz'; % 10hz, 100hz, or 2hz
 whichModel='era5'; % ecmwf or era5
 
@@ -46,29 +46,8 @@ for ii=1:size(caseList,1)
     % Make list of files within the specified time frame
     fileList=makeFileList(indir,startTime,endTime,'xxxxxx20YYMMDDxhhmmss',1);
     
-    if length(fileList)==0
-        disp('No data files found.');
-        startTime=endTime;
-        continue
-    end
-    
     % Load data
     data=read_HCR(fileList,data,startTime,endTime);
-    
-    if isempty(data.time)
-        disp('No data found.');
-        startTime=endTime;
-        continue
-    end
-    
-    % Check if all variables were found
-    for kk=1:length(dataVars)
-        if ~isfield(data,dataVars{kk})
-            dataVars{kk}=[];
-        end
-    end
-    
-    data.asl=HCRrange2asl(data.range,data.elevation,data.altitude);
 
     %% We have some data where lat/lon are zero
     lonZero=find(data.longitude==0);

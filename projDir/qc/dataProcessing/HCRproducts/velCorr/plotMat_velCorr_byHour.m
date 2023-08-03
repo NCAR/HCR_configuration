@@ -5,9 +5,9 @@ close all
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-project='socrates'; % socrates, cset, aristo, otrec
-quality='qc3'; % field, qc1, qc2
-qcVersion='v3.1';
+project='spicule'; % socrates, cset, aristo, otrec
+quality='qc1'; % field, qc1, qc2
+qcVersion='v1.2';
 freqData='10hz'; % 10hz, 100hz, or 2hz
 whichModel='era5';
 
@@ -22,10 +22,7 @@ caseList = table2array(readtable(infile));
 
 indir=HCRdir(project,quality,qcVersion,freqData);
 
-figdir=[indir(1:end-5),'velCorrZenithPlots/hourly/'];
-
-polyTimePeriod=15; %Time period for poly fit in seconds
-polyOrder=3; % Order of polynomial fit
+figdir=[indir(1:end-5),'velCorrPlots/wholeFlights/'];
 
 for kk=1:size(caseList,1)
 

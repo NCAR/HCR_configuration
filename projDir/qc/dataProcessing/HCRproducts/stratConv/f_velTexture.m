@@ -1,4 +1,4 @@
-function velText=f_velTexture(VEL,elev,pixRad,velBase)
+function velText=f_velTexture(VEL,pixRad,velBase)
 
 % Shrink velocity areas to remove outliers at the edges
 VELmask=zeros(size(VEL));

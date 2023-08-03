@@ -21,7 +21,11 @@ formatOut = 'yyyymmdd_HHMM';
 
 indir=HCRdir(project,quality,freqData);
 
-polyTimePeriod=15; %Time period for poly fit in seconds
+if strcmp(project,'socrates')
+    polyTimePeriod=20; %Time period for poly fit in seconds
+else
+    polyTimePeriod=15; %Time period for poly fit in seconds
+end
 polyOrder=3; % Order of polynomial fit
 
 maxEdge=14.6; % Upper edge for plotting

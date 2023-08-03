@@ -80,7 +80,7 @@ for aa=1:length(caseStart)
         velBase=-20;
 
         data.HCR_VEL(:,data.elevation<0)=-data.HCR_VEL(:,data.elevation<0);
-        data.VELTEXT=f_velTexture(data.HCR_VEL,data.elevation,pixRadVEL,velBase);
+        data.VELTEXT=f_velTexture(data.HCR_VEL,pixRadVEL,velBase);
 
         %% Mask LDR and HSRL
 
@@ -106,21 +106,20 @@ for aa=1:length(caseStart)
 
         data.TEMP=tempOrig;
 
-%         smallInds=find((data.HCR_MELTING_LAYER==20 | (isnan(data.HCR_MELTING_LAYER) & data.TEMP<0)) & isnan(data.HCR_LDR) & isnan(data.HSRL_Particle_Linear_Depolarization_Ratio) & ...
-%             (pid_hcr_hsrl==3 | pid_hcr_hsrl==6));
-%         pid_hcr_hsrl(smallInds)=11;
-% 
-%         largeInds=find((data.HCR_MELTING_LAYER==20 | (isnan(data.HCR_MELTING_LAYER) & data.TEMP<0)) & isnan(data.HCR_LDR) & isnan(data.HSRL_Particle_Linear_Depolarization_Ratio) & ...
-%             (pid_hcr_hsrl==1 | pid_hcr_hsrl==2 | pid_hcr_hsrl==4 | pid_hcr_hsrl==5));
-%         pid_hcr_hsrl(largeInds)=10;
-
-        smallInds=find((data.HCR_MELTING_LAYER==20 | (isnan(data.HCR_MELTING_LAYER) & data.TEMP<0)) & isnan(data.HCR_LDR) & isnan(data.HSRL_Particle_Linear_Depolarization_Ratio) & ...
+        smallInds=find((data.HCR_MELTING_LAYER>15 | (isnan(data.HCR_MELTING_LAYER) & data.TEMP<0)) & isnan(data.HCR_LDR) & isnan(data.HSRL_Particle_Linear_Depolarization_Ratio) & ...
             (data.HCR_DBZ<=5 | data.HCR_VEL<=1));
         pid_hcr_hsrl(smallInds)=11;
 
-        largeInds=find((data.HCR_MELTING_LAYER==20 | (isnan(data.HCR_MELTING_LAYER) & data.TEMP<0)) & isnan(data.HCR_LDR) & isnan(data.HSRL_Particle_Linear_Depolarization_Ratio) & ...
+        largeInds=find((data.HCR_MELTING_LAYER>15 | (isnan(data.HCR_MELTING_LAYER) & data.TEMP<0)) & isnan(data.HCR_LDR) & isnan(data.HSRL_Particle_Linear_Depolarization_Ratio) & ...
             (data.HCR_DBZ>5 & data.HCR_VEL>1));
         pid_hcr_hsrl(largeInds)=10;
+
+        %% Set low DBZ to cloud liquid
+
+        pid_hcr_hsrl(pid_hcr_hsrl>9 & data.HCR_DBZ<=-30)=3;
+
+        %% Set Melting to melting
+        pid_hcr_hsrl(data.HCR_MELTING_LAYER==11 | data.HCR_MELTING_LAYER==19)=4;
 
         %% Add supercooled
 
@@ -208,16 +207,20 @@ for aa=1:length(caseStart)
                 
         s2=subplot(5,2,2);
         plotMelt=data.HCR_MELTING_LAYER;
-        plotMelt(~isnan(plotMelt) & plotMelt<20)=10;
-        plotMelt(~isnan(plotMelt) & plotMelt>=20)=20;
-        surf(data.time,data.asl./1000,plotMelt,'edgecolor','none');
+        meltPlot=nan(size(plotMelt));
+        meltPlot(plotMelt==9)=3;
+        meltPlot(plotMelt==11)=2;
+        meltPlot(plotMelt==19)=1;
+        meltPlot(plotMelt==21)=0;
+        surf(data.time,data.asl./1000,meltPlot,'edgecolor','none');
         view(2);
         ylim(ylimits);
         xlim([data.time(1),data.time(end)]);
-        %caxis([0 2]);
-        colormap(s2,[1 0 1;1 1 0]);
-        c=colorbar;
-        c.Visible='off';
+        s2.Colormap=[0,1,1;0.5,0.5,0.5;0,0,0;1,0,1];
+        caxis([-0.5,3.5]);
+        cb=colorbar;
+        cb.Ticks=[0,1,2,3];
+        cb.TickLabels={'Cold','Melting cold','Melting warm','Warm'};
         ylabel('Altitude (km)');
         title(['Melting Layer']);
         grid on

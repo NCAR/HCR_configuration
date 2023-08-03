@@ -5,9 +5,9 @@ close all
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-project='socrates'; %socrates, aristo, cset
+project='otrec'; %socrates, aristo, cset
 quality='qc3'; %field, qc1, or qc2
-qcVersion='v3.1';
+qcVersion='v3.2';
 freqData='10hz'; % 10hz, 100hz, 2hz, or combined
 
 plotIn.plotMR=0;
@@ -21,6 +21,10 @@ postProcess=1; % 1 if post processing is desired
 indir=HCRdir(project,quality,qcVersion,freqData);
 
 figdir=[indir(1:end-5),'pidPlots/cases/'];
+
+if ~exist(figdir,'dir')
+    mkdir(figdir)
+end
 
 % Loop through cases
 casefile=['~/git/HCR_configuration/projDir/qc/dataProcessing/HCRproducts/caseFiles/pid_',project,'.txt'];
@@ -44,29 +48,32 @@ for aa=1:length(caseStart)
         %% Load data
         
         disp('Loading data');
-        
+
         data=[];
-        
+
         %HCR data
         data.DBZ_MASKED=[];
         data.VEL_MASKED=[];
-        data.LDR=[];
         data.TEMP=[];
         data.MELTING_LAYER=[];
         %data.SNR=[];
-                
-        dataVars=fieldnames(data);
-        
+
+        % Check if LDR_MASKED is available
+        try
+            velTest=ncread(fileList{1},'LDR_MASKED');
+            data.LDR_MASKED=[];
+        catch
+            data.LDR=[];
+        end
+
         % Load data
         data=read_HCR(fileList,data,startTime,endTime);
-        
-        % Check if all variables were found
-        for ii=1:length(dataVars)
-            if ~isfield(data,dataVars{ii})
-                dataVars{ii}=[];
-            end
+
+        if isfield(data,'LDR_MASKED')
+            data.LDR=data.LDR_MASKED;
+            data=rmfield(data,'LDR_MASKED');
         end
-       
+
         ylimits=[0 (max(data.asl(~isnan(data.DBZ_MASKED)))./1000)+0.5];
         plotIn.ylimits=ylimits;
 
@@ -78,7 +85,7 @@ for aa=1:length(caseStart)
         velBase=-20;
 
         data.VEL_MASKED(:,data.elevation<0)=-data.VEL_MASKED(:,data.elevation<0);
-        data.VELTEXT=f_velTexture(data.VEL_MASKED,data.elevation,pixRadVEL,velBase);
+        data.VELTEXT=f_velTexture(data.VEL_MASKED,pixRadVEL,velBase);
         
         %% Mask LDR
 
@@ -102,24 +109,20 @@ for aa=1:length(caseStart)
 
         data.TEMP=tempOrig;
 
-%         smallInds=find((data.MELTING_LAYER==20 | (isnan(data.MELTING_LAYER) & data.TEMP<0)) & isnan(data.LDR) & (pid_hcr==3 | pid_hcr==6));
-%         pid_hcr(smallInds)=11;
-% 
-%         largeInds=find((data.MELTING_LAYER==20 | (isnan(data.MELTING_LAYER) & data.TEMP<0)) & isnan(data.LDR) & ...
-%             (pid_hcr==1 | pid_hcr==2 | pid_hcr==4 | pid_hcr==5));
-%         pid_hcr(largeInds)=10;
-
-        smallInds=find((data.MELTING_LAYER==20 | (isnan(data.MELTING_LAYER) & data.TEMP<0)) & isnan(data.LDR) & ...
+        smallInds=find((data.MELTING_LAYER>15 | (isnan(data.MELTING_LAYER) & data.TEMP<0)) & isnan(data.LDR) & ...
             (data.DBZ_MASKED<=5 | data.VEL_MASKED<=1));
         pid_hcr(smallInds)=11;
 
-        largeInds=find((data.MELTING_LAYER==20 | (isnan(data.MELTING_LAYER) & data.TEMP<0)) & isnan(data.LDR) & ...
+        largeInds=find((data.MELTING_LAYER>15 | (isnan(data.MELTING_LAYER) & data.TEMP<0)) & isnan(data.LDR) & ...
             (data.DBZ_MASKED>5 & data.VEL_MASKED>1));
         pid_hcr(largeInds)=10;
 
         %% Set low DBZ to cloud liquid
 
         pid_hcr(pid_hcr>9 & data.DBZ_MASKED<=-30 & data.TEMP>-40)=3;
+
+        %% Set Melting to melting
+        pid_hcr(data.MELTING_LAYER==11 | data.MELTING_LAYER==19)=4;
 
         %% Add supercooled
 
@@ -144,7 +147,7 @@ for aa=1:length(caseStart)
         cscale_hcr=[1,0,0; 1,0.6,0.47; 0,1,0; 0,0.7,0; 0,0,1; 1,0,1; 0.5,0,0; 1,1,0; 0,1,1; 0,0,0; 0.5,0.5,0.5];
 
         units_str_hcr={'Rain','Supercooled Rain','Drizzle','Supercooled Drizzle','Cloud Liquid','Supercooled Cloud Liquid',...
-            'Mixed Phase','Large Frozen','Small Frozen','Precip','Cloud'};
+            'Melting','Large Frozen','Small Frozen','Precip','Cloud'};
         
         %% Plot PIDs
         
@@ -191,23 +194,27 @@ for aa=1:length(caseStart)
         ylabel('Altitude (km)');
         title(['HCR linear depolarization ratio (dB)']);
         grid on
-                
+
         s2=subplot(4,2,2);
         plotMelt=data.MELTING_LAYER;
-        plotMelt(~isnan(plotMelt) & plotMelt<20)=10;
-        plotMelt(~isnan(plotMelt) & plotMelt>=20)=20;
-        surf(data.time,data.asl./1000,plotMelt,'edgecolor','none');
+        meltPlot=nan(size(plotMelt));
+        meltPlot(plotMelt==9)=3;
+        meltPlot(plotMelt==11)=2;
+        meltPlot(plotMelt==19)=1;
+        meltPlot(plotMelt==21)=0;
+        surf(data.time,data.asl./1000,meltPlot,'edgecolor','none');
         view(2);
         ylim(ylimits);
         xlim([data.time(1),data.time(end)]);
-        %caxis([0 2]);
-        colormap(s2,[1 0 1;1 1 0]);
-        c=colorbar;
-        c.Visible='off';
+        s2.Colormap=[0,1,1;0.5,0.5,0.5;0,0,0;1,0,1];
+        caxis([-0.5,3.5]);
+        cb=colorbar;
+        cb.Ticks=[0,1,2,3];
+        cb.TickLabels={'Cold','Melting cold','Melting warm','Warm'};
         ylabel('Altitude (km)');
         title(['Melting Layer']);
         grid on
-        
+
         s4=subplot(4,2,4);
         jetIn=jet;
         jetTemp=cat(1,jetIn(1:size(jetIn,1)/2,:),repmat([0 0 0],3,1),...

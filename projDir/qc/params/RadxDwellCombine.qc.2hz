@@ -522,7 +522,7 @@ radar_name_override = "HCR";
 // Type: string
 //
 
-site_name_override = "SOCRATES";
+site_name_override = "";
 
 ///////////// title_override //////////////////////////
 //
@@ -829,7 +829,7 @@ output_fields = {
 // Type: boolean
 //
 
-exclude_specified_fields = TRUE;
+exclude_specified_fields = FALSE;
 
 ///////////// excluded_fields /////////////////////////
 //

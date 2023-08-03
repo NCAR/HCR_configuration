@@ -5,9 +5,9 @@ close all
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-project='socrates'; %socrates, aristo, cset
+project='otrec'; %socrates, aristo, cset
 quality='qc3'; %field, qc1, or qc2
-qcVersion='v3.1';
+qcVersion='v3.2';
 freqData='10hz'; % 10hz, 100hz, 2hz, or combined
 whichModel='era5';
 
@@ -47,21 +47,24 @@ for aa=1:size(caseList,1)
     %HCR data
     data.DBZ_MASKED=[];
     data.VEL_MASKED=[];
-    data.LDR=[];
     data.TEMP=[];
     data.MELTING_LAYER=[];
     %data.SNR=[];
 
-    dataVars=fieldnames(data);
+    % Check if LDR_MASKED is available
+    try
+        velTest=ncread(fileList{1},'LDR_MASKED');
+        data.LDR_MASKED=[];
+    catch
+        data.LDR=[];
+    end
 
     % Load data
     data=read_HCR(fileList,data,startTime,endTime);
 
-    % Check if all variables were found
-    for ii=1:length(dataVars)
-        if ~isfield(data,dataVars{ii})
-            dataVars{ii}=[];
-        end
+    if isfield(data,'LDR_MASKED')
+        data.LDR=data.LDR_MASKED;
+        data=rmfield(data,'LDR_MASKED');
     end
 
     % Mask with FLAG
@@ -78,7 +81,7 @@ for aa=1:size(caseList,1)
     velBase=-20;
 
     data.VEL_MASKED(:,data.elevation<0)=-data.VEL_MASKED(:,data.elevation<0);
-    data.VELTEXT=f_velTexture(data.VEL_MASKED,data.elevation,pixRadVEL,velBase);
+    data.VELTEXT=f_velTexture(data.VEL_MASKED,pixRadVEL,velBase);
     
     %% Pre process
 
@@ -95,24 +98,20 @@ for aa=1:size(caseList,1)
 
     data.TEMP=tempOrig;
 
-    %     smallInds=find((data.MELTING_LAYER==20 | (isnan(data.MELTING_LAYER) & data.TEMP<0)) & isnan(data.LDR) & (pid_hcr==3 | pid_hcr==6));
-    %     pid_hcr(smallInds)=11;
-    %
-    %     largeInds=find((data.MELTING_LAYER==20 | (isnan(data.MELTING_LAYER) & data.TEMP<0)) & isnan(data.LDR) & ...
-    %         (pid_hcr==1 | pid_hcr==2 | pid_hcr==4 | pid_hcr==5));
-    %     pid_hcr(largeInds)=10;
-
-    smallInds=find((data.MELTING_LAYER==20 | (isnan(data.MELTING_LAYER) & data.TEMP<0)) & isnan(data.LDR) & ...
+    smallInds=find((data.MELTING_LAYER>15 | (isnan(data.MELTING_LAYER) & data.TEMP<0)) & isnan(data.LDR) & ...
         (data.DBZ_MASKED<=5 | data.VEL_MASKED<=1));
     pid_hcr(smallInds)=11;
 
-    largeInds=find((data.MELTING_LAYER==20 | (isnan(data.MELTING_LAYER) & data.TEMP<0)) & isnan(data.LDR) & ...
+    largeInds=find((data.MELTING_LAYER>15 | (isnan(data.MELTING_LAYER) & data.TEMP<0)) & isnan(data.LDR) & ...
         (data.DBZ_MASKED>5 & data.VEL_MASKED>1));
     pid_hcr(largeInds)=10;
 
     %% Set low DBZ to cloud liquid
 
     pid_hcr(pid_hcr>9 & data.DBZ_MASKED<=-30 & data.TEMP>-40)=3;
+
+    %% Set Melting to melting
+    pid_hcr(data.MELTING_LAYER==11 | data.MELTING_LAYER==19)=4;
 
     %% Add supercooled
 

@@ -222,8 +222,12 @@ $PROJ_DIR/qc/dataProcessing/HCRproducts/flag/cfradialDBZmasked.m
 # Find out which poly order to use by running
 $PROJ_DIR/qc/dataProcessing/HCRproducts/velCorr/plotVelCorr_findPoly.m
 
-# To make the VEL_CORR field, modify and run
-$PROJ_DIR/qc/dataProcessing/HCRproducts/velCorr/make_VEL_CORR_wholeFlights.m
+# To make the VEL_CORR field
+# If nadir and zenith pointing correction is desired run
+$PROJ_DIR/qc/dataProcessing/HCRproducts/velCorr/make_VEL_CORR_nadir_zenith_wholeFlights.m
+# If only nadir correction is desired run (not recommended!!!)
+$PROJ_DIR/qc/dataProcessing/HCRproducts/velCorr/notUsed2/make_VEL_CORR_nadir_wholeFlights.m
+
 # The filter lenght can be adjusted in this file. To test out 
 # different filter lenghts, run
 $PROJ_DIR/qc/dataProcessing/HCRproducts/velCorr/plotVelCorr_findPoly.m
@@ -236,16 +240,12 @@ $PROJ_DIR/qc/dataProcessing/HCRproducts/velCorr/cfradialVelCorr.m
 # De-alias velocity
 
 # To de-alias velocity and mask out and non-cloud
-# data run either (!!!)
-
-$PROJ_DIR/qc/dataProcessing/HCRproducts/VELdeAliasing/call_VELdeAlias_wholeFlights.m
-
-or (!!!)
+# data run
 
 $PROJ_DIR/qc/dataProcessing/HCRproducts/rayDeAliasing/call_rayDeAlias_wholeFlights_withPlot.m
 
 # To add it to the dataset run
-$PROJ_DIR/qc/dataProcessing/HCRproducts/VELdeAliasing/cfradialVELunfolded.m
+$PROJ_DIR/qc/dataProcessing/HCRproducts/rayDeAliasing/cfradialVELunfolded.m
 
 #################################################################
 # Mask out non vertical angles in VEL
@@ -366,11 +366,6 @@ $PROJ_DIR/qc/dataProcessing/determine_bias_nadir.m
 $PROJ_DIR/qc/scripts/run_RadxDwellCombine.qc.2hz.socrates
 # which runs with the params file
 $PROJ_DIR/qc/params/RadxDwellCombine.qc.2hz
-
-#################################################################
-# Add melting layer
-
-$PROJ_DIR/qc/dataProcessing/HCRproducts/meltingLayer/meltLayer_10hzTo2hz_combined.m
 
 #################################################################
 # Copy HSRL moments data into HCR QC data area - 2Hz data

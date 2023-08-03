@@ -5,14 +5,15 @@ close all
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-project='socrates'; % socrates, cset, aristo, otrec
+project='otrec'; % socrates, cset, aristo, otrec
 quality='qc3'; % field, qc1, qc2
-qcVersion='v3.1';
+qcVersion='v3.2';
 freqData='10hz'; % 10hz, 100hz, or 2hz
 whichModel='era5';
 
 saveTime=0;
 plotYes=1;
+showPlot='off';
 
 [~,outdir]=modelDir(project,whichModel,quality,qcVersion,freqData);
 
@@ -24,7 +25,11 @@ indir=HCRdir(project,quality,qcVersion,freqData);
 
 figdir=[indir(1:end-5),'velCorrZenithPlots/wholeFlights/'];
 
-polyTimePeriod=20; %Time period for poly fit in seconds
+if strcmp(project,'socrates')
+    polyTimePeriod=20; %Time period for poly fit in seconds
+else
+    polyTimePeriod=15; %Time period for poly fit in seconds
+end
 polyOrder=3; % Order of polynomial fit
 
 for kk=1:size(caseList,1)
@@ -49,24 +54,10 @@ for kk=1:size(caseList,1)
         data.ANTFLAG=[];
         
         dataVars=fieldnames(data);
-        
-        if length(fileList)==0
-            disp('No data files found.');
-            return
-        end
-        
+              
         % Load data
         data=read_HCR(fileList,data,startTime,endTime);
-        
-        % Check if all variables were found
-        for ii=1:length(dataVars)
-            if ~isfield(data,dataVars{ii})
-                dataVars{ii}=[];
-            end
-        end
-        
-        dataVars=dataVars(~cellfun('isempty',dataVars));
-            
+                    
         %% Correct nadir pointing vel
         disp('Nadir correction')
         [nadirCorrection,surfInd]=velCorrNadir(data,polyTimePeriod,polyOrder);
@@ -81,10 +72,11 @@ for kk=1:size(caseList,1)
 
         %% Correct zenith pointing vel
         disp('Zenith correction')
-        [zenithCorrection,medCloudVelNadir,medCloudVelZenith,smoothfactor,velZenithCorrSmooth]=velCorrZenith(data,velNadirCorr);
+        %[zenithCorrection,medCloudVelNadir,medCloudVelZenith,smoothfactor,velZenithCorrSmooth]=velCorrZenith(data,velNadirCorr);
+        [zenithCorrection,smoothfactor]=velCorrZenith(data,velNadirCorr);
 
         % Vel corr zenith
-        velCorrZ=data.VEL-zenithCorrection';
+        velCorrZ=data.VEL-zenithCorrection;
 
         % Corrected nadir vel
         velAllCorr=velNadirCorr;
@@ -106,6 +98,8 @@ for kk=1:size(caseList,1)
         %% Plot
 
         if plotYes
+
+            disp('Plotting.');
 
             plotInds=1:10:length(data.time);
             plotVelMasked=data.VEL;
@@ -129,12 +123,13 @@ for kk=1:size(caseList,1)
 
             velNadirCorrSmooth=movmedian(velNadirCorrSurf,smoothfactor,'omitnan');
             velNadirCorrSmooth(isnan(velNadirCorrSurf))=nan;
+            zenithCorrection(data.elevation<=0)=nan;
 
             close all
 
-            f1=figure('Position',[200 500 1500 1200],'DefaultAxesFontSize',12);
+            f1=figure('Position',[200 500 1500 1200],'DefaultAxesFontSize',12,'visible',showPlot);
 
-            s1=subplot(4,1,1);
+            s1=subplot(3,1,1);
             hold on
             surf(plotTime,plotAsl./1000,plotVel,'EdgeColor','none');
             view(2);
@@ -150,7 +145,7 @@ for kk=1:size(caseList,1)
             grid on
             box on
 
-            s2=subplot(4,1,2);
+            s2=subplot(3,1,2);
             hold on
             surf(plotTime,plotAsl./1000,plotVelCorr,'EdgeColor','none');
             view(2);
@@ -166,20 +161,16 @@ for kk=1:size(caseList,1)
             grid on
             box on
 
-            s3=subplot(4,1,3:4);
+            s3=subplot(3,1,3);
             %plot(data.time,meanCloudVel,'-b','LineWidth',0.8);
             hold on
             plot(data.time,velNadirCorrSmooth,'-y','LineWidth',1.5);
             plot(data.time,nadirCorrection,'-g','LineWidth',1);
             plot(data.time,zenithCorrection,'-c','LineWidth',1.5);
-            plot(data.time,medCloudVelNadir,'-r','LineWidth',2);
-            plot(data.time,medCloudVelZenith,'-m','LineWidth',2);
-            plot(data.time,velZenithCorrSmooth,'-b','LineWidth',2);
             ylim([-1.5 1.5])
             xlim([data.time(1),data.time(end)])
             ylabel('Velocities (m/s)')
-            legend('Surface vel','Nadir correction','Zenith correction','Cloud top vel nadir',...
-                'Cloud top vel zenith uncorr.','Cloud top vel zenith corr.','Orientation','horizontal')
+            legend('Surface vel','Nadir correction','Zenith correction','Orientation','horizontal')
             grid on
             box on
             s3.SortMethod='childorder';

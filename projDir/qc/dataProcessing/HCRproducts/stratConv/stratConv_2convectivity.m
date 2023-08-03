@@ -5,10 +5,10 @@ close all;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Input variables %%%%%%%%%%%%%%%%%%%%%%%%%%
 
-project='otrec'; %socrates, aristo, cset, otrec
+project='socrates'; %socrates, aristo, cset, otrec
 quality='qc3'; %field, qc1, or qc2
 freqData='10hz';
-qcVersion='v3.1';
+qcVersion='v3.2';
 
 showPlot='off';
 
@@ -21,6 +21,10 @@ addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 dataDir=HCRdir(project,quality,qcVersion,freqData);
 
 figdir=[dataDir(1:end-5),'convStratPlots/cases/'];
+
+if ~exist(figdir,'dir')
+    mkdir(figdir)
+end
 
 casefile=['~/git/HCR_configuration/projDir/qc/dataProcessing/HCRproducts/caseFiles/stratConv_',project,'.txt'];
 
@@ -61,7 +65,8 @@ for aa=1:length(caseStart)
     data=read_HCR(fileList,data,startTime,endTime);
     
     %% Truncate to non missing
-    nonMissingInds=findNonMissingInds(data);
+    gapSecs=10;
+    nonMissingInds=findNonMissingInds(data,gapSecs);
 
     dataInVars=fields(data);
 
@@ -96,7 +101,7 @@ for aa=1:length(caseStart)
     pixRadVEL=50;
     velBase=-20; % VEL base value which is subtracted from DBZ.
 
-    velText=f_velTexture(dataShort.VEL_MASKED,dataShort.elevation,pixRadVEL,velBase);
+    velText=f_velTexture(dataShort.VEL_MASKED,pixRadVEL,velBase);
 
     %% Convectivity
 

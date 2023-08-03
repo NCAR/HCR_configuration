@@ -519,7 +519,7 @@ fields = {
     raw_name = "MELTING_LAYER",
     filtered_name = "",
     units = "",
-    color_map = "hcr_melting_layer.colors",
+    color_map = "hcr_melting_layer_new.colors",
     shortcut = "d"
   }
   ,
@@ -533,8 +533,8 @@ fields = {
   }
   ,
   {
-    label = "PRECIP_TYPE",
-    raw_name = "PRECIP_TYPE_2D",
+    label = "ECHO_TYPE",
+    raw_name = "ECHO_TYPE_2D",
     filtered_name = "",
     units = "",
     color_map = "hcr_partition.colors",

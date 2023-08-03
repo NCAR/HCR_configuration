@@ -90,6 +90,9 @@ plot([15.5,15.5],[-100,1000],'-k','LineWidth',0.4);
 plot([14.5,14.5],[-100,1000],'-k','LineWidth',0.4);
 
 title('(a) Precipitation fraction');
+text(13.3,1.13,'CSET','FontWeight','bold','EdgeColor','g','Margin',1);
+text(14.0,1.13,'SOCRATES','FontWeight','bold','EdgeColor','b','Margin',1);
+text(15.3,1.13,'OTREC','FontWeight','bold','EdgeColor','r','Margin',1);
 
 % (b) Length
 varName='shaftKM';
@@ -108,7 +111,7 @@ set(gca,'TickLength',[0 .01]);
 ylim([-25,250]);
 text(1:1:16,zeros(1,16)-12.5,num2str(nums),'HorizontalAlignment','center');
 yticks(0:50:250);
-ylabel('Length (km)');
+ylabel('Width (km)');
 
 set(gca, 'YGrid', 'on', 'XGrid', 'off')
 box on
@@ -121,7 +124,7 @@ plot([13.5,13.5],[-100,1000],'-k','LineWidth',0.4);
 plot([15.5,15.5],[-100,1000],'-k','LineWidth',0.4);
 plot([14.5,14.5],[-100,1000],'-k','LineWidth',0.4);
 
-title('(b) Shaft length (km)');
+title('(b) Shaft width (km)');
 
 % (c) Mean reflecitivy
 varName='meanRef';

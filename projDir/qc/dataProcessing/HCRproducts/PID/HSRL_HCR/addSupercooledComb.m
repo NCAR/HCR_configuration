@@ -1,4 +1,4 @@
-function classOut = addSupercooled(pid,data)
+function classOut = addSupercooledComb(pid,data)
 %% Add supercooled
 classOut=pid;
 

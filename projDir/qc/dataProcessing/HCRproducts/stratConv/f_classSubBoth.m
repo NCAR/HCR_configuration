@@ -24,7 +24,7 @@ distAslTopo=asl-topo;
 % Minimum altitude for low/mid boundary is 2km
 % Minimum altitude for mid/high boundary is 4km
 melt=meltOrig;
-melt(distAslTopo<2000)=10;
+melt(distAslTopo<2000)=9;
 melt(isnan(meltOrig))=nan;
 temp(distAslTopo<4000 & temp<-25)=-25;
 
@@ -64,7 +64,7 @@ for ii=1:convAreas.NumObjects
     else
         % Shallow, mid, or deep
         meltMax=max(melt(convAreas.PixelIdxList{ii}));
-        if meltMax<20 % Below melting layer: shallow
+        if meltMax<15 % Below melting layer: shallow
             % Near plane check
             if planePix>10
                 classSub(convAreas.PixelIdxList{ii})=30;
@@ -94,11 +94,11 @@ end
 
 % Stratiform
 % Low
-classSub(classIn==1 & melt<20)=14;
+classSub(classIn==1 & melt<15)=14;
 % Mid
-classSub(classIn==1 & melt>=20 & temp>=-25)=16;
+classSub(classIn==1 & melt>15 & temp>=-25)=16;
 % High
-classSub(classIn==1 & melt>=20 & temp<-25)=18;
+classSub(classIn==1 & melt>15 & temp<-25)=18;
 
 % Mixed
 classSub(classIn==2)=25;

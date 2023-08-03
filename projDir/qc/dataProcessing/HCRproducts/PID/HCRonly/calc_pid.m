@@ -9,11 +9,11 @@ w=[34 22 22 22];
 %  1 Rain
 %  2 Drizzle
 %  3 Cloud liquid
-%  4 Mixed phase
+%  4 Melting (is added in post processing)
 %  5 Large frozen
 %  6 Small frozen
 
-result=nan(6,size(data.LDR,1),size(data.LDR,2));
+result=nan(5,size(data.LDR,1),size(data.LDR,2));
 
 %  Membership functions for rain
 m=nan(4,size(data.DBZ_MASKED,1),size(data.DBZ_MASKED,2));
@@ -54,16 +54,6 @@ if plotIn.plotMR
     plotMresult(data,m,result(3,:,:),'CloudLiquid',plotIn);
 end
 
-%  Membership functions for mixed phase
-m=nan(4,size(data.DBZ_MASKED,1),size(data.DBZ_MASKED,2));
-%m(1,:,:)=smf(data.DBZ_MASKED,[dbz.mixed(1),dbz.mixed(2)]);
-m(1,:,:)=1;
-m(2,:,:)=trapmf(data.LDR,[ldr.mixed(1),ldr.mixed(2),ldr.mixed(3),ldr.mixed(4)]);
-m(3,:,:)=smf(data.VEL_MASKED,[vel.mixed(1),vel.mixed(2)]);
-m(4,:,:)=trapmf(data.TEMP,[temp.mixed(1),temp.mixed(2),temp.mixed(3),temp.mixed(4)]);
-
-result(4,:,:)=sum(m.*w',1);
-
 if plotIn.plotMR
     plotMresult(data,m,result(4,:,:),'MixedPhase',plotIn);
 end
@@ -75,10 +65,10 @@ m(2,:,:)=trapmf(data.LDR,[ldr.lfrozen(1),ldr.lfrozen(2),ldr.lfrozen(3),ldr.lfroz
 m(3,:,:)=smf(data.VEL_MASKED,[vel.lfrozen(1),vel.lfrozen(2)]);
 m(4,:,:)=zmf(data.TEMP,[0,6]);
 
-result(5,:,:)=sum(m.*w',1);
+result(4,:,:)=sum(m.*w',1);
 
 if plotIn.plotMR
-    plotMresult(data,m,result(5,:,:),'LargeFrozen',plotIn);
+    plotMresult(data,m,result(4,:,:),'LargeFrozen',plotIn);
 end
 
 %  Membership functions for small frozen
@@ -88,10 +78,10 @@ m(2,:,:)=trapmf(data.LDR,[ldr.sfrozen(1),ldr.sfrozen(2),ldr.sfrozen(3),ldr.sfroz
 m(3,:,:)=zmf(data.VEL_MASKED,[vel.sfrozen(1),vel.sfrozen(2)]);
 m(4,:,:)=zmf(data.TEMP,[temp.sfrozen(1),temp.sfrozen(2)]);
 
-result(6,:,:)=sum(m.*w',1);
+result(5,:,:)=sum(m.*w',1);
 
 if plotIn.plotMR
-    plotMresult(data,m,result(6,:,:),'SmallFrozen',plotIn);
+    plotMresult(data,m,result(5,:,:),'SmallFrozen',plotIn);
 end
 
 clear m
@@ -107,4 +97,6 @@ if plotIn.plotMax
     plotResMax(data,result,maxAll,plotIn);
 end
 
+classOut(classOut==5)=6;
+classOut(classOut==4)=5;
 end

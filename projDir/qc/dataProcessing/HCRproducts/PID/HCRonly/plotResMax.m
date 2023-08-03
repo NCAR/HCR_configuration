@@ -9,13 +9,13 @@ timeMat=repmat(data.time,size(data.TEMP,1),1);
 
 f1=figure('DefaultAxesFontSize',12,'Position',[0 300 2300 1200],'visible','off');
 
-titles={'Rain','Drizzle','Cloud Liquid','Mixed Phase','Large Frozen','Small Frozen'};
+titles={'Rain','Drizzle','Cloud Liquid','Large Frozen','Small Frozen'};
 ylimits=plotIn.ylimits;
 
 colormap jet
 
-for ii=1:6
-    subplot(4,2,ii);
+for ii=1:5
+    subplot(3,2,ii);
     resPlot=squeeze(result(ii,:,:));
     resPlot(isnan(data.DBZ_MASKED))=nan;
     surf(data.time,data.asl./1000,resPlot,'edgecolor','none');
@@ -29,7 +29,7 @@ for ii=1:6
     grid on
 end
 
-subplot(4,2,8);
+subplot(3,2,6);
 surf(data.time,data.asl./1000,squeeze(maxAll),'edgecolor','none');
 view(2);
 ylim(ylimits);
