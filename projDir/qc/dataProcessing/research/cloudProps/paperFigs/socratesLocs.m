@@ -24,7 +24,7 @@ cfDir=HCRdir(project{ii},quality,qcVersion,freqData);
 
 indir=[cfDir(1:end-5),'cloudProps/'];
 
-in.(project{ii})=load([indir,project{ii},'_cloudProps.mat']);
+in.(project{ii})=load([indir,project{ii},'_cloudProps_2.mat']);
 
 plotVars=fields(in.socrates);
 
@@ -65,8 +65,8 @@ latLims=[15,45;
     -0,15];
 
 
-lons=plotV.lonAll;
-lats=plotV.latAll;
+lons=plotV.lonWholeAll;
+lats=plotV.latWholeAll;
 
 load coastlines
 
@@ -74,8 +74,8 @@ load coastlines
 load('/scr/snow2/rsfdata/projects/cset/hcr/qc3/cfradial/v3.0_full/cloudPropsProjects/flightHourGrids.mat');
 
 fig=figure('DefaultAxesFontSize',11,'position',[100,100,1200,1100],'renderer','painters','visible','on');
-colmap=turbo(21);
-colormap(colmap(3:end-1,:));
+colmap=turbo(105);
+colormap([[0.8,0.8,0.8];colmap(1:100,:)]);
 
 % Loop through projects
 projects=fields(lons);
@@ -113,13 +113,14 @@ for aa=1:length(nums)
     end
 
     perHour=hourGrid./flightHourGrids.socrates;
-    perHour(perHour==0)=nan;
+    %perHour(perHour==0)=nan;
     perHour(flightHourGrids.socrates<0.167)=nan;
+    perHour=perHour./sum(perHour(:),'omitnan');
 
     h=imagesc(lonSteps(1:end-1)+gridStep/2,latSteps(1:end-1)+gridStep/2,perHour);
     set(h,'AlphaData',~isnan(perHour));
 
-    caxis([0,18]);
+    caxis([-0.0009,0.1]);
     if aa==8
         cb=colorbar;
     end
@@ -157,7 +158,7 @@ s.plotNum{6}.Position=[0.5,0.285,0.44,0.23];
 s.plotNum{7}.Position=[0.05,0.045,0.44,0.23];
 s.plotNum{8}.Position=[0.5,0.045,0.44,0.23];
 
-cb.Position=[0.955,0.045,0.02,0.23];
+cb.Position=[0.948,0.045,0.02,0.23];
 
 set(gcf,'PaperPositionMode','auto')
-print([figdir,'socrates_locs.png'],'-dpng','-r0');
+print([figdir,'socrates_locs_2.png'],'-dpng','-r0');

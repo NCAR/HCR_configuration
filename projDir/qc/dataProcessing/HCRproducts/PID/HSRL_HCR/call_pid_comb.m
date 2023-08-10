@@ -7,7 +7,7 @@ addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
 project='socrates'; %socrates, aristo, cset
 quality='qc3'; %field, qc1, or qc2
-qcVersion='v3.1';
+qcVersion='v3.2';
 freqData='combined'; % 10hz, 100hz, 2hz, or combined
 
 plotIn.plotMR=0;
@@ -18,7 +18,13 @@ convThresh=4;
 whichFilter=0; % 0: no filter, 1: mode filter, 2: coherence filter
 postProcess=1; % 1 if post processing is desired
 
+indir=HCRdir(project,quality,qcVersion,freqData);
+
 figdir=[indir(1:end-4),'pidPlotsComb/cases/'];
+
+if ~exist(figdir,'dir')
+    mkdir(figdir)
+end
 
 % Loop through cases
 casefile=['~/git/HCR_configuration/projDir/qc/dataProcessing/HCRproducts/caseFiles/pid_',project,'.txt'];

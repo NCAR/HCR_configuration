@@ -69,7 +69,7 @@ elseif strcmp(project,'cset')
         if strcmp(freq,'10hz') | strcmp(freq,'2hz')
             indir=['/scr/snow2/rsfdata/projects/cset/hcr/',qc,'/cfradial/',qcVersion,'_full/',freq,'/'];
         elseif strcmp(freq,'combined')
-            indir=['/scr/snow2/rsfdata/projects/cset/hcr/',qc,'/cfradial/hcr_hsrl_merge/',qcVersion,'/2hz/'];
+            indir=['/scr/snow2/rsfdata/projects/cset/hcr/',qc,'/cfradial/hcr_hsrl_merge/',qcVersion,'_full/2hz/'];
         else
             disp('The requested data does not exist.');
             return
