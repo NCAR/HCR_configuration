@@ -24,7 +24,7 @@ cfDir=HCRdir(project{ii},quality,qcVersion,freqData);
 
 indir=[cfDir(1:end-5),'cloudProps/'];
 
-in.(project{ii})=load([indir,project{ii},'_cloudProps.mat']);
+in.(project{ii})=load([indir,project{ii},'_cloudProps_2.mat']);
 
 plotVars=fields(in.otrec);
 
@@ -65,8 +65,8 @@ latLims=[15,45;
     -0,15];
 
 
-lons=plotV.lonAll;
-lats=plotV.latAll;
+lons=plotV.lonWholeAll;
+lats=plotV.latWholeAll;
 
 load coastlines
 
@@ -74,8 +74,8 @@ load coastlines
 load('/scr/snow2/rsfdata/projects/cset/hcr/qc3/cfradial/v3.0_full/cloudPropsProjects/flightHourGrids.mat');
 
 fig=figure('DefaultAxesFontSize',11,'position',[100,100,1200,1000],'renderer','painters','visible','on');
-colmap=turbo(13);
-colormap(colmap(2:end,:));
+colmap=turbo(105);
+colormap([[0.8,0.8,0.8];colmap(1:100,:)]);
 
 % Loop through projects
 projects=fields(lons);
@@ -113,13 +113,14 @@ for aa=1:length(classTypes)
     end
 
     perHour=hourGrid./flightHourGrids.otrec;
-    perHour(perHour==0)=nan;
+    %perHour(perHour==0)=nan;
     perHour(flightHourGrids.otrec<0.5)=nan;
+    perHour=perHour./sum(perHour(:),'omitnan');
 
     h=imagesc(lonSteps(1:end-1)+gridStep/2,latSteps(1:end-1)+gridStep/2,perHour);
     set(h,'AlphaData',~isnan(perHour));
 
-    caxis([0,12]);
+    caxis([-0.0009,0.1]);
     if aa==12
         cb=colorbar;
     end
@@ -164,5 +165,7 @@ s.plotNum{10}.Position=[0.042 0.045 0.295 0.225];
 s.plotNum{11}.Position=[0.3475 0.045 0.295 0.225];
 s.plotNum{12}.Position=[0.655 0.045 0.295 0.225];
 
+cb.Position=[0.955,0.045,0.013,0.225];
+
 set(gcf,'PaperPositionMode','auto')
-print([figdir,'otrec_locs.png'],'-dpng','-r0');
+print([figdir,'otrec_locs_2.png'],'-dpng','-r0');

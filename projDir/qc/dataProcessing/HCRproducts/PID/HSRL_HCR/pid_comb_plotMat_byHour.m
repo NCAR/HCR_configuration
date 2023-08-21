@@ -5,7 +5,7 @@ close all;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Input variables %%%%%%%%%%%%%%%%%%%%%%%%%%
 
-project='socrates'; %socrates, aristo, cset
+project='cset'; %socrates, aristo, cset
 quality='qc3'; %field, qc1, or qc2
 qcVersion='v3.1';
 freqData='combined'; % 10hz, 100hz, 2hz, or combined
@@ -26,6 +26,10 @@ indir=HCRdir(project,quality,qcVersion,freqData);
 [~,modeldir]=modelDir(project,whichModel,quality,qcVersion,freqData);
 
 figdir=[indir(1:end-4),'pidPlotsComb/wholeFlights/'];
+
+if ~exist(figdir,'dir')
+    mkdir(figdir)
+end
 
 infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_',project,'_data.txt'];
 

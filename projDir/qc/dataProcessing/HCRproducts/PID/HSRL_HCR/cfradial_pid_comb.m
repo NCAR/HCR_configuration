@@ -5,7 +5,7 @@ close all;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Input variables %%%%%%%%%%%%%%%%%%%%%%%%%%
 
-project='socrates'; %socrates, aristo, cset
+project='cset'; %socrates, aristo, cset
 quality='qc3'; %field, qc1, or qc2
 qcVersion='v3.1';
 freqData='combined'; % 10hz, 100hz, 2hz, or combined

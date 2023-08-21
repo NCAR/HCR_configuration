@@ -85,7 +85,7 @@ xlim(lonLims(3,:));
 ylim(latLims(3,:));
 
 plot(coastlon,coastlat,'-k')
-title('(a) Cloud base low clouds (km)');
+title('(a) Cloud base (km). Low clouds.');
 
 xlabel('Longitude (deg)')
 ylabel('Latitude (deg)')
@@ -115,7 +115,7 @@ xlim(lonLims(3,:));
 ylim(latLims(3,:));
 
 plot(coastlon,coastlat,'-k')
-title('(b) Cloud depth low clouds (km)');
+title('(b) Cloud depth (km). Low clouds.');
 
 xlabel('Longitude (deg)')
 ylabel('Latitude (deg)')
@@ -148,7 +148,7 @@ xlim(lonLims(3,:));
 ylim(latLims(3,:));
 
 plot(coastlon,coastlat,'-k')
-title('(c) Cloud top shallow and low clouds (km)');
+title('(c) Cloud top (km). Shallow and low clouds.');
 
 xlabel('Longitude (deg)')
 ylabel('Latitude (deg)')

@@ -94,7 +94,7 @@ xlim(lonLims(2,:));
 ylim(latLims(2,:));
 
 plot(coastlon,coastlat,'-k')
-title('(a) Cloud top precip Shallow, Mid, and CloudLow (km)');
+title('(a) Cloud top (km). Precipitating Shallow, Mid, and CloudLow.');
 
 xlabel('Longitude (deg)')
 ylabel('Latitude (deg)')
@@ -137,7 +137,7 @@ xlim(lonLims(2,:));
 ylim(latLims(2,:));
 
 plot(coastlon,coastlat,'-k')
-title('(b) Cloud width (km)');
+title('(b) Cloud width (km).');
 
 xlabel('Longitude (deg)')
 ylabel('Latitude (deg)')

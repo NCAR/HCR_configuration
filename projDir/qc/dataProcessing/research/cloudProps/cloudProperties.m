@@ -5,10 +5,10 @@ close all;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Input variables %%%%%%%%%%%%%%%%%%%%%%%%%%
 
-project='cset'; %socrates, aristo, cset, otrec
+project='socrates'; %socrates, aristo, cset, otrec
 quality='qc3'; %field, qc1, or qc2
 freqData='10hz';
-qcVersion='v3.0';
+qcVersion='v3.1';
 whichModel='era5';
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -59,6 +59,8 @@ for ii=1:length(classTypes)
     end
     lonAll.(classTypes{ii})=[];
     latAll.(classTypes{ii})=[];
+    lonWholeAll.(classTypes{ii})=[];
+    latWholeAll.(classTypes{ii})=[];
     upFracAll.(classTypes{ii})=[];
     upNumAll.(classTypes{ii})=[];
     upMeanStrengthAll.(classTypes{ii})=[];
@@ -292,6 +294,8 @@ for aa=1:size(caseList,1)
         end
         lonAll.(classTypes{cloudType})=cat(1,lonAll.(classTypes{cloudType}),lon);
         latAll.(classTypes{cloudType})=cat(1,latAll.(classTypes{cloudType}),lat);
+        lonWholeAll.(classTypes{cloudType})=cat(2,lonWholeAll.(classTypes{cloudType}),data.longitude(clC));
+        latWholeAll.(classTypes{cloudType})=cat(2,latWholeAll.(classTypes{cloudType}),data.latitude(clC));
         upFracAll.(classTypes{cloudType})=cat(1,upFracAll.(classTypes{cloudType}),upFrac);
         upNumAll.(classTypes{cloudType})=cat(1,upNumAll.(classTypes{cloudType}),upNum);
         upMeanStrengthAll.(classTypes{cloudType})=cat(1,upMeanStrengthAll.(classTypes{cloudType}),upMeanStrength);
@@ -308,13 +312,13 @@ end
 disp('Saving output ...');
 
 if ~strcmp(project,'spicule')
-    save([figdir,project,'_cloudProps.mat'],'maxReflAll','meanReflAll','maxConvAll','meanConvAll', ...
+    save([figdir,project,'_cloudProps_2.mat'],'maxReflAll','meanReflAll','maxConvAll','meanConvAll', ...
         'cloudDepthAll','cloudLengthAll','cloudTopAll','cloudBaseAll','cloudLayersAll','maxTempAll','minTempAll','meanTempAll','maxPressAll','minPressAll','meanPressAll', ...
         'iceLevAll','divLevAll','meltDetAll','coldFracAll','sstAll','upFracAll','upNumAll','upRegsAll','precShaftsAll', ...
-        'upMeanStrengthAll','downMeanStrengthAll','upMaxStrengthAll','downMaxStrengthAll','latAll','lonAll');
+        'upMeanStrengthAll','downMeanStrengthAll','upMaxStrengthAll','downMaxStrengthAll','latAll','lonAll','latWholeAll','lonWholeAll','-v7.3');
 else
-    save([figdir,project,'_cloudProps.mat'],'maxReflAll','meanReflAll','maxConvAll','meanConvAll', ...
+    save([figdir,project,'_cloudProps_2.mat'],'maxReflAll','meanReflAll','maxConvAll','meanConvAll', ...
         'cloudDepthAll','cloudLengthAll','cloudTopAll','cloudBaseAll','cloudLayersAll','maxTempAll','minTempAll','meanTempAll','maxPressAll','minPressAll','meanPressAll', ...
         'iceLevAll','divLevAll','meltDetAll','coldFracAll','upRegNumAll','upFracAll','upNumAll','upRegsAll','precShaftsAll', ...
-        'upMeanStrengthAll','downMeanStrengthAll','upMaxStrengthAll','downMaxStrengthAll','latAll','lonAll');
+        'upMeanStrengthAll','downMeanStrengthAll','upMaxStrengthAll','downMaxStrengthAll','latAll','lonAll','latWholeAll','lonWholeAll','-v7.3');
 end
