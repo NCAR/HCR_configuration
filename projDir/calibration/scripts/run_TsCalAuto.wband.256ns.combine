@@ -1,0 +1,6 @@
+#! /bin/csh
+
+cd $PROJ_DIR/calibration/params
+
+TsCalAuto -params TsCalAuto.wband.256ns.combined.low -fh ~/projDir/calibration/data/wband_256ns/h_only/TsCalAuto_Wband-HCR-256ns_20230803_212111.txt -fv ~/projDir/calibration/data/wband_256ns/v_only/TsCalAuto_Wband-HCR-256ns_20230803_214145.txt
+
