@@ -1,0 +1,10 @@
+#! /bin/csh -f
+
+cd $PROJ_DIR/moments/params
+
+running "HcrShortLongCombine -params HcrShortLongCombine.ops"
+if ($status == 1) then
+  HcrShortLongCombine -params HcrShortLongCombine.ops -debug |& \
+    LogFilter -d $ERRORS_LOG_DIR -p HcrShortLongCombine -i ops &
+endif
+
