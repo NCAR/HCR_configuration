@@ -371,6 +371,15 @@ fields = {
   // }
   ,
   {
+    label = "VEL_unfold",
+    raw_name = "VEL_unfold",
+    filtered_name = "",
+    units = "m/s",
+    color_map = "vel.colors",
+    shortcut = "1"
+  }
+  ,
+  {
     label = "VEL_short",
     raw_name = "VEL_short",
     filtered_name = "",
