@@ -9,15 +9,15 @@ qcVersion='v3.2';
 freqData='10hz'; % 10hz, 100hz, or 2hz
 
 % Determines plot zoom.
-ylimits=[0 14];
+ylimits=[0 14.5];
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
 indir=HCRdir(project,quality,qcVersion,freqData);
 figdir=[indir(1:end-5)];
 
-startTime=datetime(2019,10,1,14,35,0);
-endTime=datetime(2019,10,1,14,50,0);
+startTime=datetime(2019,9,17,16,28,0);
+endTime=datetime(2019,9,17,17,5,0);
 
 %% Load data
 
@@ -66,10 +66,11 @@ ylim(ylimits);
 ylabel('Altitude (km)');
 xlim([data.time(1),data.time(end)]);
 title('Reflectivity (dBZ)')
+s1.Colormap=dbz_default;
 grid on
 box on
 cb1=colorbar;
-caxis([-20 15])
+caxis([-50 26])
 
 s2=subplot(2,1,2);
 
@@ -83,9 +84,9 @@ title('Radial velocity (m s^{-1})')
 grid on
 box on
 s2.Colormap=velCols;
-caxis([-5 5]);
+caxis([-8 8]);
 cb2=colorbar;
-cb2.Ticks=-5:5;
+cb2.Ticks=-8:2:8;
 
 s1.Position=[0.04,0.56,0.9,0.4];
 s2.Position=[0.04,0.07,0.9,0.4];
