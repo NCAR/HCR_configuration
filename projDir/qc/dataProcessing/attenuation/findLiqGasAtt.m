@@ -8,7 +8,7 @@ close all;
 project='cset'; %socrates, aristo, cset, otrec
 quality='qc3'; %field, qc1, or qc2
 freqData='10hz';
-qcVersion='v3.0';
+qcVersion='v3.1';
 
 showPlot='on';
 
@@ -45,8 +45,8 @@ for aa=1:length(caseStart)
     data=[];
 
     data.DBZ = [];
-    data.U_SURF=[];
-    data.V_SURF=[];
+    data.U=[];
+    data.V=[];
     data.SST=[];
     data.TEMP=[];
     data.PRESS=[];
@@ -65,13 +65,21 @@ for aa=1:length(caseStart)
 
     data.frq=ncread(fileList{1},'frequency');
 
+    %% Get surface wind
+    [linInd,~,~]=hcrSurfInds(data);
+
+    Utemp=fillmissing(data.U,'previous',1);
+    Vtemp=fillmissing(data.V,'previous',1);
+    data.U_SURF=Utemp(linInd);
+    data.V_SURF=Vtemp(linInd);
+
     %% Correct for gaseous attenuation
 
     disp('Calculating gaseous attenuation ...');
     [~,gasAttCloud,~,gasAttCloudMat]=get_gas_atten(data);
 
     % Extend to surface
-    [linInd,~,~]=hcrSurfInds(data);
+    
     for jj=1:2
         replaceLinInd=linInd;
         replaceLinInd(isnan(linInd) | ~isnan(gasAttCloudMat(linInd)) | data.FLAG(linInd)~=7)=[];
@@ -183,14 +191,14 @@ for aa=1:length(caseStart)
 
    f1 = figure('Position',[200 500 1800 1250],'DefaultAxesFontSize',12,'renderer','painters','visible',showPlot);
 
-   colormap jet
+   colormap dbz_default
 
    s1=subplot(4,1,1);
    hold on
    surf(data.time(:,timeInds),data.asl(:,timeInds)./1000,dbzOrig(:,timeInds),'edgecolor','none');
    view(2);
    ylabel('Altitude (km)');
-   caxis([-25 25]);
+   caxis([-20 30]);
    ylim([-0.1 ylimRefl]);
    xlim([data.time(timeInds(1)),data.time(timeInds(end))]);
    colorbar
@@ -202,7 +210,7 @@ for aa=1:length(caseStart)
    surf(data.time(:,timeInds),data.asl(:,timeInds)./1000,data.dbzMaskedCorrGas(:,timeInds),'edgecolor','none');
    view(2);
    ylabel('Altitude (km)');
-   caxis([-25 25]);
+   caxis([-20 30]);
    ylim([-0.1 ylimRefl]);
    xlim([data.time(timeInds(1)),data.time(timeInds(end))]);
    colorbar
@@ -214,7 +222,7 @@ for aa=1:length(caseStart)
    surf(data.time(:,timeInds),data.asl(:,timeInds)./1000,zHB(:,timeInds),'edgecolor','none');
    view(2);
    ylabel('Altitude (km)');
-   caxis([-25 25]);
+   caxis([-20 30]);
    ylim([-0.1 ylimRefl]);
    xlim([data.time(timeInds(1)),data.time(timeInds(end))]);
    colorbar
