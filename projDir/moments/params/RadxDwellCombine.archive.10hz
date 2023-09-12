@@ -95,7 +95,7 @@ instance = "archive.10hz";
 //     FMQ
 //
 
-mode = REALTIME;
+mode = ARCHIVE;
 
 ///////////// input_dir ///////////////////////////////
 //
@@ -267,20 +267,6 @@ seek_to_end_of_input_fmq = TRUE;
 //
 //======================================================================
  
-///////////// aggregate_sweep_files_on_read ///////////
-//
-// Option to aggregate sweep files into a volume on read.
-//
-// If true, and the input data is in sweeps rather than volumes (e.g. 
-//   DORADE), the sweep files from a volume will be aggregated into a 
-//   volume.
-//
-//
-// Type: boolean
-//
-
-aggregate_sweep_files_on_read = FALSE;
-
 ///////////// set_max_range ///////////////////////////
 //
 // Option to set the max range for any ray.
@@ -303,6 +289,56 @@ set_max_range = FALSE;
 
 max_range_km = 9999;
 
+///////////// set_field_folds_attribute ///////////////
+//
+// Set the 'field_folds' attribute on selected fields.
+//
+// Useful if this attribute is missing. If a field folds, and averaging 
+//   is performed to combine the dwell, we need to take the folding into 
+//   account.
+//
+//
+// Type: boolean
+//
+
+set_field_folds_attribute = FALSE;
+
+///////////// field_folds /////////////////////////////
+//
+// Specifies fields for adding folding attribute.
+//
+// Specify the field names, plus whether to use the nyquist in the data. 
+//   If use_nyquist is false, specify the lower and upper limit at which 
+//   the field folds.
+//
+//
+// Type: struct
+//   typedef struct {
+//      string field_name;
+//      boolean use_nyquist;
+//      double fold_limit_lower;
+//      double fold_limit_upper;
+//   }
+//
+// 1D array - variable length.
+//
+
+field_folds = {
+  {
+    field_name = "VEL",
+    use_nyquist = TRUE,
+    fold_limit_lower = 0,
+    fold_limit_upper = 0
+  }
+  ,
+  {
+    field_name = "PHIDP",
+    use_nyquist = FALSE,
+    fold_limit_lower = -90,
+    fold_limit_upper = 90
+  }
+};
+
 //======================================================================
 //
 // SET THE DWELL DETAILS.
@@ -322,11 +358,28 @@ max_range_km = 9999;
 
 dwell_time_secs = 0.1;
 
+///////////// center_dwell_on_time ////////////////////
+//
+// Option to center the dwell on a multiple of the dwell_time.
+//
+// The dwell will be chosen so that the center time of the dwell will be 
+//   close to an even multiple of the dwell_time_secs. So if for example 
+//   dwell_time_secs is set to 0.5, the dwell centers would be at 0.25, 
+//   0.75, 1.25 secs etc.
+//
+//
+// Type: boolean
+//
+
+center_dwell_on_time = FALSE;
+
 ///////////// dwell_stats_method //////////////////////
 //
 // Method for computing stats on the dwell.
 //
-// MIDDLE refers to the middle ray in the dwell sequence.
+// MIDDLE refers to the middle ray in the dwell sequence. The 
+//   DISCRETE_MODE computes applies only to discrete (integer) fields, and 
+//   returns the most common entry in a discrete data set.
 //
 //
 // Type: enum
@@ -336,9 +389,84 @@ dwell_time_secs = 0.1;
 //     DWELL_STATS_MAXIMUM
 //     DWELL_STATS_MINIMUM
 //     DWELL_STATS_MIDDLE
+//     DWELL_STATS_DISCRETE_MODE
 //
 
 dwell_stats_method = DWELL_STATS_MEAN;
+
+///////////// dwell_stats_max_fraction_missing ////////
+//
+// Specify the max fraction of the dwell that can have missing data.
+//
+// We compute how much of the dwell is missing for each field. If the 
+//   fraction exceeds this parameter, the combined value will be set to 
+//   missing.
+//
+// Minimum val: 0
+// Maximum val: 1
+//
+// Type: double
+//
+
+dwell_stats_max_fraction_missing = 0.25;
+
+//======================================================================
+//
+// OPTION TO SET STATS METHOD FOR INDIVIDUAL FIELDS.
+//
+//======================================================================
+ 
+///////////// set_stats_method_for_individual_fields //
+//
+// Set the stats method for individual fields.
+//
+// The global stats method is set by the 'dwell_stats_method' parameter. 
+//   If 'set_stats_method_for_individual_fields' is true, we can set the 
+//   stats method on particular fields. Fields not specified here will use 
+//   the global parameter.
+//
+//
+// Type: boolean
+//
+
+set_stats_method_for_individual_fields = FALSE;
+
+///////////// stats_method_fields /////////////////////
+//
+// Stats methods for individual fields.
+//
+// Applies if 'set_stats_method_for_individual_fields' is true. The 
+//   global stats method is set by the 'dwell_stats_method' parameter. 
+//   Fields not specified here will use the global parameter.
+//
+//
+// Type: struct
+//   typedef struct {
+//      string field_name;
+//      dwell_stats_method_t stats_method;
+//        Options:
+//          DWELL_STATS_MEAN
+//          DWELL_STATS_MEDIAN
+//          DWELL_STATS_MAXIMUM
+//          DWELL_STATS_MINIMUM
+//          DWELL_STATS_MIDDLE
+//          DWELL_STATS_DISCRETE_MODE
+//   }
+//
+// 1D array - variable length.
+//
+
+stats_method_fields = {
+  {
+    field_name = "FLAG",
+    stats_method = DWELL_STATS_MEDIAN
+  }
+  ,
+  {
+    field_name = "ANTENNA_FLAG",
+    stats_method = DWELL_STATS_MIDDLE
+  }
+};
 
 //======================================================================
 //
@@ -489,7 +617,7 @@ apply_censoring = FALSE;
 
 ///////////// censoring_fields ////////////////////////
 //
-// Fields to be used for censoring.
+// Fields to be used for determining censoring.
 //
 // Specify the fields to be used to determine whether a gate should be 
 //   censored. The name refers to the input data field names. Valid field 
@@ -554,6 +682,36 @@ censoring_fields = {
 //
 
 censoring_min_valid_run = 1;
+
+///////////// specify_non_censored_fields /////////////
+//
+// Option to exclude fields from censoring.
+//
+// If censoring is turned on, you also have the option of non censoring 
+//   specified fields. Set this parameter to TRUE, and specify the fields 
+//   to be excluded in the non_censored_fields list.
+//
+//
+// Type: boolean
+//
+
+specify_non_censored_fields = FALSE;
+
+///////////// non_censored_fields /////////////////////
+//
+// List of fields to be excluded from censoring.
+//
+// See 'specify_non_censored_fields'.
+//
+//
+// Type: string
+// 1D array - variable length.
+//
+
+non_censored_fields = {
+ "DBMHC",
+ "DBMVC"
+};
 
 //======================================================================
 //
@@ -752,7 +910,7 @@ transform_fields = {
 
 //======================================================================
 //
-// OUTPUT FORMAT.
+// WRITE CFRADIAL FILES.
 //
 //======================================================================
  
@@ -764,101 +922,11 @@ transform_fields = {
 // Type: enum
 // Options:
 //     OUTPUT_FORMAT_CFRADIAL
-//     OUTPUT_FORMAT_DORADE
-//     OUTPUT_FORMAT_FORAY
-//     OUTPUT_FORMAT_NEXRAD
-//     OUTPUT_FORMAT_UF
-//     OUTPUT_FORMAT_MDV_RADIAL
+//     OUTPUT_FORMAT_CFRADIAL2
 //
 
 output_format = OUTPUT_FORMAT_CFRADIAL;
 
-///////////// netcdf_style ////////////////////////////
-//
-// NetCDF style - if output_format is CFRADIAL.
-//
-// netCDF classic format, netCDF 64-bit offset format, netCDF4 using 
-//   HDF5 format, netCDF4 using HDF5 format but only netCDF3 calls.
-//
-//
-// Type: enum
-// Options:
-//     CLASSIC
-//     NC64BIT
-//     NETCDF4
-//     NETCDF4_CLASSIC
-//
-
-netcdf_style = NETCDF4;
-
-//======================================================================
-//
-// OUTPUT BYTE-SWAPPING and COMPRESSION.
-//
-//======================================================================
- 
-///////////// output_native_byte_order ////////////////
-//
-// Option to leave data in native byte order.
-//
-// If false, data will be byte-swapped as appropriate on output.
-//
-//
-// Type: boolean
-//
-
-output_native_byte_order = FALSE;
-
-///////////// output_compressed ///////////////////////
-//
-// Option to compress data fields on output.
-//
-// Applies to netCDF and Dorade. UF does not support compression.
-//
-//
-// Type: boolean
-//
-
-output_compressed = TRUE;
-
-//======================================================================
-//
-// OUTPUT OPTIONS FOR CfRadial FILES.
-//
-//======================================================================
- 
-///////////// output_force_ngates_vary ////////////////
-//
-// Option to force the use of ragged arrays for CfRadial files.
-//
-// Only applies to CfRadial. If true, forces the use of ragged arrays 
-//   even if the number of gates for all rays is constant.
-//
-//
-// Type: boolean
-//
-
-output_force_ngates_vary = FALSE;
-
-///////////// compression_level ///////////////////////
-//
-// Compression level for output, if compressed.
-//
-// Applies to netCDF only. Dorade compression is run-length encoding, 
-//   and has not options..
-//
-//
-// Type: int
-//
-
-compression_level = 4;
-
-//======================================================================
-//
-// OUTPUT DIRECTORY AND FILE NAME.
-//
-//======================================================================
- 
 ///////////// output_dir //////////////////////////////
 //
 // Output directory path.
@@ -902,6 +970,31 @@ output_filename_mode = START_AND_END_TIMES;
 //
 
 output_filename_prefix = "";
+
+///////////// write_output_files_on_time_boundaries ///
+//
+// Option to write the output files on time boundaries.
+//
+// See 'output_file_time_interval_secs'.
+//
+//
+// Type: boolean
+//
+
+write_output_files_on_time_boundaries = FALSE;
+
+///////////// output_file_time_interval_secs //////////
+//
+// Time interval at which files will be written out (secs).
+//
+// See 'split_output_files_on_time'. To make sense, this interval should 
+//   divide evenly into an hour - i.e. 3600.
+//
+//
+// Type: int
+//
+
+output_file_time_interval_secs = 600;
 
 ///////////// include_instrument_name_in_file_name ////
 //
