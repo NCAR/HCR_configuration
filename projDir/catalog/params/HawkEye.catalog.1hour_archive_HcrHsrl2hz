@@ -192,7 +192,7 @@ archive_start_time = "2018 01 22 22 45 00";
 // Type: string
 //
 
-archive_data_url = "$(DATA_DIR)/$(QC_VERSION)/cfradial/hcr_hsrl_merge/$(QC_SUB_VERSION)_full/2hz";
+archive_data_url = "$(DATA_DIR)/$(QC_VERSION)/cfradial/hcr_hsrl_merge/$(QC_SUB_VERSION)/2hz";
 
 //======================================================================
 //
