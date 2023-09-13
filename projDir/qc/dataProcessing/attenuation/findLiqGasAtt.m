@@ -193,7 +193,7 @@ for aa=1:length(caseStart)
 
    colormap dbz_default
 
-   s1=subplot(4,1,1);
+   s1=subplot(5,1,1);
    hold on
    surf(data.time(:,timeInds),data.asl(:,timeInds)./1000,dbzOrig(:,timeInds),'edgecolor','none');
    view(2);
@@ -205,7 +205,7 @@ for aa=1:length(caseStart)
    grid on
    title('Reflectivity (dBZ)')
 
-   s2=subplot(4,1,2);
+   s2=subplot(5,1,2);
    hold on
    surf(data.time(:,timeInds),data.asl(:,timeInds)./1000,data.dbzMaskedCorrGas(:,timeInds),'edgecolor','none');
    view(2);
@@ -217,7 +217,7 @@ for aa=1:length(caseStart)
    grid on
    title('Reflectivity corrected for gaseous attenuation (dBZ)')
 
-   s3=subplot(4,1,3);
+   s3=subplot(5,1,3);
    hold on
    surf(data.time(:,timeInds),data.asl(:,timeInds)./1000,zHB(:,timeInds),'edgecolor','none');
    view(2);
@@ -229,7 +229,20 @@ for aa=1:length(caseStart)
    grid on
    title('Reflectivity corrected for gaseous and liquid attenuation (dBZ)')
 
-   s4=subplot(4,1,4);
+   s4=subplot(5,1,4);
+   hold on
+   surf(data.time(:,timeInds),data.asl(:,timeInds)./1000,zHB(:,timeInds)-data.dbzMaskedCorrGas(:,timeInds),'edgecolor','none');
+   view(2);
+   ylabel('Altitude (km)');
+   caxis([-1 15]);
+   s4.Colormap=turbo;
+   ylim([-0.1 ylimRefl]);
+   xlim([data.time(timeInds(1)),data.time(timeInds(end))]);
+   colorbar
+   grid on
+   title('Reflectivity corrected for gaseous and liquid attenuation (dBZ)')
+
+   s5=subplot(5,1,5);
    hold on
    l0=plot(data.time,sig0model,'-c','linewidth',2);
    l1=plot(data.time,sig0measClear,'-b','linewidth',1);
@@ -258,10 +271,12 @@ for aa=1:length(caseStart)
    s2Pos=s2.Position;
    s3Pos=s3.Position;
    s4Pos=s4.Position;
+   s5Pos=s5.Position;
 
-   s1.Position=[s1Pos(1),s1Pos(2),s4Pos(3),s1Pos(4)];
-   s2.Position=[s2Pos(1),s2Pos(2),s4Pos(3),s2Pos(4)];
-   s3.Position=[s3Pos(1),s3Pos(2),s4Pos(3),s3Pos(4)];
+   s1.Position=[s1Pos(1),s1Pos(2),s5Pos(3),s1Pos(4)];
+   s2.Position=[s2Pos(1),s2Pos(2),s5Pos(3),s2Pos(4)];
+   s3.Position=[s3Pos(1),s3Pos(2),s5Pos(3),s3Pos(4)];
+   s4.Position=[s4Pos(1),s4Pos(2),s5Pos(3),s4Pos(4)];
 
    set(gcf,'PaperPositionMode','auto')
    print(f1,[figdir,project,'_att_',...

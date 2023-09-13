@@ -5,13 +5,13 @@ function zOut=hitschfeldBordan_surfUp(zIn,pia,rangeIn,melt)
 
 zInLin=10.^(zIn./10);
 
-alphaRain=0.05; % Fairall et al. (2018) https://doi.org/10.1175/JTECH-D-17-0025.1
-alphaIce=0.0325; % Protat et al. (2019) https://doi.org/10.1175/JTECH-D-18-0154.1
-beta=1;% Fairall et al. (2018) https://doi.org/10.1175/JTECH-D-17-0025.1
+alphaRain=0.05; % Default 0.05. Fairall et al. (2018) https://doi.org/10.1175/JTECH-D-17-0025.1
+alphaIce=0.0325; % Default 0.0325. Protat et al. (2019) https://doi.org/10.1175/JTECH-D-18-0154.1
+beta=1;% Default 1. Fairall et al. (2018) https://doi.org/10.1175/JTECH-D-17-0025.1
 
 alpha=nan(size(zIn));
-alpha(melt<20)=alphaRain;
-alpha(melt>=20)=alphaIce;
+alpha(melt<15)=alphaRain;
+alpha(melt>=15)=alphaIce;
 
 As=10.^(-pia./10);
 
