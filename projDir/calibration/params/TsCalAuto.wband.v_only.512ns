@@ -192,7 +192,7 @@ siggen_ip_address = "10.40.0.21";
 
 // siggen_max_power = -35.73;
 // siggen_max_power = -55.73;
-siggen_max_power = -55.73;
+siggen_max_power = -56.52;
 
 ///////////// siggen_min_power ////////////////////////
 //
@@ -241,7 +241,7 @@ siggen_specify_power_sequence = TRUE;
 
 // siggen_sequence_start_power = -35.73;
 // siggen_sequence_start_power = -55.73;
-siggen_sequence_start_power = -55.73;
+siggen_sequence_start_power = -56.52;
 
 ///////////// siggen_delta_power_sequence /////////////
 //

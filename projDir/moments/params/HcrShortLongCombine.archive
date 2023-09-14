@@ -61,7 +61,7 @@ register_with_procmap = TRUE;
 // Type: string
 //
 
-instance = "ops";
+instance = "archive";
 
 //======================================================================
 //
@@ -100,7 +100,7 @@ mode = REALTIME;
 // Type: string
 //
 
-input_dir_short = ".";
+input_dir_short = "$(DATA_DIR)/cfradial/moments/100hz_short";
 
 ///////////// input_dir_long //////////////////////////
 //
@@ -112,7 +112,7 @@ input_dir_short = ".";
 // Type: string
 //
 
-input_dir_long = ".";
+input_dir_long = "$(DATA_DIR)/cfradial/moments/100hz_long";
 
 ///////////// input_fmq_url_short /////////////////////
 //
