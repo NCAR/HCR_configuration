@@ -13,9 +13,9 @@ sig0measAtt=calc_sig0_surfGasCorr(data);
 
 % sig0 from models
 sig0modelAll=calc_sig0_model(data);
-%sig0model=sig0modelAll(2,:); % Freilich Vanhoff
+sig0model=sig0modelAll(2,:); % Freilich Vanhoff
 %sig0model=sig0modelAll(5,:); % Wu
-sig0model=sig0modelAll(8,:); % Cox Munk
+%sig0model=sig0modelAll(8,:); % Cox Munk
 
 clear sig0modelAll
 %% Create ocean surface mask
