@@ -5,10 +5,10 @@ close all;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Input variables %%%%%%%%%%%%%%%%%%%%%%%%%%
 
-project='cset'; %socrates, aristo, cset, otrec
+project='socrates'; %socrates, aristo, cset, otrec
 quality='qc3'; %field, qc1, or qc2
 freqData='10hz';
-qcVersion='v3.0';
+qcVersion='v3.2';
 
 showPlot='off';
 
@@ -52,8 +52,8 @@ for aa=1:size(caseList,1)
     data=[];
 
     data.DBZ = [];
-    data.U_SURF=[];
-    data.V_SURF=[];
+    data.U=[];
+    data.V=[];
     data.SST=[];
     data.TEMP=[];
     data.PRESS=[];
@@ -62,7 +62,6 @@ for aa=1:size(caseList,1)
     data.FLAG=[];
     data.ANTFLAG=[];
     data.rotation=[];
-    %data.MELTING_LAYER=[];
     data.pulse_width=[];
 
     dataVars=fieldnames(data);
