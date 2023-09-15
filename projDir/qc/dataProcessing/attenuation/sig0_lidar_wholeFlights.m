@@ -5,10 +5,10 @@ close all;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Input variables %%%%%%%%%%%%%%%%%%%%%%%%%%
 
-project='socrates'; %socrates, aristo, cset, otrec
+project='cset'; %socrates, aristo, cset, otrec
 quality='qc3'; %field, qc1, or qc2
 freqData='10hz';
-qcVersion='v3.2';
+qcVersion='v3.1';
 
 % Lidar
 freqDataL='combined';
@@ -39,7 +39,7 @@ infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_
 
 caseList = table2array(readtable(infile));
 
-for aa=1:size(caseList,1)
+for aa=12:size(caseList,1)
     disp(['Flight ',num2str(aa)]);
     disp(['Starting at ',datestr(datetime('now'),'yyyy-mm-dd HH:MM')]);
     disp('Loading data ...');
@@ -216,7 +216,7 @@ for aa=1:size(caseList,1)
         title('Reflectivity (dBZ)')
 
         s2=subplot(3,1,2);
-        sub1=surf(dataL.time(timeIndsL),dataL.asl(:,timeIndsL)/1000,log10(dataL.HSRL_Aerosol_Backscatter_Coefficient(:,timeIndsL)),'edgecolor','none');
+        sub1=surf(dataL.time(timeIndsL),dataL.asl(:,timeIndsL)/1000,real(log10(dataL.HSRL_Aerosol_Backscatter_Coefficient(:,timeIndsL))),'edgecolor','none');
         view(2);
         caxis([-8 -3])
         title('Aerosol backscatter coefficient (m^{-1} sr^{-1})')
