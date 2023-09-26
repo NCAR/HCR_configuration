@@ -2,57 +2,65 @@
 clear all;
 close all;
 
-dataDirTS='/scr/sleet3/rsfdata/projects/spicule/hcr/time_series_netcdf/';
+% Data directory and file
+dataDirTS='/scr/sleet3/rsfdata/projects/spicule/hcr/time_series_netcdf/20210601/';
+dataFile='20210601_201905_-89.92_47.29.nc';
 
-plotTime=datetime(2021,6,1,20,19,15); % Time at which spectra should be plotted
-plotRange=0.5; % Range at which spectra should be plotted
+% Plot time and range
+plotTime=datetime(2021,6,1,20,19,15); % Time at which waterfall should be plotted
+plotRange=0.4; % Range at which spectra should be plotted in km
 
 outFreq=10; % Desired output frequency in Hz
 timeSpan=1/outFreq;
 
-showPlot='on';
-ylimUpper=7.5;
+%% Read HCR time series data
+disp('Getting time series data ...');
 
-startTime=datetime(2021,6,1,20,18,0);
-endTime=datetime(2021,6,1,20,20,0);
+file=[dataDirTS,dataFile];
 
-%% Load data TS
-disp("Getting time series data ...");
+% Time
+baseTime=ncread(file,'base_time');
+timeOffset=ncread(file,'time_offset');
+fileStartTime=datetime(1970,1,1)+seconds(baseTime);
+data.time=fileStartTime+seconds(timeOffset)';
 
-fileListTS=makeFileList(dataDirTS,startTime+seconds(1),endTime-seconds(1),'20YYMMDDxhhmmss',1);
+% Range
+data.range=ncread(file,'range');
 
-data=[];
-data.IVc=[];
-data.QVc=[];
+% I/Q
+data.IVc=ncread([dataDirTS,dataFile],'IVc');
+data.QVc=ncread([dataDirTS,dataFile],'QVc');
 
-data=readHCRts(fileListTS,data,startTime,endTime);
+% PRT
+data.prt=ncread(file,'prt')';
+data.prt=mode(data.prt);
 
-%% Calculate moments
+% Wavelength
+data.lambda=ncreadatt(file,'/','radar_wavelength_cm')/100;
 
-timeBeams=[];
+%% Create beams
+disp('Looping through beams ...')
 
 startInd=1;
 endInd=1;
 ii=1;
 
-% Loop through beams
 while endInd<=size(data.IVc,2) & startInd<size(data.IVc,2)
 
     % Find start and end indices for beam
     timeDiff=etime(datevec(data.time(startInd)),datevec(data.time));
     [minDiff,endInd]=min(abs(timeDiff+timeSpan));
 
+    % Number of samples
     sampleNum=endInd-startInd+1;
 
-    % Window
+    % Window data
     win=window(@hamming,sampleNum);  % Default window is Hamming
     winWeight=sampleNum/sum(win);
     winNorm=win*winWeight;
 
+    % Create I/Q
     cIQv=winNorm'.*(data.IVc(:,startInd:endInd)+i*data.QVc(:,startInd:endInd))./sqrt(sampleNum);
-
-    %prtThis=mean(prt(startInd:endInd));
-    prt=mode(data.prt);
 
     %% FFT and spectra
 
@@ -64,52 +72,59 @@ while endInd<=size(data.IVc,2) & startInd<size(data.IVc,2)
 
     powerShifted=fftshift(powerSignal,2);
 
-    % Reverse to get pointing direction consistent
-    specLinOrig=fliplr(powerShifted);
+    % Reverse to get sign correct
+    specLin=fliplr(powerShifted);
 
-    % Find peak
-    specLin=nan(size(specLinOrig));
-    specVelVec=nan(size(specLinOrig));
-    %specVelVecOrig=-pi:2*pi/(sampleNum-1):pi;
-    specVelVecOrig=-3*pi:2*pi/(sampleNum):3*pi;
-    specVelVecOrig=specVelVecOrig(1:end-1);
+    % Calculate velocity
+    specVelVec=-pi:2*pi/(sampleNum):pi;
+    specVelVec=specVelVec(1:end-1);
 
-    for kk=1:size(specLinOrig,1)
-        [~,maxInd]=max(specLinOrig(kk,:),[],'omitnan');
-        maxInd=maxInd+sampleNum;
-        sBsSpec=repmat(specLinOrig(kk,:),1,3);
+    vel=data.lambda/(4*pi*data.prt)*specVelVec;
 
-        try
-            specLin(kk,:)=sBsSpec(maxInd-floor(sampleNum/2):maxInd+floor(sampleNum/2));
-            specVelVec(kk,:)=specVelVecOrig(maxInd-floor(sampleNum/2):maxInd+floor(sampleNum/2));
-        catch
-            specLin(kk,:)=sBsSpec(maxInd-floor(sampleNum/2):maxInd+floor(sampleNum/2)-1);
-            specVelVec(kk,:)=specVelVecOrig(maxInd-floor(sampleNum/2):maxInd+floor(sampleNum/2)-1);
-        end
-    end
-
-    %% Plot
+    %% Plot at the specified time
     if abs(etime(datevec(data.time(startInd)),datevec(plotTime)))<0.05
-        powerSpec=10*log10(powerShifted);
-        powerSpecNew=10*log10(specLin);
+        % Power in dB
+        powerSpecDB=10*log10(specLin);
 
-        plotRange=0.5;
+        % Find index of specified range
         rangeInd=min(find((data.range./1000)>=plotRange));
-        figure('Position',[200 500 800 1200],'DefaultAxesFontSize',12,'visible',showPlot);
-        plot(powerSpecNew(rangeInd,:),'-b','LineWidth',2);
-        ylim([-80 -30])
 
-        figure('Position',[200 500 800 1200],'DefaultAxesFontSize',12,'visible',showPlot);
+        % Create figure
+        figure('Position',[200 500 800 1200],'DefaultAxesFontSize',12);
+
+        % Plot spectra at specified range
+        s1=subplot(3,1,1);
+        plot(vel,powerSpecDB(rangeInd,:),'-b','LineWidth',2);
+        xlabel('Velocity (m s^{-1})');
+        ylabel('Power (dB)');
+        xlim([vel(1) vel(end)]);
+        title({[datestr(data.time(startInd),'yyyy-mm-dd HH:MM:SS')];['Power at ',num2str(plotRange),' km range.']});
+        
+        % Waterfall plot
+        s2=subplot(3,1,2:3);
         colormap('jet');
         hold on
-        surf(1:size(powerSpec,2),data.range./1000,powerSpecNew,'EdgeColor','none');
+        surf(vel,data.range./1000,powerSpecDB,'EdgeColor','none');
         view(2)
-        caxis([-60 -35]);
+        caxis([-60 -30]);
         colorbar
-        plot([1,40],[plotRange,plotRange],'-r','LineWidth',2);
+        xlabel('Velocity (m s^{-1})');
         ylabel('Range (km)');
-        xlim([1 size(powerSpec,2)])
-        title(datestr(data.time(startInd),'yyyy-mm-dd HH:MM:SS'))
+        xlim([vel(1) vel(end)])
+        ylim([data.range(1)./1000,data.range(end)./1000])
+        title('Power (dB)');
+
+        % Plot arrow at specified range
+        text(vel(1)-1.5,plotRange,'\rightarrow','FontSize',20,'color','b','FontWeight','bold','VerticalAlignment','middle');
+
+        % Align x axis of subplots
+        drawnow;
+        s1Pos=s1.Position;
+        s2Pos=s2.Position;
+        s1.Position=[s1Pos(1),s1Pos(2),s2Pos(3),s1Pos(4)];
+
+        % End while loop
+        break
     end
 
     %% Next beam
