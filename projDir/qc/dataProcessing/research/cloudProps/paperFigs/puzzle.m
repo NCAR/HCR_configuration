@@ -230,4 +230,5 @@ ax3.Position=[0.047,0.08,0.92,0.41];
 
 formatOut = 'yyyymmdd_HHMM';
 set(gcf,'PaperPositionMode','auto')
-print([figdir,'cloudPuzzle.png'],'-dpng','-r0');
+%print([figdir,'cloudPuzzle.png'],'-dpng','-r0');
+print([figdir,'cloudPuzzle.tif'],'-dtiffn','-r0')

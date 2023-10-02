@@ -192,4 +192,5 @@ s3.Position=[0.05,0.06,0.38,0.41];
 s4.Position=[0.54,0.06,0.38,0.41];
 
 set(gcf,'PaperPositionMode','auto')
-print([figdir,'sstTracks.png'],'-dpng','-r0');
+%print([figdir,'sstTracks.png'],'-dpng','-r0');
+print([figdir,'sstTracks.tif'],'-dtiffn','-r0')

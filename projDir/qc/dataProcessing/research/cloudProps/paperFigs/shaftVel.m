@@ -113,7 +113,7 @@ xlim(lonLims(3,:));
 ylim(latLims(3,:));
 
 plot(coastlon,coastlat,'-k')
-title('(b) OTREC maximum velocity (m s{^-1})');
+title('(b) OTREC maximum velocity (m s^{-1})');
 
 xlabel('Longitude (deg)')
 ylabel('Latitude (deg)')
@@ -128,4 +128,5 @@ cb1.Position=[0.91,0.565,0.035,0.4];
 cb2.Position=[0.91,0.07,0.035,0.4];
 
 set(gcf,'PaperPositionMode','auto')
-print([figdir,'shaftVel.png'],'-dpng','-r0');
+%print([figdir,'shaftVel.png'],'-dpng','-r0');
+print([figdir,'shaftVel.tif'],'-dtiffn','-r0')
