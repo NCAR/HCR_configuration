@@ -183,8 +183,14 @@ for aa=1:length(caseStart)
    elseif strcmp(phase,'Liquid')
        abGuess=[0.05,1];
    end
-%x = fzero(@(x) cubicpoly(x,b,c),0)
-   [x,fval,exitflag,output] = fminsearch(@(minOut) hitschfeldBordan_optimize(testDBZ,piaHydrometInt,data.range,abGuess(1),abGuess(2),firstInd),abGuess);
+
+   %% Optimize
+   disp('Optimizing ...');
+
+   fun=@(abGuess) hitschfeldBordan_optimize(testDBZ,piaHydrometInt,data.range,abGuess,firstInd);
+   [abOpt,fval,exitflag,output] = fminsearch(fun,abGuess);
+
+   zHB=hitschfeldBordan_newCoeffs(testDBZ,piaHydrometInt,data.range,abOpt);
 
    %% Check result
 % 
