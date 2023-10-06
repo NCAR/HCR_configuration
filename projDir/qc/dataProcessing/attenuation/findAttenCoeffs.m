@@ -5,12 +5,12 @@ close all;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Input variables %%%%%%%%%%%%%%%%%%%%%%%%%%
 
-project='socrates'; %socrates, aristo, cset, otrec
+project='cset'; %socrates (Frozen and Liquid), cset (Liquid)
 quality='qc3'; %field, qc1, or qc2
 freqData='10hz';
-qcVersion='v3.2';
+qcVersion='v3.1';
 
-phase='Frozen';
+phase='Liquid';
 
 showPlot='on';
 
@@ -20,7 +20,8 @@ addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
 dataDir=HCRdir(project,quality,qcVersion,freqData);
 
-figdir=[dataDir(1:end-5),'attenPlots/findCoeffs/'];
+%figdir=[dataDir(1:end-5),'attenPlots/findCoeffs/'];
+figdir='/scr/snow2/rsfdata/projects/socrates/hcr/qc3/cfradial/v3.2_full/attenPlots/findCoeffs/';
 
 casefile=['~/git/HCR_configuration/projDir/qc/dataProcessing/HCRproducts/caseFiles/atten',phase,'_',project,'_dev.txt'];
 
@@ -190,29 +191,30 @@ for aa=1:length(caseStart)
    fun=@(abGuess) hitschfeldBordan_optimize(testDBZ,piaHydrometInt,data.range,abGuess,firstInd);
    [abOpt,fval,exitflag,output] = fminsearch(fun,abGuess);
 
+   disp(['alpha=',num2str(abOpt(1)),', beta=',num2str(abOpt(2))]);
+
    zHB=hitschfeldBordan_newCoeffs(testDBZ,piaHydrometInt,data.range,abOpt);
 
-   %% Check result
-% 
-%    liqSecAtt=zHB-data.dbzMaskedCorrGas;
-% 
-%    indMat=repmat((1:size(liqSecAtt,1))',1,size(liqSecAtt,2));
-%    indMat(isnan(liqSecAtt))=0;
-% 
-%    rows=max(indMat,[],1);
-%    rowsS=rows;
-%    cols=1:size(liqSecAtt,2);
-% 
-%    cols(rows==0)=[];
-%    rowsS(rows==0)=[];
-%    linIndsCheck=sub2ind(size(liqSecAtt),rowsS,cols);
-% 
-%    checkS=liqSecAtt(linIndsCheck);
-%    PIAcheck=nan(1,size(liqSecAtt,2));
-%    PIAcheck(rows>0)=checkS;
-% 
-%    PIAcheck2=PIAcheck*2;
+   attCorrection=zHB-data.dbzMaskedCorrGas;
 
+   numNeg=length(find(attCorrection<0));
+   minNeg=min(attCorrection(:),[],'omitnan');
+
+   disp(['Negative pixels: ',num2str(numNeg),', minimum: ',num2str(minNeg),' dB']);
+
+   goodInds=find(~isnan(firstInd));
+   topZdiff=[];
+   for ii=1:length(goodInds)
+       testZ=attCorrection(firstInd(goodInds(ii)),ii);
+       if ~isnan(testZ)
+           topZdiff=[topZdiff,attCorrection(firstInd(goodInds(ii)),ii)];
+       end
+   end
+
+   ftest = figure('Position',[200 500 1800 300],'DefaultAxesFontSize',12,'renderer','painters','visible',showPlot);
+   plot(topZdiff);
+
+ 
    %% Plot
 
    timeInds=1:round(length(data.time)/2000):length(data.time);
@@ -269,17 +271,18 @@ for aa=1:length(caseStart)
    title('Reflectivity corrected for gaseous and liquid attenuation (dBZ)')
 
    s4=subplot(5,1,4);
+   colmapCorr=cat(1,[1,0,0],turbo(15));
    hold on
-   surf(data.time(:,timeInds),data.asl(:,timeInds)./1000,zHB(:,timeInds)-data.dbzMaskedCorrGas(:,timeInds),'edgecolor','none');
+   surf(data.time(:,timeInds),data.asl(:,timeInds)./1000,attCorrection(:,timeInds),'edgecolor','none');
    view(2);
    ylabel('Altitude (km)');
-   caxis([-1 15]);
-   s4.Colormap=turbo;
+   caxis([-1.01 15]);
+   s4.Colormap=colmapCorr;
    ylim([-0.1 ylimRefl]);
    xlim([data.time(timeInds(1)),data.time(timeInds(end))]);
    colorbar
    grid on
-   title('Attenuation correction (dBZ)')
+   title(['Attenuation correction (dBZ), alpha=',num2str(abOpt(1)),', beta=',num2str(abOpt(2))]);
 
    s5=subplot(5,1,5);
    hold on
@@ -321,9 +324,4 @@ for aa=1:length(caseStart)
    print(f1,[figdir,project,'_att',phase,'_',...
        datestr(data.time(1),'yyyymmdd_HHMMSS'),'_to_',datestr(data.time(end),'yyyymmdd_HHMMSS')],'-dpng','-r0')
 
-    %% Check plot
-%    f1 = figure('Position',[200 500 1800 500],'DefaultAxesFontSize',12,'renderer','painters','visible',showPlot);
-%    hold on
-%    plot(data.time,piaHydromet2,'-g','LineWidth',2);
-%    plot(data.time,PIAcheck2,'-m','LineWidth',1);
 end

@@ -31,6 +31,10 @@ for ii=1:length(goodInds)
         topZdiff=[topZdiff,zDiff(firstInd(goodInds(ii)),ii)];
     end
 end
-topZdiffAbs=abs(topZdiff);
-minOut=mean(topZdiffAbs,'omitnan');
+
+%topZdiff(topZdiff<0)=topZdiff(topZdiff<0).^2;
+topZdiff=abs(topZdiff);
+
+hold on
+minOut=mean(topZdiff,'omitnan');
 end
