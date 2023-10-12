@@ -77,7 +77,7 @@ for jj=1:length(fileList)
         cIQv=winNorm'.*(data.IVc(:,startInd:endInd)+i*data.QVc(:,startInd:endInd));%./sqrt(sampleNum);
 
         %prtThis=mean(prt(startInd:endInd));
-        prtThis=mode(data.prt);
+        prt=mode(data.prt);
 
         cIQ=cIQv;%.*sqrt(size(cIQv,2));
 
@@ -88,8 +88,8 @@ for jj=1:length(fileList)
         R4=mean(cIQ(:,1:end-4).*conj(cIQ(:,5:end)),2);
         
         powerV(:,ii)=10*log10(R0)-data.rx_gain_v;
-        vel(:,ii)=data.lambda/(4*pi*prtThis)*angle(R1);
-        width(:,ii)=data.lambda/(2*pi*prtThis*6^.5)*abs(log(abs(R1./R2))).^0.5;
+        vel(:,ii)=data.lambda/(4*pi*prt)*angle(R1);
+        width(:,ii)=data.lambda/(2*pi*prt*6^.5)*abs(log(abs(R1./R2))).^0.5;
         skew(:,ii)=abs(log(abs(R3./(R2.^3))));
         kurt(:,ii)=abs(log(abs(R4./(R2.^2))));
 
