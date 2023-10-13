@@ -1,63 +1,82 @@
-function momentsSpec=calcMomentsSpec(cIQv,sampleNum,ii,momentsSpec,data)
+function momentsSpec=calcMomentsSpec(cIQv,cIQh,sampleNum,ii,momentsSpec,data)
 %% FFT and spectra
 
-fftIQ=fft(cIQv,[],2);
+fftIQv=fft(cIQv,[],2);
+fftIQh=fft(cIQh,[],2);
 
-powerRealIn=real(fftIQ).^2;
-powerImagIn=imag(fftIQ).^2;
-powerSignal=powerRealIn+powerImagIn;
+powerRealInV=real(fftIQv).^2;
+powerImagInV=imag(fftIQv).^2;
+powerRealInH=real(fftIQh).^2;
+powerImagInH=imag(fftIQh).^2;
 
-powerShifted=fftshift(powerSignal,2);
+powerSignalV=powerRealInV+powerImagInV;
+powerSignalH=powerRealInH+powerImagInH;
+
+powerShiftedV=fftshift(powerSignalV,2);
+powerShiftedH=fftshift(powerSignalH,2);
 
 % Reverse to get pointing direction consistent
-specLinOrig=fliplr(powerShifted);
+specLinOrigV=fliplr(powerShiftedV);
+specLinOrigH=fliplr(powerShiftedH);
 
 % Find peak
-specLin=nan(size(specLinOrig));
-specVelVec=nan(size(specLinOrig));
+specLinV=nan(size(specLinOrigV));
+specVelVecV=nan(size(specLinOrigV));
 specVelVecOrig=-3*pi:2*pi/(sampleNum):3*pi;
 specVelVecOrig=specVelVecOrig(1:end-1);
 
-for kk=1:size(specLinOrig,1)
-    [~,maxInd]=max(specLinOrig(kk,:),[],'omitnan');
+for kk=1:size(specLinOrigV,1)
+    [~,maxInd]=max(specLinOrigV(kk,:),[],'omitnan');
     maxInd=maxInd+sampleNum;
-    sBsSpec=repmat(specLinOrig(kk,:),1,3);
+    sBsSpec=repmat(specLinOrigV(kk,:),1,3);
 
     try
-        specLin(kk,:)=sBsSpec(maxInd-floor(sampleNum/2):maxInd+floor(sampleNum/2));
-        specVelVec(kk,:)=specVelVecOrig(maxInd-floor(sampleNum/2):maxInd+floor(sampleNum/2));
+        specLinV(kk,:)=sBsSpec(maxInd-floor(sampleNum/2):maxInd+floor(sampleNum/2));
+        specVelVecV(kk,:)=specVelVecOrig(maxInd-floor(sampleNum/2):maxInd+floor(sampleNum/2));
     catch
-        specLin(kk,:)=sBsSpec(maxInd-floor(sampleNum/2):maxInd+floor(sampleNum/2)-1);
-        specVelVec(kk,:)=specVelVecOrig(maxInd-floor(sampleNum/2):maxInd+floor(sampleNum/2)-1);
+        specLinV(kk,:)=sBsSpec(maxInd-floor(sampleNum/2):maxInd+floor(sampleNum/2)-1);
+        specVelVecV(kk,:)=specVelVecOrig(maxInd-floor(sampleNum/2):maxInd+floor(sampleNum/2)-1);
     end
 end
 
 %%%%%%%%%%%%%%%%%%
 
 % DBM
-powerLin=mean(specLin,2);
-momentsSpec.powerV(:,ii)=10*log10(powerLin)-data.rx_gain_v;
+powerLinV=mean(specLinOrigV,2);
+momentsSpec.powerV(:,ii)=10*log10(powerLinV)-data.rx_gain_v;
+
+powerLinH=mean(specLinOrigH,2);
+momentsSpec.powerH(:,ii)=10*log10(powerLinH)-data.rx_gain_h;
 
 % SNR
-noiseLin=10.^(data.noise_v./10);
-snrLin=(powerLin-noiseLin)./noiseLin;
-snrLin(snrLin<0)=nan;
-momentsSpec.snr(:,ii)=10*log10(snrLin);
+noiseLinV=10.^(data.noise_v./10);
+snrLinV=(powerLinV-noiseLinV)./noiseLinV;
+snrLinV(snrLinV<0)=nan;
+momentsSpec.snr(:,ii)=10*log10(snrLinV);
+
+noiseLinH=10.^(data.noise_h./10);
+snrLinH=(powerLinH-noiseLinH)./noiseLinH;
+snrLinH(snrLinH<0)=nan;
+snrH=10*log10(snrLinH);
 
 % DBZ
 data.range(data.range<0)=nan;
 momentsSpec.dbz(:,ii)=momentsSpec.snr(:,ii)+20*log10(data.range./1000)+data.dbz1km_v;
+dbzH=snrH+20*log10(data.range./1000)+data.dbz1km_h;
+
+% LDR
+momentsSpec.ldr(:,ii)=momentsSpec.dbz(:,ii)-dbzH;
 
 % VEL
-momentsSpec.vel(:,ii)=sum(specLin.*specVelVec,2,'omitnan')./sum(specLin,2,'omitnan');
+momentsSpec.vel(:,ii)=sum(specLinV.*specVelVecV,2,'omitnan')./sum(specLinV,2,'omitnan');
 
 % WIDTH
-momentsSpec.width(:,ii)=(sum(specLin.*(specVelVec-momentsSpec.vel(:,ii)).^2,2,'omitnan')./sum(specLin,2,'omitnan')).^0.5;
+momentsSpec.width(:,ii)=(sum(specLinV.*(specVelVecV-momentsSpec.vel(:,ii)).^2,2,'omitnan')./sum(specLinV,2,'omitnan')).^0.5;
 
 % SKEWNESS
-momentsSpec.skew(:,ii)=sum(specLin.*(specVelVec-momentsSpec.vel(:,ii)).^3,2,'omitnan')./(sum(specLin,2,'omitnan').*momentsSpec.width(:,ii).^3);
+momentsSpec.skew(:,ii)=sum(specLinV.*(specVelVecV-momentsSpec.vel(:,ii)).^3,2,'omitnan')./(sum(specLinV,2,'omitnan').*momentsSpec.width(:,ii).^3);
 
 % KURTOSIS
-momentsSpec.kurt(:,ii)=sum(specLin.*(specVelVec-momentsSpec.vel(:,ii)).^4,2,'omitnan')./(sum(specLin,2,'omitnan').*momentsSpec.width(:,ii).^4);
+momentsSpec.kurt(:,ii)=sum(specLinV.*(specVelVecV-momentsSpec.vel(:,ii)).^4,2,'omitnan')./(sum(specLinV,2,'omitnan').*momentsSpec.width(:,ii).^4);
 
 end

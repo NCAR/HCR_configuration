@@ -17,13 +17,19 @@ data.pulse_width=ncread(file,'pulse_width')';
 data.prt=ncread(file,'prt')';
 data.lambda=ncreadatt(file,'/','radar_wavelength_cm')/100;
 data.dbz1km_v=ncreadatt(file,'/','cal_base_dbz_1km_vc');
+data.dbz1km_h=ncreadatt(file,'/','cal_base_dbz_1km_hc');
 data.noise_v=ncreadatt(file,'/','cal_noise_dbm_vc');
+data.noise_h=ncreadatt(file,'/','cal_noise_dbm_hc');
 data.rx_gain_v=ncreadatt(file,'/','cal_receiver_gain_db_vc');
+data.rx_gain_h=ncreadatt(file,'/','cal_receiver_gain_db_hc');
 
 data.lambda=ncreadatt(file,'/','radar_wavelength_cm')/100;
 data.dbz1km_v=ncreadatt(file,'/','cal_base_dbz_1km_vc');
+data.dbz1km_h=ncreadatt(file,'/','cal_base_dbz_1km_hc');
 data.noise_v=ncreadatt(file,'/','cal_noise_dbm_vc');
+data.noise_h=ncreadatt(file,'/','cal_noise_dbm_hc');
 data.rx_gain_vc=ncreadatt(file,'/','cal_receiver_gain_db_vc');
+data.rx_gain_hc=ncreadatt(file,'/','cal_receiver_gain_db_hc');
 
 for ii=1:length(vars)
     data.(vars{ii})=ncread(file,(vars{ii}));

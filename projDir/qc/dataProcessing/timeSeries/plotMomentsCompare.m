@@ -105,6 +105,23 @@ if flipYes
     set(gca, 'YDir','reverse');
 end
 
+s7=subplot(4,2,7);
+
+hold on
+surf(timeBeams,data.range./1000,moments.ldr,'edgecolor','none');
+view(2);
+ylabel('Range (km)');
+caxis([-40 10]);
+ylim([0 ylimUpper]);
+xlim([timeBeams(1),timeBeams(end)]);
+colorbar
+grid on
+title('LDR (dB)')
+
+if flipYes
+    set(gca, 'YDir','reverse');
+end
+
 s8=subplot(4,2,8);
 
 hold on
@@ -123,5 +140,5 @@ if flipYes
 end
 
 set(gcf,'PaperPositionMode','auto')
-print(f1,[figdir,project,'_moments_',type,datestr(data.time(1),'yyyymmdd_HHMMSS'),'_to_',datestr(data.time(end),'yyyymmdd_HHMMSS')],'-dpng','-r0');
+print(f1,[figdir,project,'_moments_',type,'_',datestr(data.time(1),'yyyymmdd_HHMMSS'),'_to_',datestr(data.time(end),'yyyymmdd_HHMMSS')],'-dpng','-r0');
 end
