@@ -382,7 +382,7 @@ fields = {
     raw_name = "HCR_MELTING_LAYER",
     filtered_name = "",
     units = "",
-    color_map = "hcr_melting_layer.colors",
+    color_map = "hcr_melting_layer_new.colors",
     shortcut = "d"
   }
   ,
