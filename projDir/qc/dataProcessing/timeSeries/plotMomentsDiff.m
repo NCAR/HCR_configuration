@@ -68,8 +68,8 @@ elseif strcmp(commFields{ii},'powerV')
     s1.CLim=[-110,-40];
     s2.CLim=[-110,-40];
 elseif strcmp(commFields{ii},'width')
-    s1.CLim=[0,2];
-    s2.CLim=[0,2];
+    s1.CLim=[0,4];
+    s2.CLim=[0,4];
 elseif strcmp(commFields{ii},'snr')
     s1.CLim=[-20,70];
     s2.CLim=[-20,70];

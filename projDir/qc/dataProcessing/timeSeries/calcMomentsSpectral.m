@@ -1,4 +1,4 @@
-function momentsSpec=calcMomentsSpec(cIQv,cIQh,sampleNum,ii,momentsSpec,data)
+function momentsSpec=calcMomentsSpectral(cIQv,cIQh,sampleNum,ii,momentsSpec,data)
 %% FFT and spectra
 
 fftIQv=fft(cIQv,[],2);

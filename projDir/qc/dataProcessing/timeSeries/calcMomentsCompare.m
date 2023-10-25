@@ -2,6 +2,8 @@
 clear all;
 close all;
 
+addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
+
 project='spicule'; %socrates, aristo, cset, otrec
 quality='ts'; %field, qc1, or qc2
 qualityCF='qc1';
@@ -99,12 +101,12 @@ for aa=1:length(caseStart)
         winNorm=win*winWeight;
 
         cIQv=winNorm'.*(data.IVc(:,startInd:endInd)+i*data.QVc(:,startInd:endInd))./sqrt(sampleNum);
-        cIQh=winNorm'.*(data.IHc(:,startInd:endInd)+i*data.QHc(:,startInd:endInd))./sqrt(sampleNum);
+        cIQh=winNorm'.*(data.IHx(:,startInd:endInd)+i*data.QHx(:,startInd:endInd))./sqrt(sampleNum);
 
         prt=mode(data.prt);
 
         %% Spectral moments
-        momentsSpec=calcMomentsSpec(cIQv,cIQh,sampleNum,ii,momentsSpec,data);
+        momentsSpec=calcMomentsSpectral(cIQv,cIQh,sampleNum,ii,momentsSpec,data);
         
         %% Time moments
         momentsTime=calcMomentsTime(cIQv,cIQh,prt,ii,momentsTime,data);
@@ -123,6 +125,7 @@ for aa=1:length(caseStart)
     end
 
     momentsSpec.vel=momentsSpec.vel.*data.lambda/(4*pi*prt);
+    momentsSpec.width=momentsSpec.width.*data.lambda/(4*pi*prt);
 
     %% Plot
 
