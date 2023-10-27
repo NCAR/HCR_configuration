@@ -23,7 +23,7 @@ specLinOrigH=fliplr(powerShiftedH);
 specLinV=nan(size(specLinOrigV));
 specVelVecV=nan(size(specLinOrigV));
 specVelVecOrig=-3*pi:2*pi/(sampleNum):3*pi;
-specVelVecOrig=specVelVecOrig(1:end-1);
+specVelVecOrig=specVelVecOrig(1:end-1).*data.lambda./(4*pi.*repmat(data.prtThis,1,3));
 
 for kk=1:size(specLinOrigV,1)
     [~,maxInd]=max(specLinOrigV(kk,:),[],'omitnan');

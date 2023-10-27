@@ -34,7 +34,7 @@ caseStart=datetime(caseList.Var1,caseList.Var2,caseList.Var3, ...
 caseEnd=datetime(caseList.Var7,caseList.Var8,caseList.Var9, ...
     caseList.Var10,caseList.Var11,caseList.Var12);
 
-for aa=1:length(caseStart)
+for aa=2:length(caseStart)
 
     disp(['Case ',num2str(aa),' of ',num2str(length(caseStart))]);
 
@@ -103,13 +103,13 @@ for aa=1:length(caseStart)
         cIQv=winNorm'.*(data.IVc(:,startInd:endInd)+i*data.QVc(:,startInd:endInd))./sqrt(sampleNum);
         cIQh=winNorm'.*(data.IHx(:,startInd:endInd)+i*data.QHx(:,startInd:endInd))./sqrt(sampleNum);
 
-        prt=mode(data.prt);
+        data.prtThis=data.prt(startInd:endInd);
 
         %% Spectral moments
         momentsSpec=calcMomentsSpectral(cIQv,cIQh,sampleNum,ii,momentsSpec,data);
         
         %% Time moments
-        momentsTime=calcMomentsTime(cIQv,cIQh,prt,ii,momentsTime,data);
+        momentsTime=calcMomentsTime(cIQv,cIQh,ii,momentsTime,data);
         
         timeBeams=[timeBeams;data.time(startInd)];
 
@@ -124,8 +124,8 @@ for aa=1:length(caseStart)
         ii=ii+1;
     end
 
-    momentsSpec.vel=momentsSpec.vel.*data.lambda/(4*pi*prt);
-    momentsSpec.width=momentsSpec.width.*data.lambda/(4*pi*prt);
+    %momentsSpec.vel=momentsSpec.vel.*data.lambda/(4*pi*prt);
+    %momentsSpec.width=momentsSpec.width.*data.lambda/(4*pi*prt);
 
     %% Plot
 
