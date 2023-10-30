@@ -60,7 +60,7 @@ hold on
 surf(timeBeams,data.range./1000,moments.width,'edgecolor','none');
 view(2);
 ylabel('Range (km)');
-caxis([0 2]);
+caxis([0 4]);
 ylim([0 ylimUpper]);
 xlim([timeBeams(1),timeBeams(end)]);
 colorbar
@@ -128,7 +128,7 @@ hold on
 surf(timeBeams,data.range./1000,moments.kurt,'edgecolor','none');
 view(2);
 ylabel('Range (km)');
-caxis([0 30]);
+caxis([0 10]);
 ylim([0 ylimUpper]);
 xlim([timeBeams(1),timeBeams(end)]);
 colorbar

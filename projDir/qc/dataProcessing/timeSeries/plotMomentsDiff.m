@@ -47,7 +47,7 @@ hold on
 surf(timeBeams,data.range./1000,momentsSpec.(commFields{ii})-momentsTime.(commFields{ii}),'edgecolor','none');
 view(2);
 ylabel('Range (km)');
-clim([-0.1 0.1]);
+clim([-0.2 0.2]);
 ylim([0 ylimUpper]);
 xlim([timeBeams(1),timeBeams(end)]);
 colorbar
@@ -67,18 +67,24 @@ elseif strcmp(commFields{ii},'vel')
 elseif strcmp(commFields{ii},'powerV')
     s1.CLim=[-110,-40];
     s2.CLim=[-110,-40];
+elseif strcmp(commFields{ii},'powerH')
+    s1.CLim=[-110,-40];
+    s2.CLim=[-110,-40];
 elseif strcmp(commFields{ii},'width')
     s1.CLim=[0,4];
     s2.CLim=[0,4];
 elseif strcmp(commFields{ii},'snr')
     s1.CLim=[-20,70];
     s2.CLim=[-20,70];
+elseif strcmp(commFields{ii},'ldr')
+    s1.CLim=[-40,10];
+    s2.CLim=[-40,10];
 elseif strcmp(commFields{ii},'skew')
     s1.CLim=[-1,1];
     s2.CLim=[-1,1];
 elseif strcmp(commFields{ii},'kurt')
-    s1.CLim=[0,30];
-    s2.CLim=[0,30];
+    s1.CLim=[0,10];
+    s2.CLim=[0,10];
 end
 
 set(gcf,'PaperPositionMode','auto')

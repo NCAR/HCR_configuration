@@ -1,5 +1,6 @@
 function momentsTime=calcMomentsTime(cIQv,cIQh,ii,momentsTime,data)
 cIQv=cIQv.*sqrt(size(cIQv,2));
+cIQh=cIQh.*sqrt(size(cIQh,2));
 
 R0v=mean(real(cIQv).^2+imag(cIQv).^2,2);
 R1v=mean(cIQv(:,1:end-1).*conj(cIQv(:,2:end)),2);
@@ -35,7 +36,7 @@ momentsTime.dbz(:,ii)=momentsTime.snr(:,ii)+20*log10(data.range./1000)+data.dbz1
 dbzH=snrH+20*log10(data.range./1000)+data.dbz1km_h;
 
 % LDR
-momentsTime.ldr(:,ii)=momentsTime.dbz(:,ii)-dbzH;
+momentsTime.ldr(:,ii)=dbzH-momentsTime.dbz(:,ii);
 
 end
 

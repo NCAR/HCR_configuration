@@ -65,18 +65,21 @@ momentsSpec.dbz(:,ii)=momentsSpec.snr(:,ii)+20*log10(data.range./1000)+data.dbz1
 dbzH=snrH+20*log10(data.range./1000)+data.dbz1km_h;
 
 % LDR
-momentsSpec.ldr(:,ii)=momentsSpec.dbz(:,ii)-dbzH;
+momentsSpec.ldr(:,ii)=dbzH-momentsSpec.dbz(:,ii);
+
+x=specVelVecV;
+y=specLinV-noiseLinV;
 
 % VEL
-momentsSpec.vel(:,ii)=sum(specLinV.*specVelVecV,2,'omitnan')./sum(specLinV,2,'omitnan');
+momentsSpec.vel(:,ii)=sum(y.*x,2,'omitnan')./sum(y,2,'omitnan');
 
 % WIDTH
-momentsSpec.width(:,ii)=(sum(specLinV.*(specVelVecV-momentsSpec.vel(:,ii)).^2,2,'omitnan')./sum(specLinV,2,'omitnan')).^0.5;
+momentsSpec.width(:,ii)=real((sum(y.*(x-momentsSpec.vel(:,ii)).^2,2,'omitnan')./sum(y,2,'omitnan')).^0.5);
 
 % SKEWNESS
-momentsSpec.skew(:,ii)=sum(specLinV.*(specVelVecV-momentsSpec.vel(:,ii)).^3,2,'omitnan')./(sum(specLinV,2,'omitnan').*momentsSpec.width(:,ii).^3);
+momentsSpec.skew(:,ii)=sum(y.*(x-momentsSpec.vel(:,ii)).^3,2,'omitnan')./(sum(y,2,'omitnan').*momentsSpec.width(:,ii).^3);
 
 % KURTOSIS
-momentsSpec.kurt(:,ii)=sum(specLinV.*(specVelVecV-momentsSpec.vel(:,ii)).^4,2,'omitnan')./(sum(specLinV,2,'omitnan').*momentsSpec.width(:,ii).^4);
+momentsSpec.kurt(:,ii)=sum(y.*(x-momentsSpec.vel(:,ii)).^4,2,'omitnan')./(sum(y,2,'omitnan').*momentsSpec.width(:,ii).^4);
 
 end
