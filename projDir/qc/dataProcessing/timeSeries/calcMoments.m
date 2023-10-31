@@ -34,7 +34,7 @@ caseStart=datetime(caseList.Var1,caseList.Var2,caseList.Var3, ...
 caseEnd=datetime(caseList.Var7,caseList.Var8,caseList.Var9, ...
     caseList.Var10,caseList.Var11,caseList.Var12);
 
-for aa=1:length(caseStart)
+for aa=2:length(caseStart)
 
     disp(['Case ',num2str(aa),' of ',num2str(length(caseStart))]);
 
@@ -100,16 +100,27 @@ for aa=1:length(caseStart)
         winWeight=sampleNum/sum(win);
         winNorm=win*winWeight;
 
-        cIQv=winNorm'.*(data.IVc(:,startInd:endInd)+i*data.QVc(:,startInd:endInd))./sqrt(sampleNum);
-        cIQh=winNorm'.*(data.IHx(:,startInd:endInd)+i*data.QHx(:,startInd:endInd))./sqrt(sampleNum);
+        cIQ.v=winNorm'.*(data.IVc(:,startInd:endInd)+i*data.QVc(:,startInd:endInd))./sqrt(sampleNum);
+        cIQ.h=winNorm'.*(data.IHx(:,startInd:endInd)+i*data.QHx(:,startInd:endInd))./sqrt(sampleNum);
 
         data.prtThis=data.prt(startInd:endInd);
 
-        %% Spectral moments
-        momentsSpec=calcMomentsSpectral(cIQv,cIQh,sampleNum,ii,momentsSpec,data);
-        
         %% Time moments
-        momentsTime=calcMomentsTime(cIQv,cIQh,ii,momentsTime,data);
+        momentsTime=calcMomentsTime(cIQ,ii,momentsTime,data);
+
+        %% Spectral moments
+        [specPowerLin,specPowerDB]=getSpectra(cIQ);
+
+        % Power fields
+        momentsSpec=calcMomentsSpec_powerFields(specPowerLin,ii,momentsSpec,data);
+
+        % Move peak of spectra to middle
+        [specPowerDBadj,specVelAdj]=adjSpecBoundsV(specPowerDB.V,momentsTime.vel(:,ii),sampleNum,data);
+
+        % Higher order moments
+        momentsSpec=calcMomentsSpec_higherMoments(specPowerDBadj,specVelAdj,ii,momentsSpec,data);
+
+        %% Other processing
         
         timeBeams=[timeBeams;data.time(startInd)];
 
@@ -123,9 +134,6 @@ for aa=1:length(caseStart)
         startInd=endInd+1;
         ii=ii+1;
     end
-
-    %momentsSpec.vel=momentsSpec.vel.*data.lambda/(4*pi*prt);
-    %momentsSpec.width=momentsSpec.width.*data.lambda/(4*pi*prt);
 
     %% Plot
 
