@@ -257,22 +257,25 @@ $PROJ_DIR/qc/dataProcessing/HCRproducts/flag/cfradialVELmasked.m
 
 #################################################################
 # Interpolate forecast or reanalysis data
-# 
-# Modify and run $PROJ_DIR/qc/dataProcessing/HCRproducts/modelData/model2HCR4d.m
-
-# It needs an input file with the start and end dates of each flight
-# $PROJ_DIR/qc/dataProcessing/scriptsFiles/flights_socrates_data.txt
-
-# It also needs model input data from eather ecmwf forecasts or
-# era5 reanalysis which are in
+#
+# We need model input data from eather ecmwf forecasts or
+# era5 reanalysis
 
 # The variables needed are:
 # 3D: Relative humidity, U velocity, V velocity, Temperature, Geopotential, 1000 to 100 hPa
 # 2D: Sea surface temperature, 2 metre dewpoint temperature, 2 metre temperature,
 #     10 metre U wind component, 10 metre V wind component, Surface pressure
 
-cd $DATA_DIR
-cd ../model/era5
+# cd $DATA_DIR
+# cd ../model/era5
+
+# To get era5 data run $PROJ_DIR/qc/scripts/downloadERA5.pressLev.cset
+# (There is also a script for surface variables but that needs more testing (downloadERA5.surf.cset)
+
+# Modify and run $PROJ_DIR/qc/dataProcessing/HCRproducts/modelData/model2HCR4d.m
+
+# It needs an input file with the start and end dates of each flight
+# $PROJ_DIR/qc/dataProcessing/scriptsFiles/flights_socrates_data.txt
 
 # Add model data to cfradial files
 
@@ -292,7 +295,7 @@ $PROJ_DIR/qc/dataProcessing/other/filterHX/cfradialLDRmasked.m
 # Add melting layer
 
 # Adjust and run
-$PROJ_DIR/qc/dataProcessing/HCRproducts/meltingLayer/call_meltLayer_wholeFlights.m
+$PROJ_DIR/qc/dataProcessing/HCRproducts/meltingLayer/call_meltLayer_advanced_wholeFlights.m
 
 # To add it to the dataset run
 $PROJ_DIR/qc/dataProcessing/HCRproducts/meltingLayer/cfradialMeltLayer.m
