@@ -1,4 +1,4 @@
-function plotMomentsCompare(data,moments,timeBeams,figdir,project,type,ylimUpper,flipYes,showPlot)
+function plotMomentsCompare(data,moments,timeBeams,figdir,project,type,ylimUpper,flipYes,showPlot,plotTimes,plotRangeKM)
 f1 = figure('Position',[200 500 1800 1300],'DefaultAxesFontSize',12,'visible',showPlot);
 
 colormap jet
@@ -20,6 +20,11 @@ if flipYes
     set(gca, 'YDir','reverse');
 end
 
+if ~isempty(plotTimes)
+    scatter(plotTimes,plotRangeKM,'ok','LineWidth',1.5);
+    s1.SortMethod='childorder';
+end
+
 s2=subplot(4,2,2);
 
 hold on
@@ -35,6 +40,11 @@ title('Velocity (m s^{-1})')
 
 if flipYes
     set(gca, 'YDir','reverse');
+end
+
+if ~isempty(plotTimes)
+    scatter(plotTimes,plotRangeKM,'ok','LineWidth',1.5);
+    s2.SortMethod='childorder';
 end
 
 s3=subplot(4,2,3);
@@ -54,6 +64,11 @@ if flipYes
     set(gca, 'YDir','reverse');
 end
 
+if ~isempty(plotTimes)
+    scatter(plotTimes,plotRangeKM,'ok','LineWidth',1.5);
+    s3.SortMethod='childorder';
+end
+
 s4=subplot(4,2,4);
 
 hold on
@@ -69,6 +84,11 @@ title('Spectrum width (m s^{-1})')
 
 if flipYes
     set(gca, 'YDir','reverse');
+end
+
+if ~isempty(plotTimes)
+    scatter(plotTimes,plotRangeKM,'ok','LineWidth',1.5);
+    s4.SortMethod='childorder';
 end
 
 s5=subplot(4,2,5);
@@ -88,6 +108,11 @@ if flipYes
     set(gca, 'YDir','reverse');
 end
 
+if ~isempty(plotTimes)
+    scatter(plotTimes,plotRangeKM,'ok','LineWidth',1.5);
+    s5.SortMethod='childorder';
+end
+
 s6=subplot(4,2,6);
 
 hold on
@@ -103,6 +128,11 @@ title('Skew (dB)')
 
 if flipYes
     set(gca, 'YDir','reverse');
+end
+
+if ~isempty(plotTimes)
+    scatter(plotTimes,plotRangeKM,'ok','LineWidth',1.5);
+    s6.SortMethod='childorder';
 end
 
 s7=subplot(4,2,7);
@@ -122,6 +152,11 @@ if flipYes
     set(gca, 'YDir','reverse');
 end
 
+if ~isempty(plotTimes)
+    scatter(plotTimes,plotRangeKM,'ok','LineWidth',1.5);
+    s7.SortMethod='childorder';
+end
+
 s8=subplot(4,2,8);
 
 hold on
@@ -137,6 +172,11 @@ title('Kurtosis (dB)')
 
 if flipYes
     set(gca, 'YDir','reverse');
+end
+
+if ~isempty(plotTimes)
+    scatter(plotTimes,plotRangeKM,'ok','LineWidth',1.5);
+    s8.SortMethod='childorder';
 end
 
 set(gcf,'PaperPositionMode','auto')
