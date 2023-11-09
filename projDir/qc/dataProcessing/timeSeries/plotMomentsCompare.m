@@ -135,26 +135,28 @@ if ~isempty(plotTimes)
     s6.SortMethod='childorder';
 end
 
-s7=subplot(4,2,7);
+if ~isempty(find(~isnan(moments.ldr)))
+    s7=subplot(4,2,7);
 
-hold on
-surf(timeBeams,data.range./1000,moments.ldr,'edgecolor','none');
-view(2);
-ylabel('Range (km)');
-caxis([-40 10]);
-ylim([0 ylimUpper]);
-xlim([timeBeams(1),timeBeams(end)]);
-colorbar
-grid on
-title('LDR (dB)')
+    hold on
+    surf(timeBeams,data.range./1000,moments.ldr,'edgecolor','none');
+    view(2);
+    ylabel('Range (km)');
+    caxis([-40 10]);
+    ylim([0 ylimUpper]);
+    xlim([timeBeams(1),timeBeams(end)]);
+    colorbar
+    grid on
+    title('LDR (dB)')
 
-if flipYes
-    set(gca, 'YDir','reverse');
-end
+    if flipYes
+        set(gca, 'YDir','reverse');
+    end
 
-if ~isempty(plotTimes)
-    scatter(plotTimes,plotRangeKM,'ok','LineWidth',1.5);
-    s7.SortMethod='childorder';
+    if ~isempty(plotTimes)
+        scatter(plotTimes,plotRangeKM,'ok','LineWidth',1.5);
+        s7.SortMethod='childorder';
+    end
 end
 
 s8=subplot(4,2,8);

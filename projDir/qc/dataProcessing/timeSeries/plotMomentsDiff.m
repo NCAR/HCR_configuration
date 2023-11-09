@@ -6,88 +6,91 @@ commFields=intersect(tFields,sFields);
 
 for ii=1:length(commFields)
 
-f1 = figure('Position',[200 500 900 900],'DefaultAxesFontSize',12,'visible',showPlot);
+    if ~isempty(find(~isnan(momentsSpec.(commFields{ii}))))
 
-colormap jet
-s1=subplot(3,1,1);
+        f1 = figure('Position',[200 500 900 900],'DefaultAxesFontSize',12,'visible',showPlot);
 
-hold on
-surf(timeBeams,data.range./1000,momentsTime.(commFields{ii}),'edgecolor','none');
-view(2);
-ylabel('Range (km)');
-ylim([0 ylimUpper]);
-xlim([timeBeams(1),timeBeams(end)]);
-colorbar
-grid on
-title([commFields{ii},' time domain']);
+        colormap jet
+        s1=subplot(3,1,1);
 
-if flipYes
-    set(gca, 'YDir','reverse');
-end
+        hold on
+        surf(timeBeams,data.range./1000,momentsTime.(commFields{ii}),'edgecolor','none');
+        view(2);
+        ylabel('Range (km)');
+        ylim([0 ylimUpper]);
+        xlim([timeBeams(1),timeBeams(end)]);
+        colorbar
+        grid on
+        title([commFields{ii},' time domain']);
 
-s2=subplot(3,1,2);
+        if flipYes
+            set(gca, 'YDir','reverse');
+        end
 
-hold on
-surf(timeBeams,data.range./1000,momentsSpec.(commFields{ii}),'edgecolor','none');
-view(2);
-ylabel('Range (km)');
-ylim([0 ylimUpper]);
-xlim([timeBeams(1),timeBeams(end)]);
-colorbar
-grid on
-title([commFields{ii},' spectral domain']);
+        s2=subplot(3,1,2);
 
-if flipYes
-    set(gca, 'YDir','reverse');
-end
+        hold on
+        surf(timeBeams,data.range./1000,momentsSpec.(commFields{ii}),'edgecolor','none');
+        view(2);
+        ylabel('Range (km)');
+        ylim([0 ylimUpper]);
+        xlim([timeBeams(1),timeBeams(end)]);
+        colorbar
+        grid on
+        title([commFields{ii},' spectral domain']);
 
-s3=subplot(3,1,3);
+        if flipYes
+            set(gca, 'YDir','reverse');
+        end
 
-hold on
-surf(timeBeams,data.range./1000,momentsSpec.(commFields{ii})-momentsTime.(commFields{ii}),'edgecolor','none');
-view(2);
-ylabel('Range (km)');
-clim([-0.2 0.2]);
-ylim([0 ylimUpper]);
-xlim([timeBeams(1),timeBeams(end)]);
-colorbar
-grid on
-title([commFields{ii},' spectral minus time domain']);
+        s3=subplot(3,1,3);
 
-if flipYes
-    set(gca, 'YDir','reverse');
-end
+        hold on
+        surf(timeBeams,data.range./1000,momentsSpec.(commFields{ii})-momentsTime.(commFields{ii}),'edgecolor','none');
+        view(2);
+        ylabel('Range (km)');
+        clim([-0.2 0.2]);
+        ylim([0 ylimUpper]);
+        xlim([timeBeams(1),timeBeams(end)]);
+        colorbar
+        grid on
+        title([commFields{ii},' spectral minus time domain']);
 
-if strcmp(commFields{ii},'dbz')
-    s1.CLim=[-60,20];
-    s2.CLim=[-60,20];
-elseif strcmp(commFields{ii},'vel')
-    s1.CLim=[-5,5];
-    s2.CLim=[-5,5];
-elseif strcmp(commFields{ii},'powerV')
-    s1.CLim=[-110,-40];
-    s2.CLim=[-110,-40];
-elseif strcmp(commFields{ii},'powerH')
-    s1.CLim=[-110,-40];
-    s2.CLim=[-110,-40];
-elseif strcmp(commFields{ii},'width')
-    s1.CLim=[0,4];
-    s2.CLim=[0,4];
-elseif strcmp(commFields{ii},'snr')
-    s1.CLim=[-20,70];
-    s2.CLim=[-20,70];
-elseif strcmp(commFields{ii},'ldr')
-    s1.CLim=[-40,10];
-    s2.CLim=[-40,10];
-elseif strcmp(commFields{ii},'skew')
-    s1.CLim=[-1,1];
-    s2.CLim=[-1,1];
-elseif strcmp(commFields{ii},'kurt')
-    s1.CLim=[0,10];
-    s2.CLim=[0,10];
-end
+        if flipYes
+            set(gca, 'YDir','reverse');
+        end
 
-set(gcf,'PaperPositionMode','auto')
-print(f1,[figdir,project,'_momentsDiff_',(commFields{ii}),'_',datestr(data.time(1),'yyyymmdd_HHMMSS'),'_to_',datestr(data.time(end),'yyyymmdd_HHMMSS')],'-dpng','-r0');
+        if strcmp(commFields{ii},'dbz')
+            s1.CLim=[-60,20];
+            s2.CLim=[-60,20];
+        elseif strcmp(commFields{ii},'vel')
+            s1.CLim=[-5,5];
+            s2.CLim=[-5,5];
+        elseif strcmp(commFields{ii},'powerV')
+            s1.CLim=[-110,-40];
+            s2.CLim=[-110,-40];
+        elseif strcmp(commFields{ii},'powerH')
+            s1.CLim=[-110,-40];
+            s2.CLim=[-110,-40];
+        elseif strcmp(commFields{ii},'width')
+            s1.CLim=[0,4];
+            s2.CLim=[0,4];
+        elseif strcmp(commFields{ii},'snr')
+            s1.CLim=[-20,70];
+            s2.CLim=[-20,70];
+        elseif strcmp(commFields{ii},'ldr')
+            s1.CLim=[-40,10];
+            s2.CLim=[-40,10];
+        elseif strcmp(commFields{ii},'skew')
+            s1.CLim=[-1,1];
+            s2.CLim=[-1,1];
+        elseif strcmp(commFields{ii},'kurt')
+            s1.CLim=[0,10];
+            s2.CLim=[0,10];
+        end
+
+        set(gcf,'PaperPositionMode','auto')
+        print(f1,[figdir,project,'_momentsDiff_',(commFields{ii}),'_',datestr(data.time(1),'yyyymmdd_HHMMSS'),'_to_',datestr(data.time(end),'yyyymmdd_HHMMSS')],'-dpng','-r0');
+    end
 end
 end

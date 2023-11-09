@@ -1,7 +1,11 @@
 function momentsSpec=calcMomentsSpec_powerFields(specPowerLin,ii,momentsSpec,data)
 %% V
 % DBM
-powerLinV=mean(specPowerLin.V,2);
+if isfield(specPowerLin,'V')
+    powerLinV=mean(specPowerLin.V,2);
+else
+    powerLinV=mean(specPowerLin,2,'omitnan');
+end
 momentsSpec.powerV(:,ii)=10*log10(powerLinV)-data.rx_gain_v;
 
 % SNR

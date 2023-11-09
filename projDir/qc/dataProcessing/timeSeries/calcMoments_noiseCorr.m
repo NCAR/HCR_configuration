@@ -12,7 +12,7 @@ qcVersion='v1.1';
 
 dataDirTS=HCRdir(project,quality,qcVersion,freqData);
 
-figdir=[dataDirTS,'figsTS/'];
+figdir=[dataDirTS,'figsTS_rmNoise/'];
 
 showPlot='on';
 ylimUpper=5.2;
@@ -46,6 +46,8 @@ caseStart=datetime(caseList.Var1,caseList.Var2,caseList.Var3, ...
     caseList.Var4,caseList.Var5,caseList.Var6);
 caseEnd=datetime(caseList.Var7,caseList.Var8,caseList.Var9, ...
     caseList.Var10,caseList.Var11,caseList.Var12);
+
+warning('off','MATLAB:polyfit:RepeatedPointsOrRescale');
 
 for aa=1:length(caseStart)
 
@@ -84,7 +86,7 @@ for aa=1:length(caseStart)
     momentsTime.ldr=nan(size(data.range,1),beamNum);
     
     momentsSpec.powerV=nan(size(data.range,1),beamNum);
-    momentsSpec.powerh=nan(size(data.range,1),beamNum);
+    momentsSpec.powerH=nan(size(data.range,1),beamNum);
     momentsSpec.vel=nan(size(data.range,1),beamNum);
     momentsSpec.width=nan(size(data.range,1),beamNum);
     momentsSpec.dbz=nan(size(data.range,1),beamNum);
@@ -92,6 +94,9 @@ for aa=1:length(caseStart)
     momentsSpec.skew=nan(size(data.range,1),beamNum);
     momentsSpec.kurt=nan(size(data.range,1),beamNum);
     momentsSpec.ldr=nan(size(data.range,1),beamNum);
+
+    momentsSpecRMnoiseSmooth=momentsSpec;
+    momentsSpecRMnoise=momentsSpec;
 
     timeBeams=[];
 
@@ -126,12 +131,27 @@ for aa=1:length(caseStart)
 
         % Power fields
         momentsSpec=calcMomentsSpec_powerFields(specPowerLin,ii,momentsSpec,data);
-
+        
         % Move peak of spectra to middle
         [specPowerDBadj,specVelAdj]=adjSpecBoundsV(specPowerDB.V,momentsTime.vel(:,ii),sampleNum,data);
 
         % Higher order moments
         momentsSpec=calcMomentsSpec_higherMoments(specPowerDBadj,specVelAdj,ii,momentsSpec,data);
+
+        %% Remove noise
+        [powerDBsmooth,powerRMnoiseDBsmooth,locsMin,locsMax]=findPeaksValleysSpec(specPowerDBadj,specVelAdj,sampleNum);
+        powerRMnoiseDB=specPowerDBadj;
+        powerRMnoiseDB(isnan(powerRMnoiseDBsmooth))=nan;
+        specVelRMnoise=specVelAdj;
+        specVelRMnoise(isnan(powerRMnoiseDBsmooth))=nan;
+
+        % Power fields
+        momentsSpecRMnoiseSmooth=calcMomentsSpec_powerFields(10.^(powerRMnoiseDBsmooth./10),ii,momentsSpecRMnoiseSmooth,data);
+        momentsSpecRMnoise=calcMomentsSpec_powerFields(10.^(powerRMnoiseDB./10),ii,momentsSpecRMnoise,data);
+
+        % Higher order moments
+        momentsSpecRMnoiseSmooth=calcMomentsSpec_higherMoments(powerRMnoiseDBsmooth,specVelRMnoise,ii,momentsSpecRMnoiseSmooth,data);
+        momentsSpecRMnoise=calcMomentsSpec_higherMoments(powerRMnoiseDB,specVelRMnoise,ii,momentsSpecRMnoise,data);
 
         %% Other processing
         
@@ -150,9 +170,9 @@ for aa=1:length(caseStart)
             if ~isempty(plotInd)
                 disp('Plotting spectra ...')
                 close all
-                plotSpectraExamples(data,momentsSpec,specPowerDB,sampleNum,plotRangeKM,plotInd,startInd,ii,ylimUpper,figdir,project);
-
-                [locsMin,locsMax]=findPeaksValleysSpec(specPowerDBadj,specVelAdj,sampleNum,plotRangeKM,plotInd,data.range);
+                plotSpectraExamplesRMnoise(data,momentsSpec,momentsSpecRMnoise,momentsSpecRMnoiseSmooth, ...
+                    specVelAdj,specPowerDBadj,powerDBsmooth,powerRMnoiseDB,powerRMnoiseDBsmooth, ...
+                    locsMax,locsMin,plotRangeKM,plotInd,startInd,ii,ylimUpper,figdir,project);                
             end
         end
 
@@ -169,6 +189,9 @@ for aa=1:length(caseStart)
 
     plotMomentsCompare(data,momentsTime,timeBeams,figdir,project,'Time',ylimUpper,flipYes,showPlot,plotTimes,plotRangeKM);
     plotMomentsCompare(data,momentsSpec,timeBeams,figdir,project,'Spec',ylimUpper,flipYes,showPlot,plotTimes,plotRangeKM);
+    plotMomentsCompare(data,momentsSpecRMnoise,timeBeams,figdir,project,'SpecRMnoise',ylimUpper,flipYes,showPlot,plotTimes,plotRangeKM);
+    plotMomentsCompare(data,momentsSpecRMnoiseSmooth,timeBeams,figdir,project,'SpecRMnoiseSmooth',ylimUpper,flipYes,showPlot,plotTimes,plotRangeKM);
 
-    plotMomentsDiff(data,momentsTime,momentsSpec,timeBeams,figdir,project,ylimUpper,flipYes,showPlot);
+    plotMomentsDiff(data,momentsTime,momentsSpecRMnoise,timeBeams,figdir,project,ylimUpper,flipYes,showPlot);
 end
+warning('on','MATLAB:polyfit:RepeatedPointsOrRescale');
