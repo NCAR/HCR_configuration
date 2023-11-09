@@ -18,12 +18,6 @@ powerRMnoiseOut=nan(size(powerAdj));
 
 for ii=1:size(powerAdj,1)
 
-    % Find maxima and minima
-    % thisVel=velAdj(ii,:);
-    % if max(~isnan(thisVel))==0
-    %     continue
-    % end
-    
     powerOrig=powerLarge(ii,:);
     regrFit=polyfit(velAdjLarge(ii,:),powerOrig,25);
     powerSmooth=polyval(regrFit,velAdjLarge(ii,:));
@@ -87,20 +81,6 @@ for ii=1:size(powerAdj,1)
     locsMinOut.(['min',num2str(ii)])=locsMin;
     locsMaxOut.(['max',num2str(ii)])=locsMax;
 
-    % Plot
-    % if ii==rangeInd
-    %     figure
-    %     plot(thisVel,powerAdj(ii,:));
-    %     hold on
-    %     plot(thisVel,powerSmooth);
-    %     plot(thisVel,powerRMnoise,'LineWidth',1.5);
-    %     scatter(thisVel(locsMax),powerSmooth(locsMax),'filled','MarkerFaceColor','m');
-    %     scatter(thisVel(locsMin),powerSmooth(locsMin),'filled','MarkerFaceColor','c');
-    %     hold off
-    %     xlim([thisVel(1),thisVel(end)]);
-    %     ylim([-80,10]);
-    %     stopHere=1;
-    % end
 end
 
 end

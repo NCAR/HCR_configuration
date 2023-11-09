@@ -90,7 +90,7 @@ for ii=1:length(commFields)
         end
 
         set(gcf,'PaperPositionMode','auto')
-        print(f1,[figdir,project,'_momentsDiff_',(commFields{ii}),'_',datestr(data.time(1),'yyyymmdd_HHMMSS'),'_to_',datestr(data.time(end),'yyyymmdd_HHMMSS')],'-dpng','-r0');
+        print(f1,[figdir,project,'_diff_',(commFields{ii}),'_',datestr(data.time(1),'yyyymmdd_HHMMSS'),'_to_',datestr(data.time(end),'yyyymmdd_HHMMSS')],'-dpng','-r0');
     end
 end
 end
