@@ -139,7 +139,7 @@ for aa=1:length(caseStart)
         momentsSpec=calcMomentsSpec_higherMoments(specPowerDBadj,specVelAdj,ii,momentsSpec,data);
 
         %% Remove noise
-        [powerDBsmooth,powerRMnoiseDBsmooth,locsMin,locsMax]=findPeaksValleysSpec(specPowerDBadj,specVelAdj,sampleNum);
+        [powerDBsmooth,powerRMnoiseDBsmooth,locsMin,locsMax]=findPeaksValleysSpec_test(specPowerDBadj,specVelAdj,sampleNum);
         powerRMnoiseDB=specPowerDBadj;
         powerRMnoiseDB(isnan(powerRMnoiseDBsmooth))=nan;
         specVelRMnoise=specVelAdj;
