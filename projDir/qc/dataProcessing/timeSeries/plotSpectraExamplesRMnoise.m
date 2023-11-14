@@ -1,6 +1,6 @@
 function plotSpectraExamplesRMnoise(data,momentsTime,momentsSpec,momentsSpecRMnoise,momentsSpecRMnoiseSmooth, ...
     specVelAdj,specPowerDBadj,powerDBsmooth,powerRMnoiseDB,powerRMnoiseDBsmooth, ...
-    locsMax,locsMin,plotRangeKM,plotInd,startInd,ii,ylimUpper,figdir,project)
+    plotRangeKM,plotInd,startInd,ii,ylimUpper,figdir,project)
 
 % Find index of specified range
 rangeInd=min(find((data.range./1000)>=plotRangeKM(plotInd)));
@@ -37,8 +37,6 @@ hold on
 plot(velX,specPowerDBadj(rangeInd,:),'-b','LineWidth',1);
 plot(velX,powerDBsmooth(rangeInd,:),'-c','LineWidth',2);
 plot(velX,powerRMnoiseDBsmooth(rangeInd,:),'-r','LineWidth',2);
-scatter(velX(locsMax.(['max',num2str(ii)])),powerDBsmooth(rangeInd,locsMax.(['max',num2str(ii)])),'filled','MarkerFaceColor','g');
-scatter(velX(locsMin.(['min',num2str(ii)])),powerDBsmooth(rangeInd,locsMin.(['min',num2str(ii)])),'filled','MarkerFaceColor','m');
 xlabel('Velocity (m s^{-1})');
 ylabel('Power (dB)');
 xlim([velX(1) velX(end)]);
