@@ -12,7 +12,7 @@ qcVersion='v1.1';
 
 dataDirTS=HCRdir(project,quality,qcVersion,freqData);
 
-figdir=[dataDirTS,'figsTS_rmNoise/'];
+figdir=[dataDirTS,'figsTS_dualParticles/'];
 
 showPlot='on';
 ylimUpper=5.2;
@@ -84,19 +84,8 @@ for aa=1:length(caseStart)
     momentsTime.skew=nan(size(data.range,1),beamNum);
     momentsTime.kurt=nan(size(data.range,1),beamNum);
     momentsTime.ldr=nan(size(data.range,1),beamNum);
-    
-    momentsSpec.powerV=nan(size(data.range,1),beamNum);
-    momentsSpec.powerH=nan(size(data.range,1),beamNum);
-    momentsSpec.vel=nan(size(data.range,1),beamNum);
-    momentsSpec.width=nan(size(data.range,1),beamNum);
-    momentsSpec.dbz=nan(size(data.range,1),beamNum);
-    momentsSpec.snr=nan(size(data.range,1),beamNum);
-    momentsSpec.skew=nan(size(data.range,1),beamNum);
-    momentsSpec.kurt=nan(size(data.range,1),beamNum);
-    momentsSpec.ldr=nan(size(data.range,1),beamNum);
 
-    momentsSpecRMnoiseSmooth=momentsSpec;
-    momentsSpecRMnoise=momentsSpec;
+    momentsSpecRMnoise=momentsTime;
 
     timeBeams=[];
 
@@ -128,15 +117,9 @@ for aa=1:length(caseStart)
 
         %% Spectral moments
         [specPowerLin,specPowerDB]=getSpectra(cIQ);
-
-        % Power fields
-        momentsSpec=calcMomentsSpec_powerFields(specPowerLin,ii,momentsSpec,data);
         
         % Move peak of spectra to middle
         [specPowerDBadj,specVelAdj]=adjSpecBoundsV(specPowerDB.V,momentsTime.vel(:,ii),sampleNum,data);
-
-        % Higher order moments
-        momentsSpec=calcMomentsSpec_higherMoments(specPowerDBadj,specVelAdj,ii,momentsSpec,data);
 
         %% Remove noise
         [powerDBsmooth,powerRMnoiseDBsmooth]=rmNoiseSpec(specPowerDBadj,specVelAdj,sampleNum);
@@ -146,12 +129,14 @@ for aa=1:length(caseStart)
         specVelRMnoise(isnan(powerRMnoiseDBsmooth))=nan;
 
         % Power fields
-        momentsSpecRMnoiseSmooth=calcMomentsSpec_powerFields(10.^(powerRMnoiseDBsmooth./10),ii,momentsSpecRMnoiseSmooth,data);
         momentsSpecRMnoise=calcMomentsSpec_powerFields(10.^(powerRMnoiseDB./10),ii,momentsSpecRMnoise,data);
 
         % Higher order moments
-        momentsSpecRMnoiseSmooth=calcMomentsSpec_higherMoments(powerRMnoiseDBsmooth,specVelRMnoise,ii,momentsSpecRMnoiseSmooth,data);
         momentsSpecRMnoise=calcMomentsSpec_higherMoments(powerRMnoiseDB,specVelRMnoise,ii,momentsSpecRMnoise,data);
+
+        %% Find regions with dual particle species
+
+        dualParticles=findDualParticles_test(powerRMnoiseDBsmooth,specVelRMnoise);
 
         %% Other processing
         
@@ -163,18 +148,18 @@ for aa=1:length(caseStart)
             flipYes=0;
         end
 
-        %% Plot spectra
-        if plotSpectra
-            plotTimeDiff=abs(etime(datevec(data.time(startInd)),datevec(plotTimes)));
-            plotInd=find(plotTimeDiff<0.04);
-            if ~isempty(plotInd)
-                disp('Plotting spectra ...')
-                close all
-                plotSpectraExamplesRMnoise(data,momentsTime,momentsSpec,momentsSpecRMnoise,momentsSpecRMnoiseSmooth, ...
-                    specVelAdj,specPowerDBadj,powerDBsmooth,powerRMnoiseDB,powerRMnoiseDBsmooth, ...
-                    locsMax,locsMin,plotRangeKM,plotInd,startInd,ii,ylimUpper,figdir,project);                
-            end
-        end
+        % %% Plot spectra
+        % if plotSpectra
+        %     plotTimeDiff=abs(etime(datevec(data.time(startInd)),datevec(plotTimes)));
+        %     plotInd=find(plotTimeDiff<0.04);
+        %     if ~isempty(plotInd)
+        %         disp('Plotting spectra ...')
+        %         close all
+        %         plotSpectraExamplesRMnoise(data,momentsTime,momentsSpec,momentsSpecRMnoise,momentsSpecRMnoiseSmooth, ...
+        %             specVelAdj,specPowerDBadj,powerDBsmooth,powerRMnoiseDB,powerRMnoiseDBsmooth, ...
+        %             locsMax,locsMin,plotRangeKM,plotInd,startInd,ii,ylimUpper,figdir,project);                
+        %     end
+        % end
 
         %% Next beam
         startInd=endInd+1;
@@ -183,15 +168,12 @@ for aa=1:length(caseStart)
 
     %% Plot
 
-    close all
+    % close all
+    % 
+    % disp('Plotting moments ...');
+    % 
+    % plotMomentsCompare(data,momentsTime,timeBeams,figdir,project,'Time',ylimUpper,flipYes,showPlot,plotTimes,plotRangeKM);
+    % plotMomentsCompare(data,momentsSpecRMnoise,timeBeams,figdir,project,'SpecRMnoise',ylimUpper,flipYes,showPlot,plotTimes,plotRangeKM);
 
-    disp('Plotting moments ...');
-
-    plotMomentsCompare(data,momentsTime,timeBeams,figdir,project,'Time',ylimUpper,flipYes,showPlot,plotTimes,plotRangeKM);
-    plotMomentsCompare(data,momentsSpec,timeBeams,figdir,project,'Spec',ylimUpper,flipYes,showPlot,plotTimes,plotRangeKM);
-    plotMomentsCompare(data,momentsSpecRMnoise,timeBeams,figdir,project,'SpecRMnoise',ylimUpper,flipYes,showPlot,plotTimes,plotRangeKM);
-    plotMomentsCompare(data,momentsSpecRMnoiseSmooth,timeBeams,figdir,project,'SpecRMnoiseSmooth',ylimUpper,flipYes,showPlot,plotTimes,plotRangeKM);
-
-    plotMomentsDiff(data,momentsTime,momentsSpecRMnoise,timeBeams,figdir,project,ylimUpper,flipYes,showPlot);
 end
 warning('on','MATLAB:polyfit:RepeatedPointsOrRescale');

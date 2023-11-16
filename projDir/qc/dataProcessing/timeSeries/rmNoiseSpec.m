@@ -1,4 +1,4 @@
-function [powerSmoothOut,powerRMnoiseOut]=findPeaksValleysSpec_test(powerAdj,velAdj,sampleNum)
+function [powerSmoothOut,powerRMnoiseOut,locsMinOut,locsMaxOut]=rmNoiseSpec(powerAdj,velAdj,sampleNum)
 % Find maxima and minima in spectra
 
 powerSmoothOut=nan(size(powerAdj));
@@ -24,12 +24,6 @@ for ii=1:size(powerAdj,1)
     end
 
     locsMin=cat(2,1+round(sampleNum/20),locsMin,length(powerSmooth)-round(sampleNum/20));
-
-    plot(powerAdj(ii,:))
-    hold on
-    plot(powerSmooth,'-r','linewidth',2);
-    scatter(locsMin,powerSmooth(locsMin),'filled')
-    scatter(locsMax,powerSmooth(locsMax),'filled')
     
     noisePower=powerAdj(ii,:);
 
@@ -118,13 +112,10 @@ for ii=1:size(powerAdj,1)
     for kk=1:length(startLine)
         lineTest=powerRMnoise(startLine(kk):endLine(kk));
         spread=max(lineTest,[],'omitnan')-min(lineTest,[],'omitnan');
-        if spread<1
+        if spread<2
             powerRMnoise(startLine(kk):endLine(kk))=nan;
         end
     end
-
-    plot(powerRMnoise,'-g');
-    hold off
 
     powerSmoothOut(ii,:)=powerSmooth;
     powerRMnoiseOut(ii,:)=powerRMnoise;
