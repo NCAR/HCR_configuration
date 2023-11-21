@@ -87,6 +87,8 @@ for aa=1:length(caseStart)
 
     momentsSpecRMnoise=momentsTime;
 
+    momentsVelDual=nan(size(data.range,1),beamNum,2);
+
     timeBeams=[];
 
     startInd=1;
@@ -136,7 +138,7 @@ for aa=1:length(caseStart)
 
         %% Find regions with dual particle species
 
-        dualParticles=findDualParticles_test(powerRMnoiseDBsmooth,specVelRMnoise);
+        momentsVelDual=findDualParticles_test(powerRMnoiseDBsmooth,specVelRMnoise,momentsVelDual,ii);
 
         %% Other processing
         
@@ -148,19 +150,6 @@ for aa=1:length(caseStart)
             flipYes=0;
         end
 
-        % %% Plot spectra
-        % if plotSpectra
-        %     plotTimeDiff=abs(etime(datevec(data.time(startInd)),datevec(plotTimes)));
-        %     plotInd=find(plotTimeDiff<0.04);
-        %     if ~isempty(plotInd)
-        %         disp('Plotting spectra ...')
-        %         close all
-        %         plotSpectraExamplesRMnoise(data,momentsTime,momentsSpec,momentsSpecRMnoise,momentsSpecRMnoiseSmooth, ...
-        %             specVelAdj,specPowerDBadj,powerDBsmooth,powerRMnoiseDB,powerRMnoiseDBsmooth, ...
-        %             locsMax,locsMin,plotRangeKM,plotInd,startInd,ii,ylimUpper,figdir,project);                
-        %     end
-        % end
-
         %% Next beam
         startInd=endInd+1;
         ii=ii+1;
@@ -168,12 +157,11 @@ for aa=1:length(caseStart)
 
     %% Plot
 
-    % close all
-    % 
-    % disp('Plotting moments ...');
-    % 
-    % plotMomentsCompare(data,momentsTime,timeBeams,figdir,project,'Time',ylimUpper,flipYes,showPlot,plotTimes,plotRangeKM);
-    % plotMomentsCompare(data,momentsSpecRMnoise,timeBeams,figdir,project,'SpecRMnoise',ylimUpper,flipYes,showPlot,plotTimes,plotRangeKM);
+    close all
+
+    disp('Plotting velocities ...');
+
+    plotVelocities(data,momentsVelDual,momentsTime,timeBeams,figdir,project,ylimUpper,flipYes,showPlot);
 
 end
 warning('on','MATLAB:polyfit:RepeatedPointsOrRescale');

@@ -1,4 +1,4 @@
-function momentsVelDual=findDualParticles_test(powerIn,specVelIn,momentsVelDual,nn)
+function momentsVelDual=findDualParticles_testPrev(powerIn,specVelIn,momentsVelDual,nn)
 % Find maxima and minima in spectra
 close all
 velDual=nan(size(powerIn,1),2);
@@ -7,6 +7,8 @@ dataInds=find(any(~isnan(powerIn),2));
 
 % Remove transmitter pulse
 dataInds(dataInds<=12)=[];
+
+testPrev=nan(1,2);
 
 for jj=1:length(dataInds)
     ii=dataInds(jj);
@@ -122,50 +124,88 @@ for jj=1:length(dataInds)
     end
 
     %% Add to output
-
-    % Check against noise floor
-    if sum(~isnan(locsMax))==2
-        minPow=min(powerOrig,[],'omitmissing');
-        testPow=powerOrig(locsMax(~isnan(locsMax)));
-        absDiff=abs(testPow-minPow);
-        [minDiffPow,minIndPow]=min(absDiff);
-        if minDiffPow<5
-            locsMax(minIndPow)=nan;
+    velTest=specVelIn(ii,locsMax(~isnan(locsMax)));
+    if sum(isnan(testPrev))==2 % Start of a segment
+        if length(velTest)==1
+            velTest=[velTest,nan];
+        end
+        velDual(ii,:)=velTest;
+    else
+        if length(velTest)==1 & sum(isnan(testPrev))==1
+            velDual(ii,~isnan(testPrev))=velTest;
+        else
+            if length(velTest)==1
+                velTest=[velTest,nan];
+            end
+            test1=min(abs(velTest-testPrev),[],'omitmissing');
+            test2=min(abs(fliplr(velTest)-testPrev),[],'omitmissing');
+            if test1>test2
+                velDual(ii,:)=fliplr(velTest);
+            else
+                velDual(ii,:)=velTest;
+            end
         end
     end
+    testPrev=velDual(ii,:);
 
-    velTest=specVelIn(ii,locsMax(~isnan(locsMax)));
-    if length(velTest)==1
-        velTest=[velTest,nan];
-    end
-    velDual(ii,:)=velTest;
-
-    % plot(specVelIn(ii,:),powerOrig,'-b','linewidth',2);
+    % plot(powerOrig,'-b','linewidth',2);
     % hold on
-    % scatter(specVelIn(ii,locsMin),powerOrig(locsMin),'filled','MarkerFaceColor','r')
-    % scatter(specVelIn(ii,locsMax(~isnan(locsMax))),powerOrig(locsMax(~isnan(locsMax))),80,'filled','MarkerFaceColor','g')
-    % scatter(specVelIn(ii,diffMin),powerOrig(diffMin),'filled','MarkerFaceColor','y')
-    % scatter(specVelIn(ii,diffMax),powerOrig(diffMax),'filled','MarkerFaceColor','k')
-    % % if ~isempty(testX)
-    % %     for mm=1:size(testX,1)
-    % %         scatter(testX(mm,:),testY(mm,:),'filled','MarkerFaceColor','m')
-    % %     end
-    % % end
+    % scatter(locsMin,powerOrig(locsMin),'filled','MarkerFaceColor','r')
+    % scatter(locsMax(~isnan(locsMax)),powerOrig(locsMax(~isnan(locsMax))),80,'filled','MarkerFaceColor','g')
+    % scatter(diffMin,powerOrig(diffMin),'filled','MarkerFaceColor','y')
+    % scatter(diffMax,powerOrig(diffMax),'filled','MarkerFaceColor','k')
+    % if ~isempty(testX)
+    %     for mm=1:size(testX,1)
+    %         scatter(testX(mm,:),testY(mm,:),'filled','MarkerFaceColor','m')
+    %     end
+    % end
     % if ~isnan(addPeak)
-    %     scatter(specVelIn(ii,addPeak),powerOrig(addPeak),20,'filled','MarkerFaceColor','m');
+    %     scatter(addPeak,powerOrig(addPeak),20,'filled','MarkerFaceColor','m');
     % end
     % 
-    % % yyaxis right
-    % % plot(diffCurve,'-c','linewidth',1.5);
-    % % hold on
-    % % scatter(specVelIn(ii,diffMin),diffCurve(diffMin),'filled','MarkerFaceColor','y')
-    % % scatter(specVelIn(ii,diffMax),diffCurve(diffMax),'filled','MarkerFaceColor','k')
-    % % ylim([-0.5,0.5]);
-    % % grid on
-    % % 
-    % % cla
-    % % yyaxis left
+    % yyaxis right
+    % plot(diffCurve,'-c','linewidth',1.5);
+    % hold on
+    % scatter(diffMin,diffCurve(diffMin),'filled','MarkerFaceColor','y')
+    % scatter(diffMax,diffCurve(diffMax),'filled','MarkerFaceColor','k')
+    % ylim([-0.5,0.5]);
+    % grid on
+    % 
+    % cla
+    % yyaxis left
     % cla
 end
-momentsVelDual(:,nn,:)=velDual;
+
+%% Check with previous time step
+if nn==1
+    momentsVelDual(:,nn,:)=velDual;
+else
+    prevTime=squeeze(momentsVelDual(:,nn-1,:));
+    findSections=any(~isnan(velDual),2);
+    secDiff=diff(findSections);
+    secStart=find(secDiff==1)+1;
+    secEnd=find(secDiff==-1);
+
+    if length(secEnd)<length(secStart)
+        secEnd=cat(1,secEnd,size(velDual,1));
+    end
+
+    for mm=1:length(secStart)
+        % Check for all nan
+        prevNan=sum(~isnan(prevTime(secStart(mm):secEnd(mm),:)),1,'omitmissing');
+        thisNan=sum(~isnan(velDual(secStart(mm):secEnd(mm),:)),1,'omitmissing');
+        [~,minIndNan]=min(thisNan);
+        if (prevNan(1)==0 & minIndNan==2) | (prevNan(2)==0 & minIndNan==1)
+            velDual(secStart(mm):secEnd(mm),:)=fliplr(velDual(secStart(mm):secEnd(mm),:));
+        else
+            testSec1=sum(sum(abs(prevTime(secStart(mm):secEnd(mm),:)-velDual(secStart(mm):secEnd(mm),:)),'omitmissing'),'omitmissing');
+            testSec2=sum(sum(abs(prevTime(secStart(mm):secEnd(mm),:)-fliplr(velDual(secStart(mm):secEnd(mm),:))),'omitmissing'),'omitmissing');
+
+            if testSec1>testSec2
+                velDual(secStart(mm):secEnd(mm),:)=fliplr(velDual(secStart(mm):secEnd(mm),:));
+            end
+        end
+    end
+    momentsVelDual(:,nn,:)=velDual;
+end
 end
