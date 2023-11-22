@@ -17,27 +17,14 @@ figdir=[dataDirTS,'figsTS_dualParticles/'];
 showPlot='on';
 ylimUpper=5.2;
 ylimLower=-0.1;
-plotSpectra=1;
 
-casefile=['~/git/HCR_configuration/projDir/qc/dataProcessing/HCRproducts/caseFiles/calcMoments_',project,'.txt'];
-if plotSpectra
-    sTimeFile=['~/git/HCR_configuration/projDir/qc/dataProcessing/HCRproducts/caseFiles/spectraTimes_',project,'.txt'];
-end
+casefile=['~/git/HCR_configuration/projDir/qc/dataProcessing/HCRproducts/caseFiles/dualParticles_',project,'.txt'];
 
 freqStr=strfind(freqData,'hz');
 outFreq=str2num(freqData(1:freqStr-1)); % Desired output frequency in Hz
 timeSpan=1/outFreq;
 
-plotTimes=[];
-plotRangeKM=[];
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-if plotSpectra
-    plotTimeRange=readtable(sTimeFile);
-    plotTimes=datetime(plotTimeRange.Var1,plotTimeRange.Var2,plotTimeRange.Var3, ...
-        plotTimeRange.Var4,plotTimeRange.Var5,plotTimeRange.Var6);
-    plotRangeKM=plotTimeRange.Var7;
-end
 
 % Loop through cases
 
@@ -138,7 +125,7 @@ for aa=1:length(caseStart)
 
         %% Find regions with dual particle species
 
-        momentsVelDual=findDualParticles_test(powerRMnoiseDBsmooth,specVelRMnoise,momentsVelDual,ii);
+        momentsVelDual=findDualParticles_test(powerRMnoiseDBsmooth,specVelRMnoise,specPowerDBadj,momentsVelDual,ii);
 
         %% Other processing
         

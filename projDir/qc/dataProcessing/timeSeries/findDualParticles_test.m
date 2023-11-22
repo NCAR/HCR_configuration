@@ -1,4 +1,4 @@
-function momentsVelDual=findDualParticles_test(powerIn,specVelIn,momentsVelDual,nn)
+function momentsVelDual=findDualParticles_test(powerIn,specVelIn,powerRaw,momentsVelDual,nn)
 % Find maxima and minima in spectra
 close all
 velDual=nan(size(powerIn,1),2);
@@ -10,7 +10,7 @@ dataInds(dataInds<=12)=[];
 
 for jj=1:length(dataInds)
     ii=dataInds(jj);
-
+    disp('Next')
     powerOrig=powerIn(ii,:);
 
     % Find start and end of line segments
@@ -33,139 +33,117 @@ for jj=1:length(dataInds)
         endLine=[endLine,length(powerOrig)];
     end
 
-    % Find maxima and minima
-    [locsMax,prom]=islocalmax(powerOrig,'MaxNumExtrema',2);
+    % Find maxima % and minima
+    locsMax=islocalmax(powerOrig);
     locsMax=find(locsMax==1);
-    prom=prom(locsMax);
-    locsMin=islocalmin(powerOrig);
-    locsMin=find(locsMin==1);
-
-    locsMin=cat(2,startLine,endLine,locsMin);
-    locsMin=unique(locsMin);
-
-    maxEnd=ismember(locsMax,[startLine,endLine]);
-    locsMax(maxEnd==1)=[];
-
-    %% Find second peak if it doesn't exist
-
+   
     % Find change points
     diffCurve=cat(2,nan,diff(powerOrig));
-    [diffMax,promD]=islocalmax(diffCurve);
+    diffMax=islocalmax(diffCurve);
     diffMax=find(diffMax==1);
-    promD=promD(diffMax);
     diffMin=islocalmin(diffCurve);
     diffMin=find(diffMin==1);
 
     % Find points to test
     testX=[];
     testY=[];
-    addPeak=nan;
-    if length(locsMax)==1
 
-        % Left side
-        val1=diffMax(diffMax<locsMax);
-        peak1=diffMin(diffMin<locsMax);
-
-        for kk=1:length(peak1)
-            thisPeak=peak1(kk);
-            peakValDiff=thisPeak-val1;
-
-            nextLeftInd=val1(max(find(peakValDiff>0)));
-            nextRightInd=val1(min(find(peakValDiff<0)));
-            if ~isempty(nextLeftInd) & ~isempty(nextRightInd)
-                testX=cat(1,testX,[nextLeftInd,nextRightInd]);
+    for kk=1:length(diffMax)-1
+        if powerOrig(diffMax(kk+1))>powerOrig(diffMax(kk))
+            findMin=sum(diffMin>diffMax(kk) & diffMin<diffMax(kk+1));
+            if findMin==1
+                hasPeak=sum(locsMax>diffMax(kk) & locsMax<diffMax(kk+1));
+                if hasPeak==0
+                    testX=cat(1,testX,[diffMax(kk),diffMax(kk+1)]);
+                end
             end
         end
-
-        % Right side
-        val2=diffMin(diffMin>locsMax);
-        peak2=diffMax(diffMax>locsMax);
-
-        for kk=1:length(peak2)
-            thisPeak=peak2(kk);
-            peakValDiff=thisPeak-val2;
-
-            nextLeftInd=val2(max(find(peakValDiff>0)));
-            nextRightInd=val2(min(find(peakValDiff<0)));
-            if ~isempty(nextLeftInd) & ~isempty(nextRightInd)
-                testX=cat(1,testX,[nextLeftInd,nextRightInd]);
+    end
+    for kk=1:length(diffMin)-1
+        if powerOrig(diffMin(kk))>powerOrig(diffMin(kk+1))
+            findMax=sum(diffMax>diffMin(kk) & diffMax<diffMin(kk+1));
+            if findMax==1
+                hasPeak=sum(locsMax>diffMin(kk) & locsMax<diffMin(kk+1));
+                if hasPeak==0
+                    testX=cat(1,testX,[diffMin(kk),diffMin(kk+1)]);
+                end
             end
         end
-
-        testPeak=[];
-        for kk=1:size(testX,1)
-            testXthis=testX(kk,:);
-            testYthis=powerOrig(testXthis);
-            testY=cat(1,testY,testYthis);
-            fitLineMod=polyfit(testXthis,testYthis,1);
-            fitLine=polyval(fitLineMod,testX(kk,1):testX(kk,2));
-            powerMinusLine=powerOrig(testXthis(1):testXthis(2))-fitLine;
-            [maxPeak,maxPeakInd]=max(powerMinusLine);
-            maxPeakInd=maxPeakInd+testXthis(1);
-            if maxPeak>3
-                testPeak=cat(1,testPeak,[maxPeak,maxPeakInd]);
+    end
+        
+    addPeak=[];
+    for kk=1:size(testX,1)
+        smallPeakInds=[];
+        testXthis=testX(kk,:);
+        testYthis=powerOrig(testXthis);
+        testY=cat(1,testY,testYthis);
+        fitLineMod=polyfit(testXthis,testYthis,1);
+        fitLine=polyval(fitLineMod,testX(kk,1):testX(kk,2));
+        powerMinusLine=powerOrig(testXthis(1):testXthis(2))-fitLine;
+        cutProm=3;
+        testProm=max(powerMinusLine)-min(powerMinusLine)
+        if testProm>cutProm
+            [~,smallPeaks]=max(powerMinusLine);
+            smallPeakInds=smallPeaks+testXthis(1);
+        end
+        if powerOrig(testXthis(1))<powerOrig(testXthis(2))
+            for ll=1:length(smallPeakInds)
+                goodPeak=smallPeakInds(ll);
+                peakValDiff=goodPeak-diffMin;
+                getPeak=diffMin(min(find(peakValDiff<0)));
+                if getPeak<testXthis(2)
+                    addPeak=cat(2,addPeak,getPeak);
+                end
+            end
+        else
+            for ll=1:length(smallPeakInds)
+                goodPeak=smallPeakInds(ll);
+                peakValDiff=goodPeak-diffMax;
+                getPeak=diffMax(max(find(peakValDiff>0)));
+                if getPeak>testXthis(1)
+                    addPeak=cat(2,addPeak,getPeak);
+                end
             end
         end
-        if ~isempty(testPeak)
-            [~,maxAddInd]=max(testPeak(:,1));
-            goodPeak=testPeak(maxAddInd,2);
-
-            if goodPeak<locsMax
-                peakValDiff=goodPeak-peak1;
-                addPeak=peak1(min(find(peakValDiff<0)));
-            else
-                peakValDiff=goodPeak-peak2;
-                addPeak=peak2(max(find(peakValDiff>0)));
-            end
-        end
-        locsMax=cat(2,locsMax,addPeak);
     end
 
-    %% Add to output
+        locsMax=cat(2,locsMax,addPeak);
+
+        %% Add to output
 
     % Check against noise floor
-    if sum(~isnan(locsMax))==2
+    if sum(~isnan(locsMax))>2
         minPow=min(powerOrig,[],'omitmissing');
-        testPow=powerOrig(locsMax(~isnan(locsMax)));
+        testPow=powerOrig(locsMax);
         absDiff=abs(testPow-minPow);
-        [minDiffPow,minIndPow]=min(absDiff);
-        if minDiffPow<5
-            locsMax(minIndPow)=nan;
+        tooLow=find(absDiff<5);
+        locsMax(tooLow)=[];
+        if isempty(locsMax)
+            [~,locsMax]=max(powerOrig,[],'omitmissing');
         end
     end
 
-    velTest=specVelIn(ii,locsMax(~isnan(locsMax)));
-    if length(velTest)==1
-        velTest=[velTest,nan];
-    end
-    velDual(ii,:)=velTest;
-
-    % plot(specVelIn(ii,:),powerOrig,'-b','linewidth',2);
-    % hold on
-    % scatter(specVelIn(ii,locsMin),powerOrig(locsMin),'filled','MarkerFaceColor','r')
-    % scatter(specVelIn(ii,locsMax(~isnan(locsMax))),powerOrig(locsMax(~isnan(locsMax))),80,'filled','MarkerFaceColor','g')
-    % scatter(specVelIn(ii,diffMin),powerOrig(diffMin),'filled','MarkerFaceColor','y')
-    % scatter(specVelIn(ii,diffMax),powerOrig(diffMax),'filled','MarkerFaceColor','k')
-    % % if ~isempty(testX)
-    % %     for mm=1:size(testX,1)
-    % %         scatter(testX(mm,:),testY(mm,:),'filled','MarkerFaceColor','m')
-    % %     end
-    % % end
-    % if ~isnan(addPeak)
-    %     scatter(specVelIn(ii,addPeak),powerOrig(addPeak),20,'filled','MarkerFaceColor','m');
+    % velTest=specVelIn(ii,locsMax(~isnan(locsMax)));
+    % if length(velTest)==1
+    %     velTest=[velTest,nan];
     % end
-    % 
-    % % yyaxis right
-    % % plot(diffCurve,'-c','linewidth',1.5);
-    % % hold on
-    % % scatter(specVelIn(ii,diffMin),diffCurve(diffMin),'filled','MarkerFaceColor','y')
-    % % scatter(specVelIn(ii,diffMax),diffCurve(diffMax),'filled','MarkerFaceColor','k')
-    % % ylim([-0.5,0.5]);
-    % % grid on
-    % % 
-    % % cla
-    % % yyaxis left
-    % cla
+    % velDual(ii,:)=velTest;
+
+    %if nn==19
+        plot(specVelIn(ii,:),powerRaw(ii,:),'-c','linewidth',1);
+        hold on
+        plot(specVelIn(ii,:),powerOrig,'-b','linewidth',2);
+        %scatter(specVelIn(ii,locsMin),powerOrig(locsMin),'filled','MarkerFaceColor','g')
+        scatter(specVelIn(ii,locsMax(~isnan(locsMax))),powerOrig(locsMax(~isnan(locsMax))),80,'filled','MarkerFaceColor','r')
+        scatter(specVelIn(ii,diffMin),powerOrig(diffMin),'filled','MarkerFaceColor','y')
+        scatter(specVelIn(ii,diffMax),powerOrig(diffMax),'filled','MarkerFaceColor','k')
+        if ~isempty(testX)
+            for mm=1:size(testX,1)
+                scatter(specVelIn(ii,testX(mm,:)),testY(mm,:),'filled','MarkerFaceColor','g')
+            end
+        end
+        cla
+   % end
 end
 momentsVelDual(:,nn,:)=velDual;
 end
