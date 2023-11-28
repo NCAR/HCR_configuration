@@ -1,9 +1,7 @@
 function plotVelocities(data,velDual,moments,timeBeams,figdir,project,ylimUpper,flipYes,showPlot)
-velMin=min(velDual,[],3,'omitmissing');
-velMax=max(velDual,[],3,'omitmissing');
-
-velMin(isnan(velMin) & ~isnan(velMax))=velMax(isnan(velMin) & ~isnan(velMax));
-velMax(isnan(velMax) & ~isnan(velMin))=velMin(isnan(velMax) & ~isnan(velMin));
+velBase=velDual(:,:,1);
+velHigh=velDual(:,:,2);
+velLow=velDual(:,:,3);
 
 f1 = figure('Position',[200 500 1800 900],'DefaultAxesFontSize',12,'visible',showPlot);
 
@@ -29,7 +27,7 @@ end
 s2=subplot(2,2,2);
 
 hold on
-surf(timeBeams,data.range./1000,velMin,'edgecolor','none');
+surf(timeBeams,data.range./1000,velBase,'edgecolor','none');
 view(2);
 ylabel('Range (km)');
 caxis([-8 8]);
@@ -37,7 +35,7 @@ ylim([0 ylimUpper]);
 xlim([timeBeams(1),timeBeams(end)]);
 colorbar
 grid on
-title('Velocity minimum (m s^{-1})')
+title('Velocity base (m s^{-1})')
 
 if flipYes
     set(gca, 'YDir','reverse');
@@ -45,16 +43,12 @@ end
 
 s3=subplot(2,2,3);
 
-overlap=sum(~isnan(velDual),3);
-plotOverlap=double(overlap>1);
-velOverlap=moments.vel;
-velOverlap(plotOverlap==0)=nan;
-velOverlap(~isnan(moments.vel) & isnan(velOverlap))=-99;
+velHigh(isnan(velHigh))=-99;
 
-colTwo=cat(1,[0,1,0],velCols);
+colTwo=cat(1,[0,0,0],velCols);
 
 hold on
-surf(timeBeams,data.range./1000,velOverlap,'edgecolor','none');
+surf(timeBeams,data.range./1000,velHigh,'edgecolor','none');
 view(2);
 ylabel('Range (km)');
 caxis([-8.001 8]);
@@ -63,7 +57,7 @@ ylim([0 ylimUpper]);
 xlim([timeBeams(1),timeBeams(end)]);
 colorbar
 grid on
-title('Regions with two particles')
+title('Velocity high (m s^{-1})')
 
 if flipYes
     set(gca, 'YDir','reverse');
@@ -71,16 +65,19 @@ end
 
 s4=subplot(2,2,4);
 
+velLow(isnan(velLow))=-99;
+
 hold on
-surf(timeBeams,data.range./1000,velMax,'edgecolor','none');
+surf(timeBeams,data.range./1000,velLow,'edgecolor','none');
 view(2);
 ylabel('Range (km)');
-caxis([-8 8]);
+caxis([-8.001 8]);
+s4.Colormap=colTwo;
 ylim([0 ylimUpper]);
 xlim([timeBeams(1),timeBeams(end)]);
 colorbar
 grid on
-title('Velocity maximum (m s^{-1})')
+title('Velocity low (m s^{-1})')
 
 if flipYes
     set(gca, 'YDir','reverse');

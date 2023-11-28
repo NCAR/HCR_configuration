@@ -34,7 +34,7 @@ caseStart=datetime(caseList.Var1,caseList.Var2,caseList.Var3, ...
 caseEnd=datetime(caseList.Var7,caseList.Var8,caseList.Var9, ...
     caseList.Var10,caseList.Var11,caseList.Var12);
 
-warning('off','MATLAB:polyfit:RepeatedPointsOrRescale');
+%warning('off','MATLAB:polyfit:RepeatedPointsOrRescale');
 
 for aa=1:length(caseStart)
 
@@ -74,7 +74,7 @@ for aa=1:length(caseStart)
 
     momentsSpecRMnoise=momentsTime;
 
-    momentsVelDual=nan(size(data.range,1),beamNum,2);
+    momentsVelDualRaw=nan(size(data.range,1),beamNum,1);
 
     timeBeams=[];
 
@@ -125,7 +125,7 @@ for aa=1:length(caseStart)
 
         %% Find regions with dual particle species
 
-        momentsVelDual=findDualParticles_test(powerRMnoiseDBsmooth,specVelRMnoise,specPowerDBadj,momentsVelDual,ii);
+        momentsVelDualRaw=findDualParticles_test(powerRMnoiseDBsmooth,specVelRMnoise,specPowerDBadj,momentsVelDualRaw,ii);
 
         %% Other processing
         
@@ -142,6 +142,9 @@ for aa=1:length(caseStart)
         ii=ii+1;
     end
 
+    %% Sort out vel dual
+    momentsVelDual=sortDualParticles(momentsVelDualRaw,momentsTime);
+    
     %% Plot
 
     close all
@@ -151,4 +154,4 @@ for aa=1:length(caseStart)
     plotVelocities(data,momentsVelDual,momentsTime,timeBeams,figdir,project,ylimUpper,flipYes,showPlot);
 
 end
-warning('on','MATLAB:polyfit:RepeatedPointsOrRescale');
+%warning('on','MATLAB:polyfit:RepeatedPointsOrRescale');

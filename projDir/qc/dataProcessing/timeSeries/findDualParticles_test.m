@@ -1,7 +1,7 @@
 function momentsVelDual=findDualParticles_test(powerIn,specVelIn,powerRaw,momentsVelDual,nn)
 % Find maxima and minima in spectra
 close all
-velDual=nan(size(powerIn,1),2);
+velDual=nan(size(powerIn,1),10);
 
 dataInds=find(any(~isnan(powerIn),2));
 
@@ -10,7 +10,7 @@ dataInds(dataInds<=12)=[];
 
 for jj=1:length(dataInds)
     ii=dataInds(jj);
-    disp('Next')
+    
     powerOrig=powerIn(ii,:);
 
     % Find start and end of line segments
@@ -81,7 +81,7 @@ for jj=1:length(dataInds)
         fitLine=polyval(fitLineMod,testX(kk,1):testX(kk,2));
         powerMinusLine=powerOrig(testXthis(1):testXthis(2))-fitLine;
         cutProm=3;
-        testProm=max(powerMinusLine)-min(powerMinusLine)
+        testProm=max(powerMinusLine)-min(powerMinusLine);
         if testProm>cutProm
             [~,smallPeaks]=max(powerMinusLine);
             smallPeakInds=smallPeaks+testXthis(1);
@@ -116,8 +116,7 @@ for jj=1:length(dataInds)
         minPow=min(powerOrig,[],'omitmissing');
         testPow=powerOrig(locsMax);
         absDiff=abs(testPow-minPow);
-        tooLow=find(absDiff<5);
-        locsMax(tooLow)=[];
+        locsMax(absDiff<5)=[];
         if isempty(locsMax)
             [~,locsMax]=max(powerOrig,[],'omitmissing');
         end
@@ -127,9 +126,9 @@ for jj=1:length(dataInds)
     % if length(velTest)==1
     %     velTest=[velTest,nan];
     % end
-    % velDual(ii,:)=velTest;
+    velDual(ii,1:length(locsMax))=specVelIn(ii,locsMax);
 
-    %if nn==19
+    if nn==inf
         plot(specVelIn(ii,:),powerRaw(ii,:),'-c','linewidth',1);
         hold on
         plot(specVelIn(ii,:),powerOrig,'-b','linewidth',2);
@@ -143,7 +142,15 @@ for jj=1:length(dataInds)
             end
         end
         cla
-   % end
+    end
 end
-momentsVelDual(:,nn,:)=velDual;
+findEmpty=all(isnan(velDual),1);
+velDual(:,findEmpty)=[];
+
+checkDims=size(momentsVelDual,3)-size(velDual,2);
+if checkDims<0
+    momentsVelDual=padarray(momentsVelDual,[0,0,abs(checkDims)],nan,'post');
+end
+
+momentsVelDual(:,nn,1:size(velDual,2))=velDual;
 end
