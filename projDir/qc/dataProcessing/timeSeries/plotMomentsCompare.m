@@ -28,7 +28,7 @@ hold on
 surf(moments.time,moments.asl./1000,moments.vel,'edgecolor','none');
 view(2);
 ylabel('Altitude (km)');
-clim([-5 5]);
+clim([-8 8]);
 ylim([0 ylimUpper]);
 xlim([moments.time(1),moments.time(end)]);
 colorbar

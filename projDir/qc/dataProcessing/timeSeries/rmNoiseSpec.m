@@ -65,19 +65,23 @@ for ii=1:size(powerAdj,1)
 
     powerRMnoise(powerSmooth<noisePerc)=nan;
    
-    lineMask=~isnan(powerRMnoise);
-    lineMask=bwareaopen(lineMask,round(sampleNum/20));
-
-    powerRMnoise(lineMask==0)=nan;
+    lineMask=double(~isnan(powerRMnoise));
+    lineMask(lineMask==0)=nan;
+    lineMask=movmedian(lineMask,round(sampleNum/20),'includemissing');
+    lineMask=movmedian(lineMask,round(sampleNum/20),'omitmissing');
+       
+    powerRMnoise(isnan(lineMask))=nan;
 
     powerWithNoise=powerSmooth;
     powerWithNoise(~isnan(powerRMnoise))=nan;
     powerRMnoise(powerSmooth<=max(powerWithNoise,[],'omitmissing'))=nan;
 
-    lineMask=~isnan(powerRMnoise);
-    lineMask=bwareaopen(lineMask,round(sampleNum/20));
-
-    powerRMnoise(lineMask==0)=nan;
+    lineMask=double(~isnan(powerRMnoise));
+    lineMask(lineMask==0)=nan;
+    lineMask=movmedian(lineMask,round(sampleNum/20),'includemissing');
+    lineMask=movmedian(lineMask,round(sampleNum/20),'omitmissing');
+       
+    powerRMnoise(isnan(lineMask))=nan;
 
     noisePower2=powerAdj(ii,:);
     noisePower2(~isnan(powerRMnoise))=nan;
@@ -85,10 +89,12 @@ for ii=1:size(powerAdj,1)
 
     powerRMnoise(powerSmooth<noisePerc2)=nan;
 
-    lineMask=~isnan(powerRMnoise);
-    lineMask=bwareaopen(lineMask,round(sampleNum/20));
-
-    powerRMnoise(lineMask==0)=nan;
+    lineMask=double(~isnan(powerRMnoise));
+    lineMask(lineMask==0)=nan;
+    lineMask=movmedian(lineMask,round(sampleNum/20),'includemissing');
+    lineMask=movmedian(lineMask,round(sampleNum/20),'omitmissing');
+       
+    powerRMnoise(isnan(lineMask))=nan;
 
     lineMask=~isnan(powerRMnoise);
     diffLine=diff(lineMask);

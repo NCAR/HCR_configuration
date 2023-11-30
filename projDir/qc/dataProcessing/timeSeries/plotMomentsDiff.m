@@ -63,8 +63,8 @@ for ii=1:length(commFields)
             s1.CLim=[-60,20];
             s2.CLim=[-60,20];
         elseif strcmp(commFields{ii},'velRaw') | strcmp(commFields{ii},'vel')
-            s1.CLim=[-5,5];
-            s2.CLim=[-5,5];
+            s1.CLim=[-8,8];
+            s2.CLim=[-8,8];
         elseif strcmp(commFields{ii},'powerV')
             s1.CLim=[-110,-40];
             s2.CLim=[-110,-40];

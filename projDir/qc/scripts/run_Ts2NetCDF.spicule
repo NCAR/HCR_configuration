@@ -1,1 +1,8 @@
-Ts2NetCDF -f /scr/sleet3/rsfdata/projects/spicule/hcr/time_series/wband/save/20210529/20210529_191* -params /home/rsfdata/git/HCR_configuration/projDir/qc/params/Ts2NetCDF.spicule -debug
+#! /bin/csh
+
+source ~/git/HCR_configuration/projDir/system/params/project_info.spicule
+
+cd $PROJ_DIR/qc/params
+
+
+Ts2NetCDF -params Ts2NetCDF.spicule -debug -start "2021 06 02 23 15 00" -end "2021 06 02 23 30 00"

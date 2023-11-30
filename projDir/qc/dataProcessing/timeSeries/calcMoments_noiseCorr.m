@@ -15,7 +15,7 @@ dataDirTS=HCRdir(project,quality,qcVersion,freqData);
 figdir=[dataDirTS,'figsTS_rmNoise/'];
 
 showPlot='on';
-ylimUpper=5.2;
+ylimUpper=7;
 ylimLower=-0.1;
 plotSpectra=1;
 
