@@ -4,6 +4,10 @@ if size(elevation,1)~=1
     elevation=elevation';
     altitude=altitude';
 end
+if min(size(range))==1
+    range=repmat(range,1,length(elevation));
+end
+    
 if size(range,2)~=length(elevation)
     range=range';
 end

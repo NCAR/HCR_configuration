@@ -1,9 +1,11 @@
-function plotSpectraExamples(data,momentsSpec,specPowerDB,sampleNum,plotRangeKM,plotInd,startInd,ii,ylimUpper,figdir,project)
+function plotSpectraExamples(data,momentsSpec,specPowerDB,plotRangeKM,plotInd,ii,ylimUpper,figdir,project)
+sampleNum=length(data.time);
+startInd=round(sampleNum/2);
 
 % X-axis
 specVelVec=-pi:2*pi/(sampleNum):pi;
 specVelVec=specVelVec(1:end-1);
-vel=data.lambda./(4.*pi.*data.prtThis).*specVelVec;
+vel=data.lambda./(4.*pi.*data.prt).*specVelVec;
 
 % Find index of specified range
 rangeInd=min(find((data.range./1000)>=plotRangeKM(plotInd)));

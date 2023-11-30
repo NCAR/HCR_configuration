@@ -1,6 +1,8 @@
-function [powerAdj,specVelAdj]=adjSpecBoundsV(specDB,velIn,sampleNum,data)
+function [powerAdj,specVelAdj]=adjSpecBoundsV(specDB,velIn,data)
 
 %% Filter
+
+sampleNum=length(data.time);
 
 duplicateSpec=5;
 
@@ -10,7 +12,7 @@ powerSpecSmoothLarge=movmedian(powerSpecLarge,round(size(specDB,2))/5,2);
 powerSpecSmoothLarge=powerSpecSmoothLarge(:,sampleNum+1:end-sampleNum);
 
 velSpecLarge=-duplicateSpec*pi:2*pi/(sampleNum):duplicateSpec*pi;
-velSpecLarge=velSpecLarge(1:end-1).*data.lambda./(4*pi.*repmat(data.prtThis,1,duplicateSpec));
+velSpecLarge=velSpecLarge(1:end-1).*data.lambda./(4*pi.*repmat(data.prt,1,duplicateSpec));
 
 powerSpecLarge=powerSpecLarge(:,sampleNum+1:end-sampleNum);
 

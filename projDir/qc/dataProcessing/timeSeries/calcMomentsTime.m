@@ -9,10 +9,21 @@ R3v=mean(cIQ.v(:,1:end-3).*conj(cIQ.v(:,4:end)),2);
 R4v=mean(cIQ.v(:,1:end-4).*conj(cIQ.v(:,5:end)),2);
 
 momentsTime.powerV(:,ii)=10*log10(R0v)-data.rx_gain_v;
-momentsTime.vel(:,ii)=data.lambda/(4*pi*mode(data.prt))*angle(R1v);
-momentsTime.width(:,ii)=data.lambda/(2*pi.*mode(data.prt)*6^.5)*abs(log(abs(R1v./R2v))).^0.5;
+momentsTime.velRaw(:,ii)=data.lambda/(4*pi*mode(data.prt))*angle(R1v);
+widthRaw=data.lambda/(2*pi.*mode(data.prt)*6^.5)*abs(log(abs(R1v./R2v))).^0.5;
 momentsTime.skew(:,ii)=abs(log(abs(R3v./(R2v.^3))));
 momentsTime.kurt(:,ii)=abs(log(abs(R4v./(R2v.^2))));
+
+% Correct velocity for aircraft motion
+xCorr=sind(momentsTime.azimuth_vc(ii)).*cosd(momentsTime.elevation(ii)).*momentsTime.eastward_velocity(ii);
+yCorr=cosd(momentsTime.azimuth_vc(ii)).*cosd(momentsTime.elevation(ii)).*momentsTime.northward_velocity(ii);
+zCorr=sind(momentsTime.elevation(ii)).*momentsTime.vertical_velocity(ii);
+momentsTime.vel(:,ii)=momentsTime.velRaw(:,ii)+xCorr+yCorr+zCorr;
+
+% Correct width for aircraft motion
+velAircraft=sqrt(momentsTime.eastward_velocity(ii).^2+momentsTime.northward_velocity(ii).^2);
+deltaC=0.3.*velAircraft.*sin(deg2rad(momentsTime.elevation(ii))).*deg2rad(data.beamwidth_v);
+momentsTime.width(:,ii)=real(sqrt(widthRaw.^2-deltaC.^2));
 
 % SNRV
 noiseLinV=10.^(data.noise_v./10);

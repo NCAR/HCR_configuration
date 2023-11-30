@@ -1,4 +1,4 @@
-function plotMomentsCompare(data,moments,timeBeams,figdir,project,type,ylimUpper,flipYes,showPlot,plotTimes,plotRangeKM)
+function plotMomentsCompare(moments,figdir,project,type,ylimUpper,showPlot,plotTimes,plotRangeKM)
 f1 = figure('Position',[200 500 1800 1300],'DefaultAxesFontSize',12,'visible',showPlot);
 
 colormap jet
@@ -6,19 +6,16 @@ colormap jet
 s1=subplot(4,2,1);
 
 hold on
-surf(timeBeams,data.range./1000,moments.powerV,'edgecolor','none');
+surf(moments.time,moments.asl./1000,moments.powerV,'edgecolor','none');
 view(2);
-ylabel('Range (km)');
-caxis([-110 -40]);
+ylabel('Altitude (km)');
+clim([-110 -40]);
 ylim([0 ylimUpper]);
-xlim([timeBeams(1),timeBeams(end)]);
+xlim([moments.time(1),moments.time(end)]);
 colorbar
 grid on
+box on
 title('Power (dB)')
-
-if flipYes
-    set(gca, 'YDir','reverse');
-end
 
 if ~isempty(plotTimes)
     scatter(plotTimes,plotRangeKM,'ok','LineWidth',1.5);
@@ -28,19 +25,16 @@ end
 s2=subplot(4,2,2);
 
 hold on
-surf(timeBeams,data.range./1000,moments.vel,'edgecolor','none');
+surf(moments.time,moments.asl./1000,moments.vel,'edgecolor','none');
 view(2);
-ylabel('Range (km)');
-caxis([-5 5]);
+ylabel('Altitude (km)');
+clim([-5 5]);
 ylim([0 ylimUpper]);
-xlim([timeBeams(1),timeBeams(end)]);
+xlim([moments.time(1),moments.time(end)]);
 colorbar
 grid on
+box on
 title('Velocity (m s^{-1})')
-
-if flipYes
-    set(gca, 'YDir','reverse');
-end
 
 if ~isempty(plotTimes)
     scatter(plotTimes,plotRangeKM,'ok','LineWidth',1.5);
@@ -50,19 +44,16 @@ end
 s3=subplot(4,2,3);
 
 hold on
-surf(timeBeams,data.range./1000,moments.dbz,'edgecolor','none');
+surf(moments.time,moments.asl./1000,moments.dbz,'edgecolor','none');
 view(2);
-ylabel('Range (km)');
+ylabel('Altitude (km)');
 caxis([-60 20]);
 ylim([0 ylimUpper]);
-xlim([timeBeams(1),timeBeams(end)]);
+xlim([moments.time(1),moments.time(end)]);
 colorbar
 grid on
+box on
 title('Reflectivity (dBZ)')
-
-if flipYes
-    set(gca, 'YDir','reverse');
-end
 
 if ~isempty(plotTimes)
     scatter(plotTimes,plotRangeKM,'ok','LineWidth',1.5);
@@ -72,19 +63,16 @@ end
 s4=subplot(4,2,4);
 
 hold on
-surf(timeBeams,data.range./1000,moments.width,'edgecolor','none');
+surf(moments.time,moments.asl./1000,moments.width,'edgecolor','none');
 view(2);
-ylabel('Range (km)');
-caxis([0 4]);
+ylabel('Altitude (km)');
+clim([0 4]);
 ylim([0 ylimUpper]);
-xlim([timeBeams(1),timeBeams(end)]);
+xlim([moments.time(1),moments.time(end)]);
 colorbar
 grid on
+box on
 title('Spectrum width (m s^{-1})')
-
-if flipYes
-    set(gca, 'YDir','reverse');
-end
 
 if ~isempty(plotTimes)
     scatter(plotTimes,plotRangeKM,'ok','LineWidth',1.5);
@@ -94,19 +82,16 @@ end
 s5=subplot(4,2,5);
 
 hold on
-surf(timeBeams,data.range./1000,moments.snr,'edgecolor','none');
+surf(moments.time,moments.asl./1000,moments.snr,'edgecolor','none');
 view(2);
-ylabel('Range (km)');
-caxis([-20 70]);
+ylabel('Altitude (km)');
+clim([-20 70]);
 ylim([0 ylimUpper]);
-xlim([timeBeams(1),timeBeams(end)]);
+xlim([moments.time(1),moments.time(end)]);
 colorbar
 grid on
+box on
 title('Signal to noise ratio (dB)')
-
-if flipYes
-    set(gca, 'YDir','reverse');
-end
 
 if ~isempty(plotTimes)
     scatter(plotTimes,plotRangeKM,'ok','LineWidth',1.5);
@@ -116,19 +101,16 @@ end
 s6=subplot(4,2,6);
 
 hold on
-surf(timeBeams,data.range./1000,moments.skew,'edgecolor','none');
+surf(moments.time,moments.asl./1000,moments.skew,'edgecolor','none');
 view(2);
-ylabel('Range (km)');
-caxis([-1 1]);
+ylabel('Altitude (km)');
+clim([-1 1]);
 ylim([0 ylimUpper]);
-xlim([timeBeams(1),timeBeams(end)]);
+xlim([moments.time(1),moments.time(end)]);
 colorbar
 grid on
+box on
 title('Skew (dB)')
-
-if flipYes
-    set(gca, 'YDir','reverse');
-end
 
 if ~isempty(plotTimes)
     scatter(plotTimes,plotRangeKM,'ok','LineWidth',1.5);
@@ -139,19 +121,16 @@ if ~isempty(find(~isnan(moments.ldr)))
     s7=subplot(4,2,7);
 
     hold on
-    surf(timeBeams,data.range./1000,moments.ldr,'edgecolor','none');
+    surf(moments.time,moments.asl./1000,moments.ldr,'edgecolor','none');
     view(2);
-    ylabel('Range (km)');
-    caxis([-40 10]);
+    ylabel('Altitude (km)');
+    clim([-40 10]);
     ylim([0 ylimUpper]);
-    xlim([timeBeams(1),timeBeams(end)]);
+    xlim([moments.time(1),moments.time(end)]);
     colorbar
     grid on
+    box on
     title('LDR (dB)')
-
-    if flipYes
-        set(gca, 'YDir','reverse');
-    end
 
     if ~isempty(plotTimes)
         scatter(plotTimes,plotRangeKM,'ok','LineWidth',1.5);
@@ -162,19 +141,16 @@ end
 s8=subplot(4,2,8);
 
 hold on
-surf(timeBeams,data.range./1000,moments.kurt,'edgecolor','none');
+surf(moments.time,moments.asl./1000,moments.kurt,'edgecolor','none');
 view(2);
-ylabel('Range (km)');
-caxis([0 10]);
+ylabel('Altitude (km)');
+clim([0 10]);
 ylim([0 ylimUpper]);
-xlim([timeBeams(1),timeBeams(end)]);
+xlim([moments.time(1),moments.time(end)]);
 colorbar
 grid on
+box on
 title('Kurtosis (dB)')
-
-if flipYes
-    set(gca, 'YDir','reverse');
-end
 
 if ~isempty(plotTimes)
     scatter(plotTimes,plotRangeKM,'ok','LineWidth',1.5);
@@ -182,5 +158,5 @@ if ~isempty(plotTimes)
 end
 
 set(gcf,'PaperPositionMode','auto')
-print(f1,[figdir,project,'_moments_',type,'_',datestr(data.time(1),'yyyymmdd_HHMMSS'),'_to_',datestr(data.time(end),'yyyymmdd_HHMMSS')],'-dpng','-r0');
+print(f1,[figdir,project,'_moments_',type,'_',datestr(moments.time(1),'yyyymmdd_HHMMSS'),'_to_',datestr(moments.time(end),'yyyymmdd_HHMMSS')],'-dpng','-r0');
 end

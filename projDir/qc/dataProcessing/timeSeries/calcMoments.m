@@ -15,8 +15,7 @@ dataDirTS=HCRdir(project,quality,qcVersion,freqData);
 figdir=[dataDirTS,'figsTS/'];
 
 showPlot='on';
-ylimUpper=5.2;
-ylimLower=-0.1;
+ylimUpper=7;
 plotSpectra=1;
 
 casefile=['~/git/HCR_configuration/projDir/qc/dataProcessing/HCRproducts/caseFiles/calcMoments_',project,'.txt'];
@@ -47,7 +46,7 @@ caseStart=datetime(caseList.Var1,caseList.Var2,caseList.Var3, ...
 caseEnd=datetime(caseList.Var7,caseList.Var8,caseList.Var9, ...
     caseList.Var10,caseList.Var11,caseList.Var12);
 
-for aa=2:length(caseStart)
+for aa=1:length(caseStart)
 
     disp(['Case ',num2str(aa),' of ',num2str(length(caseStart))]);
 
@@ -64,17 +63,27 @@ for aa=2:length(caseStart)
     data.QVc=[];
     data.IHx=[];
     data.QHx=[];
+    data.eastward_velocity=[];
+    data.northward_velocity=[];
+    data.vertical_velocity=[];
+    data.azimuth_vc=[];
 
-    data=readHCRts(fileListTS,data,startTime,endTime);
+    data=readHCRts(fileListTS,data,startTime-seconds(timeSpan),endTime+seconds(timeSpan));
 
     %% Calculate moments
 
     disp('Calculating moments ...')
 
-    beamNum=ceil(size(data.IVc,2)/(timeSpan*10000));
+    % Find available times
+    timeRound=dateshift(data.time,'start','minute')+seconds(round(second(data.time),1));
+    timeRound=unique(timeRound);
+    goodTimes=timeRound(timeRound>=startTime & timeRound<=endTime);
+
+    beamNum=length(goodTimes);
 
     momentsTime.powerV=nan(size(data.range,1),beamNum);
     momentsTime.powerH=nan(size(data.range,1),beamNum);
+    momentsTime.velRaw=nan(size(data.range,1),beamNum);
     momentsTime.vel=nan(size(data.range,1),beamNum);
     momentsTime.width=nan(size(data.range,1),beamNum);
     momentsTime.dbz=nan(size(data.range,1),beamNum);
@@ -82,30 +91,24 @@ for aa=2:length(caseStart)
     momentsTime.skew=nan(size(data.range,1),beamNum);
     momentsTime.kurt=nan(size(data.range,1),beamNum);
     momentsTime.ldr=nan(size(data.range,1),beamNum);
-    
-    momentsSpec.powerV=nan(size(data.range,1),beamNum);
-    momentsSpec.powerh=nan(size(data.range,1),beamNum);
-    momentsSpec.vel=nan(size(data.range,1),beamNum);
-    momentsSpec.width=nan(size(data.range,1),beamNum);
-    momentsSpec.dbz=nan(size(data.range,1),beamNum);
-    momentsSpec.snr=nan(size(data.range,1),beamNum);
-    momentsSpec.skew=nan(size(data.range,1),beamNum);
-    momentsSpec.kurt=nan(size(data.range,1),beamNum);
-    momentsSpec.ldr=nan(size(data.range,1),beamNum);
+    momentsTime.range=nan(size(data.range,1),beamNum);
+    momentsTime.asl=nan(size(data.range,1),beamNum);
+    momentsTime.elevation=nan(1,beamNum);
+    momentsTime.eastward_velocity=nan(1,beamNum);
+    momentsTime.northward_velocity=nan(1,beamNum);
+    momentsTime.vertical_velocity=nan(1,beamNum);
+    momentsTime.azimuth_vc=nan(1,beamNum);
+    momentsTime.time=goodTimes;
+       
+    momentsSpec=momentsTime;
 
-    timeBeams=[];
-
-    startInd=1;
-    endInd=1;
-    ii=1;
-
-    % Loop through beams
-    while endInd<=size(data.IVc,2) & startInd<size(data.IVc,2)
+  % Loop through beams
+    for ii=1:beamNum
 
         % Find start and end indices for beam
-        timeDiff=etime(datevec(data.time(startInd)),datevec(data.time));
-        [minDiff,endInd]=min(abs(timeDiff+timeSpan));
-
+        [~,startInd]=min(abs(etime(datevec(goodTimes(ii)-seconds(timeSpan/2)),datevec(data.time))));
+        [~,endInd]=min(abs(etime(datevec(goodTimes(ii)+seconds(timeSpan/2)),datevec(data.time))));
+        
         sampleNum=endInd-startInd+1;
 
         % Window
@@ -113,50 +116,55 @@ for aa=2:length(caseStart)
         winWeight=sampleNum/sum(win);
         winNorm=win*winWeight;
 
-        cIQ.v=winNorm'.*(data.IVc(:,startInd:endInd)+i*data.QVc(:,startInd:endInd))./sqrt(sampleNum);
-        cIQ.h=winNorm'.*(data.IHx(:,startInd:endInd)+i*data.QHx(:,startInd:endInd))./sqrt(sampleNum);
+        % Trim data down to current beam
+        dataThis=trimData(data,startInd,endInd);
+        
+        % IQ
+        cIQ.v=winNorm'.*(dataThis.IVc+i*dataThis.QVc)./sqrt(sampleNum);
+        cIQ.h=winNorm'.*(dataThis.IHx+i*dataThis.QHx)./sqrt(sampleNum);
 
-        data.prtThis=data.prt(startInd:endInd);
+        %% Other variables
+        momentsTime.range(:,ii)=dataThis.range;
+        momentsTime.elevation(ii)=median(dataThis.elevation);
+        momentsTime.eastward_velocity(ii)=median(dataThis.eastward_velocity);
+        momentsTime.northward_velocity(ii)=median(dataThis.northward_velocity);
+        momentsTime.vertical_velocity(ii)=median(dataThis.vertical_velocity);
+        momentsTime.azimuth_vc(ii)=median(dataThis.azimuth_vc);
+        momentsTime.asl(:,ii)=median(dataThis.asl,2);
+
+        momentsSpec.range(:,ii)=dataThis.range;
+        momentsSpec.elevation(ii)=median(dataThis.elevation);
+        momentsSpec.eastward_velocity(ii)=median(dataThis.eastward_velocity);
+        momentsSpec.northward_velocity(ii)=median(dataThis.northward_velocity);
+        momentsSpec.vertical_velocity(ii)=median(dataThis.vertical_velocity);
+        momentsSpec.azimuth_vc(ii)=median(dataThis.azimuth_vc);
+        momentsSpec.asl(:,ii)=median(dataThis.asl,2);
 
         %% Time moments
-        momentsTime=calcMomentsTime(cIQ,ii,momentsTime,data);
+        momentsTime=calcMomentsTime(cIQ,ii,momentsTime,dataThis);
 
         %% Spectral moments
         [specPowerLin,specPowerDB]=getSpectra(cIQ);
 
-        % Power fields
-        momentsSpec=calcMomentsSpec_powerFields(specPowerLin,ii,momentsSpec,data);
-
         % Move peak of spectra to middle
-        [specPowerDBadj,specVelAdj]=adjSpecBoundsV(specPowerDB.V,momentsTime.vel(:,ii),sampleNum,data);
+        [specPowerDBadj,specVelAdj]=adjSpecBoundsV(specPowerDB.V,momentsTime.velRaw(:,ii),dataThis);
+
+        % Power fields
+        momentsSpec=calcMomentsSpec_powerFields(specPowerLin,ii,momentsSpec,dataThis);
 
         % Higher order moments
-        momentsSpec=calcMomentsSpec_higherMoments(specPowerDBadj,specVelAdj,ii,momentsSpec,data);
-
-        %% Other processing
-        
-        timeBeams=[timeBeams;data.time(startInd)];
-
-        if data.elevation(startInd)<0
-            flipYes=1;
-        else
-            flipYes=0;
-        end
+        momentsSpec=calcMomentsSpec_higherMoments(specPowerDBadj,specVelAdj,ii,momentsSpec,dataThis);
 
         %% Plot spectra
         if plotSpectra
-            plotTimeDiff=abs(etime(datevec(data.time(startInd)),datevec(plotTimes)));
+            plotTimeDiff=abs(etime(datevec(goodTimes(ii)),datevec(plotTimes)));
             plotInd=find(plotTimeDiff<0.04);
             if ~isempty(plotInd)
                 disp('Plotting spectra ...')
                 close all
-                plotSpectraExamples(data,momentsSpec,specPowerDB,sampleNum,plotRangeKM,plotInd,startInd,ii,ylimUpper,figdir,project);
+                plotSpectraExamples(dataThis,momentsSpec,specPowerDB,plotRangeKM,plotInd,ii,ylimUpper,figdir,project);
             end
         end
-
-        %% Next beam
-        startInd=endInd+1;
-        ii=ii+1;
     end
 
     %% Plot
@@ -165,8 +173,8 @@ for aa=2:length(caseStart)
 
     disp('Plotting moments ...');
 
-    plotMomentsCompare(data,momentsTime,timeBeams,figdir,project,'Time',ylimUpper,flipYes,showPlot,plotTimes,plotRangeKM);
-    plotMomentsCompare(data,momentsSpec,timeBeams,figdir,project,'Spec',ylimUpper,flipYes,showPlot,plotTimes,plotRangeKM);
+    plotMomentsCompare(momentsTime,figdir,project,'Time',ylimUpper,showPlot,plotTimes,plotRangeKM);
+    plotMomentsCompare(momentsSpec,figdir,project,'Spec',ylimUpper,showPlot,plotTimes,plotRangeKM);
 
-    plotMomentsDiff(data,momentsTime,momentsSpec,timeBeams,figdir,project,ylimUpper,flipYes,showPlot);
+    plotMomentsDiff(momentsTime,momentsSpec,figdir,project,ylimUpper,showPlot);
 end

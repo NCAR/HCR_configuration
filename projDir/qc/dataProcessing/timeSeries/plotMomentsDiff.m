@@ -1,4 +1,12 @@
-function plotMomentsDiff(data,momentsTime,momentsSpec,timeBeams,figdir,project,ylimUpper,flipYes,showPlot)
+function plotMomentsDiff(momentsTime,momentsSpec,figdir,project,ylimUpper,showPlot)
+momentsTime=rmfield(momentsTime,'azimuth_vc');
+momentsTime=rmfield(momentsTime,'eastward_velocity');
+momentsTime=rmfield(momentsTime,'elevation');
+momentsTime=rmfield(momentsTime,'northward_velocity');
+momentsTime=rmfield(momentsTime,'range');
+momentsTime=rmfield(momentsTime,'time');
+momentsTime=rmfield(momentsTime,'vertical_velocity');
+
 tFields=fields(momentsTime);
 sFields=fields(momentsSpec);
 
@@ -14,56 +22,47 @@ for ii=1:length(commFields)
         s1=subplot(3,1,1);
 
         hold on
-        surf(timeBeams,data.range./1000,momentsTime.(commFields{ii}),'edgecolor','none');
+        surf(momentsSpec.time,momentsTime.asl./1000,momentsTime.(commFields{ii}),'edgecolor','none');
         view(2);
         ylabel('Range (km)');
         ylim([0 ylimUpper]);
-        xlim([timeBeams(1),timeBeams(end)]);
+        xlim([momentsSpec.time(1),momentsSpec.time(end)]);
         colorbar
         grid on
+        box on
         title([commFields{ii},' time domain']);
-
-        if flipYes
-            set(gca, 'YDir','reverse');
-        end
 
         s2=subplot(3,1,2);
 
         hold on
-        surf(timeBeams,data.range./1000,momentsSpec.(commFields{ii}),'edgecolor','none');
+        surf(momentsSpec.time,momentsSpec.asl./1000,momentsSpec.(commFields{ii}),'edgecolor','none');
         view(2);
         ylabel('Range (km)');
         ylim([0 ylimUpper]);
-        xlim([timeBeams(1),timeBeams(end)]);
+        xlim([momentsSpec.time(1),momentsSpec.time(end)]);
         colorbar
         grid on
+        box on
         title([commFields{ii},' spectral domain']);
-
-        if flipYes
-            set(gca, 'YDir','reverse');
-        end
 
         s3=subplot(3,1,3);
 
         hold on
-        surf(timeBeams,data.range./1000,momentsSpec.(commFields{ii})-momentsTime.(commFields{ii}),'edgecolor','none');
+        surf(momentsSpec.time,momentsSpec.asl./1000,momentsSpec.(commFields{ii})-momentsTime.(commFields{ii}),'edgecolor','none');
         view(2);
         ylabel('Range (km)');
         clim([-0.2 0.2]);
         ylim([0 ylimUpper]);
-        xlim([timeBeams(1),timeBeams(end)]);
+        xlim([momentsSpec.time(1),momentsSpec.time(end)]);
         colorbar
         grid on
+        box on
         title([commFields{ii},' spectral minus time domain']);
-
-        if flipYes
-            set(gca, 'YDir','reverse');
-        end
 
         if strcmp(commFields{ii},'dbz')
             s1.CLim=[-60,20];
             s2.CLim=[-60,20];
-        elseif strcmp(commFields{ii},'vel')
+        elseif strcmp(commFields{ii},'velRaw') | strcmp(commFields{ii},'vel')
             s1.CLim=[-5,5];
             s2.CLim=[-5,5];
         elseif strcmp(commFields{ii},'powerV')
@@ -90,7 +89,7 @@ for ii=1:length(commFields)
         end
 
         set(gcf,'PaperPositionMode','auto')
-        print(f1,[figdir,project,'_diff_',(commFields{ii}),'_',datestr(data.time(1),'yyyymmdd_HHMMSS'),'_to_',datestr(data.time(end),'yyyymmdd_HHMMSS')],'-dpng','-r0');
+        print(f1,[figdir,project,'_diff_',(commFields{ii}),'_',datestr(momentsSpec.time(1),'yyyymmdd_HHMMSS'),'_to_',datestr(momentsSpec.time(end),'yyyymmdd_HHMMSS')],'-dpng','-r0');
     end
 end
 end

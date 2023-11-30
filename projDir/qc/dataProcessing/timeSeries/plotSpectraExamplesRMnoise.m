@@ -1,6 +1,8 @@
 function plotSpectraExamplesRMnoise(data,momentsTime,momentsSpec,momentsSpecRMnoise,momentsSpecRMnoiseSmooth, ...
     specVelAdj,specPowerDBadj,powerDBsmooth,powerRMnoiseDB,powerRMnoiseDBsmooth, ...
-    plotRangeKM,plotInd,startInd,ii,ylimUpper,figdir,project)
+    plotRangeKM,plotInd,ii,ylimUpper,figdir,project)
+
+startInd=round(length(data.time)/2);
 
 % Find index of specified range
 rangeInd=min(find((data.range./1000)>=plotRangeKM(plotInd)));

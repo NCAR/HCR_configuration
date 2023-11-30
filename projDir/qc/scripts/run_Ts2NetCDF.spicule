@@ -1,0 +1,1 @@
+Ts2NetCDF -f /scr/sleet3/rsfdata/projects/spicule/hcr/time_series/wband/save/20210529/20210529_191* -params /home/rsfdata/git/HCR_configuration/projDir/qc/params/Ts2NetCDF.spicule -debug

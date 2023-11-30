@@ -1,22 +1,28 @@
 function momentsVelDual=sortDualParticles(momentsVelDualRaw,momentsTime)
-% Sort vel dual into two fields
-momentsVelDual=nan(size(momentsVelDualRaw,1),size(momentsVelDualRaw,2),3);
+% Correct velocity for aircraft motion
+xCorr=sind(momentsTime.azimuth_vc).*cosd(momentsTime.elevation).*momentsTime.eastward_velocity;
+yCorr=cosd(momentsTime.azimuth_vc).*cosd(momentsTime.elevation).*momentsTime.northward_velocity;
+zCorr=sind(momentsTime.elevation).*momentsTime.vertical_velocity;
+momentsVelDualC=momentsVelDualRaw+xCorr+yCorr+zCorr;
 
-velDiff=momentsVelDualRaw-momentsTime.vel;
+% Sort vel dual into two fields
+momentsVelDual=nan(size(momentsVelDualC,1),size(momentsVelDualC,2),3);
+
+velDiff=momentsVelDualC-momentsTime.vel;
 
 % Fill in the base layer, i.e. the layer that is closest to the time domain
 % vel
 [~,minDiffInd]=min(abs(velDiff),[],3,'omitmissing');
 
-subRow=repmat((1:size(momentsVelDualRaw,1))',[1,size(momentsVelDualRaw,2)]);
-subCol=repmat((1:size(momentsVelDualRaw,2)),[size(momentsVelDualRaw,1),1]);
+subRow=repmat((1:size(momentsVelDualC,1))',[1,size(momentsVelDualC,2)]);
+subCol=repmat((1:size(momentsVelDualC,2)),[size(momentsVelDualC,1),1]);
 
-minDiffIndLin=sub2ind(size(momentsVelDualRaw),subRow,subCol,minDiffInd);
+minDiffIndLin=sub2ind(size(momentsVelDualC),subRow,subCol,minDiffInd);
 
-momentsVelDual(:,:,1)=momentsVelDualRaw(minDiffIndLin);
+momentsVelDual(:,:,1)=momentsVelDualC(minDiffIndLin);
 
 % Handle the other layers
-otherLayers=momentsVelDualRaw;
+otherLayers=momentsVelDualC;
 otherLayers(minDiffIndLin)=nan;
 
 % Separate into higher and lower than from time domain

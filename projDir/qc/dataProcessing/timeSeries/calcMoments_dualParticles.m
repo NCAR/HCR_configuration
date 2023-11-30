@@ -15,14 +15,12 @@ dataDirTS=HCRdir(project,quality,qcVersion,freqData);
 figdir=[dataDirTS,'figsTS_dualParticles/'];
 
 showPlot='on';
-ylimUpper=5.2;
-ylimLower=-0.1;
 
 casefile=['~/git/HCR_configuration/projDir/qc/dataProcessing/HCRproducts/caseFiles/dualParticles_',project,'.txt'];
 
 freqStr=strfind(freqData,'hz');
 outFreq=str2num(freqData(1:freqStr-1)); % Desired output frequency in Hz
-timeSpan=1/outFreq;
+timeSpan=1/outFreq; % Desired time resolution in seconds
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -33,8 +31,6 @@ caseStart=datetime(caseList.Var1,caseList.Var2,caseList.Var3, ...
     caseList.Var4,caseList.Var5,caseList.Var6);
 caseEnd=datetime(caseList.Var7,caseList.Var8,caseList.Var9, ...
     caseList.Var10,caseList.Var11,caseList.Var12);
-
-%warning('off','MATLAB:polyfit:RepeatedPointsOrRescale');
 
 for aa=1:length(caseStart)
 
@@ -53,17 +49,27 @@ for aa=1:length(caseStart)
     data.QVc=[];
     data.IHx=[];
     data.QHx=[];
+    data.eastward_velocity=[];
+    data.northward_velocity=[];
+    data.vertical_velocity=[];
+    data.azimuth_vc=[];
 
-    data=readHCRts(fileListTS,data,startTime,endTime);
+    data=readHCRts(fileListTS,data,startTime-seconds(timeSpan),endTime+seconds(timeSpan));
 
     %% Calculate moments
 
     disp('Calculating moments ...')
 
-    beamNum=ceil(size(data.IVc,2)/(timeSpan*10000));
+    % Find available times
+    timeRound=dateshift(data.time,'start','minute')+seconds(round(second(data.time),1));
+    timeRound=unique(timeRound);
+    goodTimes=timeRound(timeRound>=startTime & timeRound<=endTime);
+
+    beamNum=length(goodTimes);
 
     momentsTime.powerV=nan(size(data.range,1),beamNum);
     momentsTime.powerH=nan(size(data.range,1),beamNum);
+    momentsTime.velRaw=nan(size(data.range,1),beamNum);
     momentsTime.vel=nan(size(data.range,1),beamNum);
     momentsTime.width=nan(size(data.range,1),beamNum);
     momentsTime.dbz=nan(size(data.range,1),beamNum);
@@ -71,24 +77,24 @@ for aa=1:length(caseStart)
     momentsTime.skew=nan(size(data.range,1),beamNum);
     momentsTime.kurt=nan(size(data.range,1),beamNum);
     momentsTime.ldr=nan(size(data.range,1),beamNum);
-
-    momentsSpecRMnoise=momentsTime;
-
+    momentsTime.range=nan(size(data.range,1),beamNum);
+    momentsTime.asl=nan(size(data.range,1),beamNum);
+    momentsTime.elevation=nan(1,beamNum);
+    momentsTime.eastward_velocity=nan(1,beamNum);
+    momentsTime.northward_velocity=nan(1,beamNum);
+    momentsTime.vertical_velocity=nan(1,beamNum);
+    momentsTime.azimuth_vc=nan(1,beamNum);
+    momentsTime.time=goodTimes;
+     
     momentsVelDualRaw=nan(size(data.range,1),beamNum,1);
 
-    timeBeams=[];
-
-    startInd=1;
-    endInd=1;
-    ii=1;
-
     % Loop through beams
-    while endInd<=size(data.IVc,2) & startInd<size(data.IVc,2)
+    for ii=1:beamNum
 
         % Find start and end indices for beam
-        timeDiff=etime(datevec(data.time(startInd)),datevec(data.time));
-        [minDiff,endInd]=min(abs(timeDiff+timeSpan));
-
+        [~,startInd]=min(abs(etime(datevec(goodTimes(ii)-seconds(timeSpan/2)),datevec(data.time))));
+        [~,endInd]=min(abs(etime(datevec(goodTimes(ii)+seconds(timeSpan/2)),datevec(data.time))));
+        
         sampleNum=endInd-startInd+1;
 
         % Window
@@ -96,50 +102,42 @@ for aa=1:length(caseStart)
         winWeight=sampleNum/sum(win);
         winNorm=win*winWeight;
 
-        cIQ.v=winNorm'.*(data.IVc(:,startInd:endInd)+i*data.QVc(:,startInd:endInd))./sqrt(sampleNum);
-        cIQ.h=winNorm'.*(data.IHx(:,startInd:endInd)+i*data.QHx(:,startInd:endInd))./sqrt(sampleNum);
+        % Trim data down to current beam
+        dataThis=trimData(data,startInd,endInd);
+        
+        % IQ
+        cIQ.v=winNorm'.*(dataThis.IVc+i*dataThis.QVc)./sqrt(sampleNum);
+        cIQ.h=winNorm'.*(dataThis.IHx+i*dataThis.QHx)./sqrt(sampleNum);
 
-        data.prtThis=data.prt(startInd:endInd);
+        %% Other variables
+        momentsTime.range(:,ii)=dataThis.range;
+        momentsTime.elevation(ii)=median(dataThis.elevation);
+        momentsTime.eastward_velocity(ii)=median(dataThis.eastward_velocity);
+        momentsTime.northward_velocity(ii)=median(dataThis.northward_velocity);
+        momentsTime.vertical_velocity(ii)=median(dataThis.vertical_velocity);
+        momentsTime.azimuth_vc(ii)=median(dataThis.azimuth_vc);
+        momentsTime.asl(:,ii)=median(dataThis.asl,2);
 
         %% Time moments
-        momentsTime=calcMomentsTime(cIQ,ii,momentsTime,data);
+        momentsTime=calcMomentsTime(cIQ,ii,momentsTime,dataThis);
 
         %% Spectral moments
         [specPowerLin,specPowerDB]=getSpectra(cIQ);
         
         % Move peak of spectra to middle
-        [specPowerDBadj,specVelAdj]=adjSpecBoundsV(specPowerDB.V,momentsTime.vel(:,ii),sampleNum,data);
+        [specPowerDBadj,specVelAdj]=adjSpecBoundsV(specPowerDB.V,momentsTime.velRaw(:,ii),dataThis);
 
         %% Remove noise
-        [powerDBsmooth,powerRMnoiseDBsmooth]=rmNoiseSpec(specPowerDBadj,specVelAdj,sampleNum);
+        [powerDBsmooth,powerRMnoiseDBsmooth]=rmNoiseSpec(specPowerDBadj,specVelAdj);
         powerRMnoiseDB=specPowerDBadj;
         powerRMnoiseDB(isnan(powerRMnoiseDBsmooth))=nan;
         specVelRMnoise=specVelAdj;
         specVelRMnoise(isnan(powerRMnoiseDBsmooth))=nan;
 
-        % Power fields
-        momentsSpecRMnoise=calcMomentsSpec_powerFields(10.^(powerRMnoiseDB./10),ii,momentsSpecRMnoise,data);
-
-        % Higher order moments
-        momentsSpecRMnoise=calcMomentsSpec_higherMoments(powerRMnoiseDB,specVelRMnoise,ii,momentsSpecRMnoise,data);
-
         %% Find regions with dual particle species
 
-        momentsVelDualRaw=findDualParticles_test(powerRMnoiseDBsmooth,specVelRMnoise,specPowerDBadj,momentsVelDualRaw,ii);
+        momentsVelDualRaw=findDualParticles(powerRMnoiseDBsmooth,specVelRMnoise,specPowerDBadj,momentsVelDualRaw,ii);
 
-        %% Other processing
-        
-        timeBeams=[timeBeams;data.time(startInd)];
-
-        if data.elevation(startInd)<0
-            flipYes=1;
-        else
-            flipYes=0;
-        end
-
-        %% Next beam
-        startInd=endInd+1;
-        ii=ii+1;
     end
 
     %% Sort out vel dual
@@ -151,7 +149,6 @@ for aa=1:length(caseStart)
 
     disp('Plotting velocities ...');
 
-    plotVelocities(data,momentsVelDual,momentsTime,timeBeams,figdir,project,ylimUpper,flipYes,showPlot);
+    plotVelocities(momentsVelDual,momentsTime,figdir,project,showPlot);
 
 end
-%warning('on','MATLAB:polyfit:RepeatedPointsOrRescale');

@@ -1,4 +1,4 @@
-function momentsVelDual=findDualParticles_test(powerIn,specVelIn,powerRaw,momentsVelDual,nn)
+function momentsVelDual=findDualParticles(powerIn,specVelIn,powerRaw,momentsVelDual,nn)
 % Find maxima and minima in spectra
 close all
 velDual=nan(size(powerIn,1),10);
@@ -122,17 +122,12 @@ for jj=1:length(dataInds)
         end
     end
 
-    % velTest=specVelIn(ii,locsMax(~isnan(locsMax)));
-    % if length(velTest)==1
-    %     velTest=[velTest,nan];
-    % end
     velDual(ii,1:length(locsMax))=specVelIn(ii,locsMax);
 
     if nn==inf
         plot(specVelIn(ii,:),powerRaw(ii,:),'-c','linewidth',1);
         hold on
         plot(specVelIn(ii,:),powerOrig,'-b','linewidth',2);
-        %scatter(specVelIn(ii,locsMin),powerOrig(locsMin),'filled','MarkerFaceColor','g')
         scatter(specVelIn(ii,locsMax(~isnan(locsMax))),powerOrig(locsMax(~isnan(locsMax))),80,'filled','MarkerFaceColor','r')
         scatter(specVelIn(ii,diffMin),powerOrig(diffMin),'filled','MarkerFaceColor','y')
         scatter(specVelIn(ii,diffMax),powerOrig(diffMax),'filled','MarkerFaceColor','k')
