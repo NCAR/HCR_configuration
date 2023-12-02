@@ -1,4 +1,4 @@
-function [powerSmoothOut,powerRMnoiseOut,locsMinOut,locsMaxOut]=rmNoiseSpec(powerAdj,velAdj)
+function [powerSmoothOut,powerRMnoiseOut]=rmNoiseSpec(powerAdj,velAdj)
 sampleNum=size(powerAdj,2);
 
 % Find maxima and minima in spectra

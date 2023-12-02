@@ -20,6 +20,11 @@ for jj=1:length(dataInds)
     startLine=find(diffLine==1)+1;
     endLine=find(diffLine==-1);
 
+    if isempty(startLine) & isempty(endLine)
+        startLine=1;
+        endLine=length(powerOrig);
+    end
+
     if isempty(startLine) & ~isempty(endLine)
         startLine=1;
     end

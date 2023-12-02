@@ -76,5 +76,5 @@ title('Velocity low (m s^{-1})')
 linkaxes([s1 s2 s3 s4],'xy')
 
 set(gcf,'PaperPositionMode','auto')
-print(f1,[figdir,project,'_vels_',datestr(moments.time(1),'yyyymmdd_HHMMSS'),'_to_',datestr(moments.time(end),'yyyymmdd_HHMMSS')],'-dpng','-r0');
+print(f1,[figdir,project,'_vels100hz_',datestr(moments.time(1),'yyyymmdd_HHMMSS'),'_to_',datestr(moments.time(end),'yyyymmdd_HHMMSS')],'-dpng','-r0');
 end

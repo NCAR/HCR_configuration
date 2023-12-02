@@ -7,7 +7,7 @@ addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 project='spicule'; %socrates, aristo, cset, otrec
 quality='ts'; %field, qc1, or qc2
 qualityCF='qc1';
-freqData='10hz';
+freqData='100hz'; % !!!!!!!!! Must be equal or less than one second !!!!!!!!!!!!!
 qcVersion='v1.1';
 
 dataDirTS=HCRdir(project,quality,qcVersion,freqData);
@@ -32,7 +32,7 @@ caseStart=datetime(caseList.Var1,caseList.Var2,caseList.Var3, ...
 caseEnd=datetime(caseList.Var7,caseList.Var8,caseList.Var9, ...
     caseList.Var10,caseList.Var11,caseList.Var12);
 
-for aa=1:length(caseStart)
+for aa=2:length(caseStart)
 
     disp(['Case ',num2str(aa),' of ',num2str(length(caseStart))]);
 
@@ -61,9 +61,9 @@ for aa=1:length(caseStart)
     disp('Calculating moments ...')
 
     % Find available times
-    timeRound=dateshift(data.time,'start','minute')+seconds(round(second(data.time),1));
-    timeRound=unique(timeRound);
-    goodTimes=timeRound(timeRound>=startTime & timeRound<=endTime);
+    TTdata=timetable(data.time',ones(size(data.time))');
+    synchTT=retime(TTdata,'regular','sum','TimeStep',seconds(timeSpan));
+    goodTimes=synchTT.Time(synchTT.Var1>0);
 
     beamNum=length(goodTimes);
 
@@ -87,9 +87,11 @@ for aa=1:length(caseStart)
     momentsTime.time=goodTimes;
      
     momentsVelDualRaw=nan(size(data.range,1),beamNum,1);
-
+tic
     % Loop through beams
     for ii=1:beamNum
+
+        disp(datestr(goodTimes(ii),'yyyymmdd_HHMMSS.FFF'));
 
         % Find start and end indices for beam
         [~,startInd]=min(abs(etime(datevec(goodTimes(ii)-seconds(timeSpan/2)),datevec(data.time))));
@@ -139,7 +141,7 @@ for aa=1:length(caseStart)
         momentsVelDualRaw=findDualParticles(powerRMnoiseDBsmooth,specVelRMnoise,specPowerDBadj,momentsVelDualRaw,ii);
 
     end
-
+toc
     %% Sort out vel dual
     momentsVelDual=sortDualParticles(momentsVelDualRaw,momentsTime);
     
