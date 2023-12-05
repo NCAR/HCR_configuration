@@ -7,8 +7,8 @@ addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 project='spicule'; %socrates, aristo, cset, otrec
 quality='ts'; %field, qc1, or qc2
 qualityCF='qc1';
-freqData='10hz'; % !!!!!!!!! Must be equal or less than one second !!!!!!!!!!!!!
-qcVersion='v1.2';
+freqData='100hz'; % !!!!!!!!! Must be equal or less than one second !!!!!!!!!!!!!
+qcVersion='v1.1';
 
 dataDirTS=HCRdir(project,quality,qcVersion,freqData);
 
@@ -32,7 +32,7 @@ caseStart=datetime(caseList.Var1,caseList.Var2,caseList.Var3, ...
 caseEnd=datetime(caseList.Var7,caseList.Var8,caseList.Var9, ...
     caseList.Var10,caseList.Var11,caseList.Var12);
 
-for aa=3:length(caseStart)
+for aa=2:length(caseStart)
 
     disp(['Case ',num2str(aa),' of ',num2str(length(caseStart))]);
 
@@ -77,7 +77,6 @@ for aa=3:length(caseStart)
     momentsTime.skew=nan(size(data.range,1),beamNum);
     momentsTime.kurt=nan(size(data.range,1),beamNum);
     momentsTime.ldr=nan(size(data.range,1),beamNum);
-    momentsTime.ncp=nan(size(data.range,1),beamNum);
     momentsTime.range=nan(size(data.range,1),beamNum);
     momentsTime.asl=nan(size(data.range,1),beamNum);
     momentsTime.elevation=nan(1,beamNum);
@@ -88,7 +87,6 @@ for aa=3:length(caseStart)
     momentsTime.time=goodTimes;
      
     momentsVelDualRaw=nan(size(data.range,1),beamNum,1);
-    
 tic
     % Loop through beams
     for ii=1:beamNum
@@ -96,8 +94,8 @@ tic
         disp(datestr(goodTimes(ii),'yyyymmdd_HHMMSS.FFF'));
 
         % Find start and end indices for beam
-        [~,startInd]=min(abs(goodTimes(ii)-seconds(timeSpan/20)-data.time));
-        [~,endInd]=min(abs(goodTimes(ii)+seconds(timeSpan/20)-data.time));
+        [~,startInd]=min(abs(etime(datevec(goodTimes(ii)-seconds(timeSpan/2)),datevec(data.time))));
+        [~,endInd]=min(abs(etime(datevec(goodTimes(ii)+seconds(timeSpan/2)),datevec(data.time))));
         
         sampleNum=endInd-startInd+1;
 
@@ -125,25 +123,11 @@ tic
         %% Time moments
         momentsTime=calcMomentsTime(cIQ,ii,momentsTime,dataThis);
 
-        % Censor on SNR and NCP
-        censorY=momentsTime.snr(:,ii)<0 & momentsTime.ncp(:,ii)<0.2;
-        censorY(isnan(momentsTime.snr(:,ii)))=1;
-        censorY=~censorY;
-        censorY=double(censorY);
-        censorY(censorY==0)=nan;
-        censorY=movmedian(censorY,7,'includemissing');
-        censorY=movmedian(censorY,7,'omitmissing');
-        momentsTime.vel(isnan(censorY),ii)=nan;
-
         %% Spectral moments
         [specPowerLin,specPowerDB]=getSpectra(cIQ);
         
         % Move peak of spectra to middle
         [specPowerDBadj,specVelAdj]=adjSpecBoundsV(specPowerDB.V,momentsTime.velRaw(:,ii),dataThis);
-
-        % Censor
-        specPowerDBadj(isnan(momentsTime.vel(:,ii)),:)=nan;
-        specVelAdj(isnan(momentsTime.vel(:,ii)),:)=nan;
 
         %% Remove noise
         [powerDBsmooth,powerRMnoiseDBsmooth]=rmNoiseSpec(specPowerDBadj,specVelAdj);

@@ -13,6 +13,7 @@ momentsTime.velRaw(:,ii)=data.lambda/(4*pi*mode(data.prt))*angle(R1v);
 widthRaw=data.lambda/(2*pi.*mode(data.prt)*6^.5)*abs(log(abs(R1v./R2v))).^0.5;
 momentsTime.skew(:,ii)=abs(log(abs(R3v./(R2v.^3))));
 momentsTime.kurt(:,ii)=abs(log(abs(R4v./(R2v.^2))));
+momentsTime.ncp(:,ii)=abs(R1v)./R0v;
 
 % Correct velocity for aircraft motion
 xCorr=sind(momentsTime.azimuth_vc(ii)).*cosd(momentsTime.elevation(ii)).*momentsTime.eastward_velocity(ii);

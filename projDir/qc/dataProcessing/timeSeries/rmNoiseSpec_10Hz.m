@@ -1,4 +1,4 @@
-function [powerSmoothOut,powerRMnoiseOut]=rmNoiseSpec(powerAdj,velAdj)
+function [powerSmoothOut,powerRMnoiseOut]=rmNoiseSpec_10Hz(powerAdj,velAdj)
 sampleNum=size(powerAdj,2);
 
 % Find maxima and minima in spectra
@@ -6,10 +6,7 @@ sampleNum=size(powerAdj,2);
 powerSmoothOut=nan(size(powerAdj));
 powerRMnoiseOut=nan(size(powerAdj));
 
-loopInds=find(any(~isnan(powerAdj),2));
-
-for aa=1:size(loopInds,1)
-    ii=loopInds(aa);
+for ii=1:size(powerAdj,1)
 
     powerOrig=powerAdj(ii,:);
     B=dop(velAdj(ii,:)',25);
@@ -120,22 +117,12 @@ for aa=1:size(loopInds,1)
         end
     end
 
-    rmLine=zeros(size(startLine));
-    lineMax=nan(size(startLine));
     for kk=1:length(startLine)
         lineTest=powerRMnoise(startLine(kk):endLine(kk));
         spread=max(lineTest,[],'omitnan')-min(lineTest,[],'omitnan');
         if spread<2
-            rmLine(kk)=1;
+            powerRMnoise(startLine(kk):endLine(kk))=nan;
         end
-        lineMax(kk)=max(lineTest);
-    end
-
-    rmLine(lineMax~=max(lineMax))=1;
-    rmInds=find(rmLine==1);
-    for kk=1:length(rmInds)
-        powerRMnoise(startLine(rmInds(kk)):endLine(rmInds(kk)))=nan;
-        powerSmooth(startLine(rmInds(kk)):endLine(rmInds(kk)))=nan;
     end
 
     powerSmoothOut(ii,:)=powerSmooth;
