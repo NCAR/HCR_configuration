@@ -32,7 +32,7 @@ caseStart=datetime(caseList.Var1,caseList.Var2,caseList.Var3, ...
 caseEnd=datetime(caseList.Var7,caseList.Var8,caseList.Var9, ...
     caseList.Var10,caseList.Var11,caseList.Var12);
 
-for aa=3:length(caseStart)
+for aa=4:length(caseStart)
 
     disp(['Case ',num2str(aa),' of ',num2str(length(caseStart))]);
 
@@ -86,14 +86,14 @@ for aa=3:length(caseStart)
     momentsTime.vertical_velocity=nan(1,beamNum);
     momentsTime.azimuth_vc=nan(1,beamNum);
     momentsTime.time=goodTimes;
-     
+
     momentsVelDualRaw=nan(size(data.range,1),beamNum,1);
-    
-tic
+
+    tic
     % Loop through beams
     for ii=1:beamNum
 
-        disp(datestr(goodTimes(ii),'yyyymmdd_HHMMSS.FFF'));
+        %disp(datestr(goodTimes(ii),'yyyymmdd_HHMMSS.FFF'));
 
         % Find start and end indices for beam
         [~,startInd]=min(abs(goodTimes(ii)-seconds(timeSpan/20)-data.time));
@@ -157,10 +157,15 @@ tic
         momentsVelDualRaw=findDualParticles(powerRMnoiseDBsmooth,specVelRMnoise,specPowerDBadj,momentsVelDualRaw,ii);
 
     end
-toc
+    eSecs=toc;
+
+    eData=momentsTime.time(end)-momentsTime.time(1);
+    timePerMin=eSecs/60/minutes(eData);
+    disp([num2str(timePerMin),' minutes per data minute.']);
+
     %% Sort out vel dual
     momentsVelDual=sortDualParticles(momentsVelDualRaw,momentsTime);
-    
+
     %% Plot
 
     close all

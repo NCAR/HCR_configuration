@@ -6,7 +6,7 @@ zCorr=sind(momentsTime.elevation).*momentsTime.vertical_velocity;
 momentsVelDualC=momentsVelDualRaw+xCorr+yCorr+zCorr;
 
 % Sort vel dual into two fields
-momentsVelDual=nan(size(momentsVelDualC,1),size(momentsVelDualC,2),3);
+momentsVelDual=nan(size(momentsVelDualC,1),size(momentsVelDualC,2),5);
 
 velDiff=momentsVelDualC-momentsTime.vel;
 
@@ -19,7 +19,7 @@ subCol=repmat((1:size(momentsVelDualC,2)),[size(momentsVelDualC,1),1]);
 
 minDiffIndLin=sub2ind(size(momentsVelDualC),subRow,subCol,minDiffInd);
 
-momentsVelDual(:,:,1)=momentsVelDualC(minDiffIndLin);
+baseLayer=momentsVelDualC(minDiffIndLin);
 
 % Handle the other layers
 otherLayers=momentsVelDualC;
@@ -80,7 +80,7 @@ if ~isempty(velHigh)
         [~,goodInd]=min(abs(surrMed-multPix),[],'omitmissing');
         highLayer(r(ii),c(ii))=multPix(goodInd);
     end
-    momentsVelDual(:,:,2)=highLayer(2:end-1,2:end-1);
+    velHighHoles=highLayer(2:end-1,2:end-1);
 end
 
 if ~isempty(velLow)
@@ -105,6 +105,19 @@ if ~isempty(velLow)
         [~,goodInd]=min(abs(surrMed-multPix),[],'omitmissing');
         lowLayer(r(ii),c(ii))=multPix(goodInd);
     end
-    momentsVelDual(:,:,3)=lowLayer(2:end-1,2:end-1);
+    velLowHoles=lowLayer(2:end-1,2:end-1);
 end
+
+% Add base layer to high and low
+velHighFilled=velHighHoles;
+velHighFilled(isnan(velHighHoles))=baseLayer(isnan(velHighHoles));
+
+velLowFilled=velLowHoles;
+velLowFilled(isnan(velLowHoles))=baseLayer(isnan(velLowHoles));
+
+momentsVelDual(:,:,1)=baseLayer;
+momentsVelDual(:,:,2)=velHighFilled;
+momentsVelDual(:,:,3)=velLowFilled;
+momentsVelDual(:,:,4)=velHighHoles;
+momentsVelDual(:,:,5)=velLowHoles;
 end

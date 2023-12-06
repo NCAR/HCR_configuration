@@ -1,12 +1,22 @@
 function plotVelocities(velDual,moments,figdir,project,showPlot)
-velBase=velDual(:,:,1);
-velHigh=velDual(:,:,2);
-velLow=velDual(:,:,3);
+velDual(:,moments.elevation>0,:)=-velDual(:,moments.elevation>0,:);
+moments.vel(:,moments.elevation>0,:)=-moments.vel(:,moments.elevation>0,:);
 
-velHighFilled=velHigh;
-velHighFilled(isnan(velHigh))=velBase(isnan(velHigh));
-velLowFilled=velLow;
-velLowFilled(isnan(velLow))=velBase(isnan(velLow));
+velBase=velDual(:,:,1);
+velHigh=nan(size(velBase));
+velLow=nan(size(velBase));
+velHighH=nan(size(velBase));
+velLowH=nan(size(velBase));
+
+velHigh(:,moments.elevation>0)=velDual(:,moments.elevation>0,3);
+velLow(:,moments.elevation>0)=velDual(:,moments.elevation>0,2);
+velHigh(:,moments.elevation<=0)=velDual(:,moments.elevation<=0,2);
+velLow(:,moments.elevation<=0)=velDual(:,moments.elevation<=0,3);
+
+velHighH(:,moments.elevation>0)=velDual(:,moments.elevation>0,5);
+velLowH(:,moments.elevation>0)=velDual(:,moments.elevation>0,4);
+velHighH(:,moments.elevation<=0)=velDual(:,moments.elevation<=0,4);
+velLowH(:,moments.elevation<=0)=velDual(:,moments.elevation<=0,5);
 
 aslGood=moments.asl(~isnan(velBase))./1000;
 ylims=[0,max(aslGood)+0.5];
@@ -53,10 +63,10 @@ title('Velocity base (m s^{-1})')
 
 s3=subplot(3,2,3);
 
-velHigh(isnan(velHigh))=-99;
+velHighH(isnan(velHighH))=-99;
 
 hold on
-surf(moments.time,moments.asl./1000,velHigh,'edgecolor','none');
+surf(moments.time,moments.asl./1000,velHighH,'edgecolor','none');
 view(2);
 ylabel('Altitude (km)');
 clim([-8.001 8]);
@@ -70,10 +80,10 @@ title('Velocity high (m s^{-1})')
 
 s4=subplot(3,2,4);
 
-velLow(isnan(velLow))=-99;
+velLowH(isnan(velLowH))=-99;
 
 hold on
-surf(moments.time,moments.asl./1000,velLow,'edgecolor','none');
+surf(moments.time,moments.asl./1000,velLowH,'edgecolor','none');
 view(2);
 ylabel('Altitude (km)');
 clim([-8.001 8]);
@@ -87,10 +97,10 @@ title('Velocity low (m s^{-1})')
 
 s5=subplot(3,2,5);
 
-velHighFilled(isnan(velHighFilled))=-99;
+velHigh(isnan(velHigh))=-99;
 
 hold on
-surf(moments.time,moments.asl./1000,velHighFilled,'edgecolor','none');
+surf(moments.time,moments.asl./1000,velHigh,'edgecolor','none');
 view(2);
 ylabel('Altitude (km)');
 clim([-8.001 8]);
@@ -104,10 +114,10 @@ title('Velocity high filled (m s^{-1})')
 
 s6=subplot(3,2,6);
 
-velLowFilled(isnan(velLowFilled))=-99;
+velLow(isnan(velLow))=-99;
 
 hold on
-surf(moments.time,moments.asl./1000,velLowFilled,'edgecolor','none');
+surf(moments.time,moments.asl./1000,velLow,'edgecolor','none');
 view(2);
 ylabel('Altitude (km)');
 clim([-8.001 8]);
