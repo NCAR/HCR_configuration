@@ -175,7 +175,7 @@ for aa=1:length(caseStart)
         momentsSpec=calcMomentsSpec_higherMoments(specPowerDBadj,specVelAdj,ii,momentsSpec,dataThis);
 
         %% Remove noise
-        [powerDBsmooth,powerRMnoiseDBsmooth]=rmNoiseSpec_10Hz(specPowerDBadj,specVelAdj);
+        [powerDBsmooth,powerRMnoiseDBsmooth]=rmNoiseSpec_10Hz(specPowerDBadj);
         powerRMnoiseDB=specPowerDBadj;
         powerRMnoiseDB(isnan(powerRMnoiseDBsmooth))=nan;
         specVelRMnoise=specVelAdj;

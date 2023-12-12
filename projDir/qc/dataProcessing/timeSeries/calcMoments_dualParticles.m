@@ -32,7 +32,7 @@ caseStart=datetime(caseList.Var1,caseList.Var2,caseList.Var3, ...
 caseEnd=datetime(caseList.Var7,caseList.Var8,caseList.Var9, ...
     caseList.Var10,caseList.Var11,caseList.Var12);
 
-for aa=4:length(caseStart)
+for aa=1:length(caseStart)
 
     disp(['Case ',num2str(aa),' of ',num2str(length(caseStart))]);
 
@@ -79,7 +79,7 @@ for aa=4:length(caseStart)
     momentsTime.ldr=nan(size(data.range,1),beamNum);
     momentsTime.ncp=nan(size(data.range,1),beamNum);
     momentsTime.range=nan(size(data.range,1),beamNum);
-    momentsTime.asl=nan(size(data.range,1),beamNum);
+    momentsTime.altitude=nan(1,beamNum);
     momentsTime.elevation=nan(1,beamNum);
     momentsTime.eastward_velocity=nan(1,beamNum);
     momentsTime.northward_velocity=nan(1,beamNum);
@@ -120,7 +120,7 @@ for aa=4:length(caseStart)
         momentsTime.northward_velocity(ii)=median(dataThis.northward_velocity);
         momentsTime.vertical_velocity(ii)=median(dataThis.vertical_velocity);
         momentsTime.azimuth_vc(ii)=median(dataThis.azimuth_vc);
-        momentsTime.asl(:,ii)=median(dataThis.asl,2);
+        momentsTime.altitude(ii)=median(dataThis.altitude);
 
         %% Time moments
         momentsTime=calcMomentsTime(cIQ,ii,momentsTime,dataThis);
@@ -146,7 +146,7 @@ for aa=4:length(caseStart)
         specVelAdj(isnan(momentsTime.vel(:,ii)),:)=nan;
 
         %% Remove noise
-        [powerDBsmooth,powerRMnoiseDBsmooth]=rmNoiseSpec(specPowerDBadj,specVelAdj);
+        [powerDBsmooth,powerRMnoiseDBsmooth]=rmNoiseSpec(specPowerDBadj);
         powerRMnoiseDB=specPowerDBadj;
         powerRMnoiseDB(isnan(powerRMnoiseDBsmooth))=nan;
         specVelRMnoise=specVelAdj;
@@ -171,6 +171,8 @@ for aa=4:length(caseStart)
     close all
 
     disp('Plotting velocities ...');
+
+    momentsTime.asl=HCRrange2asl(momentsTime.range,momentsTime.elevation,momentsTime.altitude);
 
     plotVelocities(momentsVelDual,momentsTime,figdir,project,showPlot);
 

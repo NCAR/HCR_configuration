@@ -1,4 +1,4 @@
-function [powerSmoothOut,powerRMnoiseOut]=rmNoiseSpec(powerAdj,velAdj)
+function [powerSmoothOut,powerRMnoiseOut]=rmNoiseSpec(powerAdj)
 sampleNum=size(powerAdj,2);
 
 % Find maxima and minima in spectra
@@ -8,16 +8,17 @@ powerRMnoiseOut=nan(size(powerAdj));
 
 loopInds=find(any(~isnan(powerAdj),2));
 
+x=linspace(-1,1,sampleNum);
+[~,powerSmoothAll,~]= forsythe_polyfit(x,powerAdj',25);
+
 for aa=1:size(loopInds,1)
     ii=loopInds(aa);
 
-    powerOrig=powerAdj(ii,:);
-    B=dop(velAdj(ii,:)',25);
-    powerSmooth=B*B'*powerOrig';
+    powerSmooth=powerSmoothAll(:,ii);
     powerSmooth=powerSmooth';
     powerSmooth(1:round(sampleNum/100))=nan;
     powerSmooth(sampleNum-round(sampleNum/100)+1:end)=nan;
-        
+
     [locsMax,prom]=islocalmax(powerSmooth,'MinSeparation',round(sampleNum/6),'MinProminence',1);
     locsMax=find(locsMax==1);
     prom=prom(locsMax);
@@ -29,14 +30,14 @@ for aa=1:size(loopInds,1)
     end
 
     locsMin=cat(2,1+round(sampleNum/20),locsMin,length(powerSmooth)-round(sampleNum/20));
-    
+
     noisePower=powerAdj(ii,:);
 
     if ~isempty(locsMax)
         peakPower=powerSmooth(locsMax);
         valPower=powerSmooth(locsMin);
 
-         for jj=1:length(locsMax)
+        for jj=1:length(locsMax)
             thisMax=locsMax(jj);
             promThis=prom(jj);
             peakPowerThis=peakPower(jj);
@@ -60,19 +61,19 @@ for aa=1:size(loopInds,1)
             end
 
             noisePower(leftInd:rightInd)=nan;
-         end
+        end
     end
 
     powerRMnoise=powerSmooth;
     noisePerc=prctile(noisePower,60);
 
     powerRMnoise(powerSmooth<noisePerc)=nan;
-   
+
     lineMask=double(~isnan(powerRMnoise));
     lineMask(lineMask==0)=nan;
     lineMask=movmedian(lineMask,round(sampleNum/20),'includemissing');
     lineMask=movmedian(lineMask,round(sampleNum/20),'omitmissing');
-       
+
     powerRMnoise(isnan(lineMask))=nan;
 
     powerWithNoise=powerSmooth;
@@ -83,7 +84,7 @@ for aa=1:size(loopInds,1)
     lineMask(lineMask==0)=nan;
     lineMask=movmedian(lineMask,round(sampleNum/20),'includemissing');
     lineMask=movmedian(lineMask,round(sampleNum/20),'omitmissing');
-       
+
     powerRMnoise(isnan(lineMask))=nan;
 
     noisePower2=powerAdj(ii,:);
@@ -96,7 +97,7 @@ for aa=1:size(loopInds,1)
     lineMask(lineMask==0)=nan;
     lineMask=movmedian(lineMask,round(sampleNum/20),'includemissing');
     lineMask=movmedian(lineMask,round(sampleNum/20),'omitmissing');
-       
+
     powerRMnoise(isnan(lineMask))=nan;
 
     lineMask=~isnan(powerRMnoise);

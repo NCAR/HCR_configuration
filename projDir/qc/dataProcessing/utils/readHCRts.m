@@ -70,16 +70,15 @@ end
 
 % Trimm times
 allVars=fieldnames(data);
-timeInds=find(data.time>=startTime & data.time<=endTime);
+%timeInds=find(data.time>=startTime & data.time<=endTime);
+%noTimeInds=find(data.time<startTime | data.time>endTime);
 for ii=1:size(allVars,1)
-    if ~strcmp(allVars{ii},'range') & max(size(data.(allVars{ii})))~=1
-        if min(size(data.(allVars{ii})))~=1
-            data.(allVars{ii})=single(data.(allVars{ii})(:,timeInds));
-        else
-            data.(allVars{ii})=data.(allVars{ii})(:,timeInds);
-        end
+    if ~strcmp(allVars{ii},'range') & ~strcmp(allVars{ii},'time') & max(size(data.(allVars{ii})))~=1
+        %data.(allVars{ii})=data.(allVars{ii})(:,timeInds);
+        data.(allVars{ii})(:,(data.time<startTime | data.time>endTime))=[];
     end
 end
-data.asl=HCRrange2asl(data.range,data.elevation,data.altitude);
-data.asl=single(data.asl);
+data.time(:,(data.time<startTime | data.time>endTime))=[];
+% data.asl=HCRrange2asl(data.range,data.elevation,data.altitude);
+% data.asl=single(data.asl);
 end
