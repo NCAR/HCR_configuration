@@ -1,6 +1,13 @@
-function data=readHCRts(fileList,data,startTime,endTime)
+function [data,fileFirst,fileLast]=readHCRts(fileList,data,startTime,endTime,cutTime)
 
-vars=fieldnames(data);
+fileFirst=nan(length(fileList),1);
+fileLast=nan(length(fileList),1);
+
+if ~isempty(data)
+    vars=fieldnames(data);
+else
+    vars=[];
+end
 
 file=fileList{1};
 
@@ -43,6 +50,9 @@ for ii=1:length(vars)
     end
 end
 
+fileFirst(1)=1;
+fileLast(1)=length(data.time);
+
 for jj=2:length(fileList)
     file=fileList{jj};
 
@@ -64,21 +74,21 @@ for jj=2:length(fileList)
         if ~strcmp(vars{ii},'range') & size(readThis,2)==1
             readThis=readThis';
         end
-        data.(vars{ii})=cat(2,data.(vars{ii}),readThis);
+        data.(vars{ii})=cat(2,data.(vars{ii}),single(readThis));
     end
+    fileFirst(jj)=fileLast(jj-1)+1;
+    fileLast(jj)=length(data.time);
 end
 
 % Trimm times
-allVars=fieldnames(data);
-%timeInds=find(data.time>=startTime & data.time<=endTime);
-%noTimeInds=find(data.time<startTime | data.time>endTime);
-for ii=1:size(allVars,1)
-    if ~strcmp(allVars{ii},'range') & ~strcmp(allVars{ii},'time') & max(size(data.(allVars{ii})))~=1
-        %data.(allVars{ii})=data.(allVars{ii})(:,timeInds);
-        data.(allVars{ii})(:,(data.time<startTime | data.time>endTime))=[];
+if cutTime
+    allVars=fieldnames(data);
+    noTimeInds=find(data.time<startTime | data.time>endTime);
+    for ii=1:size(allVars,1)
+        if ~strcmp(allVars{ii},'range') & ~strcmp(allVars{ii},'time') & max(size(data.(allVars{ii})))~=1
+            data.(allVars{ii})(:,noTimeInds)=[];
+        end
     end
+    data.time(:,noTimeInds)=[];
 end
-data.time(:,(data.time<startTime | data.time>endTime))=[];
-% data.asl=HCRrange2asl(data.range,data.elevation,data.altitude);
-% data.asl=single(data.asl);
 end

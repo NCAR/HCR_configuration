@@ -1,12 +1,17 @@
 function momentsVelDual=findDualParticles(powerIn,specVelIn,powerRaw,momentsVelDual,nn)
 % Find maxima and minima in spectra
-close all
 velDual=nan(size(powerIn,1),10);
 
 dataInds=find(any(~isnan(powerIn),2));
 
 % Remove transmitter pulse
 dataInds(dataInds<=12)=[];
+
+locsMaxAll=islocalmax(powerIn,2);
+
+diffCurve=cat(2,nan(size(powerIn,1),1),diff(powerIn,1,2));
+diffMaxAll=islocalmax(diffCurve,2);
+diffMinAll=islocalmin(diffCurve,2);
 
 for jj=1:length(dataInds)
     ii=dataInds(jj);
@@ -39,15 +44,11 @@ for jj=1:length(dataInds)
     end
 
     % Find maxima % and minima
-    locsMax=islocalmax(powerOrig);
-    locsMax=find(locsMax==1);
+    locsMax=find(locsMaxAll(ii,:)==1);
    
     % Find change points
-    diffCurve=cat(2,nan,diff(powerOrig));
-    diffMax=islocalmax(diffCurve);
-    diffMax=find(diffMax==1);
-    diffMin=islocalmin(diffCurve);
-    diffMin=find(diffMin==1);
+    diffMax=find(diffMaxAll(ii,:)==1);
+    diffMin=find(diffMinAll(ii,:)==1);
 
     % Find points to test
     testX=[];
@@ -152,5 +153,6 @@ if checkDims<0
     momentsVelDual=padarray(momentsVelDual,[0,0,abs(checkDims)],nan,'post');
 end
 
-momentsVelDual(:,nn,1:size(velDual,2))=velDual;
+dim3=size(velDual,2);
+momentsVelDual(:,nn,1:dim3)=single(velDual);
 end

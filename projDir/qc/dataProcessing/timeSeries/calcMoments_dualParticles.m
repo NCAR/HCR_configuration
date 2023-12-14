@@ -33,135 +33,191 @@ caseEnd=datetime(caseList.Var7,caseList.Var8,caseList.Var9, ...
     caseList.Var10,caseList.Var11,caseList.Var12);
 
 for aa=1:length(caseStart)
+    tic
 
     disp(['Case ',num2str(aa),' of ',num2str(length(caseStart))]);
 
     startTime=caseStart(aa);
     endTime=caseEnd(aa);
 
-    %% Load data TS
-    disp("Getting time series data ...");
-
     fileListTS=makeFileList(dataDirTS,startTime+seconds(1),endTime-seconds(1),'20YYMMDDxhhmmss',1);
 
-    data=[];
-    data.IVc=[];
-    data.QVc=[];
-    data.IHx=[];
-    data.QHx=[];
-    data.eastward_velocity=[];
-    data.northward_velocity=[];
-    data.vertical_velocity=[];
-    data.azimuth_vc=[];
+    for bb=1:length(fileListTS)
 
-    data=readHCRts(fileListTS,data,startTime-seconds(timeSpan),endTime+seconds(timeSpan));
+        if bb==1
+            data=[];
+            data.IVc=[];
+            data.QVc=[];
+            data.IHx=[];
+            data.QHx=[];
+            data.eastward_velocity=[];
+            data.northward_velocity=[];
+            data.vertical_velocity=[];
+            data.azimuth_vc=[];
 
-    %% Calculate moments
+            vars=fieldnames(data);
 
-    disp('Calculating moments ...')
+            %% Load data TS
+            disp(['Loading time series file ',num2str(bb),' of ' num2str(length(fileListTS)),' ...']);
+            data=readHCRts(fileListTS(1),data,startTime-seconds(timeSpan),endTime+seconds(timeSpan),0);
 
-    % Find available times
-    TTdata=timetable(data.time',ones(size(data.time))');
-    synchTT=retime(TTdata,'regular','sum','TimeStep',seconds(timeSpan));
-    goodTimes=synchTT.Time(synchTT.Var1>0);
+            % Find available times
+            timeTest=data.time';
+            timeTest(data.time<startTime | data.time>endTime)=[];
+            TTdata=timetable(timeTest,ones(size(timeTest)));
+            synchTT=retime(TTdata,'regular','sum','TimeStep',seconds(timeSpan));
+            goodTimes=synchTT.timeTest(synchTT.Var1>0);
 
-    beamNum=length(goodTimes);
+            beamNum=length(goodTimes)-1;
+        else
+            %% Trimm first file
+            data=trimFirstFile(data,endInd);
 
-    momentsTime.powerV=nan(size(data.range,1),beamNum);
-    momentsTime.powerH=nan(size(data.range,1),beamNum);
-    momentsTime.velRaw=nan(size(data.range,1),beamNum);
-    momentsTime.vel=nan(size(data.range,1),beamNum);
-    momentsTime.width=nan(size(data.range,1),beamNum);
-    momentsTime.dbz=nan(size(data.range,1),beamNum);
-    momentsTime.snr=nan(size(data.range,1),beamNum);
-    momentsTime.skew=nan(size(data.range,1),beamNum);
-    momentsTime.kurt=nan(size(data.range,1),beamNum);
-    momentsTime.ldr=nan(size(data.range,1),beamNum);
-    momentsTime.ncp=nan(size(data.range,1),beamNum);
-    momentsTime.range=nan(size(data.range,1),beamNum);
-    momentsTime.altitude=nan(1,beamNum);
-    momentsTime.elevation=nan(1,beamNum);
-    momentsTime.eastward_velocity=nan(1,beamNum);
-    momentsTime.northward_velocity=nan(1,beamNum);
-    momentsTime.vertical_velocity=nan(1,beamNum);
-    momentsTime.azimuth_vc=nan(1,beamNum);
-    momentsTime.time=goodTimes;
+            goodTimes(1:end-1)=[];
 
-    momentsVelDualRaw=nan(size(data.range,1),beamNum,1);
+            %% Load data TS
+            disp(['Loading time series file ',num2str(bb),' of ' num2str(length(fileListTS)),' ...']);
 
-    tic
-    % Loop through beams
-    for ii=1:beamNum
+            data=readHCRts_add(fileListTS{bb},data,vars);
 
-        %disp(datestr(goodTimes(ii),'yyyymmdd_HHMMSS.FFF'));
+            % Find available times
+            timeTest=data.time';
+            timeTest(data.time<goodTimes | data.time>endTime)=[];
+        end
 
-        % Find start and end indices for beam
-        [~,startInd]=min(abs(goodTimes(ii)-seconds(timeSpan/20)-data.time));
-        [~,endInd]=min(abs(goodTimes(ii)+seconds(timeSpan/20)-data.time));
-        
-        sampleNum=endInd-startInd+1;
+        TTdata=timetable(timeTest,ones(size(timeTest)));
+        synchTT=retime(TTdata,'regular','sum','TimeStep',seconds(timeSpan));
+        goodTimes=synchTT.timeTest(synchTT.Var1>0);
 
-        % Window
-        win=window(@hamming,sampleNum);  % Default window is Hamming
-        winWeight=sampleNum/sum(win);
-        winNorm=win*winWeight;
+        if bb<length(fileListTS)
+            beamNum=length(goodTimes)-1;
+        else
+            beamNum=length(goodTimes);
+        end
 
-        % Trim data down to current beam
-        dataThis=trimData(data,startInd,endInd);
-        
-        % IQ
-        cIQ.v=winNorm'.*(dataThis.IVc+i*dataThis.QVc)./sqrt(sampleNum);
-        cIQ.h=winNorm'.*(dataThis.IHx+i*dataThis.QHx)./sqrt(sampleNum);
+        %% Calculate moments
 
-        %% Other variables
-        momentsTime.range(:,ii)=dataThis.range;
-        momentsTime.elevation(ii)=median(dataThis.elevation);
-        momentsTime.eastward_velocity(ii)=median(dataThis.eastward_velocity);
-        momentsTime.northward_velocity(ii)=median(dataThis.northward_velocity);
-        momentsTime.vertical_velocity(ii)=median(dataThis.vertical_velocity);
-        momentsTime.azimuth_vc(ii)=median(dataThis.azimuth_vc);
-        momentsTime.altitude(ii)=median(dataThis.altitude);
+        disp('Calculating moments ...')
+        momentsTimeOne.powerV=nan(size(data.range,1),beamNum);
+        momentsTimeOne.powerH=nan(size(data.range,1),beamNum);
+        momentsTimeOne.velRaw=nan(size(data.range,1),beamNum);
+        momentsTimeOne.vel=nan(size(data.range,1),beamNum);
+        momentsTimeOne.width=nan(size(data.range,1),beamNum);
+        momentsTimeOne.dbz=nan(size(data.range,1),beamNum);
+        momentsTimeOne.snr=nan(size(data.range,1),beamNum);
+        momentsTimeOne.skew=nan(size(data.range,1),beamNum);
+        momentsTimeOne.kurt=nan(size(data.range,1),beamNum);
+        momentsTimeOne.ldr=nan(size(data.range,1),beamNum);
+        momentsTimeOne.ncp=nan(size(data.range,1),beamNum);
+        momentsTimeOne.range=nan(size(data.range,1),beamNum);
+        momentsTimeOne.altitude=nan(1,beamNum);
+        momentsTimeOne.elevation=nan(1,beamNum);
+        momentsTimeOne.eastward_velocity=nan(1,beamNum);
+        momentsTimeOne.northward_velocity=nan(1,beamNum);
+        momentsTimeOne.vertical_velocity=nan(1,beamNum);
+        momentsTimeOne.azimuth_vc=nan(1,beamNum);
+        momentsTimeOne.time=goodTimes(1:beamNum)';
 
-        %% Time moments
-        momentsTime=calcMomentsTime(cIQ,ii,momentsTime,dataThis);
+        momentsVelDualRawOne=single(nan(size(data.range,1),beamNum,1));
 
-        % Censor on SNR and NCP
-        censorY=momentsTime.snr(:,ii)<0 & momentsTime.ncp(:,ii)<0.2;
-        censorY(isnan(momentsTime.snr(:,ii)))=1;
-        censorY=~censorY;
-        censorY=double(censorY);
-        censorY(censorY==0)=nan;
-        censorY=movmedian(censorY,7,'includemissing');
-        censorY=movmedian(censorY,7,'omitmissing');
-        momentsTime.vel(isnan(censorY),ii)=nan;
+        % Loop through beams
+        for ii=1:beamNum
 
-        %% Spectral moments
-        [specPowerLin,specPowerDB]=getSpectra(cIQ);
-        
-        % Move peak of spectra to middle
-        [specPowerDBadj,specVelAdj]=adjSpecBoundsV(specPowerDB.V,momentsTime.velRaw(:,ii),dataThis);
+            %disp(datestr(goodTimes(ii),'yyyymmdd_HHMMSS.FFF'));
+            if ii==111
+                stop1=1;
+            end
 
-        % Censor
-        specPowerDBadj(isnan(momentsTime.vel(:,ii)),:)=nan;
-        specVelAdj(isnan(momentsTime.vel(:,ii)),:)=nan;
+            % Find start and end indices for beam
+            [~,startInd]=min(abs(goodTimes(ii)-seconds(timeSpan/20)-data.time));
+            [~,endInd]=min(abs(goodTimes(ii)+seconds(timeSpan/20)-data.time));
 
-        %% Remove noise
-        [powerDBsmooth,powerRMnoiseDBsmooth]=rmNoiseSpec(specPowerDBadj);
-        powerRMnoiseDB=specPowerDBadj;
-        powerRMnoiseDB(isnan(powerRMnoiseDBsmooth))=nan;
-        specVelRMnoise=specVelAdj;
-        specVelRMnoise(isnan(powerRMnoiseDBsmooth))=nan;
+            sampleNum=endInd-startInd+1;
 
-        %% Find regions with dual particle species
+            % Window
+            win=window(@hamming,sampleNum);  % Default window is Hamming
+            winWeight=sampleNum/sum(win);
+            winNorm=win*winWeight;
 
-        momentsVelDualRaw=findDualParticles(powerRMnoiseDBsmooth,specVelRMnoise,specPowerDBadj,momentsVelDualRaw,ii);
+            % Trim data down to current beam
+            dataThis=trimData(data,startInd,endInd);
 
+            % IQ
+            cIQ.v=winNorm'.*(dataThis.IVc+i*dataThis.QVc)./sqrt(sampleNum);
+            cIQ.h=winNorm'.*(dataThis.IHx+i*dataThis.QHx)./sqrt(sampleNum);
+
+            %% Other variables
+            momentsTimeOne.range(:,ii)=dataThis.range;
+            momentsTimeOne.elevation(ii)=median(dataThis.elevation);
+            momentsTimeOne.eastward_velocity(ii)=median(dataThis.eastward_velocity);
+            momentsTimeOne.northward_velocity(ii)=median(dataThis.northward_velocity);
+            momentsTimeOne.vertical_velocity(ii)=median(dataThis.vertical_velocity);
+            momentsTimeOne.azimuth_vc(ii)=median(dataThis.azimuth_vc);
+            momentsTimeOne.altitude(ii)=median(dataThis.altitude);
+
+            %% Time moments
+            momentsTimeOne=calcMomentsTime(cIQ,ii,momentsTimeOne,dataThis);
+
+            % Censor on SNR and NCP
+            censorY=momentsTimeOne.snr(:,ii)<0 & momentsTimeOne.ncp(:,ii)<0.2;
+            censorY(isnan(momentsTimeOne.snr(:,ii)))=1;
+            censorY=~censorY;
+            censorY=double(censorY);
+            censorY(censorY==0)=nan;
+            censorY=movmedian(censorY,7,'includemissing');
+            censorY=movmedian(censorY,7,'omitmissing');
+            momentsTimeOne.vel(isnan(censorY),ii)=nan;
+
+            %% Spectral moments
+            [specPowerLin,specPowerDB]=getSpectra(cIQ);
+
+            % Move peak of spectra to middle
+            [specPowerDBadj,specVelAdj]=adjSpecBoundsV(specPowerDB.V,momentsTimeOne.velRaw(:,ii),dataThis);
+
+            % Censor
+            specPowerDBadj(isnan(momentsTimeOne.vel(:,ii)),:)=nan;
+            specVelAdj(isnan(momentsTimeOne.vel(:,ii)),:)=nan;
+
+            %% Remove noise
+            [powerDBsmooth,powerRMnoiseDBsmooth]=rmNoiseSpec(specPowerDBadj);
+            powerRMnoiseDB=specPowerDBadj;
+            powerRMnoiseDB(isnan(powerRMnoiseDBsmooth))=nan;
+            specVelRMnoise=specVelAdj;
+            specVelRMnoise(isnan(powerRMnoiseDBsmooth))=nan;
+
+            %% Find regions with dual particle species
+
+            momentsVelDualRawOne=findDualParticles(powerRMnoiseDBsmooth,specVelRMnoise,specPowerDBadj,momentsVelDualRawOne,ii);
+
+        end
+
+        %% Add to output
+        if bb==1
+            momentsTime=momentsTimeOne;
+            momentsVelDualRaw=momentsVelDualRawOne;
+        else
+            dataFields=fields(momentsTime);
+
+            for hh=1:length(dataFields)
+                momentsTime.(dataFields{hh})=cat(2,momentsTime.(dataFields{hh}),momentsTimeOne.(dataFields{hh}));
+            end
+
+            checkDims=size(momentsVelDualRaw,3)-size(momentsVelDualRawOne,3);
+            if checkDims<0
+                momentsVelDualRaw=padarray(momentsVelDualRaw,[0,0,abs(checkDims)],nan,'post');
+            end
+
+            momVelTest=nan(size(momentsVelDualRawOne,1),size(momentsVelDualRawOne,2),max(size(momentsVelDualRaw,3)));
+            dim3=size(momentsVelDualRawOne,3);
+            momVelTest(:,:,1:dim3)=momentsVelDualRawOne;     
+            momentsVelDualRaw=cat(2,momentsVelDualRaw,momVelTest);
+        end
     end
     eSecs=toc;
 
     eData=momentsTime.time(end)-momentsTime.time(1);
     timePerMin=eSecs/60/minutes(eData);
-    disp([num2str(timePerMin),' minutes per data minute.']);
+    disp(['Total: ',num2str(eSecs/60),' minutes. Per data minute: ',num2str(timePerMin),' minutes.']);
 
     %% Sort out vel dual
     momentsVelDual=sortDualParticles(momentsVelDualRaw,momentsTime);

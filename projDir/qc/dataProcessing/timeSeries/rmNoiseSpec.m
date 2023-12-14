@@ -11,19 +11,22 @@ loopInds=find(any(~isnan(powerAdj),2));
 x=linspace(-1,1,sampleNum);
 [~,powerSmoothAll,~]= forsythe_polyfit(x,powerAdj',25);
 
+powerSmoothAll=powerSmoothAll';
+powerSmoothAll(:,1:round(sampleNum/100))=nan;
+powerSmoothAll(:,sampleNum-round(sampleNum/100)+1:end)=nan;
+
+[locsMaxAll,promAll]=islocalmax(powerSmoothAll,2,'MinSeparation',round(sampleNum/6),'MinProminence',1);
+locsMinAll=islocalmin(powerSmoothAll,2);
+
 for aa=1:size(loopInds,1)
     ii=loopInds(aa);
 
-    powerSmooth=powerSmoothAll(:,ii);
-    powerSmooth=powerSmooth';
-    powerSmooth(1:round(sampleNum/100))=nan;
-    powerSmooth(sampleNum-round(sampleNum/100)+1:end)=nan;
+    powerSmooth=powerSmoothAll(ii,:);
 
-    [locsMax,prom]=islocalmax(powerSmooth,'MinSeparation',round(sampleNum/6),'MinProminence',1);
-    locsMax=find(locsMax==1);
-    prom=prom(locsMax);
-    locsMin=islocalmin(powerSmooth);
-    locsMin=find(locsMin==1);
+    locsMax=find(locsMaxAll(ii,:)==1);
+    prom=promAll(ii,locsMax);
+
+    locsMin=find(locsMinAll(ii,:)==1);
 
     if isempty(locsMin)
         [~,locsMin]=min(powerSmooth);
