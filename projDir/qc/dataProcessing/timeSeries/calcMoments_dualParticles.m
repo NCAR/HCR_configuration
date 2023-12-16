@@ -124,13 +124,10 @@ for aa=1:length(caseStart)
         for ii=1:beamNum
 
             %disp(datestr(goodTimes(ii),'yyyymmdd_HHMMSS.FFF'));
-            if ii==111
-                stop1=1;
-            end
-
+            
             % Find start and end indices for beam
-            [~,startInd]=min(abs(goodTimes(ii)-seconds(timeSpan/20)-data.time));
-            [~,endInd]=min(abs(goodTimes(ii)+seconds(timeSpan/20)-data.time));
+            [~,startInd]=min(abs(goodTimes(ii)-seconds(timeSpan/10)-data.time)); % Default: 20
+            [~,endInd]=min(abs(goodTimes(ii)+seconds(timeSpan/10)-data.time));
 
             sampleNum=endInd-startInd+1;
 

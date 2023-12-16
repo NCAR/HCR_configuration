@@ -131,7 +131,8 @@ for jj=1:length(dataInds)
     velDual(ii,1:length(locsMax))=specVelIn(ii,locsMax);
 
     if nn==inf
-        plot(specVelIn(ii,:),powerRaw(ii,:),'-c','linewidth',1);
+        scatter(specVelIn(ii,:),powerRaw(ii,:),'MarkerEdgeColor','c');
+        xlim([-8,8]);
         hold on
         plot(specVelIn(ii,:),powerOrig,'-b','linewidth',2);
         scatter(specVelIn(ii,locsMax(~isnan(locsMax))),powerOrig(locsMax(~isnan(locsMax))),80,'filled','MarkerFaceColor','r')

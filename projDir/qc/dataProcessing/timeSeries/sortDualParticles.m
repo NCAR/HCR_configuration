@@ -1,4 +1,6 @@
 function momentsVelDual=sortDualParticles(momentsVelDualRaw,momentsTime)
+rmThresh=5; % Default 25
+
 % Correct velocity for aircraft motion
 xCorr=sind(momentsTime.azimuth_vc).*cosd(momentsTime.elevation).*momentsTime.eastward_velocity;
 yCorr=cosd(momentsTime.azimuth_vc).*cosd(momentsTime.elevation).*momentsTime.northward_velocity;
@@ -20,6 +22,7 @@ subCol=repmat((1:size(momentsVelDualC,2)),[size(momentsVelDualC,1),1]);
 minDiffIndLin=sub2ind(size(momentsVelDualC),subRow,subCol,minDiffInd);
 
 baseLayer=momentsVelDualC(minDiffIndLin);
+baseLayerWork=baseLayer;
 
 % Handle the other layers
 otherLayers=momentsVelDualC;
@@ -34,7 +37,7 @@ velLow(velDiff>=0)=nan;
 
 % Combine to remove small regions
 regsHigh=any(~isnan(velHigh),3);
-regsHigh=bwareaopen(regsHigh,25);
+regsHigh=bwareaopen(regsHigh,rmThresh);
 
 for ii=1:size(velHigh,3)
     thisHigh=velHigh(:,:,ii);
@@ -47,7 +50,7 @@ findEmptyHigh=squeeze(sum(sum(~isnan(velHigh),1),2));
 velHigh(:,:,findEmptyHigh==0)=[];
 
 regsLow=any(~isnan(velLow),3);
-regsLow=bwareaopen(regsLow,25);
+regsLow=bwareaopen(regsLow,rmThresh);
 
 for ii=1:size(velLow,3)
     thisLow=velLow(:,:,ii);
@@ -108,14 +111,49 @@ if ~isempty(velLow)
     velLowHoles=lowLayer(2:end-1,2:end-1);
 end
 
-% Add base layer to high and low
+% Remove regions where velocities are close together
+velHighHoles(abs(velHighHoles-baseLayerWork)<0)=nan;
+velLowHoles(abs(velLowHoles-baseLayerWork)<0)=nan;
+
+% Sort regions with only two peaks
 velHighFilled=velHighHoles;
-velHighFilled(isnan(velHighHoles))=baseLayer(isnan(velHighHoles));
+velHighFilled(isnan(velHighHoles) & ~isnan(velLowHoles))=baseLayerWork(isnan(velHighHoles) & ~isnan(velLowHoles));
+baseLayerWork(isnan(velHighHoles) & ~isnan(velLowHoles))=nan;
 
 velLowFilled=velLowHoles;
-velLowFilled(isnan(velLowHoles))=baseLayer(isnan(velLowHoles));
+velLowFilled(~isnan(velHighHoles) & isnan(velLowHoles))=baseLayerWork(~isnan(velHighHoles) & isnan(velLowHoles));
+baseLayerWork(~isnan(velHighHoles) & isnan(velLowHoles))=nan;
 
-momentsVelDual(:,:,1)=baseLayer;
+% Sort regions with three peaks
+diffHB=abs(velHighFilled-baseLayerWork);
+diffLB=abs(velLowFilled-baseLayerWork);
+
+velHighFilled(diffHB<diffLB & diffHB<2)=baseLayerWork(diffHB<diffLB & diffHB<2);
+baseLayerWork(diffHB<diffLB & diffHB<2)=nan;
+velLowFilled(diffHB>=diffLB & diffLB<2)=baseLayerWork(diffHB>=diffLB & diffLB<2);
+baseLayerWork(diffHB>=diffLB & diffLB<2)=nan;
+
+% Sort regions with one peak
+intHigh=fillmissing2(velHighFilled,'movmedian',15);
+intHigh=fillmissing2(intHigh,'linear');
+intLow=fillmissing2(velLowFilled,'movmedian',15);
+intLow=fillmissing2(intLow,'linear');
+
+diffIntHB=abs(intHigh-baseLayerWork);
+diffIntLB=abs(intLow-baseLayerWork);
+
+velHighFilled(diffIntHB<diffIntLB)=baseLayerWork(diffIntHB<diffIntLB);
+baseLayerWork(diffIntHB<diffIntLB)=nan;
+velLowFilled(diffIntHB>=diffIntLB)=baseLayerWork(diffIntHB>=diffIntLB);
+baseLayerWork(diffIntHB>=diffIntLB)=nan;
+
+% velHighFilled=velHighHoles;
+% velHighFilled(isnan(velHighHoles))=baseLayer(isnan(velHighHoles));
+% 
+% velLowFilled=velLowHoles;
+% velLowFilled(isnan(velLowHoles))=baseLayer(isnan(velLowHoles));
+
+momentsVelDual(:,:,1)=baseLayerWork;
 momentsVelDual(:,:,2)=velHighFilled;
 momentsVelDual(:,:,3)=velLowFilled;
 momentsVelDual(:,:,4)=velHighHoles;
