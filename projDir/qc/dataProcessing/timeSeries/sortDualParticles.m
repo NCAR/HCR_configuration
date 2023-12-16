@@ -128,10 +128,12 @@ baseLayerWork(~isnan(velHighHoles) & isnan(velLowHoles))=nan;
 diffHB=abs(velHighFilled-baseLayerWork);
 diffLB=abs(velLowFilled-baseLayerWork);
 
-velHighFilled(diffHB<diffLB & diffHB<2)=baseLayerWork(diffHB<diffLB & diffHB<2);
-baseLayerWork(diffHB<diffLB & diffHB<2)=nan;
-velLowFilled(diffHB>=diffLB & diffLB<2)=baseLayerWork(diffHB>=diffLB & diffLB<2);
-baseLayerWork(diffHB>=diffLB & diffLB<2)=nan;
+highInds=find(diffHB<diffLB & diffHB<2 & isnan(velHighFilled));
+velHighFilled(highInds)=baseLayerWork(highInds);
+baseLayerWork(highInds)=nan;
+lowInds=(diffHB>=diffLB & diffLB<2 & isnan(velLowFilled));
+velLowFilled(lowInds)=baseLayerWork(lowInds);
+baseLayerWork(lowInds)=nan;
 
 % Sort regions with one peak
 intHigh=fillmissing2(velHighFilled,'movmedian',15);
@@ -142,16 +144,18 @@ intLow=fillmissing2(intLow,'linear');
 diffIntHB=abs(intHigh-baseLayerWork);
 diffIntLB=abs(intLow-baseLayerWork);
 
-velHighFilled(diffIntHB<diffIntLB)=baseLayerWork(diffIntHB<diffIntLB);
-baseLayerWork(diffIntHB<diffIntLB)=nan;
-velLowFilled(diffIntHB>=diffIntLB)=baseLayerWork(diffIntHB>=diffIntLB);
-baseLayerWork(diffIntHB>=diffIntLB)=nan;
+indsHigh2=(diffIntHB<diffIntLB & isnan(velHighFilled));
+velHighFilled(indsHigh2)=baseLayerWork(indsHigh2);
+baseLayerWork(indsHigh2)=nan;
+indsLow2=(diffIntHB>=diffIntLB & isnan(velLowFilled));
+velLowFilled(indsLow2)=baseLayerWork(indsLow2);
+baseLayerWork(indsLow2)=nan;
 
-% velHighFilled=velHighHoles;
-% velHighFilled(isnan(velHighHoles))=baseLayer(isnan(velHighHoles));
-% 
-% velLowFilled=velLowHoles;
-% velLowFilled(isnan(velLowHoles))=baseLayer(isnan(velLowHoles));
+% % velHighFilled=velHighHoles;
+% % velHighFilled(isnan(velHighHoles))=baseLayer(isnan(velHighHoles));
+% % 
+% % velLowFilled=velLowHoles;
+% % velLowFilled(isnan(velLowHoles))=baseLayer(isnan(velLowHoles));
 
 momentsVelDual(:,:,1)=baseLayerWork;
 momentsVelDual(:,:,2)=velHighFilled;
