@@ -112,34 +112,42 @@ if ~isempty(velLow)
 end
 
 % Remove regions where velocities are close together
-velHighHoles(abs(velHighHoles-baseLayerWork)<0)=nan;
-velLowHoles(abs(velLowHoles-baseLayerWork)<0)=nan;
+% velHighHoles(abs(velHighHoles-baseLayerWork)<0)=nan;
+% velLowHoles(abs(velLowHoles-baseLayerWork)<0)=nan;
 
 % Sort regions with only two peaks
+% If data in base and high, move base to low
 velHighFilled=velHighHoles;
 velHighFilled(isnan(velHighHoles) & ~isnan(velLowHoles))=baseLayerWork(isnan(velHighHoles) & ~isnan(velLowHoles));
 baseLayerWork(isnan(velHighHoles) & ~isnan(velLowHoles))=nan;
-
+% If data in base and low, move base to high
 velLowFilled=velLowHoles;
 velLowFilled(~isnan(velHighHoles) & isnan(velLowHoles))=baseLayerWork(~isnan(velHighHoles) & isnan(velLowHoles));
 baseLayerWork(~isnan(velHighHoles) & isnan(velLowHoles))=nan;
 
 % Sort regions with three peaks
+% Check if base layer is closer to high or to low
+minDiffPeaks=3;
 diffHB=abs(velHighFilled-baseLayerWork);
 diffLB=abs(velLowFilled-baseLayerWork);
-
-highInds=find(diffHB<diffLB & diffHB<2 & isnan(velHighFilled));
+% Move to closer one if difference is smaller than XX m/s
+highInds=find(diffHB<diffLB & diffHB<minDiffPeaks & isnan(velHighFilled));
 velHighFilled(highInds)=baseLayerWork(highInds);
-baseLayerWork(highInds)=nan;
-lowInds=(diffHB>=diffLB & diffLB<2 & isnan(velLowFilled));
+baseLayerWork(diffHB<diffLB & diffHB<minDiffPeaks)=nan;
+lowInds=(diffHB>=diffLB & diffLB<minDiffPeaks & isnan(velLowFilled));
 velLowFilled(lowInds)=baseLayerWork(lowInds);
-baseLayerWork(lowInds)=nan;
+baseLayerWork(diffHB>=diffLB & diffLB<minDiffPeaks)=nan;
 
 % Sort regions with one peak
-intHigh=fillmissing2(velHighFilled,'movmedian',15);
-intHigh=fillmissing2(intHigh,'linear');
+% Interpolate over holes and see which one is closer
+intHigh=fillmissing2(velHighFilled,'movmedian',25);
+intHighH=fillmissing(intHigh,'linear',2,'EndValues','extrap');
+intHighV=fillmissing(intHighH,'linear',1,'EndValues','extrap');
+intHigh=(intHighV+intHighH)./2;
 intLow=fillmissing2(velLowFilled,'movmedian',15);
-intLow=fillmissing2(intLow,'linear');
+intLowH=fillmissing(intLow,'linear',2,'EndValues','extrap');
+intLowV=fillmissing(intLowH,'linear',1,'EndValues','extrap');
+intLow=(intLowV+intLowH)./2;
 
 diffIntHB=abs(intHigh-baseLayerWork);
 diffIntLB=abs(intLow-baseLayerWork);

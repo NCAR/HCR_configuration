@@ -18,7 +18,7 @@ velLowH(:,moments.elevation>0)=velDual(:,moments.elevation>0,4);
 velHighH(:,moments.elevation<=0)=velDual(:,moments.elevation<=0,4);
 velLowH(:,moments.elevation<=0)=velDual(:,moments.elevation<=0,5);
 
-aslGood=moments.asl(~isnan(velBase))./1000;
+aslGood=moments.asl(~isnan(velHigh))./1000;
 ylims=[0,max(aslGood)+0.5];
 
 f1 = figure('Position',[200 500 1800 1250],'DefaultAxesFontSize',12,'visible',showPlot);

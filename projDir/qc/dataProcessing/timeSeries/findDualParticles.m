@@ -1,6 +1,6 @@
 function momentsVelDual=findDualParticles(powerIn,specVelIn,powerRaw,momentsVelDual,nn)
 % Find maxima and minima in spectra
-velDual=nan(size(powerIn,1),10);
+velDual=nan(size(powerIn,1),35);
 
 dataInds=find(any(~isnan(powerIn),2));
 
