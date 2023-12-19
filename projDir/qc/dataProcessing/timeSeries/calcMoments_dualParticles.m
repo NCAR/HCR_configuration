@@ -69,6 +69,14 @@ for aa=1:length(caseStart)
             goodTimes=synchTT.timeTest(synchTT.Var1>0);
 
             beamNum=length(goodTimes)-1;
+
+            % Set up de-aliasing
+            defaultPrev=data.lambda/(mode(data.prt)*4);
+
+            velPrev=repmat(defaultPrev,size(data.range,1),1);
+            prevCount=zeros(size(velPrev));
+            prevKeep=nan(size(velPrev));
+            flipYes=0;
         else
             %% Trimm first file
             data=trimFirstFile(data,endInd);
@@ -101,6 +109,7 @@ for aa=1:length(caseStart)
         momentsTimeOne.powerV=nan(size(data.range,1),beamNum);
         momentsTimeOne.powerH=nan(size(data.range,1),beamNum);
         momentsTimeOne.velRaw=nan(size(data.range,1),beamNum);
+        momentsTimeOne.velRawDeAliased=nan(size(data.range,1),beamNum);
         momentsTimeOne.vel=nan(size(data.range,1),beamNum);
         momentsTimeOne.width=nan(size(data.range,1),beamNum);
         momentsTimeOne.dbz=nan(size(data.range,1),beamNum);
@@ -163,13 +172,41 @@ for aa=1:length(caseStart)
             censorY(censorY==0)=nan;
             censorY=movmedian(censorY,7,'includemissing');
             censorY=movmedian(censorY,7,'omitmissing');
-            momentsTimeOne.vel(isnan(censorY),ii)=nan;
+            momentsTimeOne.velRaw(isnan(censorY),ii)=nan;
+
+            %% Correct velocity folding
+
+            if momentsTimeOne.elevation(ii)>0
+                velRay=-momentsTimeOne.velRaw(:,ii);
+            else
+                velRay=momentsTimeOne.velRaw(:,ii);
+            end
+
+            finalRay=deAliasSingleRay(velRay,velPrev,defaultPrev,[],momentsTimeOne.time(ii));
+
+            % Set up time consistency check
+
+            [velPrev,prevCount,prevKeep,flipYes]=setUpPrev(finalRay,velPrev,prevCount,prevKeep,flipYes,momentsTimeOne.elevation(ii),outFreq,defaultPrev);
+
+            
+            %% Add to output
+            if momentsTimeOne.elevation(ii)>0
+                momentsTimeOne.velRawDeAliased(:,ii)=-finalRay;
+            else
+                momentsTimeOne.velRawDeAliased(:,ii)=finalRay;
+            end
+
+            %% Correct velocity for aircraft motion
+            xCorr=sind(momentsTimeOne.azimuth_vc(ii)).*cosd(momentsTimeOne.elevation(ii)).*momentsTimeOne.eastward_velocity(ii);
+            yCorr=cosd(momentsTimeOne.azimuth_vc(ii)).*cosd(momentsTimeOne.elevation(ii)).*momentsTimeOne.northward_velocity(ii);
+            zCorr=sind(momentsTimeOne.elevation(ii)).*momentsTimeOne.vertical_velocity(ii);
+            momentsTimeOne.vel(:,ii)=momentsTimeOne.velRawDeAliased(:,ii)+single(xCorr+yCorr+zCorr);
 
             %% Spectral moments
             [specPowerLin,specPowerDB]=getSpectra(cIQ);
 
             % Move peak of spectra to middle
-            [specPowerDBadj,specVelAdj]=adjSpecBoundsV(specPowerDB.V,momentsTimeOne.velRaw(:,ii),dataThis);
+            [specPowerDBadj,specVelAdj]=adjSpecBoundsV(specPowerDB.V,specPowerLin.V,momentsTimeOne.velRawDeAliased(:,ii),dataThis,defaultPrev);
 
             % Censor
             specPowerDBadj(isnan(momentsTimeOne.vel(:,ii)),:)=nan;

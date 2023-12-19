@@ -15,12 +15,6 @@ momentsTime.skew(:,ii)=single(abs(log(abs(R3v./(R2v.^3)))));
 momentsTime.kurt(:,ii)=single(abs(log(abs(R4v./(R2v.^2)))));
 momentsTime.ncp(:,ii)=single(abs(R1v)./R0v);
 
-% Correct velocity for aircraft motion
-xCorr=sind(momentsTime.azimuth_vc(ii)).*cosd(momentsTime.elevation(ii)).*momentsTime.eastward_velocity(ii);
-yCorr=cosd(momentsTime.azimuth_vc(ii)).*cosd(momentsTime.elevation(ii)).*momentsTime.northward_velocity(ii);
-zCorr=sind(momentsTime.elevation(ii)).*momentsTime.vertical_velocity(ii);
-momentsTime.vel(:,ii)=momentsTime.velRaw(:,ii)+single(xCorr+yCorr+zCorr);
-
 % Correct width for aircraft motion
 velAircraft=sqrt(momentsTime.eastward_velocity(ii).^2+momentsTime.northward_velocity(ii).^2);
 deltaC=0.3.*velAircraft.*sin(deg2rad(momentsTime.elevation(ii))).*deg2rad(data.beamwidth_v);

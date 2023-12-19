@@ -8,7 +8,7 @@ zCorr=sind(momentsTime.elevation).*momentsTime.vertical_velocity;
 momentsVelDualC=momentsVelDualRaw+xCorr+yCorr+zCorr;
 
 % Sort vel dual into two fields
-momentsVelDual=nan(size(momentsVelDualC,1),size(momentsVelDualC,2),5);
+momentsVelDual=nan(size(momentsVelDualC,1),size(momentsVelDualC,2),7);
 
 velDiff=momentsVelDualC-momentsTime.vel;
 
@@ -165,9 +165,11 @@ baseLayerWork(indsLow2)=nan;
 % % velLowFilled=velLowHoles;
 % % velLowFilled(isnan(velLowHoles))=baseLayer(isnan(velLowHoles));
 
-momentsVelDual(:,:,1)=baseLayerWork;
+momentsVelDual(:,:,1)=baseLayer;
 momentsVelDual(:,:,2)=velHighFilled;
 momentsVelDual(:,:,3)=velLowFilled;
 momentsVelDual(:,:,4)=velHighHoles;
 momentsVelDual(:,:,5)=velLowHoles;
+momentsVelDual(:,:,6)=baseLayerWork;
+momentsVelDual(:,:,7)=velHighFilled-velLowFilled;
 end
