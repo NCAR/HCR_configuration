@@ -1,4 +1,4 @@
-function [powerAdj,specVelAdj]=adjSpecBoundsV(specDB,specLin,velIn,data,nyq)
+function [powerAdj,specVelAdj]=adjSpecBoundsV(specDB,velIn,data)
 
 %% Filter
 
@@ -45,26 +45,4 @@ end
 
 powerAdj(isnan(velIn),:)=nan;
 
-% De-alias
-% Mean vel
-noiseLinV=10.^(data.noise_v./10);
-x=specVelAdj;
-y=specLin-noiseLinV;
-velMean=sum(y.*x,2,'omitnan')./sum(y,2,'omitnan');
-
-deAliasDiff=velMean-velIn;
-
-deAliasMask=zeros(size(deAliasDiff));
-checkFold=[2,4,6];
-
-for jj=1:3
-    deAliasMask(deAliasDiff>checkFold(jj)*nyq-3)=checkFold(jj)*nyq;
-    deAliasMask(deAliasDiff<-(checkFold(jj)*nyq-3))=-checkFold(jj)*nyq;
-end
-
-if mean(data.elevation)>=0
-    specVelAdj=-(specVelAdj-deAliasMask);
-else
-    specVelAdj=specVelAdj-deAliasMask;
-end
 end

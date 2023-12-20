@@ -26,6 +26,10 @@ velLowH(:,moments.elevation<=0)=velDual(:,moments.elevation<=0,5);
 aslGood=moments.asl(~isnan(velHigh))./1000;
 ylims=[0,max(aslGood)+0.5];
 
+lmin=min(velLow(:),[],'omitmissing');
+cmin=min([-12,lmin]);
+clims=[cmin-0.001,abs(cmin)];
+
 f1 = figure('Position',[200 500 1800 1250],'DefaultAxesFontSize',12,'visible',showPlot);
 
 colormap(velCols);
@@ -41,7 +45,7 @@ hold on
 surf(moments.time,moments.asl./1000,moments.vel,'edgecolor','none');
 view(2);
 ylabel('Altitude (km)');
-clim([-8 8]);
+clim(clims);
 s1.Colormap=colTwo;
 ylim(ylims);
 xlim([moments.time(1),moments.time(end)]);
@@ -58,7 +62,7 @@ hold on
 surf(moments.time,moments.asl./1000,velBase,'edgecolor','none');
 view(2);
 ylabel('Altitude (km)');
-clim([-8 8]);
+clim(clims);
 s2.Colormap=colTwo;
 ylim(ylims);
 xlim([moments.time(1),moments.time(end)]);
@@ -75,7 +79,7 @@ hold on
 surf(moments.time,moments.asl./1000,velHighH,'edgecolor','none');
 view(2);
 ylabel('Altitude (km)');
-clim([-8.001 8]);
+clim(clims);
 s3.Colormap=colTwo;
 ylim(ylims);
 xlim([moments.time(1),moments.time(end)]);
@@ -92,7 +96,7 @@ hold on
 surf(moments.time,moments.asl./1000,velLowH,'edgecolor','none');
 view(2);
 ylabel('Altitude (km)');
-clim([-8.001 8]);
+clim(clims);
 s4.Colormap=colTwo;
 ylim(ylims);
 xlim([moments.time(1),moments.time(end)]);
@@ -109,7 +113,7 @@ hold on
 surf(moments.time,moments.asl./1000,velHigh,'edgecolor','none');
 view(2);
 ylabel('Altitude (km)');
-clim([-8.001 8]);
+clim(clims);
 s5.Colormap=colTwo;
 ylim(ylims);
 xlim([moments.time(1),moments.time(end)]);
@@ -126,7 +130,7 @@ hold on
 surf(moments.time,moments.asl./1000,velLow,'edgecolor','none');
 view(2);
 ylabel('Altitude (km)');
-clim([-8.001 8]);
+clim(clims);
 s6.Colormap=colTwo;
 ylim(ylims);
 xlim([moments.time(1),moments.time(end)]);
@@ -143,7 +147,7 @@ hold on
 surf(moments.time,moments.asl./1000,velBaseCheck,'edgecolor','none');
 view(2);
 ylabel('Altitude (km)');
-clim([-8.001 8]);
+clim(clims);
 s7.Colormap=colTwo;
 ylim(ylims);
 xlim([moments.time(1),moments.time(end)]);

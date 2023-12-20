@@ -32,7 +32,7 @@ caseStart=datetime(caseList.Var1,caseList.Var2,caseList.Var3, ...
 caseEnd=datetime(caseList.Var7,caseList.Var8,caseList.Var9, ...
     caseList.Var10,caseList.Var11,caseList.Var12);
 
-for aa=1:length(caseStart)
+for aa=2:length(caseStart)
     tic
 
     disp(['Case ',num2str(aa),' of ',num2str(length(caseStart))]);
@@ -174,7 +174,7 @@ for aa=1:length(caseStart)
             censorY=movmedian(censorY,7,'omitmissing');
             momentsTimeOne.velRaw(isnan(censorY),ii)=nan;
 
-            %% Correct velocity folding
+            %% Correct time domain velocity folding
 
             if momentsTimeOne.elevation(ii)>0
                 velRay=-momentsTimeOne.velRaw(:,ii);
@@ -206,8 +206,27 @@ for aa=1:length(caseStart)
             [specPowerLin,specPowerDB]=getSpectra(cIQ);
 
             % Move peak of spectra to middle
-            [specPowerDBadj,specVelAdj]=adjSpecBoundsV(specPowerDB.V,specPowerLin.V,momentsTimeOne.velRawDeAliased(:,ii),dataThis,defaultPrev);
+            [specPowerDBadj,specVelAdj]=adjSpecBoundsV(specPowerDB.V,momentsTimeOne.velRawDeAliased(:,ii),dataThis);
 
+            % De-alias
+            % Mean vel
+            noiseLinV=10.^(data.noise_v./10);
+            x=specVelAdj;
+            y=specPowerLin.V-noiseLinV;
+            velMean=sum(y.*x,2,'omitnan')./sum(y,2,'omitnan');
+
+            deAliasDiff=velMean-momentsTimeOne.velRawDeAliased(:,ii);
+
+            deAliasMask=zeros(size(deAliasDiff));
+            checkFold=[2,4,6];
+
+            for jj=1:3
+                deAliasMask(deAliasDiff>checkFold(jj)*defaultPrev-5)=checkFold(jj)*defaultPrev;
+                deAliasMask(deAliasDiff<-(checkFold(jj)*defaultPrev-5))=-checkFold(jj)*defaultPrev;
+            end
+
+            specVelAdj=specVelAdj-deAliasMask;
+          
             % Censor
             specPowerDBadj(isnan(momentsTimeOne.vel(:,ii)),:)=nan;
             specVelAdj(isnan(momentsTimeOne.vel(:,ii)),:)=nan;
