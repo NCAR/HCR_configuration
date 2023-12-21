@@ -4,11 +4,11 @@ close all;
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-project='spicule'; %socrates, aristo, cset, otrec
+project='socrates'; %socrates, aristo, cset, otrec
 quality='ts'; %field, qc1, or qc2
-qualityCF='qc1';
+qualityCF='qc3';
 freqData='10hz'; % !!!!!!!!! Must be equal or less than one second !!!!!!!!!!!!!
-qcVersion='v1.2';
+qcVersion='v3.2';
 
 dataDirTS=HCRdir(project,quality,qcVersion,freqData);
 
@@ -32,7 +32,7 @@ caseStart=datetime(caseList.Var1,caseList.Var2,caseList.Var3, ...
 caseEnd=datetime(caseList.Var7,caseList.Var8,caseList.Var9, ...
     caseList.Var10,caseList.Var11,caseList.Var12);
 
-for aa=2:length(caseStart)
+for aa=1:length(caseStart)
     tic
 
     disp(['Case ',num2str(aa),' of ',num2str(length(caseStart))]);
@@ -181,6 +181,7 @@ for aa=2:length(caseStart)
             else
                 velRay=momentsTimeOne.velRaw(:,ii);
             end
+            velRay(1:12)=nan;
 
             finalRay=deAliasSingleRay(velRay,velPrev,defaultPrev,[],momentsTimeOne.time(ii));
 

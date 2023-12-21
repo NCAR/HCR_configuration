@@ -127,18 +127,18 @@ elseif strcmp(project,'otrec')
 elseif strcmp(project,'spicule')
     if strcmp(qc,'field')
         if strcmp(freq,'100hz') | strcmp(freq,'10hz')
-            indir=['/scr/sleet3/rsfdata/projects/spicule/hcr/cfradial/moments/',freq,'/'];
+            indir=['/scr/virga1/rsfdata/projects/spicule/hcr/cfradial/moments/',freq,'/'];
         end
     elseif strcmp(qc,'qc0')
         if strcmp(freq,'10hz')
-            indir=['/scr/sleet3/rsfdata/projects/spicule/hcr/',qc,'/cfradial/',qcVersion,'/',freq,'/'];
+            indir=['/scr/virga1/rsfdata/projects/spicule/hcr/',qc,'/cfradial/',qcVersion,'/',freq,'/'];
         end
     elseif strcmp(qc,'qc1')
         if strcmp(freq,'100hz') | strcmp(freq,'10hz')
-            indir=['/scr/sleet3/rsfdata/projects/spicule/hcr/qc1/cfradial/',qcVersion,'_full/',freq,'/'];
+            indir=['/scr/virga1/rsfdata/projects/spicule/hcr/qc1/cfradial/',qcVersion,'_full/',freq,'/'];
         end
     elseif strcmp(qc,'ts')
-        indir='/scr/sleet3/rsfdata/projects/spicule/hcr/time_series_netcdf/';
+        indir='/scr/virga1/rsfdata/projects/spicule/hcr/time_series_netcdf/';
     end
 
     %% NOREASTER
