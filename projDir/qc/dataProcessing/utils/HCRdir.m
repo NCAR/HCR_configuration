@@ -35,7 +35,7 @@ if strcmp(project,'socrates')
             return
         end
     elseif strcmp(qc,'ts')
-        indir='/scr/snow2/rsfdata/projects/socrates/hcr/time_series_netcdf/';
+        indir='/scr/snow2/rsfdata/projects/socrates/hcr/time_series_netcdf/wband/';
     end
     
     %% CSET
@@ -120,7 +120,7 @@ elseif strcmp(project,'otrec')
             return
         end
     elseif strcmp(qc,'ts')
-        indir='/scr/sleet2/rsfdata/projects/otrec/hcr/time_series_netcdf/';
+        indir='/scr/sleet2/rsfdata/projects/otrec/hcr/time_series_netcdf/wband/';
     end
 
     %% SPICULE
@@ -138,7 +138,7 @@ elseif strcmp(project,'spicule')
             indir=['/scr/virga1/rsfdata/projects/spicule/hcr/qc1/cfradial/',qcVersion,'_full/',freq,'/'];
         end
     elseif strcmp(qc,'ts')
-        indir='/scr/virga1/rsfdata/projects/spicule/hcr/time_series_netcdf/';
+        indir='/scr/virga1/rsfdata/projects/spicule/hcr/time_series_netcdf/wband/';
     end
 
     %% NOREASTER
