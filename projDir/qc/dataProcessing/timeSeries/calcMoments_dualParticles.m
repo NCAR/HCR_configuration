@@ -4,11 +4,11 @@ close all;
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-project='socrates'; %socrates, aristo, cset, otrec
+project='spicule'; %socrates, aristo, cset, otrec
 quality='ts'; %field, qc1, or qc2
-qualityCF='qc3';
+qualityCF=[];
 freqData='10hz'; % !!!!!!!!! Must be equal or less than one second !!!!!!!!!!!!!
-qcVersion='v3.2';
+qcVersion=[];
 
 dataDirTS=HCRdir(project,quality,qcVersion,freqData);
 
