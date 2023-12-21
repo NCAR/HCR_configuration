@@ -237,7 +237,7 @@ chan0_is_h_or_copolar = TRUE;
 // Type: string
 //
 
-output_dir = "/scr/snow2/rsfdata/projects/socrates/hcr/time_series_netcdf";
+output_dir = "/scr/snow2/rsfdata/projects/socrates/hcr/time_series_netcdf/wband";
 
 ///////////// preserve_file_name //////////////////////
 //

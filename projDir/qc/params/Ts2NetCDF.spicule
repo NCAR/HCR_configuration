@@ -98,7 +98,7 @@ input_mode = TS_ARCHIVE_INPUT;
 // Type: string
 //
 
-input_dir = "/scr/sleet3/rsfdata/projects/spicule/hcr/time_series/wband/save";
+input_dir = "/scr/virga1/rsfdata/projects/spicule/hcr/time_series/wband/save";
 
 ///////////// input_fmq_name //////////////////////////
 //
@@ -237,7 +237,7 @@ chan0_is_h_or_copolar = TRUE;
 // Type: string
 //
 
-output_dir = "/scr/sleet3/rsfdata/projects/spicule/hcr/time_series_netcdf";
+output_dir = "/scr/virga1/rsfdata/projects/spicule/hcr/time_series_netcdf/wband";
 
 ///////////// preserve_file_name //////////////////////
 //
