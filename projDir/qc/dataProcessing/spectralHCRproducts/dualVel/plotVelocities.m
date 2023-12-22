@@ -176,5 +176,5 @@ title('High minus low (m s^{-1})')
 linkaxes([s1 s2 s3 s4 s5 s6 s7 s8],'xy')
 
 set(gcf,'PaperPositionMode','auto')
-print(f1,[figdir,project,'_vels50hz_2_',datestr(moments.time(1),'yyyymmdd_HHMMSS'),'_to_',datestr(moments.time(end),'yyyymmdd_HHMMSS')],'-dpng','-r0');
+print(f1,[figdir,project,'_dualVel_',datestr(moments.time(1),'yyyymmdd_HHMMSS'),'_to_',datestr(moments.time(end),'yyyymmdd_HHMMSS')],'-dpng','-r0');
 end

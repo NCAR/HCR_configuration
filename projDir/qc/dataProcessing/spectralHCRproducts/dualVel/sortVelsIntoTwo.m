@@ -1,4 +1,4 @@
-function momentsVelDual=sortDualParticles(momentsVelDualRaw,momentsTime)
+function momentsVelDual=sortVelsIntoTwo(momentsVelDualRaw,momentsTime)
 rmThresh=5; % Default 25
 
 % Correct velocity for aircraft motion

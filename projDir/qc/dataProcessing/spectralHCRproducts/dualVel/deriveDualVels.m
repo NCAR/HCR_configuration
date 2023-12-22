@@ -7,20 +7,19 @@ addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 project='spicule'; %socrates, aristo, cset, otrec
 quality='ts'; %field, qc1, or qc2
 qualityCF=[];
-freqData='10hz'; % !!!!!!!!! Must be equal or less than one second !!!!!!!!!!!!!
+freqData=[];
 qcVersion=[];
+
+outTime=0.1; % Desired output time resolution in seconds. Must be less than or equal to one second.
+sampleTime=0.02; % Length of sample in seconds.
 
 dataDirTS=HCRdir(project,quality,qcVersion,freqData);
 
-figdir=[dataDirTS,'figsTS_dualParticles/'];
+figdir=[dataDirTS(1:end-6),'figsTS_dualParticles/cases/'];
 
 showPlot='on';
 
 casefile=['~/git/HCR_configuration/projDir/qc/dataProcessing/HCRproducts/caseFiles/dualParticles_',project,'.txt'];
-
-freqStr=strfind(freqData,'hz');
-outFreq=str2num(freqData(1:freqStr-1)); % Desired output frequency in Hz
-timeSpan=1/outFreq; % Desired time resolution in seconds
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -42,6 +41,11 @@ for aa=1:length(caseStart)
 
     fileListTS=makeFileList(dataDirTS,startTime+seconds(1),endTime-seconds(1),'20YYMMDDxhhmmss',1);
 
+    if isempty(fileListTS)
+        warning('No data found.');
+        continue
+    end
+
     for bb=1:length(fileListTS)
 
         if bb==1
@@ -59,13 +63,13 @@ for aa=1:length(caseStart)
 
             %% Load data TS
             disp(['Loading time series file ',num2str(bb),' of ' num2str(length(fileListTS)),' ...']);
-            data=readHCRts(fileListTS(1),data,startTime-seconds(timeSpan),endTime+seconds(timeSpan),0);
+            data=readHCRts(fileListTS(1),data,startTime-seconds(outTime),endTime+seconds(outTime),0);
 
             % Find available times
             timeTest=data.time';
             timeTest(data.time<startTime | data.time>endTime)=[];
             TTdata=timetable(timeTest,ones(size(timeTest)));
-            synchTT=retime(TTdata,'regular','sum','TimeStep',seconds(timeSpan));
+            synchTT=retime(TTdata,'regular','sum','TimeStep',seconds(outTime));
             goodTimes=synchTT.timeTest(synchTT.Var1>0);
 
             beamNum=length(goodTimes)-1;
@@ -94,7 +98,7 @@ for aa=1:length(caseStart)
         end
 
         TTdata=timetable(timeTest,ones(size(timeTest)));
-        synchTT=retime(TTdata,'regular','sum','TimeStep',seconds(timeSpan));
+        synchTT=retime(TTdata,'regular','sum','TimeStep',seconds(outTime));
         goodTimes=synchTT.timeTest(synchTT.Var1>0);
 
         if bb<length(fileListTS)
@@ -135,8 +139,8 @@ for aa=1:length(caseStart)
             %disp(datestr(goodTimes(ii),'yyyymmdd_HHMMSS.FFF'));
             
             % Find start and end indices for beam
-            [~,startInd]=min(abs(goodTimes(ii)-seconds(timeSpan/10)-data.time)); % Default: 20
-            [~,endInd]=min(abs(goodTimes(ii)+seconds(timeSpan/10)-data.time));
+            [~,startInd]=min(abs(goodTimes(ii)-seconds(sampleTime/2)-data.time));
+            [~,endInd]=min(abs(goodTimes(ii)+seconds(sampleTime/2)-data.time));
 
             sampleNum=endInd-startInd+1;
 
@@ -187,7 +191,7 @@ for aa=1:length(caseStart)
 
             % Set up time consistency check
 
-            [velPrev,prevCount,prevKeep,flipYes]=setUpPrev(finalRay,velPrev,prevCount,prevKeep,flipYes,momentsTimeOne.elevation(ii),outFreq,defaultPrev);
+            [velPrev,prevCount,prevKeep,flipYes]=setUpPrev(finalRay,velPrev,prevCount,prevKeep,flipYes,momentsTimeOne.elevation(ii),1/outTime,defaultPrev);
 
             
             %% Add to output
@@ -241,7 +245,7 @@ for aa=1:length(caseStart)
 
             %% Find regions with dual particle species
 
-            momentsVelDualRawOne=findDualParticles(powerRMnoiseDBsmooth,specVelRMnoise,specPowerDBadj,momentsVelDualRawOne,ii);
+            momentsVelDualRawOne=findMultiVels(powerRMnoiseDBsmooth,specVelRMnoise,specPowerDBadj,momentsVelDualRawOne,ii);
 
         end
 
@@ -274,7 +278,7 @@ for aa=1:length(caseStart)
     disp(['Total: ',num2str(eSecs/60),' minutes. Per data minute: ',num2str(timePerMin),' minutes.']);
 
     %% Sort out vel dual
-    momentsVelDual=sortDualParticles(momentsVelDualRaw,momentsTime);
+    momentsVelDual=sortVelsIntoTwo(momentsVelDualRaw,momentsTime);
 
     %% Plot
 
