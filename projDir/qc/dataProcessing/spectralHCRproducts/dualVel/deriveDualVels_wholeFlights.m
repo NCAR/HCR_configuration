@@ -13,31 +13,25 @@ qcVersion=[];
 outTime=0.1; % Desired output time resolution in seconds. Must be less than or equal to one second.
 sampleTime=0.02; % Length of sample in seconds.
 
-dataDirTS=HCRdir(project,quality,qcVersion,freqData);
-
-figdir=[dataDirTS(1:end-6),'figsDualVel/cases/'];
-
 showPlot='on';
 
-casefile=['~/git/HCR_configuration/projDir/qc/dataProcessing/HCRproducts/caseFiles/dualParticles_',project,'.txt'];
+dataDirTS=HCRdir(project,quality,qcVersion,freqData);
+figdir=[dataDirTS(1:end-6),'figsDualVel/wholeFlights/'];
+outdir=[dataDirTS(1:end-6),'matFiles'];
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_',project,'.txt'];
 
-% Loop through cases
+caseList = table2array(readtable(infile));
 
-caseList=readtable(casefile);
-caseStart=datetime(caseList.Var1,caseList.Var2,caseList.Var3, ...
-    caseList.Var4,caseList.Var5,caseList.Var6);
-caseEnd=datetime(caseList.Var7,caseList.Var8,caseList.Var9, ...
-    caseList.Var10,caseList.Var11,caseList.Var12);
-
-for aa=1:length(caseStart)
+for aa=1:size(caseList,1)
     tic
 
-    disp(['Case ',num2str(aa),' of ',num2str(length(caseStart))]);
-
-    startTime=caseStart(aa);
-    endTime=caseEnd(aa);
+    disp(['Flight ',num2str(aa)]);
+    disp(['Starting at ',datestr(datetime('now'),'yyyy-mm-dd HH:MM')]);
+    disp('Loading data ...');
+    
+    startTime=datetime(caseList(aa,1:6));
+    endTime=datetime(caseList(aa,7:12));
 
     fileListTS=makeFileList(dataDirTS,startTime+seconds(1),endTime-seconds(1),'20YYMMDDxhhmmss',1);
 
@@ -157,7 +151,7 @@ for aa=1:length(caseStart)
             if isfield(dataThis,'IHx')
                 cIQ.h=winNorm'.*(dataThis.IHx+i*dataThis.QHx)./sqrt(sampleNum);
             end
-            
+
             %% Other variables
             momentsTimeOne.range(:,ii)=dataThis.range;
             momentsTimeOne.elevation(ii)=median(dataThis.elevation);
@@ -170,14 +164,19 @@ for aa=1:length(caseStart)
             %% Time moments
             momentsTimeOne=calcMomentsTime(cIQ,ii,momentsTimeOne,dataThis);
 
-            % Censor on SNR and NCP
-            censorY=momentsTimeOne.snr(:,ii)<0 & momentsTimeOne.ncp(:,ii)<0.2;
-            censorY(isnan(momentsTimeOne.snr(:,ii)))=1;
-            censorY=~censorY;
-            censorY=double(censorY);
-            censorY(censorY==0)=nan;
-            censorY=movmedian(censorY,7,'includemissing');
-            censorY=movmedian(censorY,7,'omitmissing');
+            % Censor on V (find missing and NScal)
+            if max(momentsTimeOne.powerV(1:14,ii))<-80 | (momentsTimeOne.powerV(1,ii)>-96 & momentsTimeOne.powerV(1,ii)<-87)
+                censorY=nan(size(momentsTimeOne.range,1),1);
+            else
+                % Censor on SNR and NCP
+                censorY=momentsTimeOne.snr(:,ii)<0 & momentsTimeOne.ncp(:,ii)<0.2;
+                censorY(isnan(momentsTimeOne.snr(:,ii)))=1;
+                censorY=~censorY;
+                censorY=double(censorY);
+                censorY(censorY==0)=nan;
+                censorY=movmedian(censorY,7,'includemissing');
+                censorY=movmedian(censorY,7,'omitmissing');
+            end
             momentsTimeOne.velRaw(isnan(censorY),ii)=nan;
 
             %% Correct time domain velocity folding
@@ -273,14 +272,18 @@ for aa=1:length(caseStart)
             momentsVelDualRaw=cat(2,momentsVelDualRaw,momVelTest);
         end
     end
+    
+    %% Sort out vel dual
+
+    disp('Sorting velocities ...')
+    momentsVelDual=sortVelsIntoTwo(momentsVelDualRaw,momentsTime);
+
+    %% Take time
     eSecs=toc;
 
     eData=momentsTime.time(end)-momentsTime.time(1);
     timePerMin=eSecs/60/minutes(eData);
     disp(['Total: ',num2str(eSecs/60),' minutes. Per data minute: ',num2str(timePerMin),' minutes.']);
-
-    %% Sort out vel dual
-    momentsVelDual=sortVelsIntoTwo(momentsVelDualRaw,momentsTime);
 
     %% Plot
 
