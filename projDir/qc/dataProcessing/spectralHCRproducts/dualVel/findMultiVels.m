@@ -1,6 +1,7 @@
-function momentsVelDual=findMultiVels(powerIn,specVelIn,powerRaw,momentsVelDual,nn)
+function [momentsVelDual,momentsPowDual]=findMultiVels(powerIn,specVelIn,powerRaw,momentsVelDual,momentsPowDual,nn)
 % Find maxima and minima in spectra
 velDual=nan(size(powerIn,1),35);
+powDual=nan(size(powerIn,1),35);
 
 dataInds=find(any(~isnan(powerIn),2));
 
@@ -129,6 +130,7 @@ for jj=1:length(dataInds)
     end
 
     velDual(ii,1:length(locsMax))=specVelIn(ii,locsMax);
+    powDual(ii,1:length(locsMax))=powerIn(ii,locsMax);
 
     if nn==inf
         scatter(specVelIn(ii,:),powerRaw(ii,:),'MarkerEdgeColor','c');
@@ -148,12 +150,15 @@ for jj=1:length(dataInds)
 end
 findEmpty=all(isnan(velDual),1);
 velDual(:,findEmpty)=[];
+powDual(:,findEmpty)=[];
 
 checkDims=size(momentsVelDual,3)-size(velDual,2);
 if checkDims<0
     momentsVelDual=padarray(momentsVelDual,[0,0,abs(checkDims)],nan,'post');
+    momentsPowDual=padarray(momentsPowDual,[0,0,abs(checkDims)],nan,'post');
 end
 
 dim3=size(velDual,2);
 momentsVelDual(:,nn,1:dim3)=single(velDual);
+momentsPowDual(:,nn,1:dim3)=single(powDual);
 end

@@ -132,6 +132,7 @@ for aa=1:length(caseStart)
         momentsTimeOne.time=goodTimes(1:beamNum)';
 
         momentsVelDualRawOne=single(nan(size(data.range,1),beamNum,1));
+        momentsPowerDualRawOne=single(nan(size(data.range,1),beamNum,1));
 
         % Loop through beams
         for ii=1:beamNum
@@ -170,14 +171,19 @@ for aa=1:length(caseStart)
             %% Time moments
             momentsTimeOne=calcMomentsTime(cIQ,ii,momentsTimeOne,dataThis);
 
-            % Censor on SNR and NCP
-            censorY=momentsTimeOne.snr(:,ii)<0 & momentsTimeOne.ncp(:,ii)<0.2;
-            censorY(isnan(momentsTimeOne.snr(:,ii)))=1;
-            censorY=~censorY;
-            censorY=double(censorY);
-            censorY(censorY==0)=nan;
-            censorY=movmedian(censorY,7,'includemissing');
-            censorY=movmedian(censorY,7,'omitmissing');
+            % Censor on V (find missing and NScal)
+            if max(momentsTimeOne.powerV(1:14,ii))<-80 | (momentsTimeOne.powerV(1,ii)>-96 & momentsTimeOne.powerV(1,ii)<-87)
+                censorY=nan(size(momentsTimeOne.range,1),1);
+            else
+                % Censor on SNR and NCP
+                censorY=momentsTimeOne.snr(:,ii)<0 & momentsTimeOne.ncp(:,ii)<0.2;
+                censorY(isnan(momentsTimeOne.snr(:,ii)))=1;
+                censorY=~censorY;
+                censorY=double(censorY);
+                censorY(censorY==0)=nan;
+                censorY=movmedian(censorY,7,'includemissing');
+                censorY=movmedian(censorY,7,'omitmissing');
+            end
             momentsTimeOne.velRaw(isnan(censorY),ii)=nan;
 
             %% Correct time domain velocity folding
@@ -247,14 +253,28 @@ for aa=1:length(caseStart)
 
             %% Find regions with dual particle species
 
-            momentsVelDualRawOne=findMultiVels(powerRMnoiseDBsmooth,specVelRMnoise,specPowerDBadj,momentsVelDualRawOne,ii);
+            [momentsVelDualRawOne,momentsPowerDualRawOne]=findMultiVels(powerRMnoiseDBsmooth,specVelRMnoise,specPowerDBadj,momentsVelDualRawOne,momentsPowerDualRawOne,ii);
 
+            %% Multi DBZ
+            % DBM
+            powerLinV=10.^(momentsPowerDualRawOne(:,ii,:)./10);
+            
+            % SNR
+            noiseLinV=10.^(dataThis.noise_v./10);
+            snrLinV=(powerLinV-noiseLinV)./noiseLinV;
+            snrLinV(snrLinV<0)=nan;
+            snrDB=10*log10(snrLinV);
+
+            % DBZ
+            dataThis.range(dataThis.range<0)=nan;
+            momentsPowerDualRawOne(:,ii,:)=snrDB+20*log10(dataThis.range./1000)+data.dbz1km_v;
         end
 
         %% Add to output
         if bb==1
             momentsTime=momentsTimeOne;
             momentsVelDualRaw=momentsVelDualRawOne;
+            momentsPowerDualRaw=momentsPowerDualRawOne;
         else
             dataFields=fields(momentsTime);
 
@@ -265,22 +285,29 @@ for aa=1:length(caseStart)
             checkDims=size(momentsVelDualRaw,3)-size(momentsVelDualRawOne,3);
             if checkDims<0
                 momentsVelDualRaw=padarray(momentsVelDualRaw,[0,0,abs(checkDims)],nan,'post');
+                momentsPowerDualRaw=padarray(momentsPowerDualRaw,[0,0,abs(checkDims)],nan,'post');
             end
 
             momVelTest=nan(size(momentsVelDualRawOne,1),size(momentsVelDualRawOne,2),max(size(momentsVelDualRaw,3)));
+            momPowTest=nan(size(momentsVelDualRawOne,1),size(momentsVelDualRawOne,2),max(size(momentsVelDualRaw,3)));
             dim3=size(momentsVelDualRawOne,3);
             momVelTest(:,:,1:dim3)=momentsVelDualRawOne;     
             momentsVelDualRaw=cat(2,momentsVelDualRaw,momVelTest);
+            momPowTest(:,:,1:dim3)=momentsPowerDualRawOne;     
+            momentsPowerDualRaw=cat(2,momentsPowerDualRaw,momPowTest);
         end
     end
+    
+    %% Sort out vel dual
+    [momentsVelDual,momentsDbzDual]=sortVelsIntoTwo(momentsVelDualRaw,momentsPowerDualRaw,momentsTime);
+
+    %% Take time
+
     eSecs=toc;
 
     eData=momentsTime.time(end)-momentsTime.time(1);
     timePerMin=eSecs/60/minutes(eData);
     disp(['Total: ',num2str(eSecs/60),' minutes. Per data minute: ',num2str(timePerMin),' minutes.']);
-
-    %% Sort out vel dual
-    momentsVelDual=sortVelsIntoTwo(momentsVelDualRaw,momentsTime);
 
     %% Plot
 
@@ -291,5 +318,6 @@ for aa=1:length(caseStart)
     momentsTime.asl=HCRrange2asl(momentsTime.range,momentsTime.elevation,momentsTime.altitude);
 
     plotVelocities(momentsVelDual,momentsTime,figdir,project,showPlot);
+    plotReflectivities(momentsDbzDual,momentsTime,figdir,project,showPlot);
 
 end
