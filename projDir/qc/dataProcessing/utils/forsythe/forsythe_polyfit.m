@@ -10,9 +10,10 @@ function [pc, ff, fc ]= forsythe_polyfit(x,y,n,varargin);
 %  n - the order of the highest polynomial desired for the fit.
 %
 %  optional:
-%     dim - default 1; the dimension of y corresponding to x.
+%     dim - default 1; the dimension of y corresponding to x. - not sure this is working!
 %     wts - default ones(size(x)); The weights for the fit, if desired.
-%
+%     do_npx_independently - default 1.  See forsythe_poly for more info.  Do NOT change
+%           unless you know what you are doing.
 %  Outputs:
 %     pc - the polynomial coefficients of the best fit.  Will have the same size as y except
 %          that the size(pc,dim) will be n+1.  Basically, the data along dimension dim, will be
@@ -21,14 +22,22 @@ function [pc, ff, fc ]= forsythe_polyfit(x,y,n,varargin);
 %          This will have the same size as y.
 %     fc - these are the coefficeients of the best fit relative to the forsythe polynomials.
 %          This is probably not helpful.
+%
+%  This routine computes the best fit polynomial using forsythe polynomials.  This will give
+%  the same best fit as the standard polyfit routine EXCEPT that it is numerically more
+%  stable if the orders are large.  
+%
+%  NOTE: stability will be improved if the values of x are not enormous.  It is recommended
+%        that x's are scaled down to -1 to 1 or something close to that.
 
 dim = 1;
 wts = ones(size(x));
+do_npx_independently = 1;
 
 paramparse(varargin);
 
 % capture the forsythe polynomial coeffs, the two diagnostic parameters, and the forsythe polys evaluated at x
-[p,rc,ortho,px] = forsythe_poly(x,n,'wts',wts);
+[p,rc,ortho,px] = forsythe_poly(x,n,'wts',wts,'do_npx_independently',do_npx_independently);
 
 % now put the important dim first, and reshape to a matrix
 sz = size(y);
