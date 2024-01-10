@@ -132,7 +132,7 @@ for jj=1:length(dataInds)
     velDual(ii,1:length(locsMax))=specVelIn(ii,locsMax);
     powDual(ii,1:length(locsMax))=powerIn(ii,locsMax);
 
-    if nn==1
+    if nn==inf
         scatter(specVelIn(ii,:),powerRaw(ii,:),'MarkerEdgeColor','k');
         xlim([-8,8]);
         hold on
