@@ -1,5 +1,5 @@
 function [np,rc,ortho,npx] = forsythe_poly(x,n,varargin)
-% [np,rc,ortho,npx] = forsythe_poly(x,n,varargin)
+% [np,rc,ortho,npx] = forsythe_poly(x,n,'param1',value1,...)
 %
 %  Generate the forsythe polynomials for the provided domain (x)
 %  i.e. polynomials that are orthonormal wrt the inner product:
@@ -8,7 +8,7 @@ function [np,rc,ortho,npx] = forsythe_poly(x,n,varargin)
 % Inputs:
 %   x - x-values that the polynomials will be evaluated at
 %   n - the highest order polynomial to compute
-%   optional inputs:
+%  optional inputs:
 %   wts - can input wts corresponding to x.  Not sure this is working properly.  default is all 1's
 %   do_npx_independently - if 1 (Default) will compute npx numerically iteratively.  If 0, then
 %       npx is created based on the polynomial coefficients.  For larger values of 'n', setting to
