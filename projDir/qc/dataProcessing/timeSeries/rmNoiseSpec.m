@@ -9,7 +9,7 @@ powerRMnoiseOut=nan(size(powerAdj));
 loopInds=find(any(~isnan(powerAdj),2));
 
 x=linspace(-1,1,sampleNum);
-[~,powerSmoothAll,~]= forsythe_polyfit(x,powerAdj',35); % Default 25
+[~,powerSmoothAll,~]= forsythe_polyfit(x,powerAdj',35); % Default 35
 
 powerSmoothAll=powerSmoothAll';
 powerSmoothAll(:,1:round(sampleNum/100))=nan;

@@ -133,7 +133,7 @@ for jj=1:length(dataInds)
     powDual(ii,1:length(locsMax))=powerIn(ii,locsMax);
 
     if nn==inf
-        scatter(specVelIn(ii,:),powerRaw(ii,:),'MarkerEdgeColor','c');
+        scatter(specVelIn(ii,:),powerRaw(ii,:),'MarkerEdgeColor','k');
         xlim([-8,8]);
         hold on
         plot(specVelIn(ii,:),powerOrig,'-b','linewidth',2);
