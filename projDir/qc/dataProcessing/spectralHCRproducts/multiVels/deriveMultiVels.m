@@ -15,7 +15,7 @@ sampleTime=0.02; % Length of sample in seconds.
 
 dataDirTS=HCRdir(project,quality,qcVersion,freqData);
 
-figdir=[dataDirTS(1:end-6),'figsDualVel/cases/'];
+figdir=[dataDirTS(1:end-6),'figsMultiVel/cases/'];
 
 showPlot='on';
 
@@ -52,8 +52,6 @@ for aa=1:length(caseStart)
             data=[];
             data.IVc=[];
             data.QVc=[];
-            %data.IHx=[];
-            %data.QHx=[];
             data.eastward_velocity=[];
             data.northward_velocity=[];
             data.vertical_velocity=[];
@@ -134,6 +132,11 @@ for aa=1:length(caseStart)
         momentsVelDualRawOne=single(nan(size(data.range,1),beamNum,1));
         momentsPowerDualRawOne=single(nan(size(data.range,1),beamNum,1));
 
+        lowShoulderVelOne=single(nan(size(data.range,1),beamNum,1));
+        highShoulderVelOne=single(nan(size(data.range,1),beamNum,1));
+        lowShoulderPowOne=single(nan(size(data.range,1),beamNum,1));
+        highShoulderPowOne=single(nan(size(data.range,1),beamNum,1));
+
         % Loop through beams
         for ii=1:beamNum
 
@@ -155,10 +158,7 @@ for aa=1:length(caseStart)
 
             % IQ
             cIQ.v=winNorm'.*(dataThis.IVc+i*dataThis.QVc)./sqrt(sampleNum);
-            if isfield(dataThis,'IHx')
-                cIQ.h=winNorm'.*(dataThis.IHx+i*dataThis.QHx)./sqrt(sampleNum);
-            end
-            
+                        
             %% Other variables
             momentsTimeOne.range(:,ii)=dataThis.range;
             momentsTimeOne.elevation(ii)=median(dataThis.elevation);
@@ -198,10 +198,8 @@ for aa=1:length(caseStart)
             finalRay=deAliasSingleRay(velRay,velPrev,defaultPrev,[],momentsTimeOne.time(ii));
 
             % Set up time consistency check
-
             [velPrev,prevCount,prevKeep,flipYes]=setUpPrev(finalRay,velPrev,prevCount,prevKeep,flipYes,momentsTimeOne.elevation(ii),1/outTime,defaultPrev);
-
-            
+           
             %% Add to output
             if momentsTimeOne.elevation(ii)>0
                 momentsTimeOne.velRawDeAliased(:,ii)=-finalRay;
@@ -253,7 +251,12 @@ for aa=1:length(caseStart)
 
             %% Find regions with dual particle species
 
-            [momentsVelDualRawOne,momentsPowerDualRawOne]=findMultiVels(powerRMnoiseDBsmooth,specVelRMnoise,specPowerDBadj,momentsVelDualRawOne,momentsPowerDualRawOne,ii);
+            [momentsVelDualRawOne,momentsPowerDualRawOne,lowShoulderVelOne,highShoulderVelOne,lowShoulderPowOne,highShoulderPowOne] ...
+                =findMultiVels(powerRMnoiseDBsmooth,specVelRMnoise,specPowerDBadj,momentsVelDualRawOne,momentsPowerDualRawOne,lowShoulderVelOne,highShoulderVelOne,lowShoulderPowOne,highShoulderPowOne,ii);
+
+            %% Correct for aircraft motion
+            lowShoulderVelOne(:,ii)=lowShoulderVelOne(:,ii)+single(xCorr+yCorr+zCorr);
+            highShoulderVelOne(:,ii)=highShoulderVelOne(:,ii)+single(xCorr+yCorr+zCorr);
 
             %% Multi DBZ
             % DBM
@@ -275,12 +278,21 @@ for aa=1:length(caseStart)
             momentsTime=momentsTimeOne;
             momentsVelDualRaw=momentsVelDualRawOne;
             momentsPowerDualRaw=momentsPowerDualRawOne;
+            lowShoulderVel=lowShoulderVelOne;
+            highShoulderVel=highShoulderVelOne;
+            lowShoulderPow=lowShoulderPowOne;
+            highShoulderPow=highShoulderPowOne;
         else
             dataFields=fields(momentsTime);
 
             for hh=1:length(dataFields)
                 momentsTime.(dataFields{hh})=cat(2,momentsTime.(dataFields{hh}),momentsTimeOne.(dataFields{hh}));
             end
+
+            lowShoulderVel=cat(2,lowShoulderVel,lowShoulderVelOne);
+            highShoulderVel=cat(2,highShoulderVel,highShoulderVelOne);
+            lowShoulderPow=cat(2,lowShoulderPow,lowShoulderPowOne);
+            highShoulderPow=cat(2,highShoulderPowOne,highShoulderPowOne);
 
             checkDims=size(momentsVelDualRaw,3)-size(momentsVelDualRawOne,3);
             if checkDims<0
@@ -299,7 +311,7 @@ for aa=1:length(caseStart)
     end
     
     %% Sort out vel dual
-    [momentsVelDual,momentsDbzDual]=sortVelsIntoTwo(momentsVelDualRaw,momentsPowerDualRaw,momentsTime);
+   % [momentsVelDual,momentsDbzDual]=sortVelsIntoTwo(momentsVelDualRaw,momentsPowerDualRaw,momentsTime);
 
     %% Take time
 
@@ -317,7 +329,7 @@ for aa=1:length(caseStart)
 
     momentsTime.asl=HCRrange2asl(momentsTime.range,momentsTime.elevation,momentsTime.altitude);
 
-    plotVelocities(momentsVelDual,momentsTime,figdir,project,showPlot);
-    plotReflectivities(momentsDbzDual,momentsTime,figdir,project,showPlot);
+    plotMultiVels(momentsTime,lowShoulderVel,highShoulderVel,figdir,project,showPlot);
+    %plotReflectivities(momentsDbzDual,momentsTime,figdir,project,showPlot);
 
 end
