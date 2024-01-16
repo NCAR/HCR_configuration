@@ -129,8 +129,10 @@ for aa=1:length(caseStart)
         momentsTimeOne.azimuth_vc=nan(1,beamNum);
         momentsTimeOne.time=goodTimes(1:beamNum)';
 
-        momentsVelDualRawOne=single(nan(size(data.range,1),beamNum,1));
-        momentsPowerDualRawOne=single(nan(size(data.range,1),beamNum,1));
+        majorVelOne=single(nan(size(data.range,1),beamNum,1));
+        majorPowOne=single(nan(size(data.range,1),beamNum,1));
+        minorVelOne=single(nan(size(data.range,1),beamNum,1));
+        minorPowOne=single(nan(size(data.range,1),beamNum,1));
 
         lowShoulderVelOne=single(nan(size(data.range,1),beamNum,1));
         highShoulderVelOne=single(nan(size(data.range,1),beamNum,1));
@@ -251,8 +253,8 @@ for aa=1:length(caseStart)
 
             %% Find regions with dual particle species
 
-            [momentsVelDualRawOne,momentsPowerDualRawOne,lowShoulderVelOne,highShoulderVelOne,lowShoulderPowOne,highShoulderPowOne] ...
-                =findMultiVels(powerRMnoiseDBsmooth,specVelRMnoise,specPowerDBadj,momentsVelDualRawOne,momentsPowerDualRawOne,lowShoulderVelOne,highShoulderVelOne,lowShoulderPowOne,highShoulderPowOne,ii);
+            [majorVelOne,majorPowOne,minorVelOne,minorPowOne,lowShoulderVelOne,highShoulderVelOne,lowShoulderPowOne,highShoulderPowOne] ...
+                =findMultiVels(powerRMnoiseDBsmooth,specVelRMnoise,specPowerDBadj,majorVelOne,majorPowOne,minorVelOne,minorPowOne,lowShoulderVelOne,highShoulderVelOne,lowShoulderPowOne,highShoulderPowOne,ii);
 
             %% Correct for aircraft motion
             lowShoulderVelOne(:,ii)=lowShoulderVelOne(:,ii)+single(xCorr+yCorr+zCorr);
@@ -260,7 +262,7 @@ for aa=1:length(caseStart)
 
             %% Multi DBZ
             % DBM
-            powerLinV=10.^(momentsPowerDualRawOne(:,ii,:)./10);
+            powerLinV=10.^(majorPowOne(:,ii,:)./10);
             
             % SNR
             noiseLinV=10.^(dataThis.noise_v./10);
@@ -270,14 +272,16 @@ for aa=1:length(caseStart)
 
             % DBZ
             dataThis.range(dataThis.range<0)=nan;
-            momentsPowerDualRawOne(:,ii,:)=snrDB+20*log10(dataThis.range./1000)+data.dbz1km_v;
+            majorPowOne(:,ii,:)=snrDB+20*log10(dataThis.range./1000)+data.dbz1km_v;
         end
 
         %% Add to output
         if bb==1
             momentsTime=momentsTimeOne;
-            momentsVelDualRaw=momentsVelDualRawOne;
-            momentsPowerDualRaw=momentsPowerDualRawOne;
+            majorVel=majorVelOne;
+            majorPow=majorPowOne;
+            minorVel=minorVelOne;
+            minorPow=minorPowOne;
             lowShoulderVel=lowShoulderVelOne;
             highShoulderVel=highShoulderVelOne;
             lowShoulderPow=lowShoulderPowOne;
@@ -294,24 +298,40 @@ for aa=1:length(caseStart)
             lowShoulderPow=cat(2,lowShoulderPow,lowShoulderPowOne);
             highShoulderPow=cat(2,highShoulderPowOne,highShoulderPowOne);
 
-            checkDims=size(momentsVelDualRaw,3)-size(momentsVelDualRawOne,3);
+            % Major
+            checkDims=size(majorVel,3)-size(majorVelOne,3);
             if checkDims<0
-                momentsVelDualRaw=padarray(momentsVelDualRaw,[0,0,abs(checkDims)],nan,'post');
-                momentsPowerDualRaw=padarray(momentsPowerDualRaw,[0,0,abs(checkDims)],nan,'post');
+                majorVel=padarray(majorVel,[0,0,abs(checkDims)],nan,'post');
+                majorPow=padarray(majorPow,[0,0,abs(checkDims)],nan,'post');
             end
 
-            momVelTest=nan(size(momentsVelDualRawOne,1),size(momentsVelDualRawOne,2),max(size(momentsVelDualRaw,3)));
-            momPowTest=nan(size(momentsVelDualRawOne,1),size(momentsVelDualRawOne,2),max(size(momentsVelDualRaw,3)));
-            dim3=size(momentsVelDualRawOne,3);
-            momVelTest(:,:,1:dim3)=momentsVelDualRawOne;     
-            momentsVelDualRaw=cat(2,momentsVelDualRaw,momVelTest);
-            momPowTest(:,:,1:dim3)=momentsPowerDualRawOne;     
-            momentsPowerDualRaw=cat(2,momentsPowerDualRaw,momPowTest);
+            momVelTest=nan(size(majorVelOne,1),size(majorVelOne,2),max(size(majorVel,3)));
+            momPowTest=nan(size(majorVelOne,1),size(majorVelOne,2),max(size(majorVel,3)));
+            dim3=size(majorVelOne,3);
+            momVelTest(:,:,1:dim3)=majorVelOne;     
+            majorVel=cat(2,majorVel,momVelTest);
+            momPowTest(:,:,1:dim3)=majorPowOne;     
+            majorPow=cat(2,majorPow,momPowTest);
+
+            % Minor
+            checkDims=size(minorVel,3)-size(minorVelOne,3);
+            if checkDims<0
+                minorVel=padarray(minorVel,[0,0,abs(checkDims)],nan,'post');
+                minorPow=padarray(minorPow,[0,0,abs(checkDims)],nan,'post');
+            end
+
+            momVelTest=nan(size(minorVelOne,1),size(minorVelOne,2),max(size(minorVel,3)));
+            momPowTest=nan(size(minorVelOne,1),size(minorVelOne,2),max(size(minorVel,3)));
+            dim3=size(minorVelOne,3);
+            momVelTest(:,:,1:dim3)=minorVelOne;     
+            minorVel=cat(2,minorVel,momVelTest);
+            momPowTest(:,:,1:dim3)=minorPowOne;     
+            minorPow=cat(2,minorPow,momPowTest);
         end
     end
     
-    %% Sort out vel dual
-   % [momentsVelDual,momentsDbzDual]=sortVelsIntoTwo(momentsVelDualRaw,momentsPowerDualRaw,momentsTime);
+    %% Sort vels into layers
+   [velLayers,powLayers]=sortVelLayers(majorVel,majorPow,minorVel,minorPow,momentsTime);
 
     %% Take time
 
