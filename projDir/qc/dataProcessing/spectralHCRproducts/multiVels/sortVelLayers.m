@@ -1,45 +1,41 @@
-function [velLayers,powLayers]=sortVelLayers(majorVel,majorPow,minorVel,minorPow,momentsTime)
+function [velLayers,powLayers]=sortVelLayers(majorVel,majorPow,minorVel,minorPow)
+velLayers=nan(size(majorVel,1),size(majorVel,2),2);
+powLayers=[];
 
-% Find base layer
-baseLayer=nan(size(majorVel,1),size(majorVel,2));
-majorVelRM=majorVel;
+% Find regions with more than one layer
+velNums=sum(~isnan(majorVel),3);
+multiLayers=nan(size(velNums));
+multiLayers(velNums>1)=1;
 
-for kk=3:0.5:ceil(max(majorVel(:),[],'omitmissing'))
-    velDiff=majorVel-kk;
+[~,multiDens]=fast_nd_mean(multiLayers,[11,11]);
 
-    [minDiff,minDiffInd]=min(abs(velDiff),[],3,'omitmissing');
+multiMask=multiDens>30;
+multiMask=imclose(multiMask,strel('disk',3));
+multiMask=imopen(multiMask,strel('disk',1));
+multiMask=bwareaopen(multiMask,51);
 
-    subRow=repmat((1:size(majorVel,1))',[1,size(majorVel,2)]);
-    subCol=repmat((1:size(majorVel,2)),[size(majorVel,1),1]);
+mask3D=repmat(multiMask,1,1,size(majorVel,3));
+majorVel(mask3D==0)=nan;
+majorPow(mask3D==0)=nan;
 
-    minDiffIndLin=sub2ind(size(majorVel),subRow,subCol,minDiffInd);
+mask3D=repmat(multiMask,1,1,size(minorVel,3));
+minorVel(mask3D==0)=nan;
+minorPow(mask3D==0)=nan;
 
-    testLayer=majorVel(minDiffIndLin);
-    testLayer(minDiff>0.25)=nan;
+% Process region by region
+multiRegs=bwconncomp(multiMask);
 
-    baseLayer(~isnan(testLayer) & isnan(baseLayer))=testLayer(~isnan(testLayer) & isnan(baseLayer));
+for ll=1:multiRegs.NumObjects
+    pixLin=multiRegs.PixelIdxList{ll};
+    [r,c]=ind2sub(size(multiMask),pixLin);
+    minR=min(r);
+    maxR=max(r);
+    minC=min(c);
+    maxC=max(c);
+
+    [velLayers(minR:maxR,minC:maxC,2),velLayers(minR:maxR,minC:maxC,1)]=processMultiRegs(majorVel(minR:maxR,minC:maxC,:),majorPow(minR:maxR,minC:maxC,:), ...
+        minorVel(minR:maxR,minC:maxC,:),minorPow(minR:maxR,minC:maxC,:),multiLayers(minR:maxR,minC:maxC));
 end
-
-for kk=floor(min(majorVel(:),[],'omitmissing')):0.5:3
-    velDiff=majorVel-kk;
-
-    [minDiff,minDiffInd]=min(abs(velDiff),[],3,'omitmissing');
-
-    subRow=repmat((1:size(majorVel,1))',[1,size(majorVel,2)]);
-    subCol=repmat((1:size(majorVel,2)),[size(majorVel,1),1]);
-
-    minDiffIndLin=sub2ind(size(majorVel),subRow,subCol,minDiffInd);
-
-    testLayer=majorVel(minDiffIndLin);
-    testLayer(minDiff>0.25)=nan;
-
-    baseLayer(~isnan(testLayer) & isnan(baseLayer))=testLayer(~isnan(testLayer) & isnan(baseLayer));
-end
-
-surf(baseLayer,'edgecolor','none')
-view(2)
-caxis([-5,15])
-colormap(jet(20))
 
 % % Sort vel dual into two fields
 % %velLayers=nan(size(majorVel,1),size(majorVel,2),7);

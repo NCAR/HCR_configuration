@@ -330,8 +330,19 @@ for aa=1:length(caseStart)
         end
     end
     
+    %% Reverse up pointing direction
+    shoulderLow=nan(size(lowShoulderVel));
+    shoulderLow(:,momentsTime.elevation<=0)=lowShoulderVel(:,momentsTime.elevation<=0);
+    shoulderLow(:,momentsTime.elevation>0)=-highShoulderVel(:,momentsTime.elevation>0);
+    shoulderHigh=nan(size(highShoulderVel));
+    shoulderHigh(:,momentsTime.elevation<=0)=highShoulderVel(:,momentsTime.elevation<=0);
+    shoulderHigh(:,momentsTime.elevation>0)=-lowShoulderVel(:,momentsTime.elevation>0);
+
+    majorVel(:,momentsTime.elevation>0,:)=-majorVel(:,momentsTime.elevation>0,:);
+    minorVel(:,momentsTime.elevation>0,:)=-minorVel(:,momentsTime.elevation>0,:);
+
     %% Sort vels into layers
-   [velLayers,powLayers]=sortVelLayers(majorVel,majorPow,minorVel,minorPow,momentsTime);
+   [velLayers,powLayers]=sortVelLayers(majorVel,majorPow,minorVel,minorPow);
 
     %% Take time
 
@@ -349,7 +360,7 @@ for aa=1:length(caseStart)
 
     momentsTime.asl=HCRrange2asl(momentsTime.range,momentsTime.elevation,momentsTime.altitude);
 
-    plotMultiVels(momentsTime,lowShoulderVel,highShoulderVel,figdir,project,showPlot);
+    plotMultiVels(momentsTime,shoulderLow,shoulderHigh,velLayers,figdir,project,showPlot);
     %plotReflectivities(momentsDbzDual,momentsTime,figdir,project,showPlot);
 
 end
