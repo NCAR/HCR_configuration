@@ -1,5 +1,6 @@
 function [velLayers,powLayers]=sortVelLayers(majorVel,majorPow,minorVel,minorPow)
-velLayers=nan(size(majorVel,1),size(majorVel,2),2);
+velHigh=nan(size(majorVel,1),size(majorVel,2));
+velLow=nan(size(majorVel,1),size(majorVel,2));
 powLayers=[];
 
 % Find regions with more than one layer
@@ -22,20 +23,63 @@ mask3D=repmat(multiMask,1,1,size(minorVel,3));
 minorVel(mask3D==0)=nan;
 minorPow(mask3D==0)=nan;
 
-% Process region by region
+% Find regions that are too large and break them up
+multiMaskOrig=multiMask;
 multiRegs=bwconncomp(multiMask);
 
-for ll=1:multiRegs.NumObjects
-    pixLin=multiRegs.PixelIdxList{ll};
+bigInds=find((cellfun(@length, multiRegs.PixelIdxList))>1000);
+indsComp=0;
+regsPrev=-999;
+
+while ~isempty(bigInds) & indsComp==0
+    for kk=1:length(bigInds)
+        pixLarge=multiRegs.PixelIdxList{bigInds(kk)};
+        justOne=zeros(size(multiMask));
+        justOne(pixLarge)=1;
+
+        D=-bwdist(~justOne);
+        mask1=imextendedmin(D,2);
+        D2=imimposemin(D,mask1);
+        Ld2=watershed(D2);
+        justOne(Ld2==0)=0;
+        multiMask(pixLarge)=justOne(pixLarge);
+    end
+    multiRegs=bwconncomp(multiMask);
+    bigInds=find((cellfun(@length, multiRegs.PixelIdxList))>1000);
+    if bigInds==regsPrev
+        indsComp=1;
+    end
+    regsPrev=bigInds;
+end
+
+L=labelmatrix(multiRegs);
+L=double(L);
+L(multiMaskOrig==0)=-99;
+L(L==0)=nan;
+
+L=fillmissing2(L,'nearest','MissingLocations',isnan(L));
+
+% Process region by region
+for ll=1:max(L(:))
+    pixLin=find(L==ll);
+
+    % Check how big and separate
     [r,c]=ind2sub(size(multiMask),pixLin);
     minR=min(r);
     maxR=max(r);
     minC=min(c);
     maxC=max(c);
 
-    [velLayers(minR:maxR,minC:maxC,2),velLayers(minR:maxR,minC:maxC,1)]=processMultiRegs(majorVel(minR:maxR,minC:maxC,:),majorPow(minR:maxR,minC:maxC,:), ...
-        minorVel(minR:maxR,minC:maxC,:),minorPow(minR:maxR,minC:maxC,:),multiLayers(minR:maxR,minC:maxC));
+    justOne=zeros(size(multiMask));
+    justOne(pixLin)=1;
+
+    justOne=justOne(minR:maxR,minC:maxC);
+   
+    [velHigh(pixLin),velLow(pixLin)]=processMultiRegs(majorVel(minR:maxR,minC:maxC,:),majorPow(minR:maxR,minC:maxC,:), ...
+        minorVel(minR:maxR,minC:maxC,:),minorPow(minR:maxR,minC:maxC,:),multiLayers(minR:maxR,minC:maxC),justOne);
 end
+
+velLayers=cat(3,velLow,velHigh);
 
 % % Sort vel dual into two fields
 % %velLayers=nan(size(majorVel,1),size(majorVel,2),7);

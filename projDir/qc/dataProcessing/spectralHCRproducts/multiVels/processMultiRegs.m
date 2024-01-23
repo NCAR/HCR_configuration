@@ -1,4 +1,9 @@
-function [highLayer,lowLayer]=processMultiRegs(majorVel,majorPow,minorVel,minorPow,multLayers)
+function [highLayerOut,lowLayerOut]=processMultiRegs(majorVel,majorPow,minorVel,minorPow,multLayers,inMask)
+majorVel(repmat(inMask,1,1,size(majorVel,3))==0)=nan;
+majorPow(repmat(inMask,1,1,size(majorPow,3))==0)=nan;
+minorVel(repmat(inMask,1,1,size(minorVel,3))==0)=nan;
+minorPow(repmat(inMask,1,1,size(minorPow,3))==0)=nan;
+
 highLayer=nan(size(majorVel,1),size(majorVel,2));
 lowLayer=highLayer;
 
@@ -15,14 +20,19 @@ minPerc=prctile(velDistrib,5);
 [N1,e1]=histcounts(velDistrib,floor(minPerc):0.5:ceil(maxPerc));
 [N2,e2]=histcounts(velDistrib,floor(minPerc)-0.25:0.5:ceil(maxPerc)+0.25);
 
-% s1=subplot(4,1,1);
-% bar(e1(1:end-1)+0.25,N1,1)
-% xlim([e2(1),e2(end)])
-% s2=subplot(4,1,2);
-% 
-% bar(e2(1:end-1)+0.25,N2,1)
-% xlim([e2(1),e2(end)])
-% ylims=s2.YLim;
+plotY=0;
+if plotY
+    close all
+    figure
+    s1=subplot(4,1,1);
+    bar(e1(1:end-1)+0.25,N1,1)
+    xlim([e2(1),e2(end)])
+    s2=subplot(4,1,2);
+
+    bar(e2(1:end-1)+0.25,N2,1)
+    xlim([e2(1),e2(end)])
+    ylims=s2.YLim;
+end
 
 [min1,p1]=islocalmin(N1);
 [min2,p2]=islocalmin(N2);
@@ -33,9 +43,11 @@ if sum(min1)~=0 & sum(min2)~=0
     min2=find(p2==max(p2));
     min2=min2(1);
     if abs(e1(min1)-e2(min2))<=1
-        % hold on
-        % plot([e1(min1)+0.25,e2(min2)+0.25],ylims,'-r','LineWidth',2);
-        % hold off
+        if plotY
+            hold on
+            plot([e1(min1)+0.25,e2(min2)+0.25],ylims,'-r','LineWidth',2);
+            hold off
+        end
         divider=mean([e1(min1)+0.25,e2(min2)+0.25]);
         max1=islocalmax(N1);
         max2=islocalmax(N2);
@@ -73,18 +85,21 @@ if sum(min1)~=0 & sum(min2)~=0
 
         [lowLayer,~]=buildLayer(lowMinor,lowLayer,maxLow,divider,floor(min(lowMinor(:),[],'omitmissing')));
 
-        % close all
-        % figure
-        % subplot(2,1,1)
-        % surf(highLayer,'edgecolor','none')
-        % view(2)
-        % caxis([-5,15])
-        % colormap(jet(20))
-        % subplot(2,1,2)
-        % surf(lowLayer,'edgecolor','none')
-        % view(2)
-        % caxis([-5,15])
-        % colormap(jet(20))
+        if plotY
+            figure
+            subplot(2,1,1)
+            surf(highLayer,'edgecolor','none')
+            view(2)
+            caxis([-5,15])
+            colormap(jet(20))
+            subplot(2,1,2)
+            surf(lowLayer,'edgecolor','none')
+            view(2)
+            caxis([-5,15])
+            colormap(jet(20))
+        end
     end
 end
+highLayerOut=highLayer(inMask==1);
+lowLayerOut=lowLayer(inMask==1);
 end
