@@ -1,6 +1,7 @@
-function [velLayer,velMatRM]=buildLayer(velMat,velLayer,midPoint,highPoint,lowPoint)
+function [velLayer,powLayer,velMatRM,powMatRM]=buildLayer(velMat,velLayer,powMat,powLayer,midPoint,highPoint,lowPoint)
 
 velMatRM=velMat;
+powMatRM=powMat;
 
 for kk=midPoint:0.5:highPoint
     velDiff=velMat-kk;
@@ -15,6 +16,9 @@ for kk=midPoint:0.5:highPoint
     testLayer=velMat(minDiffIndLin);
     testLayer(minDiff>0.25)=nan;
 
+    testLayerP=powMat(minDiffIndLin);
+    testLayerP(minDiff>0.25)=nan;
+
     minDiffMat=repmat(minDiff,1,1,size(velMat,3));
     minDiffLin=find(minDiffMat<=0.25);
 
@@ -24,7 +28,9 @@ for kk=midPoint:0.5:highPoint
     rmInds=intersect(minDiffIndLin,minDiffLin);
     rmInds=intersect(rmInds,baseLin);
     velMatRM(rmInds)=nan;
+    powMatRM(rmInds)=nan;
 
+    powLayer(~isnan(testLayer) & isnan(velLayer))=testLayerP(~isnan(testLayer) & isnan(velLayer));
     velLayer(~isnan(testLayer) & isnan(velLayer))=testLayer(~isnan(testLayer) & isnan(velLayer));
 end
 
@@ -40,6 +46,8 @@ for kk=lowPoint:0.5:midPoint
 
     testLayer=velMat(minDiffIndLin);
     testLayer(minDiff>0.25)=nan;
+    testLayerP=powMat(minDiffIndLin);
+    testLayerP(minDiff>0.25)=nan;
 
     minDiffMat=repmat(minDiff,1,1,size(velMat,3));
     minDiffLin=find(minDiffMat<=0.25);
@@ -50,7 +58,9 @@ for kk=lowPoint:0.5:midPoint
     rmInds=intersect(minDiffIndLin,minDiffLin);
     rmInds=intersect(rmInds,baseLin);
     velMatRM(rmInds)=nan;
+    powMatRM(rmInds)=nan;
 
+    powLayer(~isnan(testLayer) & isnan(velLayer))=testLayerP(~isnan(testLayer) & isnan(velLayer));
     velLayer(~isnan(testLayer) & isnan(velLayer))=testLayer(~isnan(testLayer) & isnan(velLayer));
 end
 end

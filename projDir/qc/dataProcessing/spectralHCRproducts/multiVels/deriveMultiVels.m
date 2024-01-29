@@ -266,9 +266,9 @@ for aa=1:length(caseStart)
             
             % SNR
             noiseLinV=10.^(dataThis.noise_v./10);
-            snrLinV=(powerLinV-noiseLinV)./noiseLinV;
-            snrLinV(snrLinV<0)=nan;
-            snrDB=10*log10(snrLinV);
+            snrLinLow=(powerLinV-noiseLinV)./noiseLinV;
+            snrLinLow(snrLinLow<0)=nan;
+            snrDB=10*log10(snrLinLow);
 
             % DBZ
             dataThis.range(dataThis.range<0)=nan;
@@ -296,7 +296,7 @@ for aa=1:length(caseStart)
             lowShoulderVel=cat(2,lowShoulderVel,lowShoulderVelOne);
             highShoulderVel=cat(2,highShoulderVel,highShoulderVelOne);
             lowShoulderPow=cat(2,lowShoulderPow,lowShoulderPowOne);
-            highShoulderPow=cat(2,highShoulderPowOne,highShoulderPowOne);
+            highShoulderPow=cat(2,highShoulderPow,highShoulderPowOne);
 
             % Major
             checkDims=size(majorVel,3)-size(majorVelOne,3);
@@ -331,18 +331,43 @@ for aa=1:length(caseStart)
     end
     
     %% Reverse up pointing direction
-    shoulderLow=nan(size(lowShoulderVel));
-    shoulderLow(:,momentsTime.elevation<=0)=lowShoulderVel(:,momentsTime.elevation<=0);
-    shoulderLow(:,momentsTime.elevation>0)=-highShoulderVel(:,momentsTime.elevation>0);
-    shoulderHigh=nan(size(highShoulderVel));
-    shoulderHigh(:,momentsTime.elevation<=0)=highShoulderVel(:,momentsTime.elevation<=0);
-    shoulderHigh(:,momentsTime.elevation>0)=-lowShoulderVel(:,momentsTime.elevation>0);
+    shoulderLowVel=nan(size(lowShoulderVel));
+    shoulderLowVel(:,momentsTime.elevation<=0)=lowShoulderVel(:,momentsTime.elevation<=0);
+    shoulderLowVel(:,momentsTime.elevation>0)=-highShoulderVel(:,momentsTime.elevation>0);
+    shoulderHighVel=nan(size(highShoulderVel));
+    shoulderHighVel(:,momentsTime.elevation<=0)=highShoulderVel(:,momentsTime.elevation<=0);
+    shoulderHighVel(:,momentsTime.elevation>0)=-lowShoulderVel(:,momentsTime.elevation>0);
 
     majorVel(:,momentsTime.elevation>0,:)=-majorVel(:,momentsTime.elevation>0,:);
     minorVel(:,momentsTime.elevation>0,:)=-minorVel(:,momentsTime.elevation>0,:);
 
     %% Sort vels into layers
-   [velLayers,powLayers]=sortVelLayers(majorVel,majorPow,minorVel,minorPow);
+    [velLayers,powLayers]=sortVelLayers(majorVel,majorPow,minorVel,minorPow);
+
+    %% Reflectivity
+    
+    % Linear
+    lowShoulderPowLin=10.^(lowShoulderPow./10);
+    highShoulderPowLin=10.^(highShoulderPow./10);
+    powLayersLin=10.^(powLayers./10);
+
+    % SNR
+    noiseLinV=10.^(data.noise_v./10);
+    snrLinLow=(lowShoulderPowLin-noiseLinV)./noiseLinV;
+    snrLinLow(snrLinLow<0)=nan;
+    snrLow=10*log10(snrLinLow);
+    snrLinHigh=(highShoulderPowLin-noiseLinV)./noiseLinV;
+    snrLinHigh(snrLinHigh<0)=nan;
+    snrHigh=10*log10(snrLinHigh);
+    snrLinLayers=(powLayersLin-noiseLinV)./noiseLinV;
+    snrLinLayers(snrLinLayers<0)=nan;
+    snrLayers=10*log10(snrLinLayers);
+    
+    % DBZ
+    data.range(data.range<0)=nan;
+    shoulderLowDbz=snrLow+20*log10(data.range./1000)+data.dbz1km_v;
+    shoulderHighDbz=snrHigh+20*log10(data.range./1000)+data.dbz1km_v;
+    dbzLayers=snrLayers+20*log10(data.range./1000)+data.dbz1km_v;
 
     %% Take time
 
@@ -360,7 +385,7 @@ for aa=1:length(caseStart)
 
     momentsTime.asl=HCRrange2asl(momentsTime.range,momentsTime.elevation,momentsTime.altitude);
 
-    plotMultiVels(momentsTime,shoulderLow,shoulderHigh,velLayers,figdir,project,showPlot);
-    %plotReflectivities(momentsDbzDual,momentsTime,figdir,project,showPlot);
+    plotMultiVels(momentsTime,shoulderLowVel,shoulderHighVel,velLayers,figdir,project,showPlot);
+    plotMultiRefs(momentsTime,shoulderLowDbz,shoulderHighDbz,dbzLayers,figdir,project,showPlot);
 
 end

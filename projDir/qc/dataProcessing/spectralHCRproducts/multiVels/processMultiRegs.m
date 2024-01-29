@@ -1,14 +1,17 @@
-function [highLayerOut,lowLayerOut]=processMultiRegs(majorVel,majorPow,minorVel,minorPow,multLayers,inMask)
+function [highLayerOutVel,lowLayerOutVel,highLayerOutPow,lowLayerOutPow]=processMultiRegs(majorVel,majorPow,minorVel,minorPow,multLayers,inMask)
 majorVel(repmat(inMask,1,1,size(majorVel,3))==0)=nan;
 majorPow(repmat(inMask,1,1,size(majorPow,3))==0)=nan;
 minorVel(repmat(inMask,1,1,size(minorVel,3))==0)=nan;
 minorPow(repmat(inMask,1,1,size(minorPow,3))==0)=nan;
 
-highLayer=nan(size(majorVel,1),size(majorVel,2));
-lowLayer=highLayer;
+highLayerVel=nan(size(majorVel,1),size(majorVel,2));
+lowLayerVel=highLayerVel;
+highLayerPow=highLayerVel;
+lowLayerPow=highLayerVel;
 
 multL3D=repmat(multLayers,1,1,size(majorVel,3));
 majorVel(isnan(multL3D))=nan;
+majorPow(isnan(multL3D))=nan;
 
 % Figue out if dual distribution
 divider=[];
@@ -62,44 +65,60 @@ if sum(min1)~=0 & sum(min2)~=0
         % Find high layer
         majorHigh=majorVel;
         majorHigh(majorVel<divider)=nan;
+        majorHighP=majorPow;
+        majorHighP(majorVel<divider)=nan;
 
-        [highLayer,highRM]=buildLayer(majorHigh,highLayer,maxHigh,ceil(maxPerc),divider);
+        [highLayerVel,highLayerPow,highRM,highRMP]=buildLayer(majorHigh,highLayerVel,majorHighP,highLayerPow,maxHigh,ceil(maxPerc),divider);
 
         highMinor=minorVel;
         highMinor(minorVel<divider)=nan;
 
         highMinor=cat(3,highRM,highMinor);
 
-        [highLayer,~]=buildLayer(highMinor,highLayer,maxHigh,ceil(max(highMinor(:),[],'omitmissing')),divider);
+        highMinorP=minorPow;
+        highMinorP(minorVel<divider)=nan;
+
+        highMinorP=cat(3,highRMP,highMinorP);
+
+        [highLayerVel,highLayerPow,~]=buildLayer(highMinor,highLayerVel,highMinorP,highLayerPow,maxHigh,ceil(max(highMinor(:),[],'omitmissing')),divider);
        
         % Find low layer
         majorLow=majorVel;
         majorLow(majorVel>=divider)=nan;
+        majorLowP=majorPow;
+        majorLowP(majorVel>=divider)=nan;
 
-        [lowLayer,lowRM]=buildLayer(majorLow,lowLayer,maxLow,divider,floor(minPerc));
+        [lowLayerVel,lowLayerPow,lowRM,lowRMP]=buildLayer(majorLow,lowLayerVel,majorLowP,lowLayerPow,maxLow,divider,floor(minPerc));
 
         lowMinor=minorVel;
         lowMinor(minorVel>=divider)=nan;
 
         lowMinor=cat(3,lowRM,lowMinor);
 
-        [lowLayer,~]=buildLayer(lowMinor,lowLayer,maxLow,divider,floor(min(lowMinor(:),[],'omitmissing')));
+        lowMinorP=minorPow;
+        lowMinorP(minorVel>=divider)=nan;
+
+        lowMinorP=cat(3,lowRMP,lowMinorP);
+
+        [lowLayerVel,lowLayerPow,~]=buildLayer(lowMinor,lowLayerVel,lowMinorP,lowLayerPow,maxLow,divider,floor(min(lowMinor(:),[],'omitmissing')));
 
         if plotY
             figure
             subplot(2,1,1)
-            surf(highLayer,'edgecolor','none')
+            surf(highLayerVel,'edgecolor','none')
             view(2)
             caxis([-5,15])
             colormap(jet(20))
             subplot(2,1,2)
-            surf(lowLayer,'edgecolor','none')
+            surf(lowLayerVel,'edgecolor','none')
             view(2)
             caxis([-5,15])
             colormap(jet(20))
         end
     end
 end
-highLayerOut=highLayer(inMask==1);
-lowLayerOut=lowLayer(inMask==1);
+highLayerOutVel=highLayerVel(inMask==1);
+lowLayerOutVel=lowLayerVel(inMask==1);
+highLayerOutPow=highLayerPow(inMask==1);
+lowLayerOutPow=lowLayerPow(inMask==1);
 end

@@ -1,7 +1,8 @@
 function [velLayers,powLayers]=sortVelLayers(majorVel,majorPow,minorVel,minorPow)
 velHigh=nan(size(majorVel,1),size(majorVel,2));
 velLow=nan(size(majorVel,1),size(majorVel,2));
-powLayers=[];
+powHigh=nan(size(majorVel,1),size(majorVel,2));
+powLow=nan(size(majorVel,1),size(majorVel,2));
 
 % Find regions with more than one layer
 velNums=sum(~isnan(majorVel),3);
@@ -27,7 +28,7 @@ minorPow(mask3D==0)=nan;
 multiMaskOrig=multiMask;
 multiRegs=bwconncomp(multiMask);
 
-bigInds=find((cellfun(@length, multiRegs.PixelIdxList))>1000);
+bigInds=find((cellfun(@length, multiRegs.PixelIdxList))>1000); % Default 1000
 indsComp=0;
 regsPrev=-999;
 
@@ -46,7 +47,7 @@ while ~isempty(bigInds) & indsComp==0
     end
     multiRegs=bwconncomp(multiMask);
     bigInds=find((cellfun(@length, multiRegs.PixelIdxList))>1000);
-    if bigInds==regsPrev
+    if isequal(bigInds,regsPrev)
         indsComp=1;
     end
     regsPrev=bigInds;
@@ -75,11 +76,12 @@ for ll=1:max(L(:))
 
     justOne=justOne(minR:maxR,minC:maxC);
    
-    [velHigh(pixLin),velLow(pixLin)]=processMultiRegs(majorVel(minR:maxR,minC:maxC,:),majorPow(minR:maxR,minC:maxC,:), ...
+    [velHigh(pixLin),velLow(pixLin),powHigh(pixLin),powLow(pixLin)]=processMultiRegs(majorVel(minR:maxR,minC:maxC,:),majorPow(minR:maxR,minC:maxC,:), ...
         minorVel(minR:maxR,minC:maxC,:),minorPow(minR:maxR,minC:maxC,:),multiLayers(minR:maxR,minC:maxC),justOne);
 end
 
 velLayers=cat(3,velLow,velHigh);
+powLayers=cat(3,powLow,powHigh);
 
 % % Sort vel dual into two fields
 % %velLayers=nan(size(majorVel,1),size(majorVel,2),7);
