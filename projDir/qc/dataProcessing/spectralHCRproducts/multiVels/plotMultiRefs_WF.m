@@ -1,7 +1,6 @@
-function plotMultiRefs(moments,shoulderLowDbz,shoulderHighDbz,dbzLayers,figdir,project,showPlot)
+function plotMultiRefs_WF(momDbz,momAsl,momTime,shoulderLowDbz,shoulderHighDbz,dbzLayers,figdir,project,showPlot)
 
-aslGood=moments.asl(~isnan(moments.vel))./1000;
-ylims=[0,max(aslGood)+0.5];
+ylims=[0,12];
 
 clims=[-20,25];
 
@@ -27,16 +26,16 @@ f1 = figure('Position',[200 500 1600 1250],'DefaultAxesFontSize',12,'visible',sh
 t = tiledlayout(4,2,'TileSpacing','tight','Padding','tight');
 s1=nexttile(1);
 
-moments.dbz(isnan(moments.vel))=-99;
+momDbz(isnan(momDbz))=-99;
 
 hold on
-surf(moments.time,moments.asl./1000,moments.dbz,'edgecolor','none');
+surf(momTime,momAsl./1000,momDbz,'edgecolor','none');
 view(2);
 ylabel('Altitude (km)');
 clim(clims);
 s1.Colormap=colDiff;
 ylim(ylims);
-xlim([moments.time(1),moments.time(end)]);
+xlim([momTime(1),momTime(end)]);
 colorbar
 grid on
 box on
@@ -47,13 +46,13 @@ s3=nexttile(3);
 shoulderHighDbz(isnan(shoulderHighDbz))=-99;
 
 hold on
-surf(moments.time,moments.asl./1000,shoulderHighDbz,'edgecolor','none');
+surf(momTime,momAsl./1000,shoulderHighDbz,'edgecolor','none');
 view(2);
 ylabel('Altitude (km)');
 clim(clims);
 s3.Colormap=colDiff;
 ylim(ylims);
-xlim([moments.time(1),moments.time(end)]);
+xlim([momTime(1),momTime(end)]);
 colorbar
 grid on
 box on
@@ -64,13 +63,13 @@ s4=nexttile(4);
 highLayer(isnan(highLayer))=-99;
 
 hold on
-surf(moments.time,moments.asl./1000,highLayer,'edgecolor','none');
+surf(momTime,momAsl./1000,highLayer,'edgecolor','none');
 view(2);
 ylabel('Altitude (km)');
 clim(clims);
 s4.Colormap=colDiff;
 ylim(ylims);
-xlim([moments.time(1),moments.time(end)]);
+xlim([momTime(1),momTime(end)]);
 colorbar
 grid on
 box on
@@ -81,13 +80,13 @@ s5=nexttile(5);
 shoulderLowDbz(isnan(shoulderLowDbz))=-99;
 
 hold on
-surf(moments.time,moments.asl./1000,shoulderLowDbz,'edgecolor','none');
+surf(momTime,momAsl./1000,shoulderLowDbz,'edgecolor','none');
 view(2);
 ylabel('Altitude (km)');
 clim(clims);
 s5.Colormap=colDiff;
 ylim(ylims);
-xlim([moments.time(1),moments.time(end)]);
+xlim([momTime(1),momTime(end)]);
 colorbar
 grid on
 box on
@@ -98,13 +97,13 @@ s6=nexttile(6);
 lowLayer(isnan(lowLayer))=-99;
 
 hold on
-surf(moments.time,moments.asl./1000,lowLayer,'edgecolor','none');
+surf(momTime,momAsl./1000,lowLayer,'edgecolor','none');
 view(2);
 ylabel('Altitude (km)');
 clim(clims);
 s6.Colormap=colDiff;
 ylim(ylims);
-xlim([moments.time(1),moments.time(end)]);
+xlim([momTime(1),momTime(end)]);
 colorbar
 grid on
 box on
@@ -115,13 +114,13 @@ s7=nexttile(7);
 shoulderDiffDbz(isnan(shoulderDiffDbz))=-99;
 
 hold on
-surf(moments.time,moments.asl./1000,shoulderDiffDbz,'edgecolor','none');
+surf(momTime,momAsl./1000,shoulderDiffDbz,'edgecolor','none');
 view(2);
 ylabel('Altitude (km)');
 clim(climsDiffS);
 s7.Colormap=colTwo;
 ylim(ylims);
-xlim([moments.time(1),moments.time(end)]);
+xlim([momTime(1),momTime(end)]);
 colorbar
 grid on
 box on
@@ -132,13 +131,13 @@ s8=nexttile(8);
 dualPartDiff(isnan(dualPartDiff))=-99;
 
 hold on
-surf(moments.time,moments.asl./1000,dualPartDiff,'edgecolor','none');
+surf(momTime,momAsl./1000,dualPartDiff,'edgecolor','none');
 view(2);
 ylabel('Altitude (km)');
 clim(climsDiff);
 s8.Colormap=colTwo;
 ylim(ylims);
-xlim([moments.time(1),moments.time(end)]);
+xlim([momTime(1),momTime(end)]);
 colorbar
 grid on
 box on
@@ -147,5 +146,5 @@ title('Dual particles high-low (dB)')
 linkaxes([s1 s3 s4 s5 s6 s7 s8],'xy')
 
 set(gcf,'PaperPositionMode','auto')
-print(f1,[figdir,project,'_multiRef_',datestr(moments.time(1),'yyyymmdd_HHMMSS'),'_to_',datestr(moments.time(end),'yyyymmdd_HHMMSS')],'-dpng','-r0');
+print(f1,[figdir,project,'_multiRef_',datestr(momTime(1),'yyyymmdd_HHMMSS'),'_to_',datestr(momTime(end),'yyyymmdd_HHMMSS')],'-dpng','-r0');
 end

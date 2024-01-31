@@ -13,31 +13,27 @@ qcVersion=[];
 outTime=0.1; % Desired output time resolution in seconds. Must be less than or equal to one second.
 sampleTime=0.02; % Length of sample in seconds.
 
+showPlot='off';
+plotYes=1;
+saveData=1;
+
 dataDirTS=HCRdir(project,quality,qcVersion,freqData);
+figdir=[dataDirTS(1:end-6),'figsMultiVel/wholeFlights/'];
+outdir=[dataDirTS(1:end-6),'matFiles/multiVel/'];
 
-figdir=[dataDirTS(1:end-6),'figsMultiVel/cases/'];
+infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_',project,'.txt'];
 
-showPlot='on';
+caseList = table2array(readtable(infile));
 
-casefile=['~/git/HCR_configuration/projDir/qc/dataProcessing/HCRproducts/caseFiles/dualParticles_',project,'.txt'];
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% Loop through cases
-
-caseList=readtable(casefile);
-caseStart=datetime(caseList.Var1,caseList.Var2,caseList.Var3, ...
-    caseList.Var4,caseList.Var5,caseList.Var6);
-caseEnd=datetime(caseList.Var7,caseList.Var8,caseList.Var9, ...
-    caseList.Var10,caseList.Var11,caseList.Var12);
-
-for aa=1:length(caseStart)
+for aa=2:size(caseList,1)
     tic
 
-    disp(['Case ',num2str(aa),' of ',num2str(length(caseStart))]);
-
-    startTime=caseStart(aa);
-    endTime=caseEnd(aa);
+    disp(['Flight ',num2str(aa)]);
+    disp(['Starting at ',datestr(datetime('now'),'yyyy-mm-dd HH:MM')]);
+    disp('Loading data ...');
+    
+    startTime=datetime(caseList(aa,1:6));
+    endTime=datetime(caseList(aa,7:12));
 
     fileListTS=makeFileList(dataDirTS,startTime+seconds(1),endTime-seconds(1),'20YYMMDDxhhmmss',1);
 
@@ -52,6 +48,8 @@ for aa=1:length(caseStart)
             data=[];
             data.IVc=[];
             data.QVc=[];
+            %data.IHx=[];
+            %data.QHx=[];
             data.eastward_velocity=[];
             data.northward_velocity=[];
             data.vertical_velocity=[];
@@ -105,7 +103,7 @@ for aa=1:length(caseStart)
             beamNum=length(goodTimes);
         end
 
-        %% Calculate moments
+          %% Calculate moments
 
         disp('Calculating moments ...')
         momentsTimeOne.powerV=nan(size(data.range,1),beamNum);
@@ -352,6 +350,7 @@ for aa=1:length(caseStart)
             momPowTest(:,:,1:dim3)=minorDbzOne;     
             minorDbz=cat(2,minorDbz,momPowTest);
         end
+
     end
     
     %% Reverse up pointing direction
@@ -373,6 +372,7 @@ for aa=1:length(caseStart)
     minorVel(:,momentsTime.elevation>0,:)=-minorVel(:,momentsTime.elevation>0,:);
 
     %% Sort vels into layers
+    disp('Sorting layers ...')
     [velLayers,dbzLayers]=sortVelLayers(majorVel,majorDbz,minorVel,minorDbz);
     
     %% Take time
@@ -383,15 +383,76 @@ for aa=1:length(caseStart)
     timePerMin=eSecs/60/minutes(eData);
     disp(['Total: ',num2str(eSecs/60),' minutes. Per data minute: ',num2str(timePerMin),' minutes.']);
 
-    %% Plot
-
-    close all
-
-    disp('Plotting velocities ...');
-
+    %% Prepare for save and plotting
     momentsTime.asl=HCRrange2asl(momentsTime.range,momentsTime.elevation,momentsTime.altitude);
+    momentsTime.dbz(isnan(momentsTime.vel))=nan;
+    momentsTime.vel(:,momentsTime.elevation>0)=-momentsTime.vel(:,momentsTime.elevation>0);
 
-    plotMultiVels(momentsTime,shoulderLowVel,shoulderHighVel,velLayers,figdir,project,showPlot);
-    plotMultiRefs(momentsTime,shoulderLowDbz,shoulderHighDbz,dbzLayers,figdir,project,showPlot);
+    %% Save
+    if saveData
+        disp('Saving fields ...')
 
+        momentsVelTime=momentsTime;
+        rmfields={'powerV';'powerH';'velRaw';'velRawDeAliased';'width';'snr';'skew';'kurt';'ldr';'ncp'; ...
+            'eastward_velocity';'northward_velocity';'vertical_velocity'};
+        momentsVelTime=rmfield(momentsVelTime,rmfields);
+        momentsVelTime.vel=single(momentsVelTime.vel);
+        momentsVelTime.dbz=single(momentsVelTime.dbz);
+        momentsVelTime.asl=single(momentsVelTime.asl);
+        save([outdir,'momentsVelTime.',datestr(momentsTime.time(1),'YYYYmmDD_HHMMSS'),'_to_',...
+            datestr(momentsTime.time(end),'YYYYmmDD_HHMMSS'),'.Flight',num2str(aa),'.mat'],'momentsVelTime','-v7.3');
+
+        save([outdir,'shouldersVelDbz.',datestr(momentsTime.time(1),'YYYYmmDD_HHMMSS'),'_to_',...
+            datestr(momentsTime.time(end),'YYYYmmDD_HHMMSS'),'.Flight',num2str(aa),'.mat'],...
+            'shoulderLowVel','shoulderHighVel','shoulderLowDbz','shoulderHighDbz','-v7.3');
+
+        save([outdir,'layersVelDbz.',datestr(momentsTime.time(1),'YYYYmmDD_HHMMSS'),'_to_',...
+            datestr(momentsTime.time(end),'YYYYmmDD_HHMMSS'),'.Flight',num2str(aa),'.mat'],...
+            'velLayers','dbzLayers','-v7.3');
+    end
+
+    %% Plot in increments
+
+    if plotYes
+        disp('Plotting ...');
+        ylimits=[0,14];
+        startPlot=startTime;
+
+        while startPlot<endTime
+
+            endPlot=startPlot+minutes(20);
+            indsTest=find(momentsTime.time>=startPlot & momentsTime.time<=endPlot);
+            if length(indsTest)==0
+                startPlot=endPlot;
+                continue
+            end
+            
+            newInds=indsTest(1):round(length(indsTest)/2000):indsTest(end);
+
+            % Resample for plotting
+            
+            momVel=momentsTime.vel(:,newInds);
+            if sum(sum(~isnan(momVel)))>300
+                momDbz=momentsTime.vel(:,newInds);
+                momTime=momentsTime.time(newInds);
+                momAsl=momentsTime.asl(:,newInds);
+                
+                sLowVel=shoulderLowVel(:,newInds);
+                sHighVel=shoulderHighVel(:,newInds);
+                sLowDbz=shoulderLowDbz(:,newInds);
+                sHighDbz=shoulderHighDbz(:,newInds);
+
+                velLayersPlot=velLayers(:,newInds,:);
+                dbzLayersPlot=dbzLayers(:,newInds,:);
+
+                close all
+
+                plotMultiVels_WF(momVel,momAsl,momTime,sLowVel,sHighVel,velLayersPlot,figdir,project,showPlot);
+                plotMultiRefs_WF(momDbz,momAsl,momTime,sLowDbz,sHighDbz,dbzLayersPlot,figdir,project,showPlot);
+               
+            end
+            startPlot=endPlot;
+        end
+    end
+    
 end

@@ -57,8 +57,8 @@ if sum(min1)~=0 & sum(min2)~=0
         max1=e1(find(max1==1))+0.25;
         max2=e2(find(max2==1))+0.25;
         maxes=[max1,max2];
-        maxLow=floor(mean(maxes(find(maxes<divider))));
-        maxHigh=ceil(mean(maxes(find(maxes>divider))));
+        maxLow=mean(maxes(find(maxes<divider)));
+        maxHigh=mean(maxes(find(maxes>divider)));
     end
 
     if ~isnan(divider)
