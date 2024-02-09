@@ -433,7 +433,7 @@ for aa=5:size(caseList,1)
             
             momVel=momentsTime.vel(:,newInds);
             if sum(sum(~isnan(momVel)))>300
-                momDbz=momentsTime.vel(:,newInds);
+                momDbz=momentsTime.dbz(:,newInds);
                 momTime=momentsTime.time(newInds);
                 momAsl=momentsTime.asl(:,newInds);
                 
