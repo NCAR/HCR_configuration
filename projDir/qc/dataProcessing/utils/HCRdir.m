@@ -5,37 +5,37 @@ indir=[];
 if strcmp(project,'socrates')
     if strcmp(qc,'field')
         if strcmp(freq,'100hz') | strcmp(freq,'10hz')
-            indir=['/scr/snow2/rsfdata/projects/socrates/hcr/cfradial/moments/',freq,'/'];
+            indir=['/scr/virga2/rsfdata/projects/socrates/hcr/cfradial/moments/',freq,'/'];
         else
             disp('No 2hz data in field data.');
             return
         end
     elseif strcmp(qc,'qc1')
         if strcmp(freq,'100hz')
-            indir='/scr/snow2/rsfdata/projects/socrates/hcr/qc/cfradial/moments/100hz/';
+            indir='/scr/virga2/rsfdata/projects/socrates/hcr/qc/cfradial/moments/100hz/';
         elseif strcmp(freq,'2hz')  | strcmp(freq,'10hz')
-            indir=['/scr/snow2/rsfdata/projects/socrates/hcr/qc/cfradial/velcorr/',freq,'/'];
+            indir=['/scr/virga2/rsfdata/projects/socrates/hcr/qc/cfradial/velcorr/',freq,'/'];
         end
     elseif strcmp(qc,'qc2')
         if strcmp(freq,'2hz') | strcmp(freq,'10hz')
-            indir=['/scr/snow2/rsfdata/projects/socrates/hcr/',qc,'/cfradial/',qcVersion,'/',freq,'/'];
+            indir=['/scr/virga2/rsfdata/projects/socrates/hcr/',qc,'/cfradial/',qcVersion,'/',freq,'/'];
         elseif strcmp(freq,'2hzMerged')
-            indir=['/scr/snow2/rsfdata/projects/socrates/hcr/',qc,'/cfradial/hcr_hsrl_merge/',qcVersion,'/2hz/'];
+            indir=['/scr/virga2/rsfdata/projects/socrates/hcr/',qc,'/cfradial/hcr_hsrl_merge/',qcVersion,'/2hz/'];
         else
             disp('The requested data does not exist.');
             return
         end
     elseif strcmp(qc,'qc3')
         if strcmp(freq,'10hz') | strcmp(freq,'2hz')
-            indir=['/scr/snow2/rsfdata/projects/socrates/hcr/',qc,'/cfradial/',qcVersion,'_full/',freq,'/'];
+            indir=['/scr/virga2/rsfdata/projects/socrates/hcr/',qc,'/cfradial/',qcVersion,'_full/',freq,'/'];
         elseif strcmp(freq,'combined')
-            indir=['/scr/snow2/rsfdata/projects/socrates/hcr/',qc,'/cfradial/hcr_hsrl_merge/',qcVersion,'_full/2hz/'];
+            indir=['/scr/virga2/rsfdata/projects/socrates/hcr/',qc,'/cfradial/hcr_hsrl_merge/',qcVersion,'_full/2hz/'];
         else
             disp('The requested data does not exist.');
             return
         end
     elseif strcmp(qc,'ts')
-        indir='/scr/snow2/rsfdata/projects/socrates/hcr/time_series_netcdf/wband/';
+        indir='/scr/virga2/rsfdata/projects/socrates/hcr/time_series_netcdf/wband/';
     end
     
     %% CSET

@@ -108,7 +108,7 @@ for jj=1:length(dataInds)
     velMinor(ii,1:length(minorMax))=specVelIn(ii,minorMax);
     powMinor(ii,1:length(minorMax))=powerIn(ii,minorMax);
 
-    if nn==1
+    if nn==inf
         scatter(specVelIn(ii,:),powerRaw(ii,:),'MarkerEdgeColor','k');
         xlim([-8,8]);
         hold on
