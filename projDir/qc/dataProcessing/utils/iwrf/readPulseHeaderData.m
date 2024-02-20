@@ -1,4 +1,4 @@
-function [pulseHeader,IQ1,IQ2,range,fileID]=readPulseHeaderData(fileID)
+function [pulseHeader,IQH,IQV,range,fileID]=readPulseHeaderData(fileID)
 
 pulseHeader.seqNum=fread(fileID,1,'int64',4*4+2*4);
 
@@ -35,11 +35,11 @@ pulseHeader.rxPhaseDeg=fread(fileID,1,'float');
 dummy=fread(fileID,[1,5],'int32');
 
 %% IQ data
-IQ1raw=fread(fileID,[2,pulseHeader.nGates],'int16');
-IQ1=IQ1raw.*pulseHeader.scale+pulseHeader.offset;
+IQHraw=fread(fileID,[2,pulseHeader.nGates],'int16');
+IQH=IQHraw.*pulseHeader.scale+pulseHeader.offset;
 
-IQ2raw=fread(fileID,[2,pulseHeader.nGates],'int16');
-IQ2=IQ2raw.*pulseHeader.scale+pulseHeader.offset;
+IQVraw=fread(fileID,[2,pulseHeader.nGates],'int16');
+IQV=IQVraw.*pulseHeader.scale+pulseHeader.offset;
 
-range=(0:pulseHeader.nGates-1).*pulseHeader.gateSpacingM+pulseHeader.startRangeM;
+range=(0:pulseHeader.nGates-1).*pulseHeader.gateSpacingM+pulseHeader.startRangeM+pulseHeader.gateSpacingM/2;
 end

@@ -29,8 +29,9 @@ while ~feof(fileID) % Run until the end of file
         [scanSegment,fileID]=readScanSegmentData(fileID);
     elseif strcmp(packetID,'77770005')
         [tsProcessing,fileID]=readTsProcessingData(fileID);
-    % elseif strcmp(packetID,'77770012')
-    %     [statusXml,fileID]=readStatusXmlData(fileID);
+    elseif strcmp(packetID,'77770012')
+        % [statusXml,fileID]=readStatusXmlData(fileID);
+        dummy=fread(fileID,1,'uint8',lenBytes-56-1);
     elseif strcmp(packetID,'77770008')
         [cal,fileID]=readCalData(fileID);
     elseif strcmp(packetID,'77770111')
