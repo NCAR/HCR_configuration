@@ -1,11 +1,10 @@
+function data=read_TsArchive_iwrf_bulk(infile,data)
 % Read HCR iwrf time series
 % Documentation: https://github.com/NCAR/lrose-titan/blob/master/docs/pdf/IWRF_ts_format.pdf
 % and https://github.com/NCAR/lrose-core/blob/master/codebase/libs/radar/src/include/radar/iwrf_data.h
 
-clear all
-close all
-tic
-infile='/scr/virga1/rsfdata/projects/spicule/hcr/time_series/wband/save/20210529/20210529_191131.131_999_017.iwrf_ts';
+readH=isfield(data,'IHx');
+
 fileID=fopen(infile,'r','l');
 
 % Read data
@@ -19,21 +18,43 @@ baseTime=datetime(1970,1,1);
 
 sUTCall=nan(1,guessSize);
 timeNSall=nan(1,guessSize);
-data.latitude=nan(1,guessSize);
-data.longitude=nan(1,guessSize);
-data.altitude=nan(1,guessSize);
-data.elevation=nan(1,guessSize);
-data.azimuth=nan(1,guessSize);
-data.pulse_width=nan(1,guessSize);
-data.prt=nan(1,guessSize);
 
-data.range=nan(numGates,guessSize);
-data.IVc=nan(numGates,guessSize);
-data.QVc=nan(numGates,guessSize);
-data.IHx=nan(numGates,guessSize);
-data.QHx=nan(numGates,guessSize);
+catYes=isfield(data,'latitude');
 
-beamCount=1;
+if catYes
+    beamCount=length(data.latitude)+1;
+    data.latitude=cat(2,data.latitude,nan(1,guessSize));
+    data.longitude=cat(2,data.longitude,nan(1,guessSize));
+    data.altitude=cat(2,data.altitude,nan(1,guessSize));
+    data.elevation=cat(2,data.elevation,nan(1,guessSize));
+    data.azimuth_vc=cat(2,data.azimuth_vc,nan(1,guessSize));
+    data.pulse_width=cat(2,data.pulse_width,nan(1,guessSize));
+    data.prt=cat(2,data.prt,nan(1,guessSize));
+
+    data.IVc=cat(2,data.IVc,nan(numGates,guessSize));
+    data.QVc=cat(2,data.QVc,nan(numGates,guessSize));
+    if readH
+        data.IHx=cat(2,data.IHx,nan(numGates,guessSize));
+        data.QHx=cat(2,data.QHx,nan(numGates,guessSize));
+    end
+else
+    beamCount=1;
+    data.latitude=nan(1,guessSize);
+    data.longitude=nan(1,guessSize);
+    data.altitude=nan(1,guessSize);
+    data.elevation=nan(1,guessSize);
+    data.azimuth_vc=nan(1,guessSize);
+    data.pulse_width=nan(1,guessSize);
+    data.prt=nan(1,guessSize);
+
+    data.range=nan(numGates,guessSize);
+    data.IVc=nan(numGates,guessSize);
+    data.QVc=nan(numGates,guessSize);
+    if readH
+        data.IHx=nan(numGates,guessSize);
+        data.QHx=nan(numGates,guessSize);
+    end
+end
 
 %% Organize data
 disp('Organizing data ...')
@@ -110,37 +131,42 @@ while ii<length(dataAll) % Run until the end of file
         ii=ii+36;
 
         % Create I/Q
-        IQHraw=nan(2,nGates);
-        IQHraw(1,:)=typecast(dataAll(ii:ii+2*nGates-1),'int16');
+        if readH
+            IQHraw=nan(2,nGates);
+            IQHraw(1,:)=typecast(dataAll(ii:ii+2*nGates-1),'int16');
+        end
         ii=ii+2*nGates;
-        IQHraw(2,:)=typecast(dataAll(ii:ii+2*nGates-1),'int16');
+        if readH
+            IQHraw(2,:)=typecast(dataAll(ii:ii+2*nGates-1),'int16');
+            IQH=IQHraw.*scale+offset;
+        end
         ii=ii+2*nGates;
-        IQH=IQHraw.*scale+offset;
 
         IQVraw=nan(2,nGates);
         IQVraw(1,:)=typecast(dataAll(ii:ii+2*nGates-1),'int16');
         ii=ii+2*nGates;
         IQVraw(2,:)=typecast(dataAll(ii:ii+2*nGates-1),'int16');
-        ii=ii+2*nGates;
         IQV=IQVraw.*scale+offset;
-
+        ii=ii+2*nGates;
+        
         range=single(0:nGates-1).*gateSpacingM+startRangeM+gateSpacingM/2;
 
         % Add all vars
         sUTCall(:,beamCount)=sUTC;
         timeNSall(:,beamCount)=timeNS;
-        data.range(:,beamCount)=range';
         data.latitude(:,beamCount)=latitude;
         data.longitude(:,beamCount)=longitude;
-        data.altitude(:,beamCount)=altMslKm/1000;
+        data.altitude(:,beamCount)=altMslKm*1000;
         data.elevation(:,beamCount)=elevation;
-        data.azimuth(:,beamCount)=azimuth;
+        data.azimuth_vc(:,beamCount)=azimuth;
         data.pulse_width(:,beamCount)=pulseWidthUS;
-        data.prt(:,beamCount)=prtUS;
+        data.prt(:,beamCount)=prtUS/1000000;
         data.IVc(:,beamCount)=IQV(1,:)';
         data.QVc(:,beamCount)=IQV(2,:)';
-        data.IHx(:,beamCount)=IQH(1,:)';
-        data.QHx(:,beamCount)=IQH(2,:)';
+        if readH
+            data.IHx(:,beamCount)=IQH(1,:)';
+            data.QHx(:,beamCount)=IQH(2,:)';
+        end
 
         beamCount=beamCount+1;
     else
@@ -149,17 +175,18 @@ while ii<length(dataAll) % Run until the end of file
     end
 end
 
+if catYes
+    data.time=cat(2,data.time,baseTime+seconds(sUTCall+timeNSall*10^-9));
+else
+    data.time=baseTime+seconds(sUTCall+timeNSall*10^-9);
+end
+
 allNan=find(isnan(data.latitude));
 
 allFields=fieldnames(data);
 for ii=1:length(allFields)
     data.(allFields{ii})(:,allNan)=[];
 end
-
-sUTCall(:,allNan)=[];
-timeNSall(:,allNan)=[];
-
-data.time=baseTime+seconds(sUTCall+timeNSall*10^-9);
 
 data.lambda=wavelengthCM/100;
 data.dbz1km_v=baseDbz1kmVC;
@@ -170,4 +197,5 @@ data.rx_gain_v=receiverGainDbVC;
 data.rx_gain_h=receiverGainDbHX;
 data.beamwidth_v=beamwidthDegV;
 data.beamwidth_h=beamwidthDegH;
-toc
+data.range=range';
+end

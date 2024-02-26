@@ -13,31 +13,27 @@ qcVersion=[];
 outTime=0.1; % Desired output time resolution in seconds. Must be less than or equal to one second.
 sampleTime=0.02; % Length of sample in seconds.
 
+showPlot='off';
+plotYes=1;
+saveData=1;
+
 dataDirTS=HCRdir(project,quality,qcVersion,freqData);
+figdir=[dataDirTS(1:end-6),'figsMultiVel/wholeFlights/'];
+outdir=[dataDirTS(1:end-6),'matFiles/multiVel/'];
 
-figdir=[dataDirTS(1:end-11),'figsMultiVel/cases/'];
+infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_',project,'.txt'];
 
-showPlot='on';
+caseList = table2array(readtable(infile));
 
-casefile=['~/git/HCR_configuration/projDir/qc/dataProcessing/HCRproducts/caseFiles/dualParticles_',project,'.txt'];
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% Loop through cases
-
-caseList=readtable(casefile);
-caseStart=datetime(caseList.Var1,caseList.Var2,caseList.Var3, ...
-    caseList.Var4,caseList.Var5,caseList.Var6);
-caseEnd=datetime(caseList.Var7,caseList.Var8,caseList.Var9, ...
-    caseList.Var10,caseList.Var11,caseList.Var12);
-
-for aa=1:length(caseStart)
+for aa=5:size(caseList,1)
     tic
 
-    disp(['Case ',num2str(aa),' of ',num2str(length(caseStart))]);
-
-    startTime=caseStart(aa);
-    endTime=caseEnd(aa);
+    disp(['Flight ',num2str(aa)]);
+    disp(['Starting at ',datestr(datetime('now'),'yyyy-mm-dd HH:MM')]);
+    disp('Loading data ...');
+    
+    startTime=datetime(caseList(aa,1:6));
+    endTime=datetime(caseList(aa,7:12));
 
     fileListTS=makeFileList(dataDirTS,startTime+seconds(1),endTime-seconds(1),'20YYMMDDxhhmmss',1);
 
@@ -52,17 +48,18 @@ for aa=1:length(caseStart)
             data=[];
             data.IVc=[];
             data.QVc=[];
-            %data.eastward_velocity=[];
-            %data.northward_velocity=[];
-            %data.vertical_velocity=[];
-            %data.azimuth_vc=[];
+            %data.IHx=[];
+            %data.QHx=[];
+            data.eastward_velocity=[];
+            data.northward_velocity=[];
+            data.vertical_velocity=[];
+            data.azimuth_vc=[];
 
             vars=fieldnames(data);
 
             %% Load data TS
             disp(['Loading time series file ',num2str(bb),' of ' num2str(length(fileListTS)),' ...']);
-            %data=readHCRts(fileListTS(1),data,startTime-seconds(outTime),endTime+seconds(outTime),0);
-            data=read_TsArchive_iwrf_bulk(fileListTS{1},data);
+            data=readHCRts(fileListTS(1),data,startTime-seconds(outTime),endTime+seconds(outTime),0);
 
             % Find available times
             timeTest=data.time';
@@ -89,8 +86,7 @@ for aa=1:length(caseStart)
             %% Load data TS
             disp(['Loading time series file ',num2str(bb),' of ' num2str(length(fileListTS)),' ...']);
 
-            % data=readHCRts_add(fileListTS{bb},data,vars);
-            data=read_TsArchive_iwrf_bulk(fileListTS{bb},data);
+            data=readHCRts_add(fileListTS{bb},data,vars);
 
             % Find available times
             timeTest=data.time';
@@ -107,7 +103,7 @@ for aa=1:length(caseStart)
             beamNum=length(goodTimes);
         end
 
-        %% Calculate moments
+          %% Calculate moments
 
         disp('Calculating moments ...')
         momentsTimeOne.powerV=nan(size(data.range,1),beamNum);
@@ -125,9 +121,9 @@ for aa=1:length(caseStart)
         momentsTimeOne.range=nan(size(data.range,1),beamNum);
         momentsTimeOne.altitude=nan(1,beamNum);
         momentsTimeOne.elevation=nan(1,beamNum);
-        % momentsTimeOne.eastward_velocity=nan(1,beamNum);
-        % momentsTimeOne.northward_velocity=nan(1,beamNum);
-        % momentsTimeOne.vertical_velocity=nan(1,beamNum);
+        momentsTimeOne.eastward_velocity=nan(1,beamNum);
+        momentsTimeOne.northward_velocity=nan(1,beamNum);
+        momentsTimeOne.vertical_velocity=nan(1,beamNum);
         momentsTimeOne.azimuth_vc=nan(1,beamNum);
         momentsTimeOne.time=goodTimes(1:beamNum)';
 
@@ -166,9 +162,9 @@ for aa=1:length(caseStart)
             %% Other variables
             momentsTimeOne.range(:,ii)=dataThis.range;
             momentsTimeOne.elevation(ii)=median(dataThis.elevation);
-            % momentsTimeOne.eastward_velocity(ii)=median(dataThis.eastward_velocity);
-            % momentsTimeOne.northward_velocity(ii)=median(dataThis.northward_velocity);
-            % momentsTimeOne.vertical_velocity(ii)=median(dataThis.vertical_velocity);
+            momentsTimeOne.eastward_velocity(ii)=median(dataThis.eastward_velocity);
+            momentsTimeOne.northward_velocity(ii)=median(dataThis.northward_velocity);
+            momentsTimeOne.vertical_velocity(ii)=median(dataThis.vertical_velocity);
             momentsTimeOne.azimuth_vc(ii)=median(dataThis.azimuth_vc);
             momentsTimeOne.altitude(ii)=median(dataThis.altitude);
 
@@ -176,7 +172,7 @@ for aa=1:length(caseStart)
             momentsTimeOne=calcMomentsTime(cIQ,ii,momentsTimeOne,dataThis);
 
             % Censor on V (find missing and NScal)
-            if max(momentsTimeOne.powerV(1:14,ii))<-120 | (momentsTimeOne.powerV(1,ii)>-96 & momentsTimeOne.powerV(1,ii)<-87)
+            if max(momentsTimeOne.powerV(1:14,ii))<-80 | (momentsTimeOne.powerV(1,ii)>-96 & momentsTimeOne.powerV(1,ii)<-87)
                 censorY=nan(size(momentsTimeOne.range,1),1);
             else
                 % Censor on SNR and NCP
@@ -212,10 +208,10 @@ for aa=1:length(caseStart)
             end
 
             %% Correct velocity for aircraft motion
-            % xCorr=sind(momentsTimeOne.azimuth_vc(ii)).*cosd(momentsTimeOne.elevation(ii)).*momentsTimeOne.eastward_velocity(ii);
-            % yCorr=cosd(momentsTimeOne.azimuth_vc(ii)).*cosd(momentsTimeOne.elevation(ii)).*momentsTimeOne.northward_velocity(ii);
-            % zCorr=sind(momentsTimeOne.elevation(ii)).*momentsTimeOne.vertical_velocity(ii);
-            momentsTimeOne.vel(:,ii)=momentsTimeOne.velRawDeAliased(:,ii);%+single(xCorr+yCorr+zCorr);
+            xCorr=sind(momentsTimeOne.azimuth_vc(ii)).*cosd(momentsTimeOne.elevation(ii)).*momentsTimeOne.eastward_velocity(ii);
+            yCorr=cosd(momentsTimeOne.azimuth_vc(ii)).*cosd(momentsTimeOne.elevation(ii)).*momentsTimeOne.northward_velocity(ii);
+            zCorr=sind(momentsTimeOne.elevation(ii)).*momentsTimeOne.vertical_velocity(ii);
+            momentsTimeOne.vel(:,ii)=momentsTimeOne.velRawDeAliased(:,ii)+single(xCorr+yCorr+zCorr);
 
             %% Spectral moments
             [specPowerLin,specPowerDB]=getSpectra(cIQ);
@@ -259,8 +255,8 @@ for aa=1:length(caseStart)
                 =findMultiVels(powerRMnoiseDBsmooth,specVelRMnoise,specPowerDBadj,majorVelOne,majorDbzOne,minorVelOne,minorDbzOne,lowShoulderVelOne,highShoulderVelOne,lowShoulderPowOne,highShoulderPowOne,ii);
 
             %% Correct for aircraft motion
-            % lowShoulderVelOne(:,ii)=lowShoulderVelOne(:,ii)+single(xCorr+yCorr+zCorr);
-            % highShoulderVelOne(:,ii)=highShoulderVelOne(:,ii)+single(xCorr+yCorr+zCorr);
+            lowShoulderVelOne(:,ii)=lowShoulderVelOne(:,ii)+single(xCorr+yCorr+zCorr);
+            highShoulderVelOne(:,ii)=highShoulderVelOne(:,ii)+single(xCorr+yCorr+zCorr);
 
             %% Multi DBZ
             % DBM
@@ -354,6 +350,7 @@ for aa=1:length(caseStart)
             momPowTest(:,:,1:dim3)=minorDbzOne;     
             minorDbz=cat(2,minorDbz,momPowTest);
         end
+
     end
     
     %% Reverse up pointing direction
@@ -375,6 +372,7 @@ for aa=1:length(caseStart)
     minorVel(:,momentsTime.elevation>0,:)=-minorVel(:,momentsTime.elevation>0,:);
 
     %% Sort vels into layers
+    disp('Sorting layers ...')
     [velLayers,dbzLayers]=sortVelLayers(majorVel,majorDbz,minorVel,minorDbz);
     
     %% Take time
@@ -385,15 +383,76 @@ for aa=1:length(caseStart)
     timePerMin=eSecs/60/minutes(eData);
     disp(['Total: ',num2str(eSecs/60),' minutes. Per data minute: ',num2str(timePerMin),' minutes.']);
 
-    %% Plot
-
-    close all
-
-    disp('Plotting velocities ...');
-
+    %% Prepare for save and plotting
     momentsTime.asl=HCRrange2asl(momentsTime.range,momentsTime.elevation,momentsTime.altitude);
+    momentsTime.dbz(isnan(momentsTime.vel))=nan;
+    momentsTime.vel(:,momentsTime.elevation>0)=-momentsTime.vel(:,momentsTime.elevation>0);
 
-    plotMultiVels(momentsTime,shoulderLowVel,shoulderHighVel,velLayers,figdir,project,showPlot);
-    plotMultiRefs(momentsTime,shoulderLowDbz,shoulderHighDbz,dbzLayers,figdir,project,showPlot);
+    %% Save
+    if saveData
+        disp('Saving fields ...')
 
+        momentsVelTime=momentsTime;
+        rmfields={'powerV';'powerH';'velRaw';'velRawDeAliased';'width';'snr';'skew';'kurt';'ldr';'ncp'; ...
+            'eastward_velocity';'northward_velocity';'vertical_velocity'};
+        momentsVelTime=rmfield(momentsVelTime,rmfields);
+        momentsVelTime.vel=single(momentsVelTime.vel);
+        momentsVelTime.dbz=single(momentsVelTime.dbz);
+        momentsVelTime.asl=single(momentsVelTime.asl);
+        save([outdir,'momentsVelTime.',datestr(momentsTime.time(1),'YYYYmmDD_HHMMSS'),'_to_',...
+            datestr(momentsTime.time(end),'YYYYmmDD_HHMMSS'),'.Flight',num2str(aa),'.mat'],'momentsVelTime','-v7.3');
+
+        save([outdir,'shouldersVelDbz.',datestr(momentsTime.time(1),'YYYYmmDD_HHMMSS'),'_to_',...
+            datestr(momentsTime.time(end),'YYYYmmDD_HHMMSS'),'.Flight',num2str(aa),'.mat'],...
+            'shoulderLowVel','shoulderHighVel','shoulderLowDbz','shoulderHighDbz','-v7.3');
+
+        save([outdir,'layersVelDbz.',datestr(momentsTime.time(1),'YYYYmmDD_HHMMSS'),'_to_',...
+            datestr(momentsTime.time(end),'YYYYmmDD_HHMMSS'),'.Flight',num2str(aa),'.mat'],...
+            'velLayers','dbzLayers','-v7.3');
+    end
+
+    %% Plot in increments
+
+    if plotYes
+        disp('Plotting ...');
+        ylimits=[0,14];
+        startPlot=startTime;
+
+        while startPlot<endTime
+
+            endPlot=startPlot+minutes(20);
+            indsTest=find(momentsTime.time>=startPlot & momentsTime.time<=endPlot);
+            if length(indsTest)==0
+                startPlot=endPlot;
+                continue
+            end
+            
+            newInds=indsTest(1):round(length(indsTest)/2000):indsTest(end);
+
+            % Resample for plotting
+            
+            momVel=momentsTime.vel(:,newInds);
+            if sum(sum(~isnan(momVel)))>300
+                momDbz=momentsTime.dbz(:,newInds);
+                momTime=momentsTime.time(newInds);
+                momAsl=momentsTime.asl(:,newInds);
+                
+                sLowVel=shoulderLowVel(:,newInds);
+                sHighVel=shoulderHighVel(:,newInds);
+                sLowDbz=shoulderLowDbz(:,newInds);
+                sHighDbz=shoulderHighDbz(:,newInds);
+
+                velLayersPlot=velLayers(:,newInds,:);
+                dbzLayersPlot=dbzLayers(:,newInds,:);
+
+                close all
+
+                plotMultiVels_WF(momVel,momAsl,momTime,sLowVel,sHighVel,velLayersPlot,figdir,project,showPlot);
+                plotMultiRefs_WF(momDbz,momAsl,momTime,sLowDbz,sHighDbz,dbzLayersPlot,figdir,project,showPlot);
+               
+            end
+            startPlot=endPlot;
+        end
+    end
+    
 end

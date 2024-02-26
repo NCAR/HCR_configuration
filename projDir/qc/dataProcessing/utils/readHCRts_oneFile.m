@@ -1,4 +1,4 @@
-function data=readHCRts(data,file)
+function data=readHCRts_oneFile(data,file)
 
 vars=fieldnames(data);
 

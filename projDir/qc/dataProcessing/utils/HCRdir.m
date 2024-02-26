@@ -138,7 +138,8 @@ elseif strcmp(project,'spicule')
             indir=['/scr/virga1/rsfdata/projects/spicule/hcr/qc1/cfradial/',qcVersion,'_full/',freq,'/'];
         end
     elseif strcmp(qc,'ts')
-        indir='/scr/virga1/rsfdata/projects/spicule/hcr/time_series_netcdf/wband/';
+        %indir='/scr/virga1/rsfdata/projects/spicule/hcr/time_series_netcdf/wband/';
+        indir='/scr/virga1/rsfdata/projects/spicule/hcr/time_series/wband/save/';
     end
 
     %% NOREASTER

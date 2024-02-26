@@ -4,7 +4,7 @@ close all;
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-project='spicule'; %socrates, aristo, cset, otrec
+project='socrates'; %socrates, aristo, cset, otrec
 quality='ts'; %field, qc1, or qc2
 qualityCF=[];
 freqData=[];
@@ -15,7 +15,7 @@ sampleTime=0.02; % Length of sample in seconds.
 
 dataDirTS=HCRdir(project,quality,qcVersion,freqData);
 
-figdir=[dataDirTS(1:end-11),'figsMultiVel/cases/'];
+figdir=[dataDirTS(1:end-6),'figsMultiVel/cases/'];
 
 showPlot='on';
 
@@ -52,17 +52,16 @@ for aa=1:length(caseStart)
             data=[];
             data.IVc=[];
             data.QVc=[];
-            %data.eastward_velocity=[];
-            %data.northward_velocity=[];
-            %data.vertical_velocity=[];
-            %data.azimuth_vc=[];
+            data.eastward_velocity=[];
+            data.northward_velocity=[];
+            data.vertical_velocity=[];
+            data.azimuth_vc=[];
 
             vars=fieldnames(data);
 
             %% Load data TS
             disp(['Loading time series file ',num2str(bb),' of ' num2str(length(fileListTS)),' ...']);
-            %data=readHCRts(fileListTS(1),data,startTime-seconds(outTime),endTime+seconds(outTime),0);
-            data=read_TsArchive_iwrf_bulk(fileListTS{1},data);
+            data=readHCRts(fileListTS(1),data,startTime-seconds(outTime),endTime+seconds(outTime),0);
 
             % Find available times
             timeTest=data.time';
@@ -89,8 +88,7 @@ for aa=1:length(caseStart)
             %% Load data TS
             disp(['Loading time series file ',num2str(bb),' of ' num2str(length(fileListTS)),' ...']);
 
-            % data=readHCRts_add(fileListTS{bb},data,vars);
-            data=read_TsArchive_iwrf_bulk(fileListTS{bb},data);
+            data=readHCRts_add(fileListTS{bb},data,vars);
 
             % Find available times
             timeTest=data.time';
@@ -125,9 +123,9 @@ for aa=1:length(caseStart)
         momentsTimeOne.range=nan(size(data.range,1),beamNum);
         momentsTimeOne.altitude=nan(1,beamNum);
         momentsTimeOne.elevation=nan(1,beamNum);
-        % momentsTimeOne.eastward_velocity=nan(1,beamNum);
-        % momentsTimeOne.northward_velocity=nan(1,beamNum);
-        % momentsTimeOne.vertical_velocity=nan(1,beamNum);
+        momentsTimeOne.eastward_velocity=nan(1,beamNum);
+        momentsTimeOne.northward_velocity=nan(1,beamNum);
+        momentsTimeOne.vertical_velocity=nan(1,beamNum);
         momentsTimeOne.azimuth_vc=nan(1,beamNum);
         momentsTimeOne.time=goodTimes(1:beamNum)';
 
@@ -166,9 +164,9 @@ for aa=1:length(caseStart)
             %% Other variables
             momentsTimeOne.range(:,ii)=dataThis.range;
             momentsTimeOne.elevation(ii)=median(dataThis.elevation);
-            % momentsTimeOne.eastward_velocity(ii)=median(dataThis.eastward_velocity);
-            % momentsTimeOne.northward_velocity(ii)=median(dataThis.northward_velocity);
-            % momentsTimeOne.vertical_velocity(ii)=median(dataThis.vertical_velocity);
+            momentsTimeOne.eastward_velocity(ii)=median(dataThis.eastward_velocity);
+            momentsTimeOne.northward_velocity(ii)=median(dataThis.northward_velocity);
+            momentsTimeOne.vertical_velocity(ii)=median(dataThis.vertical_velocity);
             momentsTimeOne.azimuth_vc(ii)=median(dataThis.azimuth_vc);
             momentsTimeOne.altitude(ii)=median(dataThis.altitude);
 
@@ -176,7 +174,7 @@ for aa=1:length(caseStart)
             momentsTimeOne=calcMomentsTime(cIQ,ii,momentsTimeOne,dataThis);
 
             % Censor on V (find missing and NScal)
-            if max(momentsTimeOne.powerV(1:14,ii))<-120 | (momentsTimeOne.powerV(1,ii)>-96 & momentsTimeOne.powerV(1,ii)<-87)
+            if max(momentsTimeOne.powerV(1:14,ii))<-80 | (momentsTimeOne.powerV(1,ii)>-96 & momentsTimeOne.powerV(1,ii)<-87)
                 censorY=nan(size(momentsTimeOne.range,1),1);
             else
                 % Censor on SNR and NCP
@@ -212,10 +210,10 @@ for aa=1:length(caseStart)
             end
 
             %% Correct velocity for aircraft motion
-            % xCorr=sind(momentsTimeOne.azimuth_vc(ii)).*cosd(momentsTimeOne.elevation(ii)).*momentsTimeOne.eastward_velocity(ii);
-            % yCorr=cosd(momentsTimeOne.azimuth_vc(ii)).*cosd(momentsTimeOne.elevation(ii)).*momentsTimeOne.northward_velocity(ii);
-            % zCorr=sind(momentsTimeOne.elevation(ii)).*momentsTimeOne.vertical_velocity(ii);
-            momentsTimeOne.vel(:,ii)=momentsTimeOne.velRawDeAliased(:,ii);%+single(xCorr+yCorr+zCorr);
+            xCorr=sind(momentsTimeOne.azimuth_vc(ii)).*cosd(momentsTimeOne.elevation(ii)).*momentsTimeOne.eastward_velocity(ii);
+            yCorr=cosd(momentsTimeOne.azimuth_vc(ii)).*cosd(momentsTimeOne.elevation(ii)).*momentsTimeOne.northward_velocity(ii);
+            zCorr=sind(momentsTimeOne.elevation(ii)).*momentsTimeOne.vertical_velocity(ii);
+            momentsTimeOne.vel(:,ii)=momentsTimeOne.velRawDeAliased(:,ii)+single(xCorr+yCorr+zCorr);
 
             %% Spectral moments
             [specPowerLin,specPowerDB]=getSpectra(cIQ);
@@ -259,8 +257,8 @@ for aa=1:length(caseStart)
                 =findMultiVels(powerRMnoiseDBsmooth,specVelRMnoise,specPowerDBadj,majorVelOne,majorDbzOne,minorVelOne,minorDbzOne,lowShoulderVelOne,highShoulderVelOne,lowShoulderPowOne,highShoulderPowOne,ii);
 
             %% Correct for aircraft motion
-            % lowShoulderVelOne(:,ii)=lowShoulderVelOne(:,ii)+single(xCorr+yCorr+zCorr);
-            % highShoulderVelOne(:,ii)=highShoulderVelOne(:,ii)+single(xCorr+yCorr+zCorr);
+            lowShoulderVelOne(:,ii)=lowShoulderVelOne(:,ii)+single(xCorr+yCorr+zCorr);
+            highShoulderVelOne(:,ii)=highShoulderVelOne(:,ii)+single(xCorr+yCorr+zCorr);
 
             %% Multi DBZ
             % DBM

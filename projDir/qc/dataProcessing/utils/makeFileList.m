@@ -54,10 +54,16 @@ if subdir
     allFileList=[];
     for jj=1:size(rangeDirs,1)
         subFileList=dir([indir,rangeDirs(jj,:),'/*.nc']);
+        if isempty(subFileList)
+            subFileList=dir([indir,rangeDirs(jj,:),'/*.iwrf_ts']);
+        end
         allFileList=cat(1,allFileList,subFileList);
     end
 else
     allFileList=dir([indir,'*.nc']);
+    if isempty(allFileList)
+        allFileList=dir([indir,'*.iwrf_ts']);
+    end
 end
 
 fileList={};
