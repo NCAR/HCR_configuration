@@ -133,22 +133,18 @@ while ii<length(dataAll) % Run until the end of file
         % Create I/Q
         if readH
             IQHraw=nan(2,nGates);
-            IQHraw(1,:)=typecast(dataAll(ii:ii+2*nGates-1),'int16');
-        end
-        ii=ii+2*nGates;
-        if readH
-            IQHraw(2,:)=typecast(dataAll(ii:ii+2*nGates-1),'int16');
+            IQHraw(:)=typecast(dataAll(ii:ii+4*nGates-1),'int16');
+        
             IQH=IQHraw.*scale+offset;
         end
-        ii=ii+2*nGates;
+        ii=ii+4*nGates;
 
         IQVraw=nan(2,nGates);
-        IQVraw(1,:)=typecast(dataAll(ii:ii+2*nGates-1),'int16');
-        ii=ii+2*nGates;
-        IQVraw(2,:)=typecast(dataAll(ii:ii+2*nGates-1),'int16');
-        IQV=IQVraw.*scale+offset;
-        ii=ii+2*nGates;
+        IQVraw(:)=typecast(dataAll(ii:ii+4*nGates-1),'int16');
+        ii=ii+4*nGates;
         
+        IQV=IQVraw.*scale+offset;
+                
         range=single(0:nGates-1).*gateSpacingM+startRangeM+gateSpacingM/2;
 
         % Add all vars
