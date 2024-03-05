@@ -189,6 +189,10 @@ for aa=1:length(caseStart)
             %% Find time index in CF moments
             cfInd=find(abs(etime(datevec(dataCF.time),datevec(momentsTimeOne.time(ii))))<0.0001);
 
+            if isempty(cfInd)
+                continue
+            end
+
             %% Time moments
             momentsTimeOne=calcMomentsTime(cIQ,ii,momentsTimeOne,dataThis);
 
