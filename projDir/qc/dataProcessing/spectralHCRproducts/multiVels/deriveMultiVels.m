@@ -6,14 +6,15 @@ addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
 project='spicule'; %socrates, aristo, cset, otrec
 quality='ts'; %field, qc1, or qc2
-qualityCF=[];
-freqData=[];
-qcVersion=[];
+qualityCF='qc1';
+freqData='10hz';
+qcVersion='v1.2';
 
 outTime=0.1; % Desired output time resolution in seconds. Must be less than or equal to one second.
 sampleTime=0.02; % Length of sample in seconds.
 
 dataDirTS=HCRdir(project,quality,qcVersion,freqData);
+dataDirCF=HCRdir(project,qualityCF,qcVersion,freqData);
 
 figdir=[dataDirTS(1:end-11),'figsMultiVel/cases/'];
 
@@ -39,6 +40,24 @@ for aa=1:length(caseStart)
     startTime=caseStart(aa);
     endTime=caseEnd(aa);
 
+    %% Moments
+    disp("Getting moments data ...");
+
+    fileListMoments=makeFileList(dataDirCF,startTime,endTime,'xxxxxx20YYMMDDxhhmmss',1);
+
+    dataCF=[];
+    dataCF.DBZ=[];
+    dataCF.VEL_RAW=[];
+    dataCF.VEL_CORR=[];
+    dataCF.VEL_MASKED=[];
+        
+    dataCF=read_HCR(fileListMoments,dataCF,startTime,endTime);
+
+    % Find velocity correction for vel_raw to vel
+    velAircraftCorrection=dataCF.VEL_CORR-dataCF.VEL_RAW;
+    velAircraftCorrection(abs(velAircraftCorrection)>5)=nan;
+    
+    %% Time series
     fileListTS=makeFileList(dataDirTS,startTime+seconds(1),endTime-seconds(1),'20YYMMDDxhhmmss',1);
 
     if isempty(fileListTS)
@@ -52,11 +71,7 @@ for aa=1:length(caseStart)
             data=[];
             data.IVc=[];
             data.QVc=[];
-            %data.eastward_velocity=[];
-            %data.northward_velocity=[];
-            %data.vertical_velocity=[];
-            %data.azimuth_vc=[];
-
+           
             vars=fieldnames(data);
 
             %% Load data TS
@@ -76,10 +91,10 @@ for aa=1:length(caseStart)
             % Set up de-aliasing
             defaultPrev=data.lambda/(mode(data.prt)*4);
 
-            velPrev=repmat(defaultPrev,size(data.range,1),1);
-            prevCount=zeros(size(velPrev));
-            prevKeep=nan(size(velPrev));
-            flipYes=0;
+            % velPrev=repmat(defaultPrev,size(data.range,1),1);
+            % prevCount=zeros(size(velPrev));
+            % prevKeep=nan(size(velPrev));
+            % flipYes=0;
         else
             %% Trimm first file
             data=trimFirstFile(data,endInd);
@@ -125,9 +140,6 @@ for aa=1:length(caseStart)
         momentsTimeOne.range=nan(size(data.range,1),beamNum);
         momentsTimeOne.altitude=nan(1,beamNum);
         momentsTimeOne.elevation=nan(1,beamNum);
-        % momentsTimeOne.eastward_velocity=nan(1,beamNum);
-        % momentsTimeOne.northward_velocity=nan(1,beamNum);
-        % momentsTimeOne.vertical_velocity=nan(1,beamNum);
         momentsTimeOne.azimuth_vc=nan(1,beamNum);
         momentsTimeOne.time=goodTimes(1:beamNum)';
 
@@ -166,56 +178,58 @@ for aa=1:length(caseStart)
             %% Other variables
             momentsTimeOne.range(:,ii)=dataThis.range;
             momentsTimeOne.elevation(ii)=median(dataThis.elevation);
-            % momentsTimeOne.eastward_velocity(ii)=median(dataThis.eastward_velocity);
-            % momentsTimeOne.northward_velocity(ii)=median(dataThis.northward_velocity);
-            % momentsTimeOne.vertical_velocity(ii)=median(dataThis.vertical_velocity);
             momentsTimeOne.azimuth_vc(ii)=median(dataThis.azimuth_vc);
             momentsTimeOne.altitude(ii)=median(dataThis.altitude);
+
+            %% Find time index in CF moments
+            cfInd=find(abs(etime(datevec(dataCF.time),datevec(momentsTimeOne.time(ii))))<0.0001);
 
             %% Time moments
             momentsTimeOne=calcMomentsTime(cIQ,ii,momentsTimeOne,dataThis);
 
-            % Censor on V (find missing and NScal)
-            if max(momentsTimeOne.powerV(1:14,ii))<-120 | (momentsTimeOne.powerV(1,ii)>-96 & momentsTimeOne.powerV(1,ii)<-87)
-                censorY=nan(size(momentsTimeOne.range,1),1);
-            else
-                % Censor on SNR and NCP
-                censorY=momentsTimeOne.snr(:,ii)<0 & momentsTimeOne.ncp(:,ii)<0.2;
-                censorY(isnan(momentsTimeOne.snr(:,ii)))=1;
-                censorY=~censorY;
-                censorY=double(censorY);
-                censorY(censorY==0)=nan;
-                censorY=movmedian(censorY,7,'includemissing');
-                censorY=movmedian(censorY,7,'omitmissing');
-            end
-            momentsTimeOne.velRaw(isnan(censorY),ii)=nan;
+            % Censor on CF moments
+            momentsTimeOne.velRaw(isnan(dataCF.VEL_MASKED(:,cfInd)),ii)=nan;
 
             %% Correct time domain velocity folding
 
-            if momentsTimeOne.elevation(ii)>0
-                velRay=-momentsTimeOne.velRaw(:,ii);
-            else
-                velRay=momentsTimeOne.velRaw(:,ii);
-            end
-            velRay(1:12)=nan;
+            deAliasDiffT=momentsTimeOne.velRaw(:,ii)+velAircraftCorrection(:,cfInd)-dataCF.VEL_CORR(:,cfInd);
 
-            finalRay=deAliasSingleRay(velRay,velPrev,defaultPrev,[],momentsTimeOne.time(ii));
+            deAliasMaskT=zeros(size(deAliasDiffT));
+            checkFold=[2,4,6];
 
-            % Set up time consistency check
-            [velPrev,prevCount,prevKeep,flipYes]=setUpPrev(finalRay,velPrev,prevCount,prevKeep,flipYes,momentsTimeOne.elevation(ii),1/outTime,defaultPrev);
-           
-            %% Add to output
-            if momentsTimeOne.elevation(ii)>0
-                momentsTimeOne.velRawDeAliased(:,ii)=-finalRay;
-            else
-                momentsTimeOne.velRawDeAliased(:,ii)=finalRay;
+            for jj=1:3
+                deAliasMaskT(deAliasDiffT>checkFold(jj)*defaultPrev-5)=checkFold(jj)*defaultPrev;
+                deAliasMaskT(deAliasDiffT<-(checkFold(jj)*defaultPrev-5))=-checkFold(jj)*defaultPrev;
             end
 
-            %% Correct velocity for aircraft motion
-            % xCorr=sind(momentsTimeOne.azimuth_vc(ii)).*cosd(momentsTimeOne.elevation(ii)).*momentsTimeOne.eastward_velocity(ii);
-            % yCorr=cosd(momentsTimeOne.azimuth_vc(ii)).*cosd(momentsTimeOne.elevation(ii)).*momentsTimeOne.northward_velocity(ii);
-            % zCorr=sind(momentsTimeOne.elevation(ii)).*momentsTimeOne.vertical_velocity(ii);
-            momentsTimeOne.vel(:,ii)=momentsTimeOne.velRawDeAliased(:,ii);%+single(xCorr+yCorr+zCorr);
+            momentsTimeOne.velRawDeAliased(:,ii)=momentsTimeOne.velRaw(:,ii)-deAliasMaskT;
+            % specVelAdj=specVelAdj-deAliasMaskT;
+            % 
+            % 
+            % 
+            % 
+            % 
+            % if momentsTimeOne.elevation(ii)>0
+            %     velRay=-momentsTimeOne.velRaw(:,ii);
+            % else
+            %     velRay=momentsTimeOne.velRaw(:,ii);
+            % end
+            % velRay(1:12)=nan;
+            % 
+            % finalRay=deAliasSingleRay(velRay,velPrev,defaultPrev,[],momentsTimeOne.time(ii));
+            % 
+            % % Set up time consistency check
+            % [velPrev,prevCount,prevKeep,flipYes]=setUpPrev(finalRay,velPrev,prevCount,prevKeep,flipYes,momentsTimeOne.elevation(ii),1/outTime,defaultPrev);
+            % 
+            % %% Add to output
+            % if momentsTimeOne.elevation(ii)>0
+            %     momentsTimeOne.velRawDeAliased(:,ii)=-finalRay;
+            % else
+            %     momentsTimeOne.velRawDeAliased(:,ii)=finalRay;
+            % end
+
+            %% Correct velocity for aircraft motion and bias
+            momentsTimeOne.vel(:,ii)=momentsTimeOne.velRawDeAliased(:,ii)+velAircraftCorrection(:,cfInd);
 
             %% Spectral moments
             [specPowerLin,specPowerDB]=getSpectra(cIQ);
@@ -259,8 +273,10 @@ for aa=1:length(caseStart)
                 =findMultiVels(powerRMnoiseDBsmooth,specVelRMnoise,specPowerDBadj,majorVelOne,majorDbzOne,minorVelOne,minorDbzOne,lowShoulderVelOne,highShoulderVelOne,lowShoulderPowOne,highShoulderPowOne,ii);
 
             %% Correct for aircraft motion
-            % lowShoulderVelOne(:,ii)=lowShoulderVelOne(:,ii)+single(xCorr+yCorr+zCorr);
-            % highShoulderVelOne(:,ii)=highShoulderVelOne(:,ii)+single(xCorr+yCorr+zCorr);
+            majorVelOne(:,ii)=majorVelOne(:,ii)+velAircraftCorrection(:,cfInd);
+            minorVelOne(:,ii)=minorVelOne(:,ii)+velAircraftCorrection(:,cfInd);
+            lowShoulderVelOne(:,ii)=lowShoulderVelOne(:,ii)+velAircraftCorrection(:,cfInd);
+            highShoulderVelOne(:,ii)=highShoulderVelOne(:,ii)+velAircraftCorrection(:,cfInd);
 
             %% Multi DBZ
             % DBM
