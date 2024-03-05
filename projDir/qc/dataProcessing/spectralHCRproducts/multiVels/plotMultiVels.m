@@ -1,4 +1,4 @@
-function plotMultiVels(moments,shoulderLow,shoulderHigh,velLayers,figdir,project,showPlot)
+function plotMultiVels(moments,dataCF,shoulderLow,shoulderHigh,velLayers,figdir,project,showPlot)
 moments.vel(:,moments.elevation>0,:)=-moments.vel(:,moments.elevation>0,:);
 
 aslGood=moments.asl(~isnan(moments.vel))./1000;
@@ -47,6 +47,23 @@ colorbar
 grid on
 box on
 title('Velocity time domain (m s^{-1})')
+
+s2=nexttile(2);
+
+dataCF.VEL_MASKED(isnan(dataCF.VEL_MASKED))=-99;
+
+hold on
+surf(dataCF.time,dataCF.asl./1000,dataCF.VEL_MASKED,'edgecolor','none');
+view(2);
+ylabel('Altitude (km)');
+clim(clims);
+s2.Colormap=colTwo;
+ylim(ylims);
+xlim([moments.time(1),moments.time(end)]);
+colorbar
+grid on
+box on
+title('Velocity time domain cfRadial (m s^{-1})')
 
 s3=nexttile(3);
 

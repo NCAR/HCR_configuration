@@ -50,13 +50,21 @@ for aa=1:length(caseStart)
     dataCF.VEL_RAW=[];
     dataCF.VEL_CORR=[];
     dataCF.VEL_MASKED=[];
+    % dataCF.eastward_velocity=[];
+    % dataCF.northward_velocity=[];
+    % dataCF.vertical_velocity=[];
+    % dataCF.azimuth=[];
         
     dataCF=read_HCR(fileListMoments,dataCF,startTime,endTime);
 
     % Find velocity correction for vel_raw to vel
-    velAircraftCorrection=dataCF.VEL_CORR-dataCF.VEL_RAW;
-    velAircraftCorrection(abs(velAircraftCorrection)>5)=nan;
-    
+
+    % xCorr=sind(dataCF.azimuth).*cosd(dataCF.elevation).*dataCF.eastward_velocity;
+    % yCorr=cosd(dataCF.azimuth).*cosd(dataCF.elevation).*dataCF.northward_velocity;
+    % zCorr=sind(dataCF.elevation).*dataCF.vertical_velocity;
+
+    velBiasCorrection=dataCF.VEL_CORR-dataCF.VEL_RAW;
+        
     %% Time series
     fileListTS=makeFileList(dataDirTS,startTime+seconds(1),endTime-seconds(1),'20YYMMDDxhhmmss',1);
 
@@ -76,25 +84,25 @@ for aa=1:length(caseStart)
 
             %% Load data TS
             disp(['Loading time series file ',num2str(bb),' of ' num2str(length(fileListTS)),' ...']);
-            %data=readHCRts(fileListTS(1),data,startTime-seconds(outTime),endTime+seconds(outTime),0);
+           
             data=read_TsArchive_iwrf_bulk(fileListTS{1},data);
 
             % Find available times
             timeTest=data.time';
             timeTest(data.time<startTime | data.time>endTime)=[];
-            TTdata=timetable(timeTest,ones(size(timeTest)));
-            synchTT=retime(TTdata,'regular','sum','TimeStep',seconds(outTime));
-            goodTimes=synchTT.timeTest(synchTT.Var1>0);
-
-            beamNum=length(goodTimes)-1;
-
+                                  
             % Set up de-aliasing
-            defaultPrev=data.lambda/(mode(data.prt)*4);
+            toVel=data.lambda/(mode(data.prt)*4);
 
-            % velPrev=repmat(defaultPrev,size(data.range,1),1);
-            % prevCount=zeros(size(velPrev));
-            % prevKeep=nan(size(velPrev));
-            % flipYes=0;
+            % De-alias bias correction
+            checkFold=[2,4,6];
+
+            deAliasMaskB=zeros(size(velBiasCorrection));
+            for jj=1:3
+                deAliasMaskB(velBiasCorrection>checkFold(jj)*toVel-5)=checkFold(jj)*toVel;
+                deAliasMaskB(velBiasCorrection<-(checkFold(jj)*toVel-5))=-checkFold(jj)*toVel;
+            end
+            velBiasCorrection=velBiasCorrection-deAliasMaskB;
         else
             %% Trimm first file
             data=trimFirstFile(data,endInd);
@@ -104,7 +112,6 @@ for aa=1:length(caseStart)
             %% Load data TS
             disp(['Loading time series file ',num2str(bb),' of ' num2str(length(fileListTS)),' ...']);
 
-            % data=readHCRts_add(fileListTS{bb},data,vars);
             data=read_TsArchive_iwrf_bulk(fileListTS{bb},data);
 
             % Find available times
@@ -155,8 +162,6 @@ for aa=1:length(caseStart)
 
         % Loop through beams
         for ii=1:beamNum
-
-            %disp(datestr(goodTimes(ii),'yyyymmdd_HHMMSS.FFF'));
             
             % Find start and end indices for beam
             [~,startInd]=min(abs(goodTimes(ii)-seconds(sampleTime/2)-data.time));
@@ -192,44 +197,19 @@ for aa=1:length(caseStart)
 
             %% Correct time domain velocity folding
 
-            deAliasDiffT=momentsTimeOne.velRaw(:,ii)+velAircraftCorrection(:,cfInd)-dataCF.VEL_CORR(:,cfInd);
+            deAliasDiffT=momentsTimeOne.velRaw(:,ii)+velBiasCorrection(:,cfInd)-dataCF.VEL_MASKED(:,cfInd);
 
             deAliasMaskT=zeros(size(deAliasDiffT));
-            checkFold=[2,4,6];
-
+           
             for jj=1:3
-                deAliasMaskT(deAliasDiffT>checkFold(jj)*defaultPrev-5)=checkFold(jj)*defaultPrev;
-                deAliasMaskT(deAliasDiffT<-(checkFold(jj)*defaultPrev-5))=-checkFold(jj)*defaultPrev;
+                deAliasMaskT(deAliasDiffT>checkFold(jj)*toVel-5)=checkFold(jj)*toVel;
+                deAliasMaskT(deAliasDiffT<-(checkFold(jj)*toVel-5))=-checkFold(jj)*toVel;
             end
 
             momentsTimeOne.velRawDeAliased(:,ii)=momentsTimeOne.velRaw(:,ii)-deAliasMaskT;
-            % specVelAdj=specVelAdj-deAliasMaskT;
-            % 
-            % 
-            % 
-            % 
-            % 
-            % if momentsTimeOne.elevation(ii)>0
-            %     velRay=-momentsTimeOne.velRaw(:,ii);
-            % else
-            %     velRay=momentsTimeOne.velRaw(:,ii);
-            % end
-            % velRay(1:12)=nan;
-            % 
-            % finalRay=deAliasSingleRay(velRay,velPrev,defaultPrev,[],momentsTimeOne.time(ii));
-            % 
-            % % Set up time consistency check
-            % [velPrev,prevCount,prevKeep,flipYes]=setUpPrev(finalRay,velPrev,prevCount,prevKeep,flipYes,momentsTimeOne.elevation(ii),1/outTime,defaultPrev);
-            % 
-            % %% Add to output
-            % if momentsTimeOne.elevation(ii)>0
-            %     momentsTimeOne.velRawDeAliased(:,ii)=-finalRay;
-            % else
-            %     momentsTimeOne.velRawDeAliased(:,ii)=finalRay;
-            % end
-
+            
             %% Correct velocity for aircraft motion and bias
-            momentsTimeOne.vel(:,ii)=momentsTimeOne.velRawDeAliased(:,ii)+velAircraftCorrection(:,cfInd);
+            momentsTimeOne.vel(:,ii)=momentsTimeOne.velRawDeAliased(:,ii)+velBiasCorrection(:,cfInd);
 
             %% Spectral moments
             [specPowerLin,specPowerDB]=getSpectra(cIQ);
@@ -244,17 +224,16 @@ for aa=1:length(caseStart)
             y=specPowerLin.V-noiseLinV;
             velMean=sum(y.*x,2,'omitnan')./sum(y,2,'omitnan');
 
-            deAliasDiff=velMean-momentsTimeOne.velRawDeAliased(:,ii);
+            deAliasDiff=velMean+velBiasCorrection(:,cfInd)-dataCF.VEL_MASKED(:,cfInd);%-momentsTimeOne.velRawDeAliased(:,ii);
 
             deAliasMask=zeros(size(deAliasDiff));
-            checkFold=[2,4,6];
-
+           
             for jj=1:3
-                deAliasMask(deAliasDiff>checkFold(jj)*defaultPrev-5)=checkFold(jj)*defaultPrev;
-                deAliasMask(deAliasDiff<-(checkFold(jj)*defaultPrev-5))=-checkFold(jj)*defaultPrev;
+                deAliasMask(deAliasDiff>checkFold(jj)*toVel-5)=checkFold(jj)*toVel;
+                deAliasMask(deAliasDiff<-(checkFold(jj)*toVel-5))=-checkFold(jj)*toVel;
             end
 
-            specVelAdj=specVelAdj-deAliasMask;
+            specVelAdj=specVelAdj-deAliasMask+velBiasCorrection(:,cfInd);
           
             % Censor
             specPowerDBadj(isnan(momentsTimeOne.vel(:,ii)),:)=nan;
@@ -273,10 +252,10 @@ for aa=1:length(caseStart)
                 =findMultiVels(powerRMnoiseDBsmooth,specVelRMnoise,specPowerDBadj,majorVelOne,majorDbzOne,minorVelOne,minorDbzOne,lowShoulderVelOne,highShoulderVelOne,lowShoulderPowOne,highShoulderPowOne,ii);
 
             %% Correct for aircraft motion
-            majorVelOne(:,ii)=majorVelOne(:,ii)+velAircraftCorrection(:,cfInd);
-            minorVelOne(:,ii)=minorVelOne(:,ii)+velAircraftCorrection(:,cfInd);
-            lowShoulderVelOne(:,ii)=lowShoulderVelOne(:,ii)+velAircraftCorrection(:,cfInd);
-            highShoulderVelOne(:,ii)=highShoulderVelOne(:,ii)+velAircraftCorrection(:,cfInd);
+            majorVelOne(:,ii)=majorVelOne(:,ii);
+            minorVelOne(:,ii)=minorVelOne(:,ii);
+            lowShoulderVelOne(:,ii)=lowShoulderVelOne(:,ii);
+            highShoulderVelOne(:,ii)=highShoulderVelOne(:,ii);
 
             %% Multi DBZ
             % DBM
@@ -390,6 +369,8 @@ for aa=1:length(caseStart)
     majorVel(:,momentsTime.elevation>0,:)=-majorVel(:,momentsTime.elevation>0,:);
     minorVel(:,momentsTime.elevation>0,:)=-minorVel(:,momentsTime.elevation>0,:);
 
+    dataCF.VEL_MASKED(:,dataCF.elevation>0)=-dataCF.VEL_MASKED(:,dataCF.elevation>0);
+
     %% Sort vels into layers
     [velLayers,dbzLayers]=sortVelLayers(majorVel,majorDbz,minorVel,minorDbz);
     
@@ -409,7 +390,7 @@ for aa=1:length(caseStart)
 
     momentsTime.asl=HCRrange2asl(momentsTime.range,momentsTime.elevation,momentsTime.altitude);
 
-    plotMultiVels(momentsTime,shoulderLowVel,shoulderHighVel,velLayers,figdir,project,showPlot);
+    plotMultiVels(momentsTime,dataCF,shoulderLowVel,shoulderHighVel,velLayers,figdir,project,showPlot);
     plotMultiRefs(momentsTime,shoulderLowDbz,shoulderHighDbz,dbzLayers,figdir,project,showPlot);
 
 end
