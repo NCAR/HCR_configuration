@@ -11,7 +11,7 @@ freqData='10hz';
 qcVersion='v1.2';
 
 outTime=0.1; % Desired output time resolution in seconds. Must be less than or equal to one second.
-sampleTime=0.1; % Length of sample in seconds.
+sampleTime=0.02; % Length of sample in seconds.
 
 dataDirTS=HCRdir(project,quality,qcVersion,freqData);
 dataDirCF=HCRdir(project,qualityCF,qcVersion,freqData);
@@ -32,7 +32,7 @@ caseStart=datetime(caseList.Var1,caseList.Var2,caseList.Var3, ...
 caseEnd=datetime(caseList.Var7,caseList.Var8,caseList.Var9, ...
     caseList.Var10,caseList.Var11,caseList.Var12);
 
-for aa=2:length(caseStart)
+for aa=1:length(caseStart)
     tic
 
     disp(['Case ',num2str(aa),' of ',num2str(length(caseStart))]);
@@ -244,7 +244,7 @@ for aa=2:length(caseStart)
             specVelAdj(isnan(momentsTimeOne.vel(:,ii)),:)=nan;
 
             %% Remove noise
-            powerRMnoiseDBsmooth=rmNoiseSpec_HS(specPowerDBadj,data.noise_v);
+            [powerDBsmooth,powerRMnoiseDBsmooth]=rmNoiseSpec(specPowerDBadj);
             powerRMnoiseDB=specPowerDBadj;
             powerRMnoiseDB(isnan(powerRMnoiseDBsmooth))=nan;
             specVelRMnoise=specVelAdj;
