@@ -10,6 +10,9 @@ qualityCF='qc1';
 freqData='10hz';
 qcVersion='v1.2';
 
+% plotInds=0;
+plotInds=(1:50:500);
+
 outTime=0.1; % Desired output time resolution in seconds. Must be less than or equal to one second.
 sampleTime=0.1; % Length of sample in seconds.
 
@@ -32,9 +35,10 @@ caseStart=datetime(caseList.Var1,caseList.Var2,caseList.Var3, ...
 caseEnd=datetime(caseList.Var7,caseList.Var8,caseList.Var9, ...
     caseList.Var10,caseList.Var11,caseList.Var12);
 
-for aa=2:length(caseStart)
+for aa=1:length(caseStart)
     tic
 
+    plotTimeAll=[];
     disp(['Case ',num2str(aa),' of ',num2str(length(caseStart))]);
 
     startTime=caseStart(aa);
@@ -244,22 +248,31 @@ for aa=2:length(caseStart)
             specVelAdj(isnan(momentsTimeOne.vel(:,ii)),:)=nan;
 
             %% Remove noise
-            powerRMnoiseDBsmooth=rmNoiseSpec_HS(specPowerDBadj,data.noise_v);
+            if ismember(ii,plotInds)
+                plotTime=momentsTimeOne.time(ii);
+                plotTimeAll=cat(1,plotTimeAll,plotTime);
+            else
+                plotTime=[];
+            end
+            powerRMnoiseDBsmooth=rmNoiseSpec_HS(specPowerDBadj,data.noise_v,plotTime);
             powerRMnoiseDB=specPowerDBadj;
             powerRMnoiseDB(isnan(powerRMnoiseDBsmooth))=nan;
             specVelRMnoise=specVelAdj;
             specVelRMnoise(isnan(powerRMnoiseDBsmooth))=nan;
 
-            %% Find regions with dual particle species
+            %% Find shoulders
+            [~,lowInds]=max(~isnan(specVelRMnoise),[],2);
+            lowIndsLin=sub2ind(size(specVelRMnoise),1:size(specVelRMnoise,1),lowInds');
+            lowShoulderVelOne(:,ii)=specVelRMnoise(lowIndsLin);
+            
 
-            [majorVelOne,majorDbzOne,minorVelOne,minorDbzOne,lowShoulderVelOne,highShoulderVelOne,lowShoulderPowOne,highShoulderPowOne] ...
-                =findMultiVels(powerRMnoiseDBsmooth,specVelRMnoise,specPowerDBadj,majorVelOne,majorDbzOne,minorVelOne,minorDbzOne,lowShoulderVelOne,highShoulderVelOne,lowShoulderPowOne,highShoulderPowOne,ii);
+            flipSpec=fliplr(specVelRMnoise);
+            [~,highInds]=max(~isnan(flipSpec),[],2);
+            highIndsLin=sub2ind(size(specVelRMnoise),1:size(specVelRMnoise,1),highInds');
+            highShoulderVelOne(:,ii)=flipSpec(highIndsLin);
 
-            %% Correct for aircraft motion
-            majorVelOne(:,ii)=majorVelOne(:,ii);
-            minorVelOne(:,ii)=minorVelOne(:,ii);
-            lowShoulderVelOne(:,ii)=lowShoulderVelOne(:,ii);
-            highShoulderVelOne(:,ii)=highShoulderVelOne(:,ii);
+            % [majorVelOne,majorDbzOne,minorVelOne,minorDbzOne,lowShoulderVelOne,highShoulderVelOne,lowShoulderPowOne,highShoulderPowOne] ...
+            %     =findMultiVels(powerRMnoiseDBsmooth,specVelRMnoise,specPowerDBadj,majorVelOne,majorDbzOne,minorVelOne,minorDbzOne,lowShoulderVelOne,highShoulderVelOne,lowShoulderPowOne,highShoulderPowOne,ii);
 
             %% Multi DBZ
             % DBM
@@ -394,7 +407,7 @@ for aa=2:length(caseStart)
 
     momentsTime.asl=HCRrange2asl(momentsTime.range,momentsTime.elevation,momentsTime.altitude);
 
-    plotMultiVels(momentsTime,dataCF,shoulderLowVel,shoulderHighVel,velLayers,figdir,project,showPlot);
-    plotMultiRefs(momentsTime,shoulderLowDbz,shoulderHighDbz,dbzLayers,figdir,project,showPlot);
+    plotMultiVels(momentsTime,dataCF,shoulderLowVel,shoulderHighVel,velLayers,figdir,project,showPlot,plotTimeAll);
+    %plotMultiRefs(momentsTime,shoulderLowDbz,shoulderHighDbz,dbzLayers,figdir,project,showPlot);
 
 end

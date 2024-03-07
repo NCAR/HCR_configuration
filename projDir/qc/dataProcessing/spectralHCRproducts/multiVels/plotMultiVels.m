@@ -1,4 +1,4 @@
-function plotMultiVels(moments,dataCF,shoulderLow,shoulderHigh,velLayers,figdir,project,showPlot)
+function plotMultiVels(moments,dataCF,shoulderLow,shoulderHigh,velLayers,figdir,project,showPlot,plotTimeAll)
 moments.vel(:,moments.elevation>0,:)=-moments.vel(:,moments.elevation>0,:);
 
 aslGood=moments.asl(~isnan(moments.vel))./1000;
@@ -32,7 +32,7 @@ shoulderDiff=shoulderHigh-shoulderLow;
 % difflimS=prctile(abs(shoulderDiff(:)),99.5);
 % climsDiffS=[0,difflimS];
 
-climsDiffS=[0,9];
+climsDiffS=[0,12];
 climsDiff=[0,5];
 
 hold on
@@ -47,6 +47,14 @@ colorbar
 grid on
 box on
 title('Velocity time domain (m s^{-1})')
+
+plotRangeInds=[20:20:700];
+for kk=1:length(plotTimeAll)
+    times=repmat(plotTimeAll(kk),length(plotRangeInds),1);
+    alts=moments.asl(plotRangeInds,moments.time==plotTimeAll(kk));
+scatter(times,alts./1000,36,'b','x');
+end
+s1.SortMethod='childorder';
 
 s2=nexttile(2);
 

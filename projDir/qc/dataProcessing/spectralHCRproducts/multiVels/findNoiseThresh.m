@@ -9,7 +9,7 @@ stepDown=0.0000001;
 
 while R2<1
     powLin(powLin>noiseThresh)=[];
-    xCalc=1:length(powLin);
+    % xCalc=1:length(powLin);
     sampleNum=length(powLin);
     % sig2r=(sum(xCalc.^2.*powLin,'omitmissing')./sum(powLin,'omitmissing')) ...
     %     -(sum(xCalc.*powLin,'omitmissing')./sum(powLin,'omitmissing')).^2;
@@ -19,6 +19,7 @@ while R2<1
     % R1=sigN2/sig2r;
     R2=meanNoise.^2/(Q*avNum);
     noiseThresh=noiseThresh-stepDown;
+    %plot(powLin)
 end
 noiseThresh=10*log10(noiseThresh+stepDown);
 meanNoise=10*log10(meanNoise);
