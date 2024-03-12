@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=View hcrdrx log"
+Exec=xterm -fg gold -bg gray30 -geometry 120x30 -e "ssh rds tail -f /home/hcr/projDir/logs/status/today/hcrdrx.ops.log"
+StartupNotify=true
+Terminal=false
+Type=Application
+Icon=/home/hcr/git/HCR_configuration/launchers/icons/scrolling-text.png
+Name=Follow hcrdrx log

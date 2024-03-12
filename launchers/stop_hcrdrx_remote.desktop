@@ -1,0 +1,7 @@
+[Desktop Entry]
+Name=Stop hcrdrx
+Exec=/home/hcr/projDir/hcrdrx/scripts/stop_hcrdrx_remote
+StartupNotify=true
+Terminal=false
+Type=Application
+Icon=/home/hcr/git/HCR_configuration/launchers/icons/stop-hcrdrx.png

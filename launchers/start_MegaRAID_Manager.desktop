@@ -1,0 +1,7 @@
+[Desktop Entry]
+Name=MegaRAID Manager
+Exec="/usr/local/MegaRAID Storage Manager/startupui.sh"
+StartupNotify=true
+Terminal=false
+Type=Application
+Icon=/home/hcr/git/HCR_configuration/launchers/icons/megaraid.png

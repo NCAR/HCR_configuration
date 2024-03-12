@@ -1,0 +1,7 @@
+[Desktop Entry]
+Name=Aeros
+Exec=/usr/local/aeros/deploy/bin/launch_aeros
+StartupNotify=true
+Terminal=false
+Type=Application
+Icon=/home/hcr/git/HCR_configuration/launchers/icons/aeros.png

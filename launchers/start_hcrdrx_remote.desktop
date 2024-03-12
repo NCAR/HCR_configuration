@@ -1,0 +1,7 @@
+[Desktop Entry]
+Name=Start hcrdrx
+Exec=/home/hcr/projDir/hcrdrx/scripts/start_hcrdrx_remote
+StartupNotify=true
+Terminal=false
+Type=Application
+Icon=/home/hcr/git/HCR_configuration/launchers/icons/hcrdrx.png

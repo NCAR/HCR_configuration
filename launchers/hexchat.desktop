@@ -1,0 +1,7 @@
+[Desktop Entry]
+Name=HexChat
+GenericName=IRC Client
+Exec=hexchat
+Icon=/home/hcr/git/HCR_configuration/launchers/icons/xchat.png
+Terminal=false
+Type=Application

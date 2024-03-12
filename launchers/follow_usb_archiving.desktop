@@ -1,0 +1,7 @@
+[Desktop Entry]
+Name=Follow USB Archiving
+Exec=check_log_in_xterm.archive
+StartupNotify=true
+Terminal=false
+Type=Application
+Icon=/home/hcr/git/HCR_configuration/launchers/icons/scrolling-text.png

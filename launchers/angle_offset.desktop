@@ -1,0 +1,7 @@
+[Desktop Entry]
+Name=Monitor Angle Offset
+Exec=start_angle_offset_mon
+StartupNotify=true
+Terminal=false
+Type=Application
+Icon=/home/hcr/git/HCR_configuration/launchers/icons/angle-offset.png
