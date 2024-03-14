@@ -1,4 +1,4 @@
-function plotMultiVels(moments,dataCF,shoulderLow,shoulderHigh,velLayers,figdir,project,showPlot,plotTimeAll)
+function plotMultiVels(moments,dataCF,shoulderLow,shoulderHigh,peakLow,peakHigh,figdir,project,showPlot,plotTimeAll)
 moments.vel(:,moments.elevation>0,:)=-moments.vel(:,moments.elevation>0,:);
 
 aslGood=moments.asl(~isnan(moments.vel))./1000;
@@ -21,16 +21,13 @@ moments.vel(isnan(moments.vel))=-99;
 colTwo=cat(1,[0,0,0],velCols);
 colDiff=cat(1,[0,0,0],jet);
 
-lowLayer=velLayers(:,:,1);
-highLayer=velLayers(:,:,2);
-
-dualPartDiff=highLayer-lowLayer;
+dualPartDiff=peakHigh-peakLow;
 shoulderDiff=shoulderHigh-shoulderLow;
 
-% difflim=prctile(abs(dualPartDiff(:)),99.5);
-% climsDiff=[0,difflim];
-% difflimS=prctile(abs(shoulderDiff(:)),99.5);
-% climsDiffS=[0,difflimS];
+difflim=prctile(abs(dualPartDiff(:)),99.5);
+climsDiff=[0,difflim];
+difflimS=prctile(abs(shoulderDiff(:)),99.5);
+climsDiffS=[0,difflimS];
 
 climsDiffS=[0,12];
 climsDiff=[0,5];
@@ -92,10 +89,10 @@ title('Velocity high (m s^{-1})')
 
 s4=nexttile(4);
 
-highLayer(isnan(highLayer))=-99;
+peakHigh(isnan(peakHigh))=-99;
 
 hold on
-surf(moments.time,moments.asl./1000,highLayer,'edgecolor','none');
+surf(moments.time,moments.asl./1000,peakHigh,'edgecolor','none');
 view(2);
 ylabel('Altitude (km)');
 clim(clims);
@@ -126,10 +123,10 @@ title('Velocity low (m s^{-1})')
 
 s6=nexttile(6);
 
-lowLayer(isnan(lowLayer))=-99;
+peakLow(isnan(peakLow))=-99;
 
 hold on
-surf(moments.time,moments.asl./1000,lowLayer,'edgecolor','none');
+surf(moments.time,moments.asl./1000,peakLow,'edgecolor','none');
 view(2);
 ylabel('Altitude (km)');
 clim(clims);

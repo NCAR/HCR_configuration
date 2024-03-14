@@ -155,14 +155,16 @@ for aa=1:length(caseStart)
         momentsTimeOne.time=goodTimes(1:beamNum)';
 
         majorVelOne=single(nan(size(data.range,1),beamNum,1));
-        majorDbzOne=single(nan(size(data.range,1),beamNum,1));
         minorVelOne=single(nan(size(data.range,1),beamNum,1));
-        minorDbzOne=single(nan(size(data.range,1),beamNum,1));
-
         lowShoulderVelOne=single(nan(size(data.range,1),beamNum,1));
         highShoulderVelOne=single(nan(size(data.range,1),beamNum,1));
-        lowShoulderPowOne=single(nan(size(data.range,1),beamNum,1));
-        highShoulderPowOne=single(nan(size(data.range,1),beamNum,1));
+
+        peakVelsOne=single(nan(size(data.range,1),beamNum,2));
+
+        % majorDbzOne=single(nan(size(data.range,1),beamNum,1));
+        % minorDbzOne=single(nan(size(data.range,1),beamNum,1));
+        % lowShoulderPowOne=single(nan(size(data.range,1),beamNum,1));
+        % highShoulderPowOne=single(nan(size(data.range,1),beamNum,1));
 
         % Loop through beams
         for ii=1:beamNum
@@ -216,54 +218,39 @@ for aa=1:length(caseStart)
 
             momentsTimeOne.velRawDeAliased(:,ii)=momentsTimeOne.velRaw(:,ii)-deAliasMaskT;
             
-            %% Correct velocity for aircraft motion and bias
+            %% Correct time domain velocity for aircraft motion and bias
             momentsTimeOne.vel(:,ii)=momentsTimeOne.velRawDeAliased(:,ii)+velBiasCorrection(:,cfInd);
 
             %% Spectral moments
             [specPowerLin,specPowerDB]=getSpectra(cIQ);
 
-            % Move peak of spectra to middle
-            [specPowerDBadj,specVelAdj]=adjSpecBoundsV(specPowerDB.V,momentsTimeOne.velRawDeAliased(:,ii),dataThis);
+             % Censor
+            specPowerLin.V(isnan(momentsTimeOne.vel(:,ii)),:)=nan;
+            specPowerDB.V(isnan(momentsTimeOne.vel(:,ii)),:)=nan;
 
-            % De-alias
-            % Mean vel
-            noiseLinV=10.^(data.noise_v./10);
-            x=specVelAdj;
-            y=specPowerLin.V-noiseLinV;
-            velMean=sum(y.*x,2,'omitnan')./sum(y,2,'omitnan');
-
-            deAliasDiff=velMean+velBiasCorrection(:,cfInd)-dataCF.VEL_MASKED(:,cfInd);%-momentsTimeOne.velRawDeAliased(:,ii);
-
-            deAliasMask=zeros(size(deAliasDiff));
-           
-            for jj=1:3
-                deAliasMask(deAliasDiff>checkFold(jj)*toVel-5)=checkFold(jj)*toVel;
-                deAliasMask(deAliasDiff<-(checkFold(jj)*toVel-5))=-checkFold(jj)*toVel;
-            end
-
-            specVelAdj=specVelAdj-deAliasMask+velBiasCorrection(:,cfInd);
-          
-            % Censor
-            specPowerDBadj(isnan(momentsTimeOne.vel(:,ii)),:)=nan;
-            specVelAdj(isnan(momentsTimeOne.vel(:,ii)),:)=nan;
-
-            %% Remove noise
+            %% Remove noise, find edge points and peaks
             if ismember(ii,plotInds)
                 plotTime=momentsTimeOne.time(ii);
                 plotTimeAll=cat(1,plotTimeAll,plotTime);
             else
                 plotTime=[];
             end
-            powerRMnoiseDBsmooth=rmNoiseSpec_HS(specPowerDBadj,data.noise_v,plotTime);
-            powerRMnoiseDB=specPowerDBadj;
-            powerRMnoiseDB(isnan(powerRMnoiseDBsmooth))=nan;
+
+            % This step removes the noise and also de-aliases
+            [powerRMnoiseDBsmooth,specVelAdj,peakVels,peakPows]=noisePeaks(specPowerDB.V,momentsTimeOne.velRawDeAliased(:,ii),dataThis,plotTime);
             specVelRMnoise=specVelAdj;
             specVelRMnoise(isnan(powerRMnoiseDBsmooth))=nan;
 
+            % Remove aircraft motion
+            specVelAdj=specVelAdj+velBiasCorrection(:,cfInd);
+            specVelRMnoise=specVelRMnoise+velBiasCorrection(:,cfInd);
+            peakVels=peakVels+velBiasCorrection(:,cfInd);
+
+            % Velocities at peaks            
+            peakVelsOne(:,ii,:)=peakVels;
+           
             %% Find shoulders
-            [~,lowInds]=max(~isnan(specVelRMnoise),[],2);
-            lowIndsLin=sub2ind(size(specVelRMnoise),1:size(specVelRMnoise,1),lowInds');
-            lowShoulderVelOne(:,ii)=specVelRMnoise(lowIndsLin);
+            lowShoulderVelOne(:,ii)=specVelRMnoise(:,1);
             
 
             flipSpec=fliplr(specVelRMnoise);
@@ -271,59 +258,58 @@ for aa=1:length(caseStart)
             highIndsLin=sub2ind(size(specVelRMnoise),1:size(specVelRMnoise,1),highInds');
             highShoulderVelOne(:,ii)=flipSpec(highIndsLin);
 
-            % [majorVelOne,majorDbzOne,minorVelOne,minorDbzOne,lowShoulderVelOne,highShoulderVelOne,lowShoulderPowOne,highShoulderPowOne] ...
-            %     =findMultiVels(powerRMnoiseDBsmooth,specVelRMnoise,specPowerDBadj,majorVelOne,majorDbzOne,minorVelOne,minorDbzOne,lowShoulderVelOne,highShoulderVelOne,lowShoulderPowOne,highShoulderPowOne,ii);
-
             %% Multi DBZ
-            % DBM
-            powerLinVmajor=10.^(majorDbzOne(:,ii,:)./10);
-            powerLinVminor=10.^(minorDbzOne(:,ii,:)./10);
-            
-            % SNR
-            noiseLinV=10.^(dataThis.noise_v./10);
-            snrLinLowMajor=(powerLinVmajor-noiseLinV)./noiseLinV;
-            snrLinLowMajor(snrLinLowMajor<0)=nan;
-            snrDBmajor=10*log10(snrLinLowMajor);
-
-            snrLinLowMinor=(powerLinVminor-noiseLinV)./noiseLinV;
-            snrLinLowMinor(snrLinLowMinor<0)=nan;
-            snrDBminor=10*log10(snrLinLowMinor);
-
-            % DBZ
-            dataThis.range(dataThis.range<0)=nan;
-            majorDbzOne(:,ii,:)=snrDBmajor+20*log10(dataThis.range./1000)+data.dbz1km_v;
-            minorDbzOne(:,ii,:)=snrDBminor+20*log10(dataThis.range./1000)+data.dbz1km_v;
-
-            % Shoulders
-            % Linear
-            lowShoulderPowLin=10.^(lowShoulderPowOne./10);
-            highShoulderPowLin=10.^(highShoulderPowOne./10);
-
-            % SNR
-            snrLinLow=(lowShoulderPowLin-noiseLinV)./noiseLinV;
-            snrLinLow(snrLinLow<0)=nan;
-            snrLow=10*log10(snrLinLow);
-            snrLinHigh=(highShoulderPowLin-noiseLinV)./noiseLinV;
-            snrLinHigh(snrLinHigh<0)=nan;
-            snrHigh=10*log10(snrLinHigh);
-
-            % DBZ
-            data.range(data.range<0)=nan;
-            lowShoulderDbzOne=snrLow+20*log10(data.range./1000)+data.dbz1km_v;
-            highShoulderDbzOne=snrHigh+20*log10(data.range./1000)+data.dbz1km_v;
+            % % DBM
+            % powerLinVmajor=10.^(majorDbzOne(:,ii,:)./10);
+            % powerLinVminor=10.^(minorDbzOne(:,ii,:)./10);
+            % 
+            % % SNR
+            % noiseLinV=10.^(dataThis.noise_v./10);
+            % snrLinLowMajor=(powerLinVmajor-noiseLinV)./noiseLinV;
+            % snrLinLowMajor(snrLinLowMajor<0)=nan;
+            % snrDBmajor=10*log10(snrLinLowMajor);
+            % 
+            % snrLinLowMinor=(powerLinVminor-noiseLinV)./noiseLinV;
+            % snrLinLowMinor(snrLinLowMinor<0)=nan;
+            % snrDBminor=10*log10(snrLinLowMinor);
+            % 
+            % % DBZ
+            % dataThis.range(dataThis.range<0)=nan;
+            % majorDbzOne(:,ii,:)=snrDBmajor+20*log10(dataThis.range./1000)+data.dbz1km_v;
+            % minorDbzOne(:,ii,:)=snrDBminor+20*log10(dataThis.range./1000)+data.dbz1km_v;
+            % 
+            % % Shoulders
+            % % Linear
+            % lowShoulderPowLin=10.^(lowShoulderPowOne./10);
+            % highShoulderPowLin=10.^(highShoulderPowOne./10);
+            % 
+            % % SNR
+            % snrLinLow=(lowShoulderPowLin-noiseLinV)./noiseLinV;
+            % snrLinLow(snrLinLow<0)=nan;
+            % snrLow=10*log10(snrLinLow);
+            % snrLinHigh=(highShoulderPowLin-noiseLinV)./noiseLinV;
+            % snrLinHigh(snrLinHigh<0)=nan;
+            % snrHigh=10*log10(snrLinHigh);
+            % 
+            % % DBZ
+            % data.range(data.range<0)=nan;
+            % lowShoulderDbzOne=snrLow+20*log10(data.range./1000)+data.dbz1km_v;
+            % highShoulderDbzOne=snrHigh+20*log10(data.range./1000)+data.dbz1km_v;
         end
 
         %% Add to output
         if bb==1
             momentsTime=momentsTimeOne;
             majorVel=majorVelOne;
-            majorDbz=majorDbzOne;
             minorVel=minorVelOne;
-            minorDbz=minorDbzOne;
             lowShoulderVel=lowShoulderVelOne;
             highShoulderVel=highShoulderVelOne;
-            lowShoulderDbz=lowShoulderDbzOne;
-            highShoulderDbz=highShoulderDbzOne;
+            peakVelsAll=peakVelsOne;
+
+            % majorDbz=majorDbzOne;
+            % minorDbz=minorDbzOne;
+            % lowShoulderDbz=lowShoulderDbzOne;
+            % highShoulderDbz=highShoulderDbzOne;
         else
             dataFields=fields(momentsTime);
 
@@ -333,39 +319,43 @@ for aa=1:length(caseStart)
 
             lowShoulderVel=cat(2,lowShoulderVel,lowShoulderVelOne);
             highShoulderVel=cat(2,highShoulderVel,highShoulderVelOne);
-            lowShoulderDbz=cat(2,lowShoulderDbz,lowShoulderDbzOne);
-            highShoulderDbz=cat(2,highShoulderDbz,highShoulderDbzOne);
+            peakVelsAll=cat(2,peakVelsAll,peakVelsOne);
+            % lowShoulderDbz=cat(2,lowShoulderDbz,lowShoulderDbzOne);
+            % highShoulderDbz=cat(2,highShoulderDbz,highShoulderDbzOne);
 
             % Major
             checkDims=size(majorVel,3)-size(majorVelOne,3);
             if checkDims<0
                 majorVel=padarray(majorVel,[0,0,abs(checkDims)],nan,'post');
-                majorDbz=padarray(majorDbz,[0,0,abs(checkDims)],nan,'post');
+                % majorDbz=padarray(majorDbz,[0,0,abs(checkDims)],nan,'post');
             end
 
             momVelTest=nan(size(majorVelOne,1),size(majorVelOne,2),max(size(majorVel,3)));
-            momPowTest=nan(size(majorVelOne,1),size(majorVelOne,2),max(size(majorVel,3)));
             dim3=size(majorVelOne,3);
             momVelTest(:,:,1:dim3)=majorVelOne;     
             majorVel=cat(2,majorVel,momVelTest);
-            momPowTest(:,:,1:dim3)=majorDbzOne;     
-            majorDbz=cat(2,majorDbz,momPowTest);
+
+            % momPowTest=nan(size(majorVelOne,1),size(majorVelOne,2),max(size(majorVel,3)));
+            % momPowTest(:,:,1:dim3)=majorDbzOne;     
+            % majorDbz=cat(2,majorDbz,momPowTest);
 
             % Minor
             checkDims=size(minorVel,3)-size(minorVelOne,3);
             if checkDims<0
                 minorVel=padarray(minorVel,[0,0,abs(checkDims)],nan,'post');
-                minorDbz=padarray(minorDbz,[0,0,abs(checkDims)],nan,'post');
+                % minorDbz=padarray(minorDbz,[0,0,abs(checkDims)],nan,'post');
             end
 
-            momVelTest=nan(size(minorVelOne,1),size(minorVelOne,2),max(size(minorVel,3)));
-            momPowTest=nan(size(minorVelOne,1),size(minorVelOne,2),max(size(minorVel,3)));
+            momVelTest=nan(size(minorVelOne,1),size(minorVelOne,2),max(size(minorVel,3)));            
             dim3=size(minorVelOne,3);
             momVelTest(:,:,1:dim3)=minorVelOne;     
             minorVel=cat(2,minorVel,momVelTest);
-            momPowTest(:,:,1:dim3)=minorDbzOne;     
-            minorDbz=cat(2,minorDbz,momPowTest);
+
+            % momPowTest=nan(size(minorVelOne,1),size(minorVelOne,2),max(size(minorVel,3)));
+            % momPowTest(:,:,1:dim3)=minorDbzOne;     
+            % minorDbz=cat(2,minorDbz,momPowTest);
         end
+       
     end
     
     %% Reverse up pointing direction
@@ -376,20 +366,27 @@ for aa=1:length(caseStart)
     shoulderHighVel(:,momentsTime.elevation<=0)=highShoulderVel(:,momentsTime.elevation<=0);
     shoulderHighVel(:,momentsTime.elevation>0)=-lowShoulderVel(:,momentsTime.elevation>0);
 
-    shoulderLowDbz=nan(size(lowShoulderDbz));
-    shoulderLowDbz(:,momentsTime.elevation<=0)=lowShoulderDbz(:,momentsTime.elevation<=0);
-    shoulderLowDbz(:,momentsTime.elevation>0)=highShoulderDbz(:,momentsTime.elevation>0);
-    shoulderHighDbz=nan(size(highShoulderDbz));
-    shoulderHighDbz(:,momentsTime.elevation<=0)=highShoulderDbz(:,momentsTime.elevation<=0);
-    shoulderHighDbz(:,momentsTime.elevation>0)=lowShoulderDbz(:,momentsTime.elevation>0);
+    % shoulderLowDbz=nan(size(lowShoulderDbz));
+    % shoulderLowDbz(:,momentsTime.elevation<=0)=lowShoulderDbz(:,momentsTime.elevation<=0);
+    % shoulderLowDbz(:,momentsTime.elevation>0)=highShoulderDbz(:,momentsTime.elevation>0);
+    % shoulderHighDbz=nan(size(highShoulderDbz));
+    % shoulderHighDbz(:,momentsTime.elevation<=0)=highShoulderDbz(:,momentsTime.elevation<=0);
+    % shoulderHighDbz(:,momentsTime.elevation>0)=lowShoulderDbz(:,momentsTime.elevation>0);
 
-    majorVel(:,momentsTime.elevation>0,:)=-majorVel(:,momentsTime.elevation>0,:);
-    minorVel(:,momentsTime.elevation>0,:)=-minorVel(:,momentsTime.elevation>0,:);
+    % majorVel(:,momentsTime.elevation>0,:)=-majorVel(:,momentsTime.elevation>0,:);
+    % minorVel(:,momentsTime.elevation>0,:)=-minorVel(:,momentsTime.elevation>0,:);
+
+    peakLowVel=nan(size(lowShoulderVel));
+    peakLowVel(:,momentsTime.elevation<=0)=peakVelsAll(:,momentsTime.elevation<=0,1);
+    peakLowVel(:,momentsTime.elevation>0)=-peakVelsAll(:,momentsTime.elevation>0,2);
+    peakHighVel=nan(size(highShoulderVel));
+    peakHighVel(:,momentsTime.elevation<=0)=peakVelsAll(:,momentsTime.elevation<=0,2);
+    peakHighVel(:,momentsTime.elevation>0)=-peakVelsAll(:,momentsTime.elevation>0,1);
 
     dataCF.VEL_MASKED(:,dataCF.elevation>0)=-dataCF.VEL_MASKED(:,dataCF.elevation>0);
 
     %% Sort vels into layers
-    [velLayers,dbzLayers]=sortVelLayers(majorVel,majorDbz,minorVel,minorDbz);
+    % [velLayers,dbzLayers]=sortVelLayers(majorVel,majorDbz,minorVel,minorDbz);
     
     %% Take time
 
@@ -407,7 +404,7 @@ for aa=1:length(caseStart)
 
     momentsTime.asl=HCRrange2asl(momentsTime.range,momentsTime.elevation,momentsTime.altitude);
 
-    plotMultiVels(momentsTime,dataCF,shoulderLowVel,shoulderHighVel,velLayers,figdir,project,showPlot,plotTimeAll);
+    plotMultiVels(momentsTime,dataCF,shoulderLowVel,shoulderHighVel,peakLowVel,peakHighVel,figdir,project,showPlot,plotTimeAll);
     %plotMultiRefs(momentsTime,shoulderLowDbz,shoulderHighDbz,dbzLayers,figdir,project,showPlot);
 
 end
