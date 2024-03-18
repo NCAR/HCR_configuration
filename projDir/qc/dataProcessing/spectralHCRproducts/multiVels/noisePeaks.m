@@ -31,8 +31,8 @@ noiseThreshAll=meanNoiseAll;
 
 %% Remove noise
 % Moving average
-meanOverPoints=3; % Average over this number of points
-secondMean=25;
+meanOverPoints=5; % Average over this number of points
+secondMean=5;
 movAv=movmedian(powerSpecLarge,meanOverPoints,2);
 movAv2=movmedian(movAv,secondMean,2);
 
@@ -118,10 +118,22 @@ peaksIndsAll=nan(size(velOut,1),2);
 peakVelsOut=nan(size(velOut,1),2);
 peakPowsOut=nan(size(velOut,1),2);
 
-findPeaks=islocalmax(powerRMnoiseAvRM,2,'MinProminence',3,'FlatSelection','center', ...
-    'MinSeparation',round(sampleNum/10),'MaxNumExtrema',2);
-
+% Polynomial fit
 loopInds2=find(any(~isnan(powerRMnoiseAvRM),2));
+powerSmoothAll=nan(size(powerRMnoiseAvRM));
+
+for aa=1:size(loopInds2,1)
+    ii=loopInds2(aa); % ii is the range index
+    fillPower=powerRMnoiseAvRM(ii,~isnan(powerRMnoiseAvRM(ii,:)));
+    fitLength=length(fillPower);
+    if fitLength>round(sampleNum/5)
+        x=linspace(-1,1,fitLength);
+        [~,powerSmoothAll(ii,~isnan(powerRMnoiseAvRM(ii,:))),~]=forsythe_polyfit(x,fillPower',round(fitLength/35)); % Default 35
+    end
+end
+
+findPeaks=islocalmax(powerSmoothAll,2,'MinProminence',0.1,'FlatSelection','center', ...
+    'MinSeparation',round(sampleNum/10),'MaxNumExtrema',2);
 
 % Decide if and what to plot
 plotAll=0; % Set to 1 if everything should be plotted. Plots won't be saved.
@@ -154,7 +166,8 @@ for aa=1:size(loopInds2,1)
         plot([velOut(ii,1),velOut(ii,end)],[meanNoiseAll(ii),meanNoiseAll(ii)],'-k','LineWidth',2);
         plot(velOut(ii,:),powerRMnoiseAv(ii,:),'-g','LineWidth',1.5);
         plot(velOut(ii,:),powerRMnoiseAvRM(ii,:),'-r','LineWidth',1.5);
-        scatter(velOut(ii,peakInds),powerRMnoiseAvRM(ii,peakInds),50,'filled','MarkerFaceColor','k');
+        plot(velOut(ii,:),powerSmoothAll(ii,:),'-c','LineWidth',1.5);
+        scatter(velOut(ii,peakInds),powerSmoothAll(ii,peakInds),50,'filled','MarkerFaceColor','k');
         xlim([velOut(ii,1),velOut(ii,end)]);
         title(num2str(ii))
         hold off

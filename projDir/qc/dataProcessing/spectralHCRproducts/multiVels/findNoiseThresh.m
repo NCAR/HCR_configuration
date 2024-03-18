@@ -7,34 +7,48 @@ powLin=10.^(powIn./10);
 powLin(isnan(powLin))=[];
 
 R2=0;
+stepDown=0.00001;
 
 while R2<1
-    if R2<0.1
-        stepDown=0.00001;
-    elseif R2<0.5
-        stepDown=0.000001;
-    else
-        stepDown=0.0000001;
-    end
+    
+    noiseThresh=noiseThresh-stepDown;
 
     powLin(powLin>noiseThresh)=[];
-    % xCalc=1:length(powLin);
-    sampleNum=length(powLin);
-    % sig2r=(sum(xCalc.^2.*powLin,'omitmissing')./sum(powLin,'omitmissing')) ...
-    %     -(sum(xCalc.*powLin,'omitmissing')./sum(powLin,'omitmissing')).^2;
-    % sigN2=sampleNum.^2/12;
-    meanNoise=sum(powLin)/sampleNum;
-    Q=sum(powLin.^2/sampleNum)-meanNoise.^2;
-    % R1=sigN2/sig2r;
-    R2=meanNoise.^2/(Q*avNum);
+    if isempty(powLin)
+        noiseThresh=noiseThresh+stepDown;
+        stepDown=stepDown/10;
+        powLin=10.^(powIn./10);
+        powLin(isnan(powLin))=[];
+    else
+        % xCalc=1:length(powLin);
+        sampleNum=length(powLin);
+        % sig2r=(sum(xCalc.^2.*powLin,'omitmissing')./sum(powLin,'omitmissing')) ...
+        %     -(sum(xCalc.*powLin,'omitmissing')./sum(powLin,'omitmissing')).^2;
+        % sigN2=sampleNum.^2/12;
+        meanNoise=sum(powLin)/sampleNum;
+        Q=sum(powLin.^2/sampleNum)-meanNoise.^2;
+        % R1=sigN2/sig2r;
+        R2=meanNoise.^2/(Q*avNum);
 
-    % plot(powLin)
-    % hold on
-    % plot([1,sampleNum],[noiseThresh,noiseThresh],'-c','LineWidth',1.5);
-    % hold off
+        if R2>=1 & stepDown>0.0000001
+            noiseThresh=noiseThresh+stepDown;
+            stepDown=stepDown/10;
+            powLin=10.^(powIn./10);
+            powLin(isnan(powLin))=[];
+            R2=0;
+        end
 
-    noiseThresh=noiseThresh-stepDown;
+        % plot(powLin)
+        % hold on
+        % plot([1,sampleNum],[noiseThresh,noiseThresh],'-c','LineWidth',1.5);
+        % hold off
+
+    end
 end
-noiseThresh=10*log10(noiseThresh+stepDown);
+
+if stepDown>0.0000001
+    warning('Missed noise threshold')
+end
+noiseThresh=real(10*log10(noiseThresh));
 meanNoise=10*log10(meanNoise);
 end
