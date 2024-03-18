@@ -46,6 +46,11 @@ for jj=2:length(fileList)
             indata.(allVars{ii})=ncread(infile,allVars{ii});
         end
     end
+    % Don't read data if range dimension does not agree
+    if size(data1.lores_alt3D,3)~=size(indata.lores_alt3D,1)
+        disp(['Skipping file ',infile,'because dimensions do not agree.']);
+        continue
+    end
     % Organize dimensions into the order beam, time, range
     allVars=fieldnames(indata);
     for ii=1:size(allVars,1)
