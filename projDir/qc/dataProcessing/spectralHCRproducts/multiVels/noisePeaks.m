@@ -1,4 +1,4 @@
-function [powerRMnoiseAvRM,velOut,peakVelsOut,peakPowsOut]=noisePeaks(specDB,velIn,data,plotTime)
+function [powerRMnoiseAvRM,velOut,peakVelsOut,peakPowsOut]=noisePeaks(specDB,velIn,data,firFilt,filtShift,plotTime)
 % Find mean noise and noise threshold with following
 % Hildebrand and Sekhon, 1974 https://doi.org/10.1175/1520-0450(1974)013%3C0808:ODOTNL%3E2.0.CO;2
 % Adjust spectra so they fit in the boundaries
@@ -31,8 +31,8 @@ noiseThreshAll=meanNoiseAll;
 
 %% Remove noise
 % Moving average
-meanOverPoints=5; % Average over this number of points
-secondMean=5;
+meanOverPoints=3; % Average over this number of points
+secondMean=25;
 movAv=movmedian(powerSpecLarge,meanOverPoints,2);
 movAv2=movmedian(movAv,secondMean,2);
 
@@ -114,26 +114,27 @@ end
     
 %% Find peaks and plot spectra
 
-peaksIndsAll=nan(size(velOut,1),2);
-peakVelsOut=nan(size(velOut,1),2);
-peakPowsOut=nan(size(velOut,1),2);
+peaksIndsAll=nan(size(velOut,1),3);
+peakVelsOut=nan(size(velOut,1),3);
+peakPowsOut=nan(size(velOut,1),3);
 
 % Polynomial fit
 loopInds2=find(any(~isnan(powerRMnoiseAvRM),2));
-powerSmoothAll=nan(size(powerRMnoiseAvRM));
 
-for aa=1:size(loopInds2,1)
-    ii=loopInds2(aa); % ii is the range index
-    fillPower=powerRMnoiseAvRM(ii,~isnan(powerRMnoiseAvRM(ii,:)));
-    fitLength=length(fillPower);
-    if fitLength>round(sampleNum/5)
-        x=linspace(-1,1,fitLength);
-        [~,powerSmoothAll(ii,~isnan(powerRMnoiseAvRM(ii,:))),~]=forsythe_polyfit(x,fillPower',round(fitLength/35)); % Default 35
-    end
-end
+sampleFrac=round(sampleNum/20);
 
-findPeaks=islocalmax(powerSmoothAll,2,'MinProminence',0.1,'FlatSelection','center', ...
-    'MinSeparation',round(sampleNum/10),'MaxNumExtrema',2);
+% FIR
+powerApp=cat(2,nan(size(powerRMnoiseAvRM,1),filtShift),powerRMnoiseAvRM,nan(size(powerRMnoiseAvRM,1),filtShift));  % Append D zeros to the input data
+
+powFilt=filter(firFilt,powerApp');
+powFilt=powFilt';
+powerSmoothAll=powFilt(:,2*filtShift+1:end);
+
+% Find peaks
+minDiffMS=1.5; % Minimum velocity difference between peaks in m/s
+minDiffPix=round(minDiffMS/(velSpecLarge(2)-velSpecLarge(1)));
+findPeaks=islocalmax(powerSmoothAll,2,'MinProminence',0.01,'FlatSelection','center', ...
+    'MinSeparation',minDiffPix,'MaxNumExtrema',3);
 
 % Decide if and what to plot
 plotAll=0; % Set to 1 if everything should be plotted. Plots won't be saved.
@@ -146,7 +147,7 @@ else
     plotRangeInds=20:20:size(specDB,1);
 end
 
-figdir='/scr/virga1/rsfdata/projects/spicule/hcr/time_series/figsMultiVel/cases/spectra/';
+figdir='/scr/virga1/rsfdata/projects/spicule/hcr/time_series/figsMultiVel/cases/';
 for aa=1:size(loopInds2,1)
     ii=loopInds2(aa); % ii is the range index
 
@@ -166,14 +167,14 @@ for aa=1:size(loopInds2,1)
         plot([velOut(ii,1),velOut(ii,end)],[meanNoiseAll(ii),meanNoiseAll(ii)],'-k','LineWidth',2);
         plot(velOut(ii,:),powerRMnoiseAv(ii,:),'-g','LineWidth',1.5);
         plot(velOut(ii,:),powerRMnoiseAvRM(ii,:),'-r','LineWidth',1.5);
-        plot(velOut(ii,:),powerSmoothAll(ii,:),'-c','LineWidth',1.5);
+        plot(velOut(ii,:),powerSmoothAll(ii,:),'-k','LineWidth',1.5);
         scatter(velOut(ii,peakInds),powerSmoothAll(ii,peakInds),50,'filled','MarkerFaceColor','k');
         xlim([velOut(ii,1),velOut(ii,end)]);
         title(num2str(ii))
         hold off
         if ~plotAll
             set(gcf,'PaperPositionMode','auto')
-            print(f0,[figdir,'spectra_',datestr(plotTime,'yyyymmdd_HHMMSS_'),num2str(ii),'.png'],'-dpng','-r0');
+            print(f0,[figdir,'spectra/spectra_',datestr(plotTime,'yyyymmdd_HHMMSS_'),num2str(ii),'.png'],'-dpng','-r0');
         end
     end
 end
@@ -230,12 +231,13 @@ if ~isempty(plotTime)
         kk=loopInds2(aa);
         scatter(peaksIndsAll(kk,1),kk,30,'filled','MarkerFaceColor','w','MarkerEdgeColor','k');
         scatter(peaksIndsAll(kk,2),kk,30,'filled','MarkerFaceColor',[0.6,0.6,0.6],'MarkerEdgeColor','k');
+        scatter(peaksIndsAll(kk,3),kk,30,'filled','MarkerFaceColor','k','MarkerEdgeColor','k');
     end
     s3.SortMethod='childorder';
     colorbar
     if ~plotAll
         set(gcf,'PaperPositionMode','auto')
-        print(f1,[figdir,'waterfall_',datestr(plotTime,'yyyymmdd_HHMMSS'),'.png'],'-dpng','-r0');
+        print(f1,[figdir,'waterfall/waterfall_',datestr(plotTime,'yyyymmdd_HHMMSS'),'.png'],'-dpng','-r0');
     end
 end
 end

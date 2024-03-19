@@ -24,13 +24,13 @@ colDiff=cat(1,[0,0,0],jet);
 dualPartDiff=peakHigh-peakLow;
 shoulderDiff=shoulderHigh-shoulderLow;
 
-difflim=prctile(abs(dualPartDiff(:)),99.5);
-climsDiff=[0,difflim];
-difflimS=prctile(abs(shoulderDiff(:)),99.5);
-climsDiffS=[0,difflimS];
+% difflim=prctile(abs(dualPartDiff(:)),99.5);
+% climsDiff=[0,difflim];
+% difflimS=prctile(abs(shoulderDiff(:)),99.5);
+% climsDiffS=[0,difflimS];
 
 climsDiffS=[0,12];
-climsDiff=[0,5];
+climsDiff=[0,7];
 
 hold on
 surf(moments.time,moments.asl./1000,moments.vel,'edgecolor','none');

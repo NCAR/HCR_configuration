@@ -35,6 +35,11 @@ caseStart=datetime(caseList.Var1,caseList.Var2,caseList.Var3, ...
 caseEnd=datetime(caseList.Var7,caseList.Var8,caseList.Var9, ...
     caseList.Var10,caseList.Var11,caseList.Var12);
 
+% For FIR filter
+Fnorm=10/(500);           % Normalized frequency
+firFilt=designfilt("lowpassfir",FilterOrder=70,CutoffFrequency=Fnorm);
+filtShift=mean(grpdelay(firFilt));
+
 for aa=1:length(caseStart)
     tic
 
@@ -159,7 +164,8 @@ for aa=1:length(caseStart)
         lowShoulderVelOne=single(nan(size(data.range,1),beamNum,1));
         highShoulderVelOne=single(nan(size(data.range,1),beamNum,1));
 
-        peakVelsOne=single(nan(size(data.range,1),beamNum,2));
+        peakVelsOne=single(nan(size(data.range,1),beamNum,3));
+        peakPowsOne=single(nan(size(data.range,1),beamNum,3));
 
         % majorDbzOne=single(nan(size(data.range,1),beamNum,1));
         % minorDbzOne=single(nan(size(data.range,1),beamNum,1));
@@ -237,7 +243,7 @@ for aa=1:length(caseStart)
             end
 
             % This step removes the noise and also de-aliases
-            [powerRMnoiseDBsmooth,specVelAdj,peakVels,peakPows]=noisePeaks(specPowerDB.V,momentsTimeOne.velRawDeAliased(:,ii),dataThis,plotTime);
+            [powerRMnoiseDBsmooth,specVelAdj,peakVels,peakPows]=noisePeaks(specPowerDB.V,momentsTimeOne.velRawDeAliased(:,ii),dataThis,firFilt,filtShift,plotTime);
             specVelRMnoise=specVelAdj;
             specVelRMnoise(isnan(powerRMnoiseDBsmooth))=nan;
 
@@ -248,6 +254,7 @@ for aa=1:length(caseStart)
 
             % Velocities at peaks            
             peakVelsOne(:,ii,:)=peakVels;
+            peakPowsOne(:,ii,:)=peakPows;
            
             %% Find shoulders
             lowShoulderVelOne(:,ii)=specVelRMnoise(:,1);
@@ -305,6 +312,7 @@ for aa=1:length(caseStart)
             lowShoulderVel=lowShoulderVelOne;
             highShoulderVel=highShoulderVelOne;
             peakVelsAll=peakVelsOne;
+            peakPowsAll=peakPowsOne;
 
             % majorDbz=majorDbzOne;
             % minorDbz=minorDbzOne;
@@ -320,6 +328,7 @@ for aa=1:length(caseStart)
             lowShoulderVel=cat(2,lowShoulderVel,lowShoulderVelOne);
             highShoulderVel=cat(2,highShoulderVel,highShoulderVelOne);
             peakVelsAll=cat(2,peakVelsAll,peakVelsOne);
+            peakPowsAll=cat(2,peakPowsAll,peakPowsOne);
             % lowShoulderDbz=cat(2,lowShoulderDbz,lowShoulderDbzOne);
             % highShoulderDbz=cat(2,highShoulderDbz,highShoulderDbzOne);
 
@@ -376,17 +385,21 @@ for aa=1:length(caseStart)
     % majorVel(:,momentsTime.elevation>0,:)=-majorVel(:,momentsTime.elevation>0,:);
     % minorVel(:,momentsTime.elevation>0,:)=-minorVel(:,momentsTime.elevation>0,:);
 
-    peakLowVel=nan(size(lowShoulderVel));
-    peakLowVel(:,momentsTime.elevation<=0)=peakVelsAll(:,momentsTime.elevation<=0,1);
-    peakLowVel(:,momentsTime.elevation>0)=-peakVelsAll(:,momentsTime.elevation>0,2);
-    peakHighVel=nan(size(highShoulderVel));
-    peakHighVel(:,momentsTime.elevation<=0)=peakVelsAll(:,momentsTime.elevation<=0,2);
-    peakHighVel(:,momentsTime.elevation>0)=-peakVelsAll(:,momentsTime.elevation>0,1);
+    peakVelsAll(:,momentsTime.elevation>0,:)=-peakVelsAll(:,momentsTime.elevation>0,:);
+
+    % peakLowVel=nan(size(lowShoulderVel));
+    % peakLowVel(:,momentsTime.elevation<=0)=peakVelsAll(:,momentsTime.elevation<=0,1);
+    % peakLowVel(:,momentsTime.elevation>0)=-peakVelsAll(:,momentsTime.elevation>0,2);
+    % peakHighVel=nan(size(highShoulderVel));
+    % peakHighVel(:,momentsTime.elevation<=0)=peakVelsAll(:,momentsTime.elevation<=0,2);
+    % peakHighVel(:,momentsTime.elevation>0)=-peakVelsAll(:,momentsTime.elevation>0,1);
 
     dataCF.VEL_MASKED(:,dataCF.elevation>0)=-dataCF.VEL_MASKED(:,dataCF.elevation>0);
 
     %% Sort vels into layers
-    % [velLayers,dbzLayers]=sortVelLayers(majorVel,majorDbz,minorVel,minorDbz);
+
+    disp('Sorting layers ...')
+    [velLayers,dbzLayers]=sortMultiVelLayers(peakVelsAll,peakPowsAll);
     
     %% Take time
 
@@ -404,7 +417,7 @@ for aa=1:length(caseStart)
 
     momentsTime.asl=HCRrange2asl(momentsTime.range,momentsTime.elevation,momentsTime.altitude);
 
-    plotMultiVels(momentsTime,dataCF,shoulderLowVel,shoulderHighVel,peakLowVel,peakHighVel,figdir,project,showPlot,plotTimeAll);
+    plotMultiVels(momentsTime,dataCF,shoulderLowVel,shoulderHighVel,velLayers(:,:,1),velLayers(:,:,2),figdir,project,showPlot,plotTimeAll);
     %plotMultiRefs(momentsTime,shoulderLowDbz,shoulderHighDbz,dbzLayers,figdir,project,showPlot);
 
 end
