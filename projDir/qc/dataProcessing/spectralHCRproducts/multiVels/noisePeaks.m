@@ -114,14 +114,11 @@ end
     
 %% Find peaks and plot spectra
 
-peaksIndsAll=nan(size(velOut,1),3);
-peakVelsOut=nan(size(velOut,1),3);
-peakPowsOut=nan(size(velOut,1),3);
+peaksIndsAll=nan(size(velOut,1),2);
+peakVelsOut=nan(size(velOut,1),2);
+peakPowsOut=nan(size(velOut,1),2);
 
-% Polynomial fit
 loopInds2=find(any(~isnan(powerRMnoiseAvRM),2));
-
-sampleFrac=round(sampleNum/20);
 
 % FIR
 powerApp=cat(2,nan(size(powerRMnoiseAvRM,1),filtShift),powerRMnoiseAvRM,nan(size(powerRMnoiseAvRM,1),filtShift));  % Append D zeros to the input data
@@ -133,8 +130,8 @@ powerSmoothAll=powFilt(:,2*filtShift+1:end);
 % Find peaks
 minDiffMS=1.5; % Minimum velocity difference between peaks in m/s
 minDiffPix=round(minDiffMS/(velSpecLarge(2)-velSpecLarge(1)));
-findPeaks=islocalmax(powerSmoothAll,2,'MinProminence',0.01,'FlatSelection','center', ...
-    'MinSeparation',minDiffPix,'MaxNumExtrema',3);
+findPeaks=islocalmax(powerSmoothAll,2,'MinProminence',0.5,'FlatSelection','center', ...
+    'MinSeparation',minDiffPix,'MaxNumExtrema',2);
 
 % Decide if and what to plot
 plotAll=0; % Set to 1 if everything should be plotted. Plots won't be saved.
@@ -231,7 +228,6 @@ if ~isempty(plotTime)
         kk=loopInds2(aa);
         scatter(peaksIndsAll(kk,1),kk,30,'filled','MarkerFaceColor','w','MarkerEdgeColor','k');
         scatter(peaksIndsAll(kk,2),kk,30,'filled','MarkerFaceColor',[0.6,0.6,0.6],'MarkerEdgeColor','k');
-        scatter(peaksIndsAll(kk,3),kk,30,'filled','MarkerFaceColor','k','MarkerEdgeColor','k');
     end
     s3.SortMethod='childorder';
     colorbar

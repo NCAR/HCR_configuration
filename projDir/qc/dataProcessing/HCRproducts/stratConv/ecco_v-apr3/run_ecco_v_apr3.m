@@ -1,23 +1,49 @@
 
-% Calculate liquid water content from HCR ocean return
+% ECCO-V for NASA APR3 radar data.
+% Author: Ulrike Romatschke, NCAR-EOL
+% See https://doi.org/10.1175/JTECH-D-22-0019.1 for algorithm description
 
-clear all;
-close all;
+clear all; % Clear workspace
+close all; % Close all figures
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Input variables %%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Input variables
 
-showPlot='on';
-
+% Estimates of the melting layer and divergence level. These are used to
+% make the subclassification into shallow, mid, deep, etc.
 meltAlt=4.7; % Estimated altitude of melting layer in km
 divAlt=8; % Estimated altitude of divergence level in km
 
+% Directory path to APR 3 data. The data needs to be organized into
+% subdirectories by date in the format yyyymmdd (20220906). The dataDir
+% below needs to point to the parent directory of those subdirectories.
 dataDir='/scr/virga1/rsfdata/projects/nasa-apr3/data/3D/';
 
+% Directory for output figures
 figdir='/scr/virga1/rsfdata/projects/nasa-apr3/ecco-v-Figs/';
 
+% Set showPlot below to either 'on' or 'off'. If 'on', the figures will pop up on
+% the screen and also be saved. If 'off', they will be only saved but will
+% not show on the screen while the code runs.
+showPlot='on';
+
+% casefile is a text file with start and end times of the data to process.
+% The format is yyyy mm dd HH MM for the start time followed by yyyy mm dd
+% HH MM of the end time. (E.g. 2022 09 06 16 21 2022 09 06 16 29)
+% Each case needs to be in a separate line. The file needs to end with a newline for
+% matlab to read it properly. Use space as a separator.
 casefile='eccoCases_apr3.txt';
 
-% Loop through cases
+%% Tuning parameters
+
+% These two tuning parameters affect the classification
+pixRadDBZ=5; % Horizontal number of pixels over which reflectivity texture is calculated.
+upperLimDBZ=30; % This affects how reflectivity texture translates into convectivity.
+
+% Echo below the altitude below is removed before processing starts
+% to limit the effect of ocean clutter
+surfAltLim=600; % ASL in m
+
+%% Loop through the cases
 
 caseList=readtable(casefile);
 caseStart=datetime(caseList.Var1,caseList.Var2,caseList.Var3, ...
@@ -36,10 +62,11 @@ for aa=1:length(caseStart)
 
     disp("Getting data ...");
 
+    % Create a file list with files between the start and end time of the
+    % case.
     fileList=makeFileList_apr3(dataDir,startTime,endTime,'xxxxxxxxxxxxxxxxxxxxxxxxxxxxx20YYMMDDxhhmmss',1);
 
     data=[];
-
     data.lores_zhh14=[];
     data.lores_vel14c=[];
     data.lores_Topo_Hm=[];
@@ -49,32 +76,28 @@ for aa=1:length(caseStart)
 
     %% Prepare data
 
-    % Remove surface echo
-    data.DBZ(data.asl<100)=nan;
+    % Remove surface echo below a certain altitude
+    data.DBZ(data.asl<surfAltLim)=nan;
 
-    % Create melting layer
+    % Create a fake melting layer based on meltAlt
     data.MELTING_LAYER=nan(size(data.DBZ));
     data.MELTING_LAYER(data.asl>=meltAlt.*1000)=20;
     data.MELTING_LAYER(data.asl<meltAlt.*1000)=10;
 
-    % Create fake temperature profile
+    % Create a fake temperature profile based on divAlt
     data.TEMP=nan(size(data.DBZ));
     data.TEMP(data.asl>=divAlt.*1000)=-30;
     data.TEMP(data.asl<divAlt.*1000)=10;
 
-    %% Texture from reflectivity and velocity
+    %% Texture from reflectivity
 
     disp('Calculating reflectivity texture ...');
 
-    pixRadDBZ=5; % Radius over which texture is calculated in pixels. Default is 50.
     dbzBase=0; % Reflectivity base value which is subtracted from DBZ.
-
     dbzText=f_reflTexture(data.DBZ,pixRadDBZ,dbzBase);
 
     %% Convectivity
 
-    % Convectivity
-    upperLimDBZ=30; % 20
     convDBZ=1/upperLimDBZ.*dbzText;
 
     %% Basic classification
@@ -92,10 +115,12 @@ for aa=1:length(caseStart)
 
     classSub=f_classSub(classBasic,data.asl,data.TOPO,data.MELTING_LAYER,data.TEMP);
 
-    %% Plot strat conv
+    %% Plot
 
     disp('Plotting ...');
 
+    % Change the default values of the subclassification to something that
+    % is easier to plot
     classSubPlot=classSub;
     classSubPlot(classSub==14)=1;
     classSubPlot(classSub==16)=2;
@@ -107,11 +132,12 @@ for aa=1:length(caseStart)
     classSubPlot(classSub==36)=8;
     classSubPlot(classSub==38)=9;
 
-    % 1D
+    % Set up the 1D classification at the bottom of the plot
     stratConv1D=max(classSubPlot,[],1);
     time1D=data.time(~isnan(stratConv1D));
     stratConv1D=stratConv1D(~isnan(stratConv1D));
 
+    % Set up color maps
     colmapSC=[0,0.1,0.6;
         0.38,0.42,0.96;
         0.65,0.74,0.86;
@@ -124,8 +150,11 @@ for aa=1:length(caseStart)
 
     col1D=colmapSC(stratConv1D,:);
 
+    % Determine upper limit of y axis based on where the valid data ends
     ylimUpper=(max(data.asl(~isnan(data.DBZ)))./1000)+0.5;
+    % Altitude of the labels within the subplots
     textAlt=ylimUpper-1;
+    % Time of the labels within the subplots
     textDate=data.time(1)+seconds(5);
 
     close all
@@ -134,6 +163,7 @@ for aa=1:length(caseStart)
 
     colormap('jet');
 
+    % Plot reflectivity
     s1=subplot(4,1,1);
 
     hold on
@@ -150,6 +180,7 @@ for aa=1:length(caseStart)
 
     text(textDate,textAlt,'(a) Reflectivity (dBZ)','FontSize',11,'FontWeight','bold');
 
+    % Plot convectivity
     s2=subplot(4,1,2);
 
     hold on
@@ -165,6 +196,8 @@ for aa=1:length(caseStart)
     box on
     text(textDate,textAlt,'(b) Convectivity','FontSize',11,'FontWeight','bold');
 
+    % Plot the 1D classification at the very bottom (needs to be done
+    % before the last plot for matlab specific reasons)
     s5=subplot(30,1,30);
 
     hold on
@@ -176,6 +209,7 @@ for aa=1:length(caseStart)
     grid on
     box on
 
+    % Plot classification
     s4=subplot(4,1,3);
 
     hold on
@@ -196,15 +230,19 @@ for aa=1:length(caseStart)
     box on
     text(textDate,textAlt,'(c) Echo type','FontSize',11,'FontWeight','bold');
 
+    % Matlab by default creates a lot of white space so we reposition the
+    % panels to avoid that
     s1.Position=[0.049 0.69 0.82 0.29];
     s2.Position=[0.049 0.38 0.82 0.29];
     s4.Position=[0.049 0.07 0.82 0.29];
     s5.Position=[0.049 0.035 0.82 0.02];
 
+    % The color bars also need to be repositioned
     cb1.Position=[0.875,0.69,0.02,0.29];
     cb2.Position=[0.875,0.38,0.02,0.29];
     cb4.Position=[0.875,0.07,0.02,0.29];
 
+    % Save the figure based on the start and end time
     set(gcf,'PaperPositionMode','auto')
     print(f1,[figdir,'apr3_',datestr(data.time(1),'yyyymmdd_HHMMSS'),'_to_',datestr(data.time(end),'yyyymmdd_HHMMSS'),'.png'],'-dpng','-r0')
 end

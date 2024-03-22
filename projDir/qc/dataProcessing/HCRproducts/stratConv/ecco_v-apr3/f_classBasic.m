@@ -7,7 +7,7 @@ classBasic=nan(size(conv));
 maskMixedOrig=conv>=stratMixed;
 
 % Check if all stratiform
-if max(max(maskMixedOrig))==0;
+if max(max(maskMixedOrig))==0
     classBasic(~isnan(conv))=1;
     return
 end
@@ -31,7 +31,7 @@ for ii=1:mixedAreas.NumObjects
     if belowFrac>0.8
         thisMat=zeros(size(conv));
         thisMat(pixInds)=1;
-        [r c]=ind2sub(size(conv),pixInds);
+        [~,c]=ind2sub(size(conv),pixInds);
         ucols=unique(c);
         convCols=conv(:,ucols);
         meltCols=melt(:,ucols);
@@ -42,7 +42,7 @@ for ii=1:mixedAreas.NumObjects
         thisCols=flipud(thisCols);
 
         checkCols=nan(size(meltCols));
-        for jj=1:length(ucols);
+        for jj=1:length(ucols)
             meltCol=meltCols(:,jj);
             checkCol=convCols(:,jj);
             meltCol(1:min(find(~isnan(meltCol))))=10;
