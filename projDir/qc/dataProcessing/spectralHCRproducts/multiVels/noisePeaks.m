@@ -1,10 +1,16 @@
-function [powerRMnoiseAvRM,velOut,peakVelsOut,peakPowsOut]=noisePeaks(specDB,velIn,data,firFilt,filtShift,plotTime)
+function [powerRMnoiseAvRM,velOut,peakVelsOut,peakPowsOut]=noisePeaks(specDB,velIn,data,firFilt,filtShift,widthC,plotTime)
 % Find mean noise and noise threshold with following
 % Hildebrand and Sekhon, 1974 https://doi.org/10.1175/1520-0450(1974)013%3C0808:ODOTNL%3E2.0.CO;2
 % Adjust spectra so they fit in the boundaries
 
 sampleNum=length(data.time);
 halfSN=round(sampleNum/2);
+
+% For beam broadening correction, calculate Gaussian of beam broadening
+% effect
+xW=-pi:2*pi/(sampleNum):pi;
+xW=xW(1:end-1).*data.lambda./(4*pi.*data.prt);
+yW=1/(widthC*sqrt(2*pi)).*exp(-0.5.*xW.^2./widthC^2);
 
 duplicateSpec=7;
 
@@ -48,6 +54,13 @@ for aa=1:size(loopInds,1)
     ii=loopInds(aa); % ii is the range index
 
     thisMov=movAv(ii,:);
+
+    % Create range specific beam broadening spectrum
+    widthSpecExtra=repmat(yW,1,duplicateSpec+2);
+    [~,meanVelInd]=min(abs(velSpecLarge+velIn(ii)));
+    meanVelInd=meanVelInd+sampleNum;
+    broadeningSpec=widthSpecExtra(meanVelInd-halfSN-floor(duplicateSpec/2)*sampleNum+1: ...
+        meanVelInd+halfSN+floor(duplicateSpec/2)*sampleNum-1);
 
     % Find noise floor and noise threshold    
     [noiseThreshAll(ii),meanNoiseAll(ii)]=findNoiseThresh(thisMov(midInds),meanOverPoints,vNoise);

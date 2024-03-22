@@ -59,19 +59,17 @@ for aa=1:length(caseStart)
     dataCF.VEL_RAW=[];
     dataCF.VEL_CORR=[];
     dataCF.VEL_MASKED=[];
-    % dataCF.eastward_velocity=[];
-    % dataCF.northward_velocity=[];
-    % dataCF.vertical_velocity=[];
-    % dataCF.azimuth=[];
-        
+    dataCF.eastward_velocity=[];
+    dataCF.northward_velocity=[];
+         
     dataCF=read_HCR(fileListMoments,dataCF,startTime,endTime);
+    dataCF.beamWidth=ncread(fileListMoments{1},'radar_beam_width_v');
 
-    % Find velocity correction for vel_raw to vel
-
-    % xCorr=sind(dataCF.azimuth).*cosd(dataCF.elevation).*dataCF.eastward_velocity;
-    % yCorr=cosd(dataCF.azimuth).*cosd(dataCF.elevation).*dataCF.northward_velocity;
-    % zCorr=sind(dataCF.elevation).*dataCF.vertical_velocity;
-
+    % Find width correction
+    velAircraft=sqrt(dataCF.eastward_velocity.^2+dataCF.northward_velocity.^2);
+    widthCorrDelta=abs(0.3.*velAircraft.*sin(deg2rad(dataCF.elevation)).*deg2rad(dataCF.beamWidth));
+    
+    % Velocity bias term
     velBiasCorrection=dataCF.VEL_CORR-dataCF.VEL_RAW;
         
     %% Time series
@@ -242,8 +240,10 @@ for aa=1:length(caseStart)
                 plotTime=[];
             end
 
-            % This step removes the noise and also de-aliases
-            [powerRMnoiseDBsmooth,specVelAdj,peakVels,peakPows]=noisePeaks(specPowerDB.V,momentsTimeOne.velRawDeAliased(:,ii),dataThis,firFilt,filtShift,plotTime);
+            % This step removes the noise, de-aliases, and corrects for
+            % spectral broadening
+            [powerRMnoiseDBsmooth,specVelAdj,peakVels,peakPows]=noisePeaks(specPowerDB.V, ...
+                momentsTimeOne.velRawDeAliased(:,ii),dataThis,firFilt,filtShift,widthCorrDelta(cfInd),plotTime);
             specVelRMnoise=specVelAdj;
             specVelRMnoise(isnan(powerRMnoiseDBsmooth))=nan;
 
