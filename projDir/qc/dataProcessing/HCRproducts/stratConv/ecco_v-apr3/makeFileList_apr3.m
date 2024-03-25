@@ -53,7 +53,7 @@ if subdir
     
     allFileList=[];
     for jj=1:size(rangeDirs,1)
-        subFileList=dir([indir,rangeDirs(jj,:),'/*.nc']);
+        subFileList=dir([indir,rangeDirs(jj,:),'/*KU*']);
         if isempty(subFileList)
             subFileList=dir([indir,rangeDirs(jj,:),'/*.iwrf_ts']);
         end

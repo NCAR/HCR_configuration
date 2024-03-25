@@ -2,6 +2,7 @@
 % ECCO-V for NASA APR3 radar data.
 % Author: Ulrike Romatschke, NCAR-EOL
 % See https://doi.org/10.1175/JTECH-D-22-0019.1 for algorithm description
+% This script saves the 1D classification into text files
 
 clear all; % Clear workspace
 close all; % Close all figures
@@ -19,7 +20,7 @@ divAlt=8; % Estimated altitude of divergence level in km
 dataDir='/scr/virga1/rsfdata/projects/nasa-apr3/data/3D/';
 
 % Directory for output figures
-figdir='/scr/virga1/rsfdata/projects/nasa-apr3/ecco-v-Figs/';
+figdir='/scr/virga1/rsfdata/projects/nasa-apr3/ecco-v-Figs/class1D/';
 
 % Set showPlot below to either 'on' or 'off'. If 'on', the figures will pop up on
 % the screen and also be saved. If 'off', they will be only saved but will
@@ -32,7 +33,7 @@ showPlot='on';
 % or a 1 for hdf5 files (E.g. 2022 09 06 16 21 2022 09 06 16 29 0)
 % Each case needs to be in a separate line. The file needs to end with a newline for
 % matlab to read it properly. Use space as a separator.
-casefile='eccoCases_apr3.txt';
+casefile='eccoCases_apr3_save1D.txt';
 
 %% Tuning parameters
 
@@ -145,48 +146,39 @@ for aa=1:length(caseStart)
     % is easier to plot
     classSubPlot=classSub;
     classSubPlot(classSub==14)=1;
-    classSubPlot(classSub==16)=2;
-    classSubPlot(classSub==18)=3;
-    classSubPlot(classSub==25)=4;
-    classSubPlot(classSub==30)=5;
-    classSubPlot(classSub==32)=6;
-    classSubPlot(classSub==34)=7;
-    classSubPlot(classSub==36)=8;
-    classSubPlot(classSub==38)=9;
+    classSubPlot(classSub==16)=1;
+    classSubPlot(classSub==18)=1;
+    classSubPlot(classSub==25)=1;
+    classSubPlot(classSub==30)=1;
+    classSubPlot(classSub==32)=2;
+    classSubPlot(classSub==34)=2;
+    classSubPlot(classSub==36)=2;
+    classSubPlot(classSub==38)=2;
 
     % Set up the 1D classification at the bottom of the plot
     stratConv1D=max(classSubPlot,[],1);
-    time1D=data.time(~isnan(stratConv1D));
-    stratConv1D=stratConv1D(~isnan(stratConv1D));
-
+    stratConv1D(isnan(stratConv1D))=0;
+    
     % Set up color maps
-    colmapSC=[0,0.1,0.6;
-        0.38,0.42,0.96;
-        0.65,0.74,0.86;
-        0.32,0.78,0.59;
-        1,0,0;
-        1,0,1;
-        1,1,0;
-        0.99,0.77,0.22;
-        0.7,0,0];
-
-    col1D=colmapSC(stratConv1D,:);
+    col1D=[1,1,1;
+        0,0,1;
+        1,0,0];
 
     % Determine upper limit of y axis based on where the valid data ends
     ylimUpper=(max(data.asl(~isnan(data.DBZ)))./1000)+0.5;
     % Altitude of the labels within the subplots
     textAlt=ylimUpper-1;
     % Time of the labels within the subplots
-    textDate=data.time(1)+seconds(5);
+    textDate=data.time(1)+minutes(3);
 
     close all
 
-    f1 = figure('Position',[200 500 1600 1100],'DefaultAxesFontSize',12,'visible',showPlot);
+    f1 = figure('Position',[200 500 2800 600],'DefaultAxesFontSize',12,'visible',showPlot);
 
     colormap('jet');
 
     % Plot reflectivity
-    s1=subplot(4,1,1);
+    s1=subplot(2,1,1);
 
     hold on
     surf(data.time,data.asl./1000,data.DBZ,'edgecolor','none');
@@ -200,71 +192,40 @@ for aa=1:length(caseStart)
     grid on
     box on
 
-    text(textDate,textAlt,'(a) Reflectivity (dBZ)','FontSize',11,'FontWeight','bold');
-
-    % Plot convectivity
-    s2=subplot(4,1,2);
-
-    hold on
-    surf(data.time,data.asl./1000,convDBZ,'edgecolor','none');
-    view(2);
-    ylabel('Altitude (km)');
-    clim([0 1]);
-    ylim([0 ylimUpper]);
-    xlim([data.time(1),data.time(end)]);
-    cb2=colorbar;
-    set(gca,'XTickLabel',[]);
-    grid on
-    box on
-    text(textDate,textAlt,'(b) Convectivity','FontSize',11,'FontWeight','bold');
+    text(textDate,textAlt,'Reflectivity (dBZ)','FontSize',11,'FontWeight','bold');
+    title(['APR3 ',datestr(data.time(1),'yyyy-mm-dd HH:MM:SS'),' to ',datestr(data.time(end),'yyyy-mm-dd HH:MM:SS')]);
 
     % Plot the 1D classification at the very bottom (needs to be done
     % before the last plot for matlab specific reasons)
-    s5=subplot(30,1,30);
+    s2=subplot(5,1,5);
 
     hold on
-    scat1=scatter(time1D,ones(size(time1D)),10,col1D,'filled');
-    set(gca,'clim',[0,1]);
-    set(gca,'YTickLabel',[]);
-    s5.Colormap=colmapSC;
+    scat1=scatter(data.time,stratConv1D,10,'k','filled');
+    s2.YTick=0:2;
+    s2.YTickLabel={'Missing';'Stratiform';'Convective'};
+    ylim([-1,3])
     xlim([data.time(1),data.time(end)]);
     grid on
     box on
-
-    % Plot classification
-    s4=subplot(4,1,3);
-
-    hold on
-    surf(data.time,data.asl./1000,classSubPlot,'edgecolor','none');
-    view(2);
-    ylabel('Altitude (km)');
-    clim([0 10]);
-    ylim([0 ylimUpper]);
-    xlim([data.time(1),data.time(end)]);
-    s4.Colormap=colmapSC;
-    clim([0.5 9.5]);
-    cb4=colorbar;
-    cb4.Ticks=1:9;
-    cb4.TickLabels={'Strat Low','Strat Mid','Strat High','Mixed',...
-        'Conv','Conv Elev','Conv Shallow','Conv Mid','Conv Deep'};
-    set(gca,'XTickLabel',[]);
-    grid on
-    box on
-    text(textDate,textAlt,'(c) Echo type','FontSize',11,'FontWeight','bold');
 
     % Matlab by default creates a lot of white space so we reposition the
     % panels to avoid that
-    s1.Position=[0.049 0.69 0.82 0.29];
-    s2.Position=[0.049 0.38 0.82 0.29];
-    s4.Position=[0.049 0.07 0.82 0.29];
-    s5.Position=[0.049 0.035 0.82 0.02];
-
+    s1.Position=[0.035 0.19 0.93 0.72];
+    s2.Position=[0.035 0.08 0.93 0.09];
+    
     % The color bars also need to be repositioned
-    cb1.Position=[0.875,0.69,0.02,0.29];
-    cb2.Position=[0.875,0.38,0.02,0.29];
-    cb4.Position=[0.875,0.07,0.02,0.29];
-
+    cb1.Position=[0.97,0.19,0.01,0.72];
+      
     % Save the figure based on the start and end time
     set(gcf,'PaperPositionMode','auto')
     print(f1,[figdir,'apr3_',datestr(data.time(1),'yyyymmdd_HHMMSS'),'_to_',datestr(data.time(end),'yyyymmdd_HHMMSS'),'.png'],'-dpng','-r0')
+
+    %% Save 1D classification and time
+
+    varNames={'Year';'Month';'Day';'Hour';'Minute';'Second';'Classification'};
+    Tout=table(year(data.time)',month(data.time)',day(data.time)', ...
+        hour(data.time)',minute(data.time)',second(data.time)',stratConv1D');
+    Tout.Properties.VariableNames=varNames;
+
+    writetable(Tout,[figdir,'apr3_',datestr(data.time(1),'yyyymmdd_HHMMSS'),'_to_',datestr(data.time(end),'yyyymmdd_HHMMSS'),'.txt']);
 end
