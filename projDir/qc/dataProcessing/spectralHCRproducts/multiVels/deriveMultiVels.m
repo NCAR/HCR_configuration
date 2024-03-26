@@ -4,11 +4,11 @@ close all;
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-project='noreaster'; %socrates, aristo, cset, otrec
+project='socrates'; %socrates, aristo, cset, otrec
 quality='ts'; %field, qc1, or qc2
-qualityCF='qc2';
+qualityCF='qc3';
 freqData='10hz';
-qcVersion='v2.1';
+qcVersion='v3.2';
 
 plotInds=0;
 % plotInds=(1:50:500);
