@@ -24,8 +24,6 @@ midInds=midInd-halfSN:midInd+halfSN;
 
 largeInds=1:length(velSpecLarge);
 
-vNoise=data.noise_v;
-
 powerRMnoiseAv=nan(size(specDB));
 powerRMnoiseAvRM=nan(size(specDB));
 powerRMnoiseRaw=nan(size(specDB));
@@ -55,15 +53,15 @@ for aa=1:size(loopInds,1)
 
     thisMov=movAv(ii,:);
 
-    % Create range specific beam broadening spectrum
-    widthSpecExtra=repmat(yW,1,duplicateSpec+2);
-    [~,meanVelInd]=min(abs(velSpecLarge+velIn(ii)));
-    meanVelInd=meanVelInd+sampleNum;
-    broadeningSpec=widthSpecExtra(meanVelInd-halfSN-floor(duplicateSpec/2)*sampleNum+1: ...
-        meanVelInd+halfSN+floor(duplicateSpec/2)*sampleNum-1);
+    % % Create range specific beam broadening spectrum
+    % widthSpecExtra=repmat(yW,1,duplicateSpec+2);
+    % [~,meanVelInd]=min(abs(velSpecLarge+velIn(ii)));
+    % meanVelInd=meanVelInd+sampleNum;
+    % broadeningSpec=widthSpecExtra(meanVelInd-halfSN-floor(duplicateSpec/2)*sampleNum+1: ...
+    %     meanVelInd+halfSN+floor(duplicateSpec/2)*sampleNum-1);
 
     % Find noise floor and noise threshold    
-    [noiseThreshAll(ii),meanNoiseAll(ii)]=findNoiseThresh(thisMov(midInds),meanOverPoints,vNoise);
+    [noiseThreshAll(ii),meanNoiseAll(ii)]=findNoiseThresh(thisMov(midInds),meanOverPoints);
 
     % Remove noise below threshold
     thisMovRM=movAv2(ii,:);

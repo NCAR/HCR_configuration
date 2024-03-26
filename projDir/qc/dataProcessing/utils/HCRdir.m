@@ -35,7 +35,7 @@ if strcmp(project,'socrates')
             return
         end
     elseif strcmp(qc,'ts')
-        indir='/scr/virga2/rsfdata/projects/socrates/hcr/time_series_netcdf/wband/';
+        indir='/scr/virga2/rsfdata/projects/socrates/hcr/time_series/wband/save/';
     end
     
     %% CSET
@@ -74,6 +74,8 @@ elseif strcmp(project,'cset')
             disp('The requested data does not exist.');
             return
         end
+    elseif strcmp(qc,'ts')
+        indir='/scr/snow2/rsfdata/projects/cset/hcr/time_series/wband/save/';
     end
     
     %% ARISTO
@@ -120,7 +122,7 @@ elseif strcmp(project,'otrec')
             return
         end
     elseif strcmp(qc,'ts')
-        indir='/scr/sleet2/rsfdata/projects/otrec/hcr/time_series_netcdf/wband/';
+        indir='/scr/sleet2/rsfdata/projects/otrec/hcr/time_series/wband/save/';
     end
 
     %% SPICULE
@@ -148,10 +150,10 @@ elseif strcmp(project,'noreaster')
         if strcmp(freq,'100hz') | strcmp(freq,'10hz')
             indir=['/scr/snow2/rsfdata/projects/noreaster/hcr/cfradial/moments/orig/',freq,'/'];
         end
-%     elseif strcmp(qc,'qc0')
-%         if strcmp(freq,'10hz')
-%             indir=['/scr/sleet2/rsfdata/projects/spicule/hcr/',qc,'/cfradial/',qcVersion,'/',freq,'/'];
-%         end
+        %     elseif strcmp(qc,'qc0')
+        %         if strcmp(freq,'10hz')
+        %             indir=['/scr/sleet2/rsfdata/projects/spicule/hcr/',qc,'/cfradial/',qcVersion,'/',freq,'/'];
+        %         end
     elseif strcmp(qc,'qc1')
         if strcmp(freq,'100hz') | strcmp(freq,'10hz')
             indir=['/scr/snow2/rsfdata/projects/noreaster/hcr/qc/cfradial/',qcVersion,'_full/',freq,'/'];
@@ -160,6 +162,8 @@ elseif strcmp(project,'noreaster')
         if strcmp(freq,'100hz') | strcmp(freq,'10hz')
             indir=['/scr/snow2/rsfdata/projects/noreaster/hcr/qc2/cfradial/',qcVersion,'_full/',freq,'/'];
         end
+    elseif strcmp(qc,'ts')
+        indir='/scr/snow2/rsfdata/projects/noreaster/hcr/time_series/wband/save/';
     end
 end
 

@@ -4,11 +4,11 @@ close all;
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-project='spicule'; %socrates, aristo, cset, otrec
+project='noreaster'; %socrates, aristo, cset, otrec
 quality='ts'; %field, qc1, or qc2
-qualityCF='qc1';
+qualityCF='qc2';
 freqData='10hz';
-qcVersion='v1.2';
+qcVersion='v2.1';
 
 plotInds=0;
 % plotInds=(1:50:500);
@@ -19,7 +19,7 @@ sampleTime=0.1; % Length of sample in seconds.
 dataDirTS=HCRdir(project,quality,qcVersion,freqData);
 dataDirCF=HCRdir(project,qualityCF,qcVersion,freqData);
 
-figdir=[dataDirTS(1:end-11),'figsMultiVel/cases/'];
+figdir=[dataDirCF(1:end-5),'figsMultiVel/cases/'];
 
 showPlot='on';
 

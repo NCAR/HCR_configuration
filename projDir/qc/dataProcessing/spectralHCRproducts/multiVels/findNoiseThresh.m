@@ -1,8 +1,9 @@
-function [noiseThresh,meanNoise,R2]=findNoiseThresh(powIn,avNum,vNoise)
+function [noiseThresh,meanNoise,R2]=findNoiseThresh(powIn,avNum)
 % Find noise threshold and mean noise following
 % Hildebrand and Sekhon, 1974 https://doi.org/10.1175/1520-0450(1974)013%3C0808:ODOTNL%3E2.0.CO;2
 
-noiseThresh=10.^((vNoise+20)./10);
+low10=prctile(powIn,10);
+noiseThresh=10.^((low10+20)./10);
 powLin=10.^(powIn./10);
 powLin(isnan(powLin))=[];
 
