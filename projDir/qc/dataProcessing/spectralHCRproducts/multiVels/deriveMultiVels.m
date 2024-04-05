@@ -26,6 +26,14 @@ showPlot='on';
 casefile=['~/git/HCR_configuration/projDir/qc/dataProcessing/HCRproducts/caseFiles/dualParticles_',project,'.txt'];
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Aircraft files
+flightDir=[dataDirTS(1:end-27),'GV/highRate/'];
+flightFilesAll=dir([flightDir,'*.nc']);
+flightsFile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_',project,'.txt'];
+flightsList=table2array(readtable(flightsFile));
+flightStarts=datetime(flightsList(:,1:6));
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Loop through cases
 
@@ -49,7 +57,26 @@ for aa=1:length(caseStart)
     startTime=caseStart(aa);
     endTime=caseEnd(aa);
 
-    %% Moments
+    %% GV data
+    flightDiff=flightStarts-startTime;
+    gvInd=find(flightDiff>0,1)-1;
+    gvFile=[flightDir,flightFilesAll(gvInd).name];
+    aircraftVel=ncread(gvFile,'WIC');
+    aircraftAlt=ncread(gvFile,'GGALT');
+    aircraftTimeIn=ncread(gvFile,'Time');
+    aircraftTime=datetime(flightStarts(gvInd).Year,flightStarts(gvInd).Month,flightStarts(gvInd).Day)+seconds(aircraftTimeIn);
+    aircraftTimeHR=repmat(aircraftTime',25,1);
+    addSecs=0:1/25:1;
+    addSecs(end)=[];
+    addSecs=repmat(addSecs',1,length(aircraftTime));
+    aircraftTimeHR=aircraftTimeHR+seconds(addSecs);
+
+    aircraftDataHR=timetable(aircraftTimeHR(:),aircraftVel(:));
+    aircraftDataLR=timetable(aircraftTime,aircraftAlt);
+
+    aircraftData=synchronize(aircraftDataHR,aircraftDataLR,'first','linear');
+
+    %% CfRadial Moments
     disp("Getting moments data ...");
 
     fileListMoments=makeFileList(dataDirCF,startTime,endTime,'xxxxxx20YYMMDDxhhmmss',1);
@@ -240,8 +267,8 @@ for aa=1:length(caseStart)
                 plotTime=[];
             end
 
-            % This step removes the noise, de-aliases, and corrects for
-            % spectral broadening
+            % This step removes the noise, de-aliases, (and corrects for
+            % spectral broadening)
             [powerRMnoiseDBsmooth,specVelAdj,peakVels,peakPows]=noisePeaks(specPowerDB.V, ...
                 momentsTimeOne.velRawDeAliased(:,ii),dataThis,firFilt,filtShift,widthCorrDelta(cfInd),plotTime);
             specVelRMnoise=specVelAdj;
@@ -267,6 +294,10 @@ for aa=1:length(caseStart)
             [~,highInds]=max(~isnan(flipSpec),[],2);
             highIndsLin=sub2ind(size(specVelRMnoise),1:size(specVelRMnoise,1),highInds');
             highShoulderVelOne(:,ii)=flipSpec(highIndsLin);
+
+            % % Width correction of shoulders
+            % lowShoulderVelOne(:,ii)=lowShoulderVelOne(:,ii)+widthCorrDelta(cfInd)/2;
+            % highShoulderVelOne(:,ii)=highShoulderVelOne(:,ii)-widthCorrDelta(cfInd)/2;
 
         end
 
@@ -361,6 +392,10 @@ for aa=1:length(caseStart)
     timePerMin=eSecs/60/minutes(eData);
     disp(['Total: ',num2str(eSecs/60),' minutes. Per data minute: ',num2str(timePerMin),' minutes.']);
 
+    %% Aircraft vel
+     TTmoments=timetable(momentsTime.time',ones(size(momentsTime.time')));
+     TTaircraft=synchronize(TTmoments,aircraftData,'first','nearest');
+       
     %% Plot
 
     close all
@@ -370,7 +405,7 @@ for aa=1:length(caseStart)
     momentsTime.asl=HCRrange2asl(momentsTime.range,momentsTime.elevation,momentsTime.altitude);
     momentsSpec.asl=HCRrange2asl(momentsSpec.range,momentsSpec.elevation,momentsSpec.altitude);
 
-    plotMultiVels(momentsTime,momentsSpec,shoulderLowVel,shoulderHighVel,peakLowVel,peakHighVel,peakLowPow,peakHighPow,figdir,project,showPlot,plotTimeAll);
+    plotMultiVels(momentsTime,momentsSpec,shoulderLowVel,shoulderHighVel,peakLowVel,peakHighVel,peakLowPow,peakHighPow,TTaircraft,figdir,project,showPlot,plotTimeAll);
     % plotMultiPows(momentsTime,dataCF,peakLowPow,peakHighPow,figdir,project,showPlot);
 
 end

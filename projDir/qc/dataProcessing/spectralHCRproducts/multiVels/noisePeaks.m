@@ -59,6 +59,13 @@ for aa=1:size(loopInds,1)
     % meanVelInd=meanVelInd+sampleNum;
     % broadeningSpec=widthSpecExtra(meanVelInd-halfSN-floor(duplicateSpec/2)*sampleNum+1: ...
     %     meanVelInd+halfSN+floor(duplicateSpec/2)*sampleNum-1);
+    % 
+    % in1=broadeningSpec(400:970);
+    % in2=thisMov(400:970);
+    % in11=padarray(in1,[0,round(length(in1)/2)],nan,'both');
+    % in11=fillmissing(in11,'nearest');    
+    % 
+    % [x2,r2] = deconv(in11,movmedian(in2,500),'same','Method','least-squares');
 
     % Find noise floor and noise threshold    
     [noiseThreshAll(ii),meanNoiseAll(ii)]=findNoiseThresh(thisMov(midInds),meanOverPoints);

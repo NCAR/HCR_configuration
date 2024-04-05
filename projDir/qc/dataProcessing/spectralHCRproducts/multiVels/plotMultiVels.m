@@ -1,4 +1,4 @@
-function plotMultiVels(moments,momentsSp,shoulderLow,shoulderHigh,peakLow,peakHigh,peakPowLow,peakPowHigh,figdir,project,showPlot,plotTimeAll)
+function plotMultiVels(moments,momentsSp,shoulderLow,shoulderHigh,peakLow,peakHigh,peakPowLow,peakPowHigh,aircraft,figdir,project,showPlot,plotTimeAll)
 moments.vel(:,moments.elevation>0,:)=-moments.vel(:,moments.elevation>0,:);
 
 aslGood=moments.asl(~isnan(moments.vel))./1000;
@@ -148,6 +148,9 @@ colorbar
 grid on
 box on
 title('Velocity low (m s^{-1})')
+
+scatter(aircraft.aircraftTime,aircraft.aircraftAlt./1000,20,-aircraft.Var1_aircraftData,'filled');
+set(gca,'clim',clim);
 
 s8=nexttile(8);
 
