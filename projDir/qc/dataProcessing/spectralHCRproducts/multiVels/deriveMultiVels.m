@@ -4,7 +4,7 @@ close all;
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-project='socrates'; %socrates, aristo, cset, otrec
+project='otrec'; %socrates, aristo, cset, otrec
 quality='ts'; %field, qc1, or qc2
 qualityCF='qc3';
 freqData='10hz';
@@ -28,6 +28,9 @@ casefile=['~/git/HCR_configuration/projDir/qc/dataProcessing/HCRproducts/caseFil
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Aircraft files
 flightDir=[dataDirTS(1:end-27),'GV/highRate/'];
+if ~exist(flightDir, 'dir')
+    flightDir=[dataDirTS(1:end-27),'GV/lowRate/'];
+end
 flightFilesAll=dir([flightDir,'*.nc']);
 flightsFile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_',project,'.txt'];
 flightsList=table2array(readtable(flightsFile));
@@ -48,7 +51,7 @@ Fnorm=10/(2000); % Normalized frequency
 firFilt=designfilt("lowpassfir",FilterOrder=70,CutoffFrequency=Fnorm);
 filtShift=mean(grpdelay(firFilt));
 
-for aa=1:length(caseStart)
+for aa=3:length(caseStart)
     tic
 
     plotTimeAll=[];
@@ -65,16 +68,23 @@ for aa=1:length(caseStart)
     aircraftAlt=ncread(gvFile,'GGALT');
     aircraftTimeIn=ncread(gvFile,'Time');
     aircraftTime=datetime(flightStarts(gvInd).Year,flightStarts(gvInd).Month,flightStarts(gvInd).Day)+seconds(aircraftTimeIn);
-    aircraftTimeHR=repmat(aircraftTime',25,1);
-    addSecs=0:1/25:1;
-    addSecs(end)=[];
-    addSecs=repmat(addSecs',1,length(aircraftTime));
-    aircraftTimeHR=aircraftTimeHR+seconds(addSecs);
+    if min(size(aircraftVel))~=1
+        aircraftTimeHR=repmat(aircraftTime',25,1);
+        addSecs=0:1/25:1;
+        addSecs(end)=[];
+        addSecs=repmat(addSecs',1,length(aircraftTime));
+        aircraftTimeHR=aircraftTimeHR+seconds(addSecs);
 
-    aircraftDataHR=timetable(aircraftTimeHR(:),aircraftVel(:));
-    aircraftDataLR=timetable(aircraftTime,aircraftAlt);
+        aircraftDataHR=timetable(aircraftTimeHR(:),aircraftVel(:));
+        aircraftDataLR=timetable(aircraftTime,aircraftAlt);
 
-    aircraftData=synchronize(aircraftDataHR,aircraftDataLR,'first','linear');
+        aircraftData=synchronize(aircraftDataHR,aircraftDataLR,'first','linear');
+    else
+        if min(size(aircraftAlt))~=1
+            aircraftAlt=aircraftAlt(1,:);
+        end
+        aircraftData=timetable(aircraftTime(:),aircraftVel(:),aircraftAlt(:));
+    end
 
     %% CfRadial Moments
     disp("Getting moments data ...");
@@ -395,6 +405,8 @@ for aa=1:length(caseStart)
     %% Aircraft vel
      TTmoments=timetable(momentsTime.time',ones(size(momentsTime.time')));
      TTaircraft=synchronize(TTmoments,aircraftData,'first','nearest');
+     TTaircraft.Properties.VariableNames={'Dummy';'Vel';'Alt'};
+     TTaircraft.Properties.DimensionNames{1}='Time';
        
     %% Plot
 

@@ -149,7 +149,7 @@ grid on
 box on
 title('Velocity low (m s^{-1})')
 
-scatter(aircraft.aircraftTime,aircraft.aircraftAlt./1000,20,-aircraft.Var1_aircraftData,'filled');
+scatter(aircraft.Time,aircraft.Alt./1000,20,-aircraft.Vel,'filled');
 set(gca,'clim',clim);
 
 s8=nexttile(8);
