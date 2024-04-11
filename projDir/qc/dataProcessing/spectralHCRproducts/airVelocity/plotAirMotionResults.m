@@ -56,6 +56,8 @@ lims=[min([xlimsIn(1),ylimsIn(1)]),max([xlimsIn(2),ylimsIn(2)])];
 xlim(lims);
 ylim(lims);
 title('Precip')
+xlabel('Velocity from aircraft (m s^{-1})');
+ylabel('Velocity from radar (m s^{-1})');
 grid on
 box on
 
@@ -68,6 +70,8 @@ lims=[min([xlimsIn(1),ylimsIn(1)]),max([xlimsIn(2),ylimsIn(2)])];
 xlim(lims);
 ylim(lims);
 title('Combined')
+xlabel('Velocity from aircraft (m s^{-1})');
+ylabel('Velocity from radar (m s^{-1})');
 grid on
 box on
 
