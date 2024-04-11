@@ -4,11 +4,11 @@ close all;
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-project='cset'; %socrates, aristo, cset, otrec
+project='otrec'; %socrates, aristo, cset, otrec
 quality='ts'; %field, qc1, or qc2
 qualityCF='qc3';
 freqData='10hz';
-qcVersion='v3.1';
+qcVersion='v3.2';
 
 plotInds=0;
 % plotInds=(1:50:500);
@@ -410,7 +410,27 @@ for aa=1:length(caseStart)
      TTaircraft=synchronize(TTmoments,aircraftData,'first','nearest');
      TTaircraft.Properties.VariableNames={'Dummy';'Vel';'Alt'};
      TTaircraft.Properties.DimensionNames{1}='Time';
-       
+
+     %% Pull out data for comparison
+     TTcompAC=timetable(momentsSpec.time',momentsSpec.velRaw(18,:)',shoulderLowVel(18,:)',momentsTime.dbz(18,:)',TTaircraft.Vel,TTaircraft.Alt, ...
+         'VariableNames',{'totVel','lowVel','refl','aircraftVel','aircraftAlt'});
+            
+     cloudInds=find(TTcompAC.refl>-27 & TTcompAC.refl<0);
+     precipInds=find(TTcompAC.refl>10);
+     TTcloud=TTcompAC(cloudInds,:);
+     TTprecip=TTcompAC(precipInds,:);
+
+     TTcompAC.velCombined=nan(size(TTcompAC.Time));
+     TTcompAC.velCombined(cloudInds)=TTcompAC.totVel(cloudInds);
+     TTcompAC.velCombined(precipInds)=TTcompAC.lowVel(precipInds);
+
+     cloudInds2D=find(momentsTime.dbz>-27 & momentsTime.dbz<0);
+     precipInds2D=find(momentsTime.dbz>10);
+
+     airMotion=nan(size(momentsTime.dbz));
+     airMotion(cloudInds2D)=momentsSpec.velRaw(cloudInds2D);
+     airMotion(precipInds2D)=shoulderLowVel(precipInds2D);
+
     %% Plot
 
     close all
@@ -421,5 +441,8 @@ for aa=1:length(caseStart)
     momentsSpec.asl=HCRrange2asl(momentsSpec.range,momentsSpec.elevation,momentsSpec.altitude);
 
     plotAirMotion(momentsTime,momentsSpec,dataCF,shoulderLowVel,shoulderHighVel,peakLowVel,peakHighVel,TTaircraft,figdir,project,showPlot,plotTimeAll);
-
+    
+    %% Plot air motion
+    close all
+    plotAirMotionResults(momentsTime,airMotion,TTcompAC,TTcloud,TTprecip,figdir,project,showPlot);
 end

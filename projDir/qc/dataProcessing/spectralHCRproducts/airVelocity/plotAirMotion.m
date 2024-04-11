@@ -1,7 +1,7 @@
 function plotAirMotion(moments,momentsSp,cf,shoulderLow,shoulderHigh,peakLow,peakHigh,aircraft,figdir,project,showPlot,plotTimeAll)
-moments.vel(:,moments.elevation>0,:)=-moments.vel(:,moments.elevation>0,:);
+%moments.vel(:,moments.elevation>0,:)=-moments.vel(:,moments.elevation>0,:);
 
-aslGood=moments.asl(~isnan(moments.vel))./1000;
+aslGood=momentsSp.asl(~isnan(momentsSp.velRaw))./1000;
 ylims=[0,max(aslGood)+0.5];
 
 clims=[-13,13];
@@ -47,30 +47,30 @@ colormap(velCols);
 t = tiledlayout(4,3,'TileSpacing','tight','Padding','tight');
 s1=nexttile(1);
 
-moments.vel(isnan(moments.vel))=-99;
+momentsSp.velRaw(isnan(momentsSp.velRaw))=-99;
 
 hold on
-surf(moments.time,moments.asl./1000,moments.vel,'edgecolor','none');
+surf(momentsSp.time,momentsSp.asl./1000,momentsSp.velRaw,'edgecolor','none');
 view(2);
 ylabel('Altitude (km)');
 clim(clims);
 s1.Colormap=colTwo;
 ylim(ylims);
-xlim([moments.time(1),moments.time(end)]);
+xlim([momentsSp.time(1),momentsSp.time(end)]);
 colorbar
 grid on
 box on
-title('Velocity time domain (m s^{-1})')
+title('Velocity (m s^{-1})')
 
 plotRangeInds=[20:20:700];
 for kk=1:length(plotTimeAll)
     times=repmat(plotTimeAll(kk),length(plotRangeInds),1);
-    alts=moments.asl(plotRangeInds,moments.time==plotTimeAll(kk));
-scatter(times,alts./1000,36,'b','x');
+    alts=momentsSp.asl(plotRangeInds,momentsSp.time==plotTimeAll(kk));
+    scatter(times,alts./1000,36,'b','x');
 end
 
 scatter(aircraft.Time,aircraft.Alt./1000,20,-aircraft.Vel,'filled');
-set(gca,'clim',clim);
+set(gca,'clim',clims);
 
 s1.SortMethod='childorder';
 
@@ -84,12 +84,22 @@ view(2);
 ylabel('Altitude (km)');
 clim([0,3]);
 s2.Colormap=colDiff;
-ylim(ylims);
-xlim([moments.time(1),moments.time(end)]);
 colorbar
 grid on
 box on
 title('Spectrum width (m s^{-1})')
+
+ax2 = axes(t);
+ax2.Layout.Tile=2;
+scatter(aircraft.Time,aircraft.Alt./1000,20,-aircraft.Vel,'filled');
+ax2.Colormap=colTwo;
+ax2.Visible = 'off';
+ax2.CLim=clims;
+linkaxes([s2,ax2]);
+ylim(ylims);
+xlim([moments.time(1),moments.time(end)]);
+
+s2.SortMethod='childorder';
 
 s3=nexttile(3);
 
@@ -101,12 +111,22 @@ view(2);
 ylabel('Altitude (km)');
 clim([-40,30]);
 s3.Colormap=colDiff;
-ylim(ylims);
-xlim([moments.time(1),moments.time(end)]);
 colorbar
 grid on
 box on
 title('Reflectivity (dBZ)')
+
+ax3=axes(t);
+ax3.Layout.Tile=3;
+scatter(aircraft.Time,aircraft.Alt./1000,20,-aircraft.Vel,'filled');
+ax3.Colormap=colTwo;
+ax3.Visible = 'off';
+ax3.CLim=clims;
+linkaxes([s3,ax3]);
+ylim(ylims);
+xlim([moments.time(1),moments.time(end)]);
+
+s3.SortMethod='childorder';
 
 s4=nexttile(4);
 
@@ -125,6 +145,11 @@ grid on
 box on
 title('Velocity high (m s^{-1})')
 
+scatter(aircraft.Time,aircraft.Alt./1000,20,-aircraft.Vel,'filled');
+set(gca,'clim',clim);
+
+s4.SortMethod='childorder';
+
 s5=nexttile(5);
 
 momentsSp.skew(isnan(momentsSp.skew))=-99;
@@ -135,12 +160,22 @@ view(2);
 ylabel('Altitude (km)');
 clim([-2,2]);
 s5.Colormap=colTwo;
-ylim(ylims);
-xlim([moments.time(1),moments.time(end)]);
 colorbar
 grid on
 box on
 title('Skew (dB)')
+
+ax5=axes(t);
+ax5.Layout.Tile=5;
+scatter(aircraft.Time,aircraft.Alt./1000,20,-aircraft.Vel,'filled');
+ax5.Colormap=colTwo;
+ax5.Visible = 'off';
+ax5.CLim=clims;
+linkaxes([s5,ax5]);
+ylim(ylims);
+xlim([moments.time(1),moments.time(end)]);
+
+s5.SortMethod='childorder';
 
 s6=nexttile(6);
 
@@ -152,12 +187,22 @@ view(2);
 ylabel('Altitude (km)');
 clim([-20,60]);
 s6.Colormap=colDiff;
-ylim(ylims);
-xlim([moments.time(1),moments.time(end)]);
 colorbar
 grid on
 box on
 title('SNR (dB)')
+
+ax6=axes(t);
+ax6.Layout.Tile=6;
+scatter(aircraft.Time,aircraft.Alt./1000,20,-aircraft.Vel,'filled');
+ax6.Colormap=colTwo;
+ax6.Visible = 'off';
+ax6.CLim=clims;
+linkaxes([s6,ax6]);
+ylim(ylims);
+xlim([moments.time(1),moments.time(end)]);
+
+s6.SortMethod='childorder';
 
 s7=nexttile(7);
 
@@ -189,12 +234,22 @@ view(2);
 ylabel('Altitude (km)');
 clim([0,6]);
 s8.Colormap=colTwo;
-ylim(ylims);
-xlim([moments.time(1),moments.time(end)]);
 colorbar
 grid on
 box on
 title('Kurtosis (dB)')
+
+ax8=axes(t);
+ax8.Layout.Tile=8;
+scatter(aircraft.Time,aircraft.Alt./1000,20,-aircraft.Vel,'filled');
+ax8.Colormap=colTwo;
+ax8.Visible = 'off';
+ax8.CLim=clims;
+linkaxes([s8,ax8]);
+ylim(ylims);
+xlim([moments.time(1),moments.time(end)]);
+
+s8.SortMethod='childorder';
 
 s9=nexttile(9);
 
@@ -206,12 +261,22 @@ view(2);
 ylabel('Altitude (km)');
 clim([0,1]);
 s9.Colormap=colDiff;
-ylim(ylims);
-xlim([moments.time(1),moments.time(end)]);
 colorbar
 grid on
 box on
 title('Convectivity')
+
+ax9=axes(t);
+ax9.Layout.Tile=9;
+scatter(aircraft.Time,aircraft.Alt./1000,20,-aircraft.Vel,'filled');
+ax9.Colormap=colTwo;
+ax9.Visible = 'off';
+ax9.CLim=clims;
+linkaxes([s9,ax9]);
+ylim(ylims);
+xlim([moments.time(1),moments.time(end)]);
+
+s9.SortMethod='childorder';
 
 s10=nexttile(10);
 
