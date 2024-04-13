@@ -4,11 +4,11 @@ close all;
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-project='otrec'; %socrates, aristo, cset, otrec
+project='cset'; %socrates, aristo, cset, otrec
 quality='ts'; %field, qc1, or qc2
 qualityCF='qc3';
 freqData='10hz';
-qcVersion='v3.2';
+qcVersion='v3.1';
 
 plotInds=0;
 % plotInds=(1:50:500);
@@ -51,7 +51,7 @@ Fnorm=10/(2000); % Normalized frequency
 firFilt=designfilt("lowpassfir",FilterOrder=70,CutoffFrequency=Fnorm);
 filtShift=mean(grpdelay(firFilt));
 
-for aa=3:length(caseStart)
+for aa=1:length(caseStart)
     tic
 
     plotTimeAll=[];
@@ -74,6 +74,10 @@ for aa=3:length(caseStart)
         addSecs(end)=[];
         addSecs=repmat(addSecs',1,length(aircraftTime));
         aircraftTimeHR=aircraftTimeHR+seconds(addSecs);
+
+        if min(size(aircraftAlt))~=1
+            aircraftAlt=aircraftAlt(1,:)';
+        end
 
         aircraftDataHR=timetable(aircraftTimeHR(:),aircraftVel(:));
         aircraftDataLR=timetable(aircraftTime,aircraftAlt);
