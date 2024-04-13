@@ -88,7 +88,7 @@ instance = "archive";
 //     ARCHIVE
 //
 
-mode = REALTIME;
+mode = ARCHIVE;
 
 ///////////// input_dir_short /////////////////////////
 //
@@ -465,7 +465,7 @@ output_format = OUTPUT_FORMAT_CFRADIAL;
 // Type: string
 //
 
-output_dir = "./output";
+output_dir = "$(DATA_DIR)/cfradial/moments/10hz_combined";
 
 ///////////// output_filename_mode ////////////////////
 //

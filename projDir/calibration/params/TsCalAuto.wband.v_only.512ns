@@ -156,6 +156,34 @@ check_radar_id = FALSE;
 
 radar_id = 0;
 
+///////////// specify_pulse_width /////////////////////
+//
+// Option to specify the pulse width.
+//
+// Only applicable if beam_method = BEAM_CONSTANT_PULSE_WIDTH. See 
+//   'fixed_pulse_width_us'. Pulses with different pulse widths are 
+//   discarded.
+//
+//
+// Type: boolean
+//
+
+specify_pulse_width = FALSE;
+
+///////////// fixed_pulse_width_us ////////////////////
+//
+// Specified pulse width in microseconds.
+//
+// See 'specify_pulse_width'. Only applicable if beam_method = 
+//   BEAM_CONSTANT_PULSE_WIDTH. Pulses with different pulse widths are 
+//   discarded.
+//
+//
+// Type: double
+//
+
+fixed_pulse_width_us = 1;
+
 //======================================================================
 //
 // SIGNAL GENERATOR CONTROL.
@@ -190,8 +218,6 @@ siggen_ip_address = "10.40.0.21";
 // Type: double
 //
 
-// siggen_max_power = -35.73;
-// siggen_max_power = -55.73;
 siggen_max_power = -56.52;
 
 ///////////// siggen_min_power ////////////////////////
@@ -239,9 +265,7 @@ siggen_specify_power_sequence = TRUE;
 // Type: double
 //
 
-// siggen_sequence_start_power = -35.73;
-// siggen_sequence_start_power = -55.73;
-siggen_sequence_start_power = -56.52;
+siggen_sequence_start_power = -32.03;
 
 ///////////// siggen_delta_power_sequence /////////////
 //
@@ -253,9 +277,11 @@ siggen_sequence_start_power = -56.52;
 //
 
 siggen_delta_power_sequence = {
- 0,
- -5,
+ -4,
+ -6,
+ -8,
  -10,
+ -12,
  -15,
  -20,
  -25,
@@ -266,7 +292,22 @@ siggen_delta_power_sequence = {
  -50,
  -55,
  -60,
- -65
+ -65,
+ -70,
+ -74,
+ -78,
+ -80,
+ -82,
+ -84,
+ -87,
+ -90,
+ -95,
+ -100,
+ -105,
+ -110,
+ -115,
+ -120,
+ -125
 };
 
 ///////////// set_sig_freq ////////////////////////////
@@ -310,13 +351,42 @@ siggen_cmd_delay = 1000;
 //
 // Option to manually set the siggen.
 //
-// Use for testing etc.
+// The user will be prompted with the required siggen power.
 //
 //
 // Type: boolean
 //
 
 use_manual_siggen_control = TRUE;
+
+///////////// prompt_user_with_attenuation ////////////
+//
+// Option to prompt with attenuation instead of siggen power.
+//
+// On some systems the injected power level is controlled with a 
+//   variable attenuator instead of by setting the siggen power. If this 
+//   is set to true, the user will be prompted with the required 
+//   attenuation in dB.
+//
+//
+// Type: boolean
+//
+
+prompt_user_with_attenuation = TRUE;
+
+///////////// variable_attenuation_start_value ////////
+//
+// Initial attenuation value (dB).
+//
+// This is the variable attenuator setting corresponding to the 
+//   siggen_sequence_start_power. We use this value to compute the 
+//   attenuation with which to prompt the user.
+//
+//
+// Type: double
+//
+
+variable_attenuation_start_value = 0;
 
 ///////////// suspend_test_pulse //////////////////////
 //
@@ -424,7 +494,8 @@ k_squared = 0.711;
 // Type: double
 //
 
-xmitPowerDbmH = 59.56;
+//xmitPowerDbmH = 59.56;
+xmitPowerDbmH = 60.35;     // 2024-04-12
 
 ///////////// xmitPowerDbmV ///////////////////////////
 //
@@ -434,7 +505,8 @@ xmitPowerDbmH = 59.56;
 // Type: double
 //
 
-xmitPowerDbmV = 59.91;
+//xmitPowerDbmV = 59.91;
+xmitPowerDbmV = 60.04;     // 2024-04-12
 
 ///////////// pulseWidthUs ////////////////////////////
 //
@@ -660,8 +732,7 @@ systemPhidpDeg = 0;
 // Type: double
 //
 
-// linear_region_min_power = -87.5;
-linear_region_min_power = -67.5;
+linear_region_min_power = -85;
 
 ///////////// linear_region_max_power /////////////////
 //
@@ -671,7 +742,7 @@ linear_region_min_power = -67.5;
 // Type: double
 //
 
-linear_region_max_power = -37.5;
+linear_region_max_power = -50;
 
 ///////////// noise_region_max_power //////////////////
 //
