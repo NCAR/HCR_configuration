@@ -1346,7 +1346,8 @@ spectrum_width_method = WIDTH_METHOD_R0R1;
 //
 
 // startup_cal_file = "$(PROJ_DIR)/moments/params/cal_512ns/TsCalAuto_Wband-HCR-512ns_20210414_222329.xml";
-startup_cal_file = "$(PROJ_DIR)/calibration/data/wband_512ns/combined/TsCalAuto_Wband-HCR-512ns_20230821_204257.xml";
+// startup_cal_file = "$(PROJ_DIR)/calibration/data/wband_512ns/combined/TsCalAuto_Wband-HCR-512ns_20230821_204257.xml";
+startup_cal_file = "$(PROJ_DIR)/calibration/data/wband_512ns/combined/TsCalAuto_Wband-HCR-512ns_20240415_232321.xml";
 
 ///////////// set_cal_by_pulse_width //////////////////
 //
