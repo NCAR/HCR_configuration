@@ -267,11 +267,6 @@ for aa=1:length(caseStart)
             momentsTimeOne.vel(:,ii)=momentsTimeOne.velRawDeAliased(:,ii)+velBiasCorrection(:,cfInd);
 
             %% Spectra
-            % % Correct for aircraft broadening
-            % x1=-pi:2*pi/(987):pi;
-            % x1=x1(1:end-1);
-            % mult1=cIQ.v.*exp(x1.^2.*widthCorrDelta(1)^2);
-
             [specPowerLin,specPowerDB]=getSpectra(cIQ);
 
              % Censor
