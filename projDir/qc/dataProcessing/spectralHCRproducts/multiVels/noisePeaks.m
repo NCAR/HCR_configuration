@@ -126,12 +126,11 @@ for aa=1:size(loopInds,1)
         powerRMnoiseRawPlot(ii,:)=thisRawPlot;
         velOut(ii,:)=thisVel;
 
-        % thisLin=10.^(thisRawPlot./10);
-        % td=ifft(thisLin,[],2);
-        % tds=ifftshift(td,2);
-        % tdCorr=tds.*exp(1./(thisVel.^2).*widthC^2);
-        % thisRawPlotCorr=fft(tdCorr,[],2);
-        % thisRawPlotCorrS=fftshift(thisRawPlotCorr,2);
+        td=ifft(thisRawPlot,[],2);
+        tds=ifftshift(td,2);
+        tdCorr=tds.*exp((1./thisVel).^2.*widthC^2);
+        thisRawPlotCorr=fft(tdCorr,[],2);
+        thisRawPlotCorrS=fftshift(thisRawPlotCorr,2);
     else
         continue
     end
