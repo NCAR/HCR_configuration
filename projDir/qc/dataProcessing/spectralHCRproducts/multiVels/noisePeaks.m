@@ -8,9 +8,9 @@ halfSN=round(sampleNum/2);
 
 % For beam broadening correction, calculate Gaussian of beam broadening
 % effect
-% xW=-pi:2*pi/(sampleNum):pi;
-% xW=xW(1:end-1).*data.lambda./(4*pi.*data.prt);
-% yW=1/(widthC*sqrt(2*pi)).*exp(-0.5.*xW.^2./widthC^2);
+xW=-pi:2*pi/(sampleNum):pi;
+xW=xW(1:end-1).*data.lambda./(4*pi.*data.prt);
+yW=1/(widthC*sqrt(2*pi)).*exp(-0.5.*xW.^2./widthC^2);
 
 duplicateSpec=7;
 
@@ -125,12 +125,6 @@ for aa=1:size(loopInds,1)
         powerRMnoiseRaw(ii,:)=thisRaw;
         powerRMnoiseRawPlot(ii,:)=thisRawPlot;
         velOut(ii,:)=thisVel;
-
-        td=ifft(thisRawPlot,[],2);
-        tds=ifftshift(td,2);
-        tdCorr=tds.*exp((1./thisVel).^2.*widthC^2);
-        thisRawPlotCorr=fft(tdCorr,[],2);
-        thisRawPlotCorrS=fftshift(thisRawPlotCorr,2);
     else
         continue
     end

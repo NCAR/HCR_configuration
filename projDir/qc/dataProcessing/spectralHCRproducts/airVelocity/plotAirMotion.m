@@ -352,8 +352,6 @@ grid on
 box on
 title('Stratiform/convective echo type')
 
-linkaxes([s1 s4 s5 s5 s7 s8 s8 s10 s10 s12],'xy')
-
 set(gcf,'PaperPositionMode','auto')
 print(f1,[figdir,project,'_airMotion_',datestr(moments.time(1),'yyyymmdd_HHMMSS'),'_to_',datestr(moments.time(end),'yyyymmdd_HHMMSS')],'-dpng','-r0');
 end
