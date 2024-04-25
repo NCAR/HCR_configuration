@@ -282,7 +282,7 @@ for aa=1:length(caseStart)
 
             % This step removes the noise, de-aliases, (and corrects for
             % spectral broadening)
-            [powerRMnoiseDBsmooth,specVelAdj,peakVels,peakPows]=noisePeaks(specPowerDB.V, ...
+            [powerRMnoiseDBsmooth,specVelAdj,peakVels,peakPows]=noisePeaksAirVel(specPowerDB.V, ...
                 momentsTimeOne.velRawDeAliased(:,ii),dataThis,firFilt,filtShift,widthCorrDelta(cfInd),plotTime);
             specVelRMnoise=specVelAdj;
             specVelRMnoise(isnan(powerRMnoiseDBsmooth))=nan;

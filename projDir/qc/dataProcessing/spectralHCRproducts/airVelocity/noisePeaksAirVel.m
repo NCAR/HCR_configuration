@@ -1,4 +1,4 @@
-function [powerRMnoiseAvRM,velOut,peakVelsOut,peakPowsOut]=noisePeaks(specDB,velIn,data,firFilt,filtShift,widthC,plotTime)
+function [powerRMnoiseAvRM,velOut,peakVelsOut,peakPowsOut]=noisePeaksAirVel(specDB,velIn,data,firFilt,filtShift,widthC,plotTime)
 % Find mean noise and noise threshold with following
 % Hildebrand and Sekhon, 1974 https://doi.org/10.1175/1520-0450(1974)013%3C0808:ODOTNL%3E2.0.CO;2
 % Adjust spectra so they fit in the boundaries
@@ -124,6 +124,12 @@ powerApp=cat(2,nan(size(powerRMnoiseAvRM,1),filtShift),powerRMnoiseAvRM,nan(size
 powFilt=filter(firFilt,powerApp');
 powFilt=powFilt';
 powerSmoothAll=powFilt(:,2*filtShift+1:end);
+
+% Width Correction
+for aa=1:size(loopInds,1)
+    ii=loopInds(aa); % ii is the range index
+    corrAW=aircraftWidthCorr(powerRMnoiseAvRM(ii,:),widthC,velOut(ii,:),data.noise_v,noiseThreshAll(ii));
+end
 
 % Find peaks
 minDiffMS=1.5; % Minimum velocity difference between peaks in m/s
