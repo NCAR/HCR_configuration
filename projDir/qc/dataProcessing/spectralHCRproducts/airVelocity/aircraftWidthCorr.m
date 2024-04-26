@@ -1,16 +1,16 @@
 % Correct spectrum for broadening due to aircraft motion
 function y2=aircraftWidthCorr(signalIn,corrFactor,xVel,noise_v,noiseThresh)
-signalIn=signalIn-noiseThresh;
-signalIn(isnan(signalIn))=0;
-signalIn(signalIn<0)=0;
-
 noiseLinV=10.^(noise_v./10);
 sigInLin=10.^(signalIn./10)-noiseLinV;
 
 % VEL
-vel1=sum(sigInLin.*xVel)/sum(sigInLin);
+vel1=sum(sigInLin.*xVel,'omitmissing')/sum(sigInLin,'omitmissing');
 % WIDTH
-width1=(sum(sigInLin.*(xVel-vel1).^2)./sum(sigInLin)).^0.5;
+width1=(sum(sigInLin.*(xVel-vel1).^2,'omitmissing')./sum(sigInLin,'omitmissing')).^0.5;
+
+%signalIn=signalIn-noiseThresh;
+signalIn(isnan(signalIn))=noiseThresh;
+%signalIn(signalIn<0)=0;
 
 sampleNum=length(xVel);
 
@@ -30,7 +30,7 @@ ifftYC=ifftYC+10^(-7);
 
 %% Correction
 yC=ifftY./abs(ifftYC);
-yC(11:end-9)=0;
+yC(6:end-4)=0;
 
 %% FFT back
 fftY=fft(yC,[],2);
