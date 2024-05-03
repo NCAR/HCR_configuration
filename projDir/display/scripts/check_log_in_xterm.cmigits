@@ -1,4 +1,4 @@
-#! /bin/csh -f
+#! /bin/csh
 
 xterm -title cmigits -bg black -fg orange -g 90x40+300-0 -fn fixed -e ssh rds tail -f ~/projDir/logs/status/today/cmigitsDaemon.ops.log
 

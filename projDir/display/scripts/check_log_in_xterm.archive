@@ -1,4 +1,4 @@
-#! /bin/csh -f
+#! /bin/csh
 
 xterm -title archive_to_USB -bg black -fg cyan -g 50x30-0-0 -fn fixed -e tail -f ~/projDir/logs/status/today/doArchive.drive0.log
 
