@@ -214,7 +214,7 @@ archive_time_span_secs = 3600;
 // Type: string
 //
 
-archive_data_url = "$(DATA_DIR)/cfradial/moments/100hz";
+archive_data_url = "$(DATA_DIR)/cfradial/moments/100hz_combined";
 
 //======================================================================
 //
@@ -815,7 +815,7 @@ override_radar_name = TRUE;
 // Type: string
 //
 
-radar_name = "HCR-100hz-shortPulse";
+radar_name = "HCR-100hz-combined";
 
 ///////////// display_site_name ///////////////////////
 //
