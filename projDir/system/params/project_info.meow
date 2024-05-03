@@ -1,0 +1,28 @@
+#############################################
+# project-specific parameters for MEOW
+#############################################
+
+# set up the environment for HCR processing for socrates
+
+setenv PROJECT_NAME socrates
+
+setenv  BSCAN_MAX_ALTITUDE_KM      12.0
+setenv  BSCAN_MIN_ALTITUDE_KM      -0.5
+
+setenv PROJ_DIR ~/git/HCR_configuration/projDir
+setenv DATA_DIR  /scr/virga1/rsfdata/projects/meow/hcr
+setenv LOG_DIR $HOME/logs
+setenv QC_VERSION qc0
+setenv QC_SUB_VERSION v0.0
+
+# make sure the output dirs exist
+
+mkdir -p $DATA_DIR
+mkdir -p $DATA_DIR/logs
+mkdir -p $LOG_DIR
+
+# length of wave filter for HcrVelCorrect 
+# This is commented because velcorr is run from matlab
+# setenv WAVE_FILTER_LENGTH_SECS 20
+
+

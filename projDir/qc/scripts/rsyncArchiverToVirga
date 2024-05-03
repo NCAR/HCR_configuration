@@ -1,0 +1,25 @@
+#! /bin/csh
+
+# script to rsync meow data to /scr/virga1/rsfdata
+
+# go to the virga directory
+
+cd /scr/virga1/rsfdata/projects/meow/hcr
+
+echo "---------- logs ----------"
+rsync -av hcr@hcr-router.fl-guest.ucar.edu:/data/hcr/data.archiver/logs/restart/202405\* logs/restart
+rsync -av hcr@hcr-router.fl-guest.ucar.edu:/data/hcr/data.archiver/logs/status/202405\* logs/status
+
+echo "---------- monitoring ----------"
+rsync -av hcr@hcr-router.fl-guest.ucar.edu:/data/hcr/data.archiver/monitoring/catalog/202405\* monitoring/catalog
+
+echo "---------- spdb ----------"
+rsync -av hcr@hcr-router.fl-guest.ucar.edu:/data/hcr/data.archiver/spdb/monitor/hcr/202405\* spdb/monitor/hcr
+
+echo "---------- 100 hz cfradial long ----------"
+rsync -av hcr@hcr-router.fl-guest.ucar.edu:/data/hcr/data.archiver/cfradial/moments/100hz_long/202405\* cfradial/moments/100hz_long
+echo "---------- 100 hz cfradial short ----------"
+rsync -av hcr@hcr-router.fl-guest.ucar.edu:/data/hcr/data.archiver/cfradial/moments/100hz_short/202405\* cfradial/moments/100hz_short
+
+echo "---------- time series ----------"
+rsync -av hcr@hcr-router.fl-guest.ucar.edu:/data/hcr/data.archiver/time_series/wband/save/202405\* time_series/wband/save
