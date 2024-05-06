@@ -10,6 +10,8 @@ vel1=sum(sigInLinNoNoise.*xVel,'omitmissing')/sum(sigInLinNoNoise,'omitmissing')
 % WIDTH
 width1=(sum(sigInLinNoNoise.*(xVel-vel1).^2,'omitmissing')./sum(sigInLinNoNoise,'omitmissing')).^0.5;
 
+ks1=(abs(sum(sigInLinNoNoise.*(xVel-vel1).^4,2,'omitnan')./sum(sigInLinNoNoise,2,'omitnan')-3.*width1.^4)).^0.25;
+
 % VEL
 vel1withNoise=sum(sigInLin.*xVel,'omitmissing')/sum(sigInLin,'omitmissing');
 % WIDTH
@@ -80,6 +82,8 @@ vel3=sum(y3LinNoNoise.*xVel,'omitmissing')/sum(y3LinNoNoise,'omitmissing');
 % WIDTH
 width3=(sum(y3LinNoNoise.*(xVel-vel3).^2,'omitmissing')./sum(y3LinNoNoise,'omitmissing')).^0.5;
 
+ks3=(abs(sum(y3LinNoNoise.*(xVel-vel3).^4,2,'omitnan')./sum(y3LinNoNoise,'omitnan')-3.*width3.^4)).^0.25;
+
 widthSmall=sqrt(width1^2-corrFactor.^2);
 
 wDiff=widthSmall-width2;
@@ -120,8 +124,8 @@ xlim([xVel(1),xVel(end)])
 grid on
 box on
 
-legend(['Width calc orig: ',num2str(width1)],['Width corrected: ',num2str(width2)],['Width orig filt: ',num2str(real(width3))])
-title(['Corrected width analytic: ',num2str(widthSmall,3),'; Difference (analytic-numeric): ',num2str(wDiff,2)]);
+legend(['Width calc orig: ',num2str(width1)],['Width corrected: ',num2str(width2)],['Width orig filt: ',num2str(real(width3)),'+-',num2str(ks3,2)])
+title(['Corrected width analytic: ',num2str(widthSmall,3),'+-',num2str(ks1,3),'; Difference (analytic-numeric): ',num2str(wDiff,2)]);
 
 % set(gcf,'PaperPositionMode','auto')
 % print(f1,[figdir,'testWidthCorr_sig_',num2str(999,2),'_sigC_',num2str(corrFactor,1),'.png'],'-dpng','-r0');
