@@ -69,16 +69,17 @@ TsSmartSave   wband      start_TsSmartSave.wband   snuff_inst
 ###############################################################################
 # Moments
 #
-#Iq2Dsr           100hz              start_Iq2Dsr.100hz                    snuff_inst    
-Iq2Dsr           100hz.longPulse     start_Iq2Dsr.100hz.longPulse          snuff_inst    
-Iq2Dsr           100hz.shortPulse    start_Iq2Dsr.100hz.shortPulse         snuff_inst    
-#RadMon          log.100hz           start_RadMon.log.100hz                snuff_inst    
-HcrShortLongCombine ops              start_HcrShortLongCombine.ops         snuff_inst    
-RadxDwellCombine realtime.10hz       start_RadxDwellCombine.realtime.10hz  snuff_inst    
-Dsr2Radx         moments.100hz.short start_Dsr2Radx.moments.100hz.short    snuff_inst    
-Dsr2Radx         moments.100hz.long  start_Dsr2Radx.moments.100hz.long     snuff_inst    
-Dsr2Radx         moments.100hz       start_Dsr2Radx.moments.100hz          snuff_inst    
-Dsr2Radx         moments.10hz        start_Dsr2Radx.moments.10hz           snuff_inst    
+#Iq2Dsr           100hz                  start_inst(moments)                  snuff_inst    
+Iq2Dsr           100hz.longPulse         start_inst(moments)                  snuff_inst    
+Iq2Dsr           100hz.shortPulse        start_inst(moments)                  snuff_inst    
+HcrShortLongCombine ops                  start_inst(moments)                  snuff_inst    
+RadxDwellCombine realtime.10hz           start_inst(moments)                  snuff_inst    
+RadxDwellCombine realtime.10hz.combined  start_inst(moments)                  snuff_inst    
+Dsr2Radx         moments.100hz.short     start_inst(moments)                  snuff_inst    
+Dsr2Radx         moments.100hz.long      start_inst(moments)                  snuff_inst    
+Dsr2Radx         moments.100hz           start_inst(moments)                  snuff_inst    
+Dsr2Radx         moments.10hz            start_inst(moments)                  snuff_inst    
+#RadMon          log.100hz               start_RadMon.log.100hz      snuff_inst    
 #
 ###############################################################################
 # Aircraft georef data
@@ -96,7 +97,7 @@ AcGeorefCompare  ops            start_AcGeorefCompare.ops            snuff_inst
 ###############################################################################
 # Monitoring - for nagios and catalog
 #
-TsStatusMonitor wband    start_TsStatusMonitor.wband    snuff_inst
-LdataWatcher  monitor    start_LdataWatcher.monitor     snuff_inst    
+TsStatusMonitor   wband      start_TsStatusMonitor.wband    snuff_inst
+LdataWatcher      monitor    start_LdataWatcher.monitor     snuff_inst    
 #
 ###############################################################################

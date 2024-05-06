@@ -34,7 +34,7 @@
 //     DEBUG_EXTRA
 //
 
-debug = DEBUG_OFF;
+debug = DEBUG_NORM;
 
 ///////////// register_with_procmap ///////////////////
 //
