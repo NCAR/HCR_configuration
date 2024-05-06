@@ -199,7 +199,8 @@ radar_location = {
 //   the DOWs) which is oriented off true north. Then if you add in the 
 //   truck HEADING relative to true north, the measured azimuth angles 
 //   will be adjusted by the heading, to give azimuth relative to TRUE 
-//   north.
+//   north. The offset is applied as the rays are read in - i.e. all other 
+//   operations use the updated azimuths.
 //
 //
 // Type: boolean
@@ -226,7 +227,8 @@ azimuth_offset = 0;
 //
 // If TRUE, this offset will be ADDED to the measured elevation angles. 
 //   This is useful to correct for a systematic bias in measured elevation 
-//   angles.
+//   angles. The offset is applied as the rays are read in - i.e. all 
+//   other operations use the updated elevations.
 //
 //
 // Type: boolean
@@ -350,7 +352,7 @@ override_primary_axis = TRUE;
 
 ///////////// primary_axis ////////////////////////////
 //
-// Platform type.
+// Primary axis.
 //
 // See override_primary_axis.
 //
@@ -982,6 +984,56 @@ check_min_rays_in_sweep = FALSE;
 
 min_rays_in_sweep = 20;
 
+///////////// check_min_rays_in_ppi_sweep /////////////
+//
+// Option to check the number of rays in a PPI sweep.
+//
+// If TRUE, a PPI sweep is only considered valid if the number of rays 
+//   exceeds 'min_rays_in_ppi_sweep'.
+//
+//
+// Type: boolean
+//
+
+check_min_rays_in_ppi_sweep = FALSE;
+
+///////////// min_rays_in_ppi_sweep ///////////////////
+//
+// The min number of rays for a PPI sweep to be valid.
+//
+// See 'check_min_rays_in_ppi_sweep'.
+//
+//
+// Type: int
+//
+
+min_rays_in_ppi_sweep = 180;
+
+///////////// check_min_rays_in_rhi_sweep /////////////
+//
+// Option to check the number of rays in a RHI sweep.
+//
+// If TRUE, a RHI sweep is only considered valid if the number of rays 
+//   exceeds 'min_rays_in_rhi_sweep'.
+//
+//
+// Type: boolean
+//
+
+check_min_rays_in_rhi_sweep = FALSE;
+
+///////////// min_rays_in_rhi_sweep ///////////////////
+//
+// The min number of rays for a RHI sweep to be valid.
+//
+// See 'check_min_rays_in_rhi_sweep'.
+//
+//
+// Type: int
+//
+
+min_rays_in_rhi_sweep = 45;
+
 //======================================================================
 //
 // COMPUTING FIXED ANGLES FROM RAYS.
@@ -1080,7 +1132,8 @@ increment_sweep_num_when_prt_mode_changes = FALSE;
 //   in ray order, and adjusts the way rays are associated with each 
 //   sweep. It does this by comparing the actual angle with the fixed 
 //   angle, and minimizes the angular difference at the transition from 
-//   one sweep to the next.
+//   one sweep to the next. If you use this section, then 
+//   'filter_antenna_transitions' should be set to FALSE.
 //
 //======================================================================
  
@@ -1096,6 +1149,19 @@ increment_sweep_num_when_prt_mode_changes = FALSE;
 //
 
 adjust_sur_sweep_limits_using_angles = FALSE;
+
+///////////// adjust_sur_sweep_max_angle_error ////////
+//
+// Max angle error to be used when adjusting sur sweep limits (deg).
+//
+// See 'adjust_sur_sweep_limits_using angles'. We only adjust sweeps for 
+//   which the elevation error is less than this.
+//
+//
+// Type: double
+//
+
+adjust_sur_sweep_max_angle_error = 2;
 
 ///////////// adjust_sector_sweep_limits_using_angles /
 //
@@ -1156,7 +1222,8 @@ force_sur_sweep_transitions_at_fixed_azimuth = FALSE;
 //
 // Azimuth to be used for forcing surveillance sweep transitions (deg).
 //
-// See 'adjust_sur_sweep_limits_to_fixed_azimuth'.
+// See 'adjust_sur_sweep_limits_to_fixed_azimuth'. Any azimuth_offset 
+//   will be applied before this check.
 //
 //
 // Type: double
@@ -1208,6 +1275,9 @@ trim_surveillance_sweeps_to_360deg = FALSE;
 // CHANGE_IN_SWEEP_NUM: each sweep will be written out as a separate 
 //   volume.
 //
+// CHANGE_IN_SWEEP_MODE: triggers and end of vol if the sweep mode 
+//   changes, for example from SUR to RHI.
+//
 // EVERY_360_DEG: the volume will end after every 360 degree sweep. The 
 //   azimuth at which the vol changes is specified by 
 //   az_for_end_of_vol_360.
@@ -1227,6 +1297,7 @@ trim_surveillance_sweeps_to_360deg = FALSE;
 //     END_OF_VOL_FLAG
 //     CHANGE_IN_VOL_NUM
 //     CHANGE_IN_SWEEP_NUM
+//     CHANGE_IN_SWEEP_MODE
 //     EVERY_360_DEG
 //     LAST_SWEEP_IN_VOL
 //     AUTOMATIC
@@ -1294,17 +1365,31 @@ nsecs_no_data_for_end_of_vol = 15;
 
 nsecs_per_volume = 60;
 
-///////////// min_rays_in_vol /////////////////////////
+///////////// min_rays_per_ppi_vol ////////////////////
 //
-// The minimum number of rays in a volume.
+// Min number of non-transition rays per PPI volume.
 //
-// This filters out small unwanted bits of data between genuine volumes.
+// Used to prevent end-of-volume conditions being determined during 
+//   antenna transition to the start of the next volume.
 //
 //
 // Type: int
 //
 
-min_rays_in_vol = 1;
+min_rays_per_ppi_vol = 1;
+
+///////////// min_rays_per_rhi_vol ////////////////////
+//
+// Min number of non-transition rays per RHI volume.
+//
+// Used to prevent end-of-volume conditions being determined during 
+//   antenna transition to the start of the next volume.
+//
+//
+// Type: int
+//
+
+min_rays_per_rhi_vol = 1;
 
 ///////////// max_rays_in_vol /////////////////////////
 //
@@ -1456,32 +1541,6 @@ min_el_change_rhi = 4;
 //
 
 max_az_change_per_sweep = 540;
-
-///////////// min_rays_per_ppi_vol ////////////////////
-//
-// Min number of rays per PPI volume.
-//
-// Used to prevent end-of-volume conditions being determined during 
-//   antenna transition to the start of the next volume.
-//
-//
-// Type: int
-//
-
-min_rays_per_ppi_vol = 1;
-
-///////////// min_rays_per_rhi_vol ////////////////////
-//
-// Min number of rays per RHI volume.
-//
-// Used to prevent end-of-volume conditions being determined during 
-//   antenna transition to the start of the next volume.
-//
-//
-// Type: int
-//
-
-min_rays_per_rhi_vol = 1;
 
 ///////////// debug_auto_detection ////////////////////
 //
@@ -2054,6 +2113,19 @@ include_subsecs_in_file_name = TRUE;
 
 include_scan_type_in_file_name = FALSE;
 
+///////////// include_scan_name_in_file_name //////////
+//
+// Option to include the scan name in the file name.
+//
+// Default is false. Only applies to CfRadial files. If true, the scan 
+//   name will be included in the file name.
+//
+//
+// Type: boolean
+//
+
+include_scan_name_in_file_name = FALSE;
+
 ///////////// include_vol_num_in_file_name ////////////
 //
 // Option to include the volume number in the file name.
@@ -2116,6 +2188,19 @@ write_master_ldata_info = FALSE;
 //
 
 write_individual_ldata_info = TRUE;
+
+///////////// register_with_data_mapper ///////////////
+//
+// Option to register the latest_data_info with the data mapper.
+//
+// If true, contacts the DataMapper using TCP, to update the latest time 
+//   for this data set.
+//
+//
+// Type: boolean
+//
+
+register_with_data_mapper = TRUE;
 
 //======================================================================
 //
