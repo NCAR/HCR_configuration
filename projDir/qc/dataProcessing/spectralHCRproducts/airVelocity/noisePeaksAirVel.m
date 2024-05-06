@@ -128,7 +128,7 @@ powerSmoothAll=powFilt(:,2*filtShift+1:end);
 % Width Correction
 for aa=1:size(loopInds,1)
     ii=loopInds(aa); % ii is the range index
-    corrAW=aircraftWidthCorr(powerRMnoiseRawPlot(ii,:),widthC,velOut(ii,:),data.noise_v,noiseThreshAll(ii));
+    corrAW=aircraftWidthCorr(powerRMnoiseRawPlot(ii,:),widthC,velOut(ii,:),data.noise_v,noiseThreshAll(ii),powerRMnoiseAv(ii,:));
     %corrAW=aircraftWidthCorr(powerRMnoiseAv(ii,:),widthC,velOut(ii,:),data.noise_v,noiseThreshAll(ii));
     %corrAW=aircraftWidthCorr(powerRMnoiseAvRM(ii,:),widthC,velOut(ii,:),data.noise_v,noiseThreshAll(ii));
 end

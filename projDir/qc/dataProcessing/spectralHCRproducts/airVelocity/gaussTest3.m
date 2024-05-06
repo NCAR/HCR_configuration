@@ -5,9 +5,9 @@ close all;
 
 figdir='/scr/virga1/rsfdata/projects/spicule/hcr/qc1/cfradial/v1.2_full/airMotion/cases/widthCorr/';
 
-sd1=0.54;
+sd1=0.7;
 mu=7;
-widthC=0.5;
+widthC=0.4;
 
 x=-1:0.01:15;
 sampleNum=length(x);
