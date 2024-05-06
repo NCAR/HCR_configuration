@@ -70,7 +70,7 @@ register_with_procmap = FALSE;
 // Type: string
 //
 
-instance = "bscan.100hz.combined";
+instance = "bscan.10hz.combined";
 
 //======================================================================
 //
@@ -110,7 +110,7 @@ input_mode = IWRF_FMQ_INPUT;
 // Type: string
 //
 
-input_fmq_url = "/tmp/fmq/moments/100hz.combined/shmem_20200";
+input_fmq_url = "/tmp/fmq/moments/10hz.combined/shmem_20300";
 
 ///////////// seek_to_start_of_fmq ////////////////////
 //
@@ -214,7 +214,7 @@ archive_time_span_secs = 3600;
 // Type: string
 //
 
-archive_data_url = "$(DATA_DIR)/cfradial/moments/100hz_combined";
+archive_data_url = "$(DATA_DIR)/cfradial/moments/10hz_combined";
 
 //======================================================================
 //
@@ -824,7 +824,7 @@ override_radar_name = TRUE;
 // Type: string
 //
 
-radar_name = "HCR-100hz-combined";
+radar_name = "HCR-10hz-combined";
 
 ///////////// display_site_name ///////////////////////
 //
