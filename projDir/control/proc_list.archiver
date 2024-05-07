@@ -41,7 +41,9 @@ TsMaxPower2Fmq  wband  start_TsMaxPower2Fmq.wband     snuff_inst
 ###############################################################################
 # Displays
 #
-RadMon  wband           start_RadMon.wband           snuff_inst        
+#RadMon  wband           start_RadMon.wband           snuff_inst        
+RadxMon  100hz.short     start_RadxMon.100hz.short   snuff_inst        
+RadxMon  100hz.long      start_RadxMon.100hz.long    snuff_inst        
 TsPrint max_power       start_TsPrint.max_power      snuff_inst        
 #
 ###############################################################################
@@ -73,8 +75,8 @@ TsSmartSave   wband      start_TsSmartSave.wband   snuff_inst
 Iq2Dsr           100hz.longPulse         start_inst(moments)                  snuff_inst    
 Iq2Dsr           100hz.shortPulse        start_inst(moments)                  snuff_inst    
 HcrShortLongCombine ops                  start_inst(moments)                  snuff_inst    
-RadxDwellCombine realtime.10hz           start_inst(moments)                  snuff_inst    
-RadxDwellCombine realtime.10hz.combined  start_inst(moments)                  snuff_inst    
+#RadxDwellCombine realtime.10hz           start_inst(moments)                  snuff_inst    
+#RadxDwellCombine realtime.10hz.combined  start_inst(moments)                  snuff_inst    
 Dsr2Radx         moments.100hz.short     start_inst(moments)                  snuff_inst    
 Dsr2Radx         moments.100hz.long      start_inst(moments)                  snuff_inst    
 Dsr2Radx         moments.100hz           start_inst(moments)                  snuff_inst    

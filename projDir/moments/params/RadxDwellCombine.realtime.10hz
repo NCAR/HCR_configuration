@@ -245,7 +245,7 @@ gematronik_realtime_wait_secs = 5;
 // Type: string
 //
 
-input_fmq_url = "/tmp/fmq/moments/100hz/shmem_20100";
+input_fmq_url = "/tmp/fmq/moments/100hz.shortPulse/shmem_20140";
 
 ///////////// seek_to_end_of_input_fmq ////////////////
 //
