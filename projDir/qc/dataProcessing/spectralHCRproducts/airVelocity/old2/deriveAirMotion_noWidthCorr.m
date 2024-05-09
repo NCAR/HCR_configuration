@@ -4,14 +4,14 @@ close all;
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-project='cset'; %socrates, aristo, cset, otrec
+project='spicule'; %socrates, aristo, cset, otrec
 quality='ts'; %field, qc1, or qc2
-qualityCF='qc3';
+qualityCF='qc1';
 freqData='10hz';
-qcVersion='v3.1';
+qcVersion='v1.2';
 
-plotInds=0;
-%plotInds=(1:50:500);
+% plotInds=0;
+plotInds=(1:50:500);
 
 outTime=0.1; % Desired output time resolution in seconds. Must be less than or equal to one second.
 sampleTime=0.1; % Length of sample in seconds.
@@ -45,6 +45,11 @@ caseStart=datetime(caseList.Var1,caseList.Var2,caseList.Var3, ...
     caseList.Var4,caseList.Var5,caseList.Var6);
 caseEnd=datetime(caseList.Var7,caseList.Var8,caseList.Var9, ...
     caseList.Var10,caseList.Var11,caseList.Var12);
+
+% For FIR filter
+Fnorm=10/(2000); % Normalized frequency
+firFilt=designfilt("lowpassfir",FilterOrder=70,CutoffFrequency=Fnorm);
+filtShift=mean(grpdelay(firFilt));
 
 for aa=1:length(caseStart)
     tic
@@ -209,10 +214,6 @@ for aa=1:length(caseStart)
 
             sampleNum=endInd-startInd+1;
 
-            if sampleNum<30
-                continue
-            end
-
             % Window
             win=window(@hamming,sampleNum);  % Default window is Hamming
             winWeight=sampleNum/sum(win);
@@ -281,8 +282,8 @@ for aa=1:length(caseStart)
 
             % This step removes the noise, de-aliases, (and corrects for
             % spectral broadening)
-            [powerRMnoiseDBsmooth,specVelAdj,peakVels,peakPows]=noisePeaksAirVel(specPowerDB.V, ...
-                momentsTimeOne.velRawDeAliased(:,ii),dataThis,widthCorrDelta(cfInd),plotTime,figdir);
+            [powerRMnoiseDBsmooth,specVelAdj,peakVels,peakPows]=noisePeaksAirVel_noWidthCorr(specPowerDB.V, ...
+                momentsTimeOne.velRawDeAliased(:,ii),dataThis,firFilt,filtShift,widthCorrDelta(cfInd),plotTime,figdir);
             specVelRMnoise=specVelAdj;
             specVelRMnoise(isnan(powerRMnoiseDBsmooth))=nan;
 
@@ -306,6 +307,10 @@ for aa=1:length(caseStart)
             [~,highInds]=max(~isnan(flipSpec),[],2);
             highIndsLin=sub2ind(size(specVelRMnoise),1:size(specVelRMnoise,1),highInds');
             highShoulderVelOne(:,ii)=flipSpec(highIndsLin);
+
+            % % Width correction of shoulders
+            % lowShoulderVelOne(:,ii)=lowShoulderVelOne(:,ii)+widthCorrDelta(cfInd)/2;
+            % highShoulderVelOne(:,ii)=highShoulderVelOne(:,ii)-widthCorrDelta(cfInd)/2;
 
         end
 

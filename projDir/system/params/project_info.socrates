@@ -10,7 +10,7 @@ setenv  BSCAN_MAX_ALTITUDE_KM      9.0
 setenv  BSCAN_MIN_ALTITUDE_KM      -0.5
 
 setenv PROJ_DIR ~/git/HCR_configuration/projDir
-setenv DATA_DIR  /scr/snow2/rsfdata/projects/socrates/hcr
+setenv DATA_DIR  /scr/virga2/rsfdata/projects/socrates/hcr
 setenv LOG_DIR $HOME/logs
 setenv QC_VERSION qc3
 setenv QC_SUB_VERSION v3.2

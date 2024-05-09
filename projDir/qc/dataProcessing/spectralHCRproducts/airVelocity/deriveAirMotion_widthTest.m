@@ -4,11 +4,11 @@ close all;
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-project='cset'; %socrates, aristo, cset, otrec
+project='spicule'; %socrates, aristo, cset, otrec
 quality='ts'; %field, qc1, or qc2
-qualityCF='qc3';
+qualityCF='qc1';
 freqData='10hz';
-qcVersion='v3.1';
+qcVersion='v1.2';
 
 plotInds=0;
 %plotInds=(1:50:500);
@@ -19,22 +19,11 @@ sampleTime=0.1; % Length of sample in seconds.
 dataDirTS=HCRdir(project,quality,qcVersion,freqData);
 dataDirCF=HCRdir(project,qualityCF,qcVersion,freqData);
 
-figdir=[dataDirCF(1:end-5),'airMotion/cases/'];
+figdir=[dataDirCF(1:end-5),'airMotion/cases/width/'];
 
 showPlot='on';
 
 casefile=['~/git/HCR_configuration/projDir/qc/dataProcessing/HCRproducts/caseFiles/airMotion_',project,'.txt'];
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Aircraft files
-flightDir=[dataDirTS(1:end-27),'GV/highRate/'];
-if ~exist(flightDir, 'dir')
-    flightDir=[dataDirTS(1:end-27),'GV/lowRate/'];
-end
-flightFilesAll=dir([flightDir,'*.nc']);
-flightsFile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_',project,'.txt'];
-flightsList=table2array(readtable(flightsFile));
-flightStarts=datetime(flightsList(:,1:6));
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -55,32 +44,6 @@ for aa=1:length(caseStart)
     startTime=caseStart(aa);
     endTime=caseEnd(aa);
 
-    %% GV data
-    flightDiff=flightStarts-startTime;
-    gvInd=find(flightDiff>0,1)-1;
-    gvFile=[flightDir,flightFilesAll(gvInd).name];
-    aircraftVel=ncread(gvFile,'WIC');
-    aircraftAlt=ncread(gvFile,'GGALT');
-    aircraftTimeIn=ncread(gvFile,'Time');
-    aircraftTime=datetime(flightStarts(gvInd).Year,flightStarts(gvInd).Month,flightStarts(gvInd).Day)+seconds(aircraftTimeIn);
-    if min(size(aircraftVel))~=1
-        aircraftTimeHR=repmat(aircraftTime',25,1);
-        addSecs=0:1/25:1;
-        addSecs(end)=[];
-        addSecs=repmat(addSecs',1,length(aircraftTime));
-        aircraftTimeHR=aircraftTimeHR+seconds(addSecs);
-
-        aircraftDataHR=timetable(aircraftTimeHR(:),aircraftVel(:));
-        aircraftDataLR=timetable(aircraftTime,aircraftAlt);
-
-        aircraftData=synchronize(aircraftDataHR,aircraftDataLR,'first','linear');
-    else
-        if min(size(aircraftAlt))~=1
-            aircraftAlt=aircraftAlt(1,:);
-        end
-        aircraftData=timetable(aircraftTime(:),aircraftVel(:),aircraftAlt(:));
-    end
-
     %% CfRadial Moments
     disp("Getting moments data ...");
 
@@ -91,16 +54,14 @@ for aa=1:length(caseStart)
     dataCF.VEL_RAW=[];
     dataCF.VEL_CORR=[];
     dataCF.VEL_MASKED=[];
-    dataCF.MELTING_LAYER=[];
-    dataCF.ECHO_TYPE_2D=[];
-    dataCF.CONVECTIVITY=[];
+    dataCF.WIDTH=[];
     dataCF.eastward_velocity=[];
     dataCF.northward_velocity=[];
          
     dataCF=read_HCR(fileListMoments,dataCF,startTime,endTime);
     dataCF.beamWidth=ncread(fileListMoments{1},'radar_beam_width_v');
 
-    % Find width correction
+    % Find width correction factor
     velAircraft=sqrt(dataCF.eastward_velocity.^2+dataCF.northward_velocity.^2);
     widthCorrDelta=abs(0.3.*velAircraft.*sin(deg2rad(dataCF.elevation)).*deg2rad(dataCF.beamWidth));
     
@@ -192,13 +153,10 @@ for aa=1:length(caseStart)
         momentsTimeOne.azimuth_vc=nan(1,beamNum);
         momentsTimeOne.time=goodTimes(1:beamNum)';
 
-        momentsSpecOne=momentsTimeOne;
-
-        lowShoulderVelOne=single(nan(size(data.range,1),beamNum,1));
-        highShoulderVelOne=single(nan(size(data.range,1),beamNum,1));
-
-        peakVelsOne=single(nan(size(data.range,1),beamNum,2));
-        peakPowsOne=single(nan(size(data.range,1),beamNum,2));
+        momentsSpecBasicOne=momentsTimeOne;
+        momentsSpecNoNoiseOne=momentsTimeOne;
+        momentsSpecSmoothOne=momentsTimeOne;
+        momentsSpecCorrectedOne=momentsTimeOne;
 
         % Loop through beams
         for ii=1:beamNum
@@ -230,10 +188,25 @@ for aa=1:length(caseStart)
             momentsTimeOne.azimuth_vc(ii)=median(dataThis.azimuth_vc);
             momentsTimeOne.altitude(ii)=median(dataThis.altitude);
 
-            momentsSpecOne.range(:,ii)=dataThis.range;
-            momentsSpecOne.elevation(ii)=median(dataThis.elevation);
-            momentsSpecOne.azimuth_vc(ii)=median(dataThis.azimuth_vc);
-            momentsSpecOne.altitude(:,ii)=median(dataThis.altitude);
+            momentsSpecBasicOne.range(:,ii)=dataThis.range;
+            momentsSpecBasicOne.elevation(ii)=median(dataThis.elevation);
+            momentsSpecBasicOne.azimuth_vc(ii)=median(dataThis.azimuth_vc);
+            momentsSpecBasicOne.altitude(:,ii)=median(dataThis.altitude);
+
+            momentsSpecNoNoiseOne.range(:,ii)=dataThis.range;
+            momentsSpecNoNoiseOne.elevation(ii)=median(dataThis.elevation);
+            momentsSpecNoNoiseOne.azimuth_vc(ii)=median(dataThis.azimuth_vc);
+            momentsSpecNoNoiseOne.altitude(:,ii)=median(dataThis.altitude);
+
+            momentsSpecSmoothOne.range(:,ii)=dataThis.range;
+            momentsSpecSmoothOne.elevation(ii)=median(dataThis.elevation);
+            momentsSpecSmoothOne.azimuth_vc(ii)=median(dataThis.azimuth_vc);
+            momentsSpecSmoothOne.altitude(:,ii)=median(dataThis.altitude);
+
+            momentsSpecCorrectedOne.range(:,ii)=dataThis.range;
+            momentsSpecCorrectedOne.elevation(ii)=median(dataThis.elevation);
+            momentsSpecCorrectedOne.azimuth_vc(ii)=median(dataThis.azimuth_vc);
+            momentsSpecCorrectedOne.altitude(:,ii)=median(dataThis.altitude);
 
             %% Find time index in CF moments
             cfInd=find(abs(etime(datevec(dataCF.time),datevec(momentsTimeOne.time(ii))))<0.0001);
@@ -281,44 +254,36 @@ for aa=1:length(caseStart)
 
             % This step removes the noise, de-aliases, (and corrects for
             % spectral broadening)
-            [powerRMnoiseDBsmooth,specVelAdj,peakVels,peakPows]=noisePeaksAirVel(specPowerDB.V, ...
-                momentsTimeOne.velRawDeAliased(:,ii),dataThis,widthCorrDelta(cfInd),plotTime,figdir);
+            [powerRMnoiseDBcorrected,powerRMnoiseDBsmooth,specVelAdj,specVelAdjSmooth]=noisePeaksAirVel_widthTest(specPowerDB.V, ...
+                momentsTimeOne.velRawDeAliased(:,ii),dataThis,widthCorrDelta(cfInd));
             specVelRMnoise=specVelAdj;
-            specVelRMnoise(isnan(powerRMnoiseDBsmooth))=nan;
+            specVelRMnoise(isnan(powerRMnoiseDBcorrected))=nan;
+
+            specVelRMnoiseSmooth=specVelAdjSmooth;
+            specVelRMnoiseSmooth(isnan(powerRMnoiseDBsmooth))=nan;
+
+            powerRMnoise=specPowerDB.V;
+            powerRMnoise(isnan(powerRMnoiseDBsmooth))=nan;
 
             % Remove aircraft motion
             specVelAdj=specVelAdj+velBiasCorrection(:,cfInd);
             specVelRMnoise=specVelRMnoise+velBiasCorrection(:,cfInd);
-            peakVels=peakVels+velBiasCorrection(:,cfInd);
-
+            
             %% Spectral moments
 
-            momentsSpecOne=calcMomentsSpec_higherMoments(powerRMnoiseDBsmooth,specVelRMnoise,ii,momentsSpecOne,dataThis);
-          
-            %% Velocities at peaks and shoulders
-            peakVelsOne(:,ii,:)=peakVels;
-            peakPowsOne(:,ii,:)=peakPows;
-           
-            % Find shoulders
-            lowShoulderVelOne(:,ii)=specVelRMnoise(:,1);            
-
-            flipSpec=fliplr(specVelRMnoise);
-            [~,highInds]=max(~isnan(flipSpec),[],2);
-            highIndsLin=sub2ind(size(specVelRMnoise),1:size(specVelRMnoise,1),highInds');
-            highShoulderVelOne(:,ii)=flipSpec(highIndsLin);
-
+            momentsSpecBasicOne=calcMomentsSpec_higherMoments(specPowerDB.V,specVelAdj,ii,momentsSpecBasicOne,dataThis);
+            momentsSpecNoNoiseOne=calcMomentsSpec_higherMoments(powerRMnoise,specVelRMnoiseSmooth,ii,momentsSpecNoNoiseOne,dataThis);
+            momentsSpecSmoothOne=calcMomentsSpec_higherMoments(powerRMnoiseDBsmooth,specVelRMnoiseSmooth,ii,momentsSpecSmoothOne,dataThis);
+            momentsSpecCorrectedOne=calcMomentsSpec_higherMoments(powerRMnoiseDBcorrected,specVelRMnoise,ii,momentsSpecCorrectedOne,dataThis);
         end
 
         %% Add to output
         if bb==1
             momentsTime=momentsTimeOne;
-            momentsSpec=momentsSpecOne;
-          
-            lowShoulderVel=lowShoulderVelOne;
-            highShoulderVel=highShoulderVelOne;
-            peakVelsAll=peakVelsOne;
-            peakPowsAll=peakPowsOne;
-
+            momentsSpecBasic=momentsSpecBasicOne;
+            momentsSpecNoNoise=momentsSpecNoNoiseOne;
+            momentsSpecSmooth=momentsSpecSmoothOne;
+            momentsSpecCorrected=momentsSpecCorrectedOne;
         else
             dataFields=fields(momentsTime);
 
@@ -326,72 +291,18 @@ for aa=1:length(caseStart)
                 momentsTime.(dataFields{hh})=cat(2,momentsTime.(dataFields{hh}),momentsTimeOne.(dataFields{hh}));
             end
 
-            dataFields1=fields(momentsSpec);
+            dataFields1=fields(momentsSpecBasic);
 
             for hh=1:length(dataFields1)
-                momentsSpec.(dataFields1{hh})=cat(2,momentsSpec.(dataFields1{hh}),momentsSpecOne.(dataFields1{hh}));
+                momentsSpecBasic.(dataFields1{hh})=cat(2,momentsSpecBasic.(dataFields1{hh}),momentsSpecBasicOne.(dataFields1{hh}));
+                momentsSpecNoNoise.(dataFields1{hh})=cat(2,momentsSpecNoNoise.(dataFields1{hh}),momentsSpecNoNoiseOne.(dataFields1{hh}));
+                momentsSpecSmooth.(dataFields1{hh})=cat(2,momentsSpecSmooth.(dataFields1{hh}),momentsSpecSmoothOne.(dataFields1{hh}));
+                momentsSpecCorrected.(dataFields1{hh})=cat(2,momentsSpecCorrected.(dataFields1{hh}),momentsSpecCorrectedOne.(dataFields1{hh}));
             end
-
-            lowShoulderVel=cat(2,lowShoulderVel,lowShoulderVelOne);
-            highShoulderVel=cat(2,highShoulderVel,highShoulderVelOne);
-            peakVelsAll=cat(2,peakVelsAll,peakVelsOne);
-            peakPowsAll=cat(2,peakPowsAll,peakPowsOne);
         end
        
     end
     
-    %% Reverse up pointing direction
-    shoulderLowVel=nan(size(lowShoulderVel));
-    shoulderLowVel(:,momentsTime.elevation<=0)=lowShoulderVel(:,momentsTime.elevation<=0);
-    shoulderLowVel(:,momentsTime.elevation>0)=-highShoulderVel(:,momentsTime.elevation>0);
-    shoulderHighVel=nan(size(highShoulderVel));
-    shoulderHighVel(:,momentsTime.elevation<=0)=highShoulderVel(:,momentsTime.elevation<=0);
-    shoulderHighVel(:,momentsTime.elevation>0)=-lowShoulderVel(:,momentsTime.elevation>0);
-
-    dataCF.VEL_MASKED(:,dataCF.elevation>0)=-dataCF.VEL_MASKED(:,dataCF.elevation>0);
-    momentsSpec.velRaw(:,momentsSpec.elevation>0)=-momentsSpec.velRaw(:,momentsSpec.elevation>0);
-    momentsSpec.skew(:,momentsSpec.elevation>0)=-momentsSpec.skew(:,momentsSpec.elevation>0);
-    
-    peakLowVel=nan(size(lowShoulderVel));
-    peakLowVel(:,momentsTime.elevation<=0)=peakVelsAll(:,momentsTime.elevation<=0,1);
-    peakLowVel(:,momentsTime.elevation>0)=-peakVelsAll(:,momentsTime.elevation>0,2);
-    peakHighVel=nan(size(highShoulderVel));
-    peakHighVel(:,momentsTime.elevation<=0)=peakVelsAll(:,momentsTime.elevation<=0,2);
-    peakHighVel(:,momentsTime.elevation>0)=-peakVelsAll(:,momentsTime.elevation>0,1);
-
-    peakLowPow=nan(size(lowShoulderVel));
-    peakLowPow(:,momentsTime.elevation<=0)=peakPowsAll(:,momentsTime.elevation<=0,1);
-    peakLowPow(:,momentsTime.elevation>0)=peakPowsAll(:,momentsTime.elevation>0,2);
-    peakHighPow=nan(size(highShoulderVel));
-    peakHighPow(:,momentsTime.elevation<=0)=peakPowsAll(:,momentsTime.elevation<=0,2);
-    peakHighPow(:,momentsTime.elevation>0)=peakPowsAll(:,momentsTime.elevation>0,1);
-
-    %% Clean up peak layers
-
-    % Velocity
-    peakLowVel(isnan(peakHighVel))=nan;
-    peakHighVel(isnan(peakLowVel))=nan;
-
-    densMask=nan(size(peakLowVel));
-    densMask(~isnan(peakLowVel))=1;
-
-    [~,multiDens]=fast_nd_mean(densMask,[11,11]);
-
-    multiMask=multiDens>15;
-    multiMask=imclose(multiMask,strel('disk',3));
-    multiMask=imopen(multiMask,strel('disk',1));
-    multiMask=bwareaopen(multiMask,51);
-
-    peakLowVel(multiMask==0)=nan;
-    peakHighVel(multiMask==0)=nan;
-
-    % Power
-    peakLowPow(isnan(peakHighPow))=nan;
-    peakHighPow(isnan(peakLowPow))=nan;
-
-    peakLowPow(multiMask==0)=nan;
-    peakHighPow(multiMask==0)=nan;
-
     %% Take time
 
     eSecs=toc;
@@ -400,44 +311,37 @@ for aa=1:length(caseStart)
     timePerMin=eSecs/60/minutes(eData);
     disp(['Total: ',num2str(eSecs/60),' minutes. Per data minute: ',num2str(timePerMin),' minutes.']);
 
-    %% Aircraft vel
-     TTmoments=timetable(momentsTime.time',ones(size(momentsTime.time')));
-     TTaircraft=synchronize(TTmoments,aircraftData,'first','nearest');
-     TTaircraft.Properties.VariableNames={'Dummy';'Vel';'Alt'};
-     TTaircraft.Properties.DimensionNames{1}='Time';
+    %% Match times
 
-     %% Pull out data for comparison
-     TTcompAC=timetable(momentsSpec.time',momentsSpec.velRaw(18,:)',shoulderLowVel(18,:)',momentsTime.dbz(18,:)',TTaircraft.Vel,TTaircraft.Alt, ...
-         'VariableNames',{'totVel','lowVel','refl','aircraftVel','aircraftAlt'});
-            
-     cloudInds=find(TTcompAC.refl>-27 & TTcompAC.refl<0);
-     precipInds=find(TTcompAC.refl>10);
-     TTcloud=TTcompAC(cloudInds,:);
-     TTprecip=TTcompAC(precipInds,:);
+    tsRound=dateshift(momentsTime.time,'start','minute')+seconds(round(second(momentsTime.time),1));
+    cfRound=dateshift(dataCF.time,'start','minute')+seconds(round(second(dataCF.time),1));
 
-     TTcompAC.velCombined=nan(size(TTcompAC.Time));
-     TTcompAC.velCombined(cloudInds)=TTcompAC.totVel(cloudInds);
-     TTcompAC.velCombined(precipInds)=TTcompAC.lowVel(precipInds);
+    indTs=ismember(tsRound,cfRound);
+    indCf=ismember(cfRound,tsRound);
 
-     cloudInds2D=find(momentsTime.dbz>-27 & momentsTime.dbz<0);
-     precipInds2D=find(momentsTime.dbz>10);
+    fieldsTs=fieldnames(momentsTime);
+    for ll=1:length(fieldsTs)
+        momentsTime.(fieldsTs{ll})=momentsTime.(fieldsTs{ll})(:,indTs);
+        momentsSpecBasic.(fieldsTs{ll})=momentsSpecBasic.(fieldsTs{ll})(:,indTs);
+        momentsSpecNoNoise.(fieldsTs{ll})=momentsSpecNoNoise.(fieldsTs{ll})(:,indTs);
+        momentsSpecSmooth.(fieldsTs{ll})=momentsSpecSmooth.(fieldsTs{ll})(:,indTs);
+        momentsSpecCorrected.(fieldsTs{ll})=momentsSpecCorrected.(fieldsTs{ll})(:,indTs);
+    end
 
-     airMotion=nan(size(momentsTime.dbz));
-     airMotion(cloudInds2D)=momentsSpec.velRaw(cloudInds2D);
-     airMotion(precipInds2D)=shoulderLowVel(precipInds2D);
+    fieldsCf=fieldnames(dataCF);
+    for ll=1:length(fieldsCf)
+        dataCF.(fieldsCf{ll})=dataCF.(fieldsCf{ll})(:,indTs);
+    end
 
     %% Plot
 
     close all
 
-    disp('Plotting velocities ...');
+    disp('Plotting widths ...');
 
     momentsTime.asl=HCRrange2asl(momentsTime.range,momentsTime.elevation,momentsTime.altitude);
-    momentsSpec.asl=HCRrange2asl(momentsSpec.range,momentsSpec.elevation,momentsSpec.altitude);
+    momentsSpecBasic.asl=HCRrange2asl(momentsSpecBasic.range,momentsSpecBasic.elevation,momentsSpecBasic.altitude);
 
-    plotAirMotion(momentsTime,momentsSpec,dataCF,shoulderLowVel,shoulderHighVel,peakLowVel,peakHighVel,TTaircraft,figdir,project,showPlot,plotTimeAll);
+    plotWidths(momentsTime,momentsSpecBasic,momentsSpecNoNoise,momentsSpecSmooth,momentsSpecCorrected,dataCF,figdir,project,showPlot);
     
-    %% Plot air motion
-    close all
-    plotAirMotionResults(momentsTime,airMotion,TTcompAC,TTcloud,TTprecip,figdir,project,showPlot);
 end

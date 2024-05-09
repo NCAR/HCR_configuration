@@ -1,181 +1,104 @@
-function plotAirMotion(moments,momentsSp,cf,shoulderLow,shoulderHigh,peakLow,peakHigh,aircraft,figdir,project,showPlot,plotTimeAll)
+function plotWidths(moments,momentsSpBasic,momentsSpNoNoise,momentsSpSmooth,momentsSpCorrected,cf,figdir,project,showPlot)
 %moments.vel(:,moments.elevation>0,:)=-moments.vel(:,moments.elevation>0,:);
 
-aslGood=momentsSp.asl(~isnan(momentsSp.velRaw))./1000;
+aslGood=momentsSpBasic.asl(~isnan(momentsSpBasic.velRaw))./1000;
 ylims=[0,max(aslGood)+0.5];
 
-clims=[-13,13];
+climsWidth=[0,3];
+climsDiff=[-13,13];
 colTwo=cat(1,[0,0,0],velCols);
 colDiff=cat(1,[0,0,0],jet);
-
-dualPartDiff=peakHigh-peakLow;
-
-%% Set up echo type and melting layer
-colmapSC=[0,0.1,0.6;
-    0.38,0.42,0.96;
-    0.65,0.74,0.86;
-    0.32,0.78,0.59;
-    1,0,0;
-    1,0,1;
-    1,1,0;
-    0.99,0.77,0.22;
-    0.7,0,0];
-
-stratConvPlot=cf.ECHO_TYPE_2D;
-stratConvPlot(stratConvPlot==14)=1;
-stratConvPlot(stratConvPlot==16)=2;
-stratConvPlot(stratConvPlot==18)=3;
-stratConvPlot(stratConvPlot==25)=4;
-stratConvPlot(stratConvPlot==30)=5;
-stratConvPlot(stratConvPlot==32)=6;
-stratConvPlot(stratConvPlot==34)=7;
-stratConvPlot(stratConvPlot==36)=8;
-stratConvPlot(stratConvPlot==38)=9;
-
-% Melting layer
-meltPlot=cf.MELTING_LAYER;
-meltPlot(meltPlot==9)=3;
-meltPlot(meltPlot==11)=2;
-meltPlot(meltPlot==19)=1;
-meltPlot(meltPlot==21)=0;
 
 %% Figure
 f1 = figure('Position',[200 500 2400 1250],'DefaultAxesFontSize',12,'visible',showPlot);
 
-colormap(velCols);
-
 t = tiledlayout(4,3,'TileSpacing','tight','Padding','tight');
+
 s1=nexttile(1);
 
-momentsSp.velRaw(isnan(momentsSp.velRaw))=-99;
+moments.width(isnan(cf.VEL_MASKED))=-99;
 
 hold on
-surf(momentsSp.time,momentsSp.asl./1000,momentsSp.velRaw,'edgecolor','none');
+surf(moments.time,moments.asl./1000,moments.width,'edgecolor','none');
 view(2);
 ylabel('Altitude (km)');
-clim(clims);
-s1.Colormap=colTwo;
-ylim(ylims);
-xlim([momentsSp.time(1),momentsSp.time(end)]);
+clim(climsWidth);
+s1.Colormap=colDiff;
 colorbar
 grid on
 box on
-title('Velocity (m s^{-1})')
-
-plotRangeInds=[20:20:700];
-for kk=1:length(plotTimeAll)
-    times=repmat(plotTimeAll(kk),length(plotRangeInds),1);
-    alts=momentsSp.asl(plotRangeInds,momentsSp.time==plotTimeAll(kk));
-    scatter(times,alts./1000,36,'b','x');
-end
-
-scatter(aircraft.Time,aircraft.Alt./1000,20,-aircraft.Vel,'filled');
-set(gca,'clim',clims);
-
-s1.SortMethod='childorder';
+title('Spectrum width time domain raw (m s^{-1})')
+ylim(ylims);
+xlim([moments.time(1),moments.time(end)]);
 
 s2=nexttile(2);
 
-momentsSp.width(isnan(momentsSp.width))=-99;
+momentsSpBasic.width(isnan(momentsSpBasic.width))=-99;
 
 hold on
-surf(momentsSp.time,momentsSp.asl./1000,momentsSp.width,'edgecolor','none');
+surf(momentsSpBasic.time,momentsSpBasic.asl./1000,momentsSpBasic.width,'edgecolor','none');
 view(2);
 ylabel('Altitude (km)');
-clim([0,3]);
+clim(climsWidth);
 s2.Colormap=colDiff;
 colorbar
 grid on
 box on
-title('Spectrum width (m s^{-1})')
-
-ax2 = axes(t);
-ax2.Layout.Tile=2;
-scatter(aircraft.Time,aircraft.Alt./1000,20,-aircraft.Vel,'filled');
-ax2.Colormap=colTwo;
-ax2.Visible = 'off';
-ax2.CLim=clims;
-linkaxes([s2,ax2]);
+title('Spectrum width spectral domain basic (m s^{-1})')
 ylim(ylims);
 xlim([moments.time(1),moments.time(end)]);
 
-s2.SortMethod='childorder';
-
 s3=nexttile(3);
 
-moments.dbz(isnan(moments.vel))=-99;
+momentsSpNoNoise.width(isnan(momentsSpNoNoise.width))=-99;
 
 hold on
-surf(moments.time,moments.asl./1000,moments.dbz,'edgecolor','none');
+surf(momentsSpBasic.time,momentsSpBasic.asl./1000,momentsSpNoNoise.width,'edgecolor','none');
 view(2);
 ylabel('Altitude (km)');
-clim([-40,30]);
+clim(climsWidth);
 s3.Colormap=colDiff;
 colorbar
 grid on
 box on
-title('Reflectivity (dBZ)')
-
-ax3=axes(t);
-ax3.Layout.Tile=3;
-scatter(aircraft.Time,aircraft.Alt./1000,20,-aircraft.Vel,'filled');
-ax3.Colormap=colTwo;
-ax3.Visible = 'off';
-ax3.CLim=clims;
-linkaxes([s3,ax3]);
+title('Spectrum width spectral domain noise removed (m s^{-1})')
 ylim(ylims);
 xlim([moments.time(1),moments.time(end)]);
-
-s3.SortMethod='childorder';
 
 s4=nexttile(4);
 
-shoulderHigh(isnan(shoulderHigh))=-99;
+cf.WIDTH(isnan(cf.VEL_MASKED))=-99;
 
 hold on
-surf(moments.time,moments.asl./1000,shoulderHigh,'edgecolor','none');
+surf(moments.time,moments.asl./1000,cf.WIDTH,'edgecolor','none');
 view(2);
 ylabel('Altitude (km)');
-clim(clims);
-s4.Colormap=colTwo;
-ylim(ylims);
-xlim([moments.time(1),moments.time(end)]);
+clim(climsWidth);
+s4.Colormap=colDiff;
 colorbar
 grid on
 box on
-title('Velocity high (m s^{-1})')
+title('Spectrum width time domain corrected (m s^{-1})')
+ylim(ylims);
+xlim([moments.time(1),moments.time(end)]);
 
-scatter(aircraft.Time,aircraft.Alt./1000,20,-aircraft.Vel,'filled');
-set(gca,'clim',clim);
-
-s4.SortMethod='childorder';
 
 s5=nexttile(5);
 
-momentsSp.skew(isnan(momentsSp.skew))=-99;
+momentsSpCorrected.width(isnan(momentsSpCorrected.width))=-99;
 
 hold on
-surf(momentsSp.time,momentsSp.asl./1000,momentsSp.skew,'edgecolor','none');
+surf(momentsSpBasic.time,momentsSpBasic.asl./1000,momentsSpCorrected.width,'edgecolor','none');
 view(2);
 ylabel('Altitude (km)');
-clim([-3,3]);
-s5.Colormap=colTwo;
+clim(climsWidth);
+s5.Colormap=colDiff;
 colorbar
 grid on
 box on
-title('Skew (dB)')
-
-ax5=axes(t);
-ax5.Layout.Tile=5;
-scatter(aircraft.Time,aircraft.Alt./1000,20,-aircraft.Vel,'filled');
-ax5.Colormap=colTwo;
-ax5.Visible = 'off';
-ax5.CLim=clims;
-linkaxes([s5,ax5]);
+title('Spectrum width spectral domain corrected (m s^{-1})')
 ylim(ylims);
 xlim([moments.time(1),moments.time(end)]);
-
-s5.SortMethod='childorder';
 
 s6=nexttile(6);
 
@@ -226,10 +149,10 @@ set(gca,'clim',clim);
 
 s8=nexttile(8);
 
-momentsSp.kurt(isnan(momentsSp.kurt))=-99;
+momentsSpBasic.kurt(isnan(momentsSpBasic.kurt))=-99;
 
 hold on
-surf(momentsSp.time,momentsSp.asl./1000,momentsSp.kurt,'edgecolor','none');
+surf(momentsSpBasic.time,momentsSpBasic.asl./1000,momentsSpBasic.kurt,'edgecolor','none');
 view(2);
 ylabel('Altitude (km)');
 clim([-6,6]);
