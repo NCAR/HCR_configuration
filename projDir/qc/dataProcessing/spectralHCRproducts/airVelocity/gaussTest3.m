@@ -7,7 +7,7 @@ figdir='/scr/virga1/rsfdata/projects/spicule/hcr/qc1/cfradial/v1.2_full/airMotio
 
 sd1=0.7;
 mu=7;
-widthC=0.4;
+widthC=0.5;
 
 x=-1:0.01:15;
 sampleNum=length(x);
@@ -34,10 +34,12 @@ y2=real(fftY);
 y2=y2./sqrt(sampleNum).*widthC*sqrt(2*pi./((x(end)-x(1)).*(x(2)-x(1))));
 
 %% WIDTH
+% y1(1:200)=nan;
+% y1(end-200:end)=nan;
 % VEL
-vel1=sum(y1.*x)/sum(y1);
+vel1=sum(y1.*x,'omitmissing')/sum(y1,'omitmissing');
 % WIDTH
-width1=(sum(y1.*(x-vel1).^2)./sum(y1)).^0.5;
+width1=(sum(y1.*(x-vel1).^2,'omitmissing')./sum(y1,'omitmissing')).^0.5;
 
 % VEL
 vel2=sum(y2.*x)/sum(y2);

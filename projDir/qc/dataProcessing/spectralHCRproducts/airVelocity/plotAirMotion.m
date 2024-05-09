@@ -103,7 +103,7 @@ s2.SortMethod='childorder';
 
 s3=nexttile(3);
 
-moments.dbz(moments.vel==-99)=-99;
+moments.dbz(isnan(moments.vel))=-99;
 
 hold on
 surf(moments.time,moments.asl./1000,moments.dbz,'edgecolor','none');
@@ -158,7 +158,7 @@ hold on
 surf(momentsSp.time,momentsSp.asl./1000,momentsSp.skew,'edgecolor','none');
 view(2);
 ylabel('Altitude (km)');
-clim([-2,2]);
+clim([-3,3]);
 s5.Colormap=colTwo;
 colorbar
 grid on
@@ -179,7 +179,7 @@ s5.SortMethod='childorder';
 
 s6=nexttile(6);
 
-moments.snr(moments.vel==-99)=-99;
+moments.snr(isnan(moments.vel))=-99;
 
 hold on
 surf(moments.time,moments.asl./1000,moments.snr,'edgecolor','none');
@@ -232,7 +232,7 @@ hold on
 surf(momentsSp.time,momentsSp.asl./1000,momentsSp.kurt,'edgecolor','none');
 view(2);
 ylabel('Altitude (km)');
-clim([0,6]);
+clim([-6,6]);
 s8.Colormap=colTwo;
 colorbar
 grid on

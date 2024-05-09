@@ -1,7 +1,18 @@
-function [powerRMnoiseAvRM,velOut,peakVelsOut,peakPowsOut]=noisePeaksAirVel(specDB,velIn,data,firFilt,filtShift,widthC,plotTime)
+function [powerRMnoiseAvRM,velOut,peakVelsOut,peakPowsOut]=noisePeaksAirVel(specDB,velIn,data,widthC,plotTime,figdir)
 % Find mean noise and noise threshold with following
 % Hildebrand and Sekhon, 1974 https://doi.org/10.1175/1520-0450(1974)013%3C0808:ODOTNL%3E2.0.CO;2
 % Adjust spectra so they fit in the boundaries
+
+% Decide if and what to plot
+plotAll=0; % Set to 1 if everything should be plotted. Plots won't be saved.
+showPlot='off';
+
+if plotAll
+    plotRangeInds=18:10:size(specDB,1);
+    plotTime=1;
+else
+    plotRangeInds=20:20:size(specDB,1);
+end
 
 sampleNum=length(data.time);
 halfSN=round(sampleNum/2);
@@ -30,15 +41,15 @@ noiseThreshAll=meanNoiseAll;
 %% Remove noise
 % Moving average
 meanOverPoints=3; % Average over this number of points
-secondMean=25;
+secondMean=round(sampleNum/3);
 movAv=movmedian(powerSpecLarge,meanOverPoints,2);
 movAv2=movmedian(movAv,secondMean,2);
 
 movAv(:,1:round(sampleNum/10))=nan;
 movAv(:,end-round(sampleNum/10):end)=nan;
 
-movAv2(:,1:round(sampleNum/10))=nan;
-movAv2(:,end-round(sampleNum/10):end)=nan;
+movAv2(:,1:round(sampleNum/3))=nan;
+movAv2(:,end-round(sampleNum/3):end)=nan;
 
 loopInds=find(any(~isnan(specDB),2));
 
@@ -47,11 +58,22 @@ for aa=1:size(loopInds,1)
 
     thisMov=movAv(ii,:);
 
+    % Get one whole spectrum
+    [~,minIndTest]=min(movAv2(ii,:));
+
+    testPow=thisMov(minIndTest:minIndTest+sampleNum-1);
+    testVel=velSpecLarge(minIndTest:minIndTest+sampleNum-1);
+
     % Find noise floor and noise threshold    
-    [noiseThreshAll(ii),meanNoiseAll(ii)]=findNoiseThresh(thisMov(midInds),meanOverPoints);
+    [noiseThreshAll(ii),meanNoiseAll(ii)]=findNoiseThresh(testPow,meanOverPoints);
+
+    % Correct for aircraft width
+    [powWidthCorr,powFilt]=aircraftWidthCorr(testPow,widthC,testVel,noiseThreshAll(ii),sampleNum);
+    powWClarge=repmat(powWidthCorr,1,duplicateSpec+2);
+    powShift=powWClarge(sampleNum*2-minIndTest:sampleNum*2-minIndTest+length(velSpecLarge)-1);
 
     % Remove noise below threshold
-    thisMovRM=movAv2(ii,:);
+    thisMovRM=powShift;
     thisMovRM(thisMovRM<noiseThreshAll(ii))=nan;
     thisMask1=~isnan(thisMovRM);
     %thisMask=bwareafilt(thisMask1,5);
@@ -118,39 +140,12 @@ peakPowsOut=nan(size(velOut,1),2);
 
 loopInds2=find(any(~isnan(powerRMnoiseAvRM),2));
 
-% FIR
-powerApp=cat(2,nan(size(powerRMnoiseAvRM,1),filtShift),powerRMnoiseAvRM,nan(size(powerRMnoiseAvRM,1),filtShift));  % Append D zeros to the input data
-
-powFilt=filter(firFilt,powerApp');
-powFilt=powFilt';
-powerSmoothAll=powFilt(:,2*filtShift+1:end);
-
-% Width Correction
-for aa=1:size(loopInds,1)
-    ii=loopInds(aa); % ii is the range index
-    corrAW=aircraftWidthCorr(powerRMnoiseRawPlot(ii,:),widthC,velOut(ii,:),data.noise_v,noiseThreshAll(ii),powerRMnoiseAv(ii,:));
-    %corrAW=aircraftWidthCorr(powerRMnoiseAv(ii,:),widthC,velOut(ii,:),data.noise_v,noiseThreshAll(ii));
-    %corrAW=aircraftWidthCorr(powerRMnoiseAvRM(ii,:),widthC,velOut(ii,:),data.noise_v,noiseThreshAll(ii));
-end
-
 % Find peaks
 minDiffMS=1.5; % Minimum velocity difference between peaks in m/s
 minDiffPix=round(minDiffMS/(velSpecLarge(2)-velSpecLarge(1)));
-findPeaks=islocalmax(powerSmoothAll,2,'MinProminence',0.5,'FlatSelection','center', ...
+findPeaks=islocalmax(powerRMnoiseAvRM,2,'MinProminence',0.5,'FlatSelection','center', ...
     'MinSeparation',minDiffPix,'MaxNumExtrema',2);
 
-% Decide if and what to plot
-plotAll=0; % Set to 1 if everything should be plotted. Plots won't be saved.
-showPlot='off';
-
-if plotAll
-    plotRangeInds=18:10:size(specDB,1);
-    plotTime=1;
-else
-    plotRangeInds=20:20:size(specDB,1);
-end
-
-figdir='/scr/virga1/rsfdata/projects/spicule/hcr/time_series/figsMultiVel/cases/';
 for aa=1:size(loopInds2,1)
     ii=loopInds2(aa); % ii is the range index
 
@@ -170,8 +165,8 @@ for aa=1:size(loopInds2,1)
         plot([velOut(ii,1),velOut(ii,end)],[meanNoiseAll(ii),meanNoiseAll(ii)],'-k','LineWidth',2);
         plot(velOut(ii,:),powerRMnoiseAv(ii,:),'-g','LineWidth',1.5);
         plot(velOut(ii,:),powerRMnoiseAvRM(ii,:),'-r','LineWidth',1.5);
-        plot(velOut(ii,:),powerSmoothAll(ii,:),'-k','LineWidth',1.5);
-        scatter(velOut(ii,peakInds),powerSmoothAll(ii,peakInds),50,'filled','MarkerFaceColor','k');
+        %plot(velOut(ii,:),powerSmoothAll(ii,:),'-k','LineWidth',1.5);
+        scatter(velOut(ii,peakInds),powerRMnoiseAvRM(ii,peakInds),50,'filled','MarkerFaceColor','k');
         xlim([velOut(ii,1),velOut(ii,end)]);
         title(num2str(ii))
         hold off

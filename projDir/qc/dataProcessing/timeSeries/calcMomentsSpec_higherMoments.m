@@ -25,6 +25,6 @@ momentsSpec.width(:,ii)=real((sum(y.*(x-momentsSpec.velRaw(:,ii)).^2,2,'omitnan'
 momentsSpec.skew(:,ii)=sum(y.*(x-momentsSpec.velRaw(:,ii)).^3,2,'omitnan')./(sum(y,2,'omitnan').*momentsSpec.width(:,ii).^3);
 
 % KURTOSIS
-momentsSpec.kurt(:,ii)=sum(y.*(x-momentsSpec.velRaw(:,ii)).^4,2,'omitnan')./(sum(y,2,'omitnan').*momentsSpec.width(:,ii).^4);
+momentsSpec.kurt(:,ii)=(sum(y.*(x-momentsSpec.velRaw(:,ii)).^4,2,'omitnan')./(sum(y,2,'omitnan').*momentsSpec.width(:,ii).^4))-3;
 
 end
