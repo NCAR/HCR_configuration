@@ -643,7 +643,7 @@ write_latest_data_info = FALSE;
 // Type: string
 //
 
-output_fmq_url = "fmqp:://localhost::/tmp/fmq/moments/100hz.combined/shmem_20200";
+output_fmq_url = "fmqp:://localhost::/tmp/fmq/moments/10hz.combined/shmem_20200";
 
 ///////////// output_fmq_compress /////////////////////
 //

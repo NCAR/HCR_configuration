@@ -76,7 +76,7 @@ procmap_register_interval = 60;
 // Type: string
 //
 
-input_fmq_url = "fmqp:://localhost::/tmp/fmq/moments/100hz.combined/shmem_20300";
+input_fmq_url = "fmqp:://localhost::/tmp/fmq/moments/10hz.combined/shmem_20200";
 
 ///////////// seek_to_end_of_input ////////////////////
 //
@@ -446,14 +446,14 @@ apply_censoring = TRUE;
 
 censoring_fields = {
   {
-    name = "SNR",
+    name = "SNRVC_long",
     min_valid_value = -9,
     max_valid_value = 1000,
     combination_method = LOGICAL_OR
   }
   ,
   {
-    name = "NCP",
+    name = "NCP_long",
     min_valid_value = 0.12,
     max_valid_value = 1000,
     combination_method = LOGICAL_OR

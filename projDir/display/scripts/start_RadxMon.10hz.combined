@@ -1,0 +1,9 @@
+#! /bin/csh
+
+xterm -title RadxMon-10hz-combined -bg black -fg green -g 80x3-0+0 -fn fixed -e RadxMon -params $PROJ_DIR/display/params/RadxMon.10hz.combined -summary -update 1 &
+
+
+
+
+
+

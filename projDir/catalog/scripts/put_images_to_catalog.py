@@ -138,7 +138,7 @@ def putFile(filePath, catalogName):
     if (options.debug == True):
         print >>sys.stderr, "  tmpDir: ", tmpDir
     if not os.path.exists(tmpDir):
-        os.makedirs(tmpDir, 0775)
+        os.makedirs(tmpDir, 0o775)
 
     # copy the file to the tmp directory
 

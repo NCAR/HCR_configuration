@@ -1,6 +1,6 @@
 #! /bin/csh
 
-xterm -title RadxMon-100hz-long -bg black -fg cyan -g 80x3-0+20 -fn fixed -e RadxMon -params $PROJ_DIR/display/params/RadxMon.100hz.long -summary -update 1 &
+xterm -title RadxMon-100hz-long -bg black -fg cyan -g 80x3-0+50 -fn fixed -e RadxMon -params $PROJ_DIR/display/params/RadxMon.100hz.long -summary -update 1 &
 
 
 

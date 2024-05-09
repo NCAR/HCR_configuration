@@ -26,7 +26,8 @@ setenv LANG C
 #  DARWIN
 #  CYGWIN
 
-setenv HOST_OS LINUX_LROSE
+setenv HOST_OS LINUX_QT5
+#setenv HOST_OS LINUX_LROSE
 
 setenv LROSE_CORE_DIR $HOME/git/lrose-core
 setenv LROSE_INSTALL_DIR $HOME/lrose
