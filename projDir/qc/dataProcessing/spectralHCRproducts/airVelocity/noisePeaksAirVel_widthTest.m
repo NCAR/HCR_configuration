@@ -1,4 +1,4 @@
-function [powerRMnoiseAvRM,powerRMnoiseAvRMS,velOut,velOutS]=noisePeaksAirVel_widthTest(specDB,velIn,data,widthC)
+function [powerRMnoiseAvRM,powerRMnoise,powerRMnoiseAvRMS,velOut,velOutS]=noisePeaksAirVel_widthTest(specDB,velIn,data,widthC)
 % Find mean noise and noise threshold with following
 % Hildebrand and Sekhon, 1974 https://doi.org/10.1175/1520-0450(1974)013%3C0808:ODOTNL%3E2.0.CO;2
 % Adjust spectra so they fit in the boundaries
@@ -16,6 +16,7 @@ velSpecLarge=velSpecLarge(1:end-1).*data.lambda./(4*pi.*repmat(data.prt,1,duplic
 
 largeInds=1:length(velSpecLarge);
 
+powerRMnoise=nan(size(specDB));
 powerRMnoiseAvRM=nan(size(specDB));
 powerRMnoiseAvRMS=nan(size(specDB));
 velOut=nan(size(specDB));
@@ -135,6 +136,10 @@ for aa=1:size(loopInds,1)
 
         thisMovRMS(largeMask==0)=nan;
         thisMovRMS=thisMovRMS(finalInds);
+
+        thisPowOrigRMnoise=powerSpecLarge(ii,finalInds);
+        thisPowOrigRMnoise(isnan(thisMovRMS))=nan;
+        powerRMnoise(ii,:)=thisPowOrigRMnoise;
 
         thisVelS=velSpecLarge(finalInds);
 

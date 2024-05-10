@@ -16,6 +16,12 @@ rsync -av hcr@hcr-router.fl-guest.ucar.edu:/data/hcr/data.archiver/monitoring/ca
 echo "---------- spdb ----------"
 rsync -av hcr@hcr-router.fl-guest.ucar.edu:/data/hcr/data.archiver/spdb/monitor/hcr/202405\* spdb/monitor/hcr
 
+echo "---------- images ----------"
+rsync -av hcr@hcr-router.fl-guest.ucar.edu:/data/hcr/data.archiver/images/catalog/202405\* images/catalog
+
+echo "---------- 10 hz cfradial combined ----------"
+rsync -av hcr@hcr-router.fl-guest.ucar.edu:/data/hcr/data.archiver/cfradial/moments/10hz_combined/202405\* cfradial/moments/10hz_combined
+
 echo "---------- 100 hz cfradial long ----------"
 rsync -av hcr@hcr-router.fl-guest.ucar.edu:/data/hcr/data.archiver/cfradial/moments/100hz_long/202405\* cfradial/moments/100hz_long
 echo "---------- 100 hz cfradial short ----------"
