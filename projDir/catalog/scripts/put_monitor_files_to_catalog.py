@@ -65,7 +65,7 @@ def main():
         print >>sys.stderr, file_tokens
 
     if len(file_tokens) != 5:
-        print "*** Invalid file name: ", options.fileName
+        print >> sys.stderr, "*** Invalid file name: ", options.fileName
         sys.exit(0)
 
     # category
@@ -179,7 +179,7 @@ def ftpFile(fileName, filePath):
     
     try:
         ftp.mkd(targetDir)
-    except ftplib.all_errors, e:
+    except ftplib.all_errors as e:
         print >>sys.stderr, "WARNING - mkd failed, dir perhaps already exists?", e
 
     # go to target dir
@@ -298,7 +298,7 @@ def runCommand(cmd):
         else:
             if (options.debug == True):
                 print >>sys.stderr, "Child returned code: ", retcode
-    except OSError, e:
+    except OSError as e:
         print >>sys.stderr, "Execution failed:", e
 
 ########################################################################
