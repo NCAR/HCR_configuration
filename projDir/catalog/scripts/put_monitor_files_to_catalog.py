@@ -33,9 +33,9 @@ def main():
     # initialize
     
     if (options.debug == True):
-        print >>sys.stderr, "=========================================================================="
-        print >>sys.stderr, "BEGIN: put_monitor_files_to_catalog.py at " + str(datetime.datetime.now())
-        print >>sys.stderr, "=========================================================================="
+        print("==========================================================================", file=sys.stderr)
+        print("BEGIN: put_monitor_files_to_catalog.py at " + str(datetime.datetime.now()), file=sys.stderr)
+        print("==========================================================================", file=sys.stderr)
 
     #   compute valid time string
 
@@ -61,11 +61,11 @@ def main():
     
     file_tokens = options.fileName.split(".")
     if (options.debug == True):
-        print >>sys.stderr, "filename toks: "
-        print >>sys.stderr, file_tokens
+        print("filename toks: ", file=sys.stderr)
+        print(file_tokens, file=sys.stderr)
 
     if len(file_tokens) != 5:
-        print >> sys.stderr, "*** Invalid file name: ", options.fileName
+        print("*** Invalid file name: ", options.fileName, file=sys.stderr)
         sys.exit(0)
 
     # category
@@ -99,7 +99,7 @@ def main():
                    field_name + "." + "txt")
 
     if (options.debug == True):
-        print >>sys.stderr, "catalogName: ", catalogName
+        print("catalogName: ", catalogName, file=sys.stderr)
 
     # put the image file
 
@@ -109,15 +109,15 @@ def main():
 
     if (options.removeAfterCopy == True):
         if (options.debug):
-            print >>sys.stderr, "Removing file: ", fullFilePath
+            print("Removing file: ", fullFilePath, file=sys.stderr)
         os.remove(fullFilePath)
 
     # let the user know we are done
 
     if (options.debug == True):
-        print >>sys.stderr, "=================================================================="
-        print >>sys.stderr, "END: put_images_to_catalog.py at " + str(datetime.datetime.now())
-        print >>sys.stderr, "=================================================================="
+        print("==================================================================", file=sys.stderr)
+        print("END: put_images_to_catalog.py at " + str(datetime.datetime.now()), file=sys.stderr)
+        print("==================================================================", file=sys.stderr)
 
     sys.exit(0)
 
@@ -127,15 +127,15 @@ def main():
 def putFile(filePath, catalogName):
 
     if (options.debug == True):
-        print >>sys.stderr, "Handling file: ", filePath
-        print >>sys.stderr, "  catalogName: ", catalogName
+        print("Handling file: ", filePath, file=sys.stderr)
+        print("  catalogName: ", catalogName, file=sys.stderr)
 
     # create tmp dir if necessary
 
     dataDir = os.environ['DATA_DIR']
     tmpDir = os.path.join(dataDir, "images/tmp")
     if (options.debug == True):
-        print >>sys.stderr, "  tmpDir: ", tmpDir
+        print("  tmpDir: ", tmpDir, file=sys.stderr)
     if not os.path.exists(tmpDir):
         os.makedirs(tmpDir, 0o775)
 
@@ -180,18 +180,18 @@ def ftpFile(fileName, filePath):
     try:
         ftp.mkd(targetDir)
     except ftplib.all_errors as e:
-        print >>sys.stderr, "WARNING - mkd failed, dir perhaps already exists?", e
+        print("WARNING - mkd failed, dir perhaps already exists?", e, file=sys.stderr)
 
     # go to target dir
 
     if (options.debug == True):
-        print >>sys.stderr, "ftp cwd to: " + targetDir
+        print("ftp cwd to: " + targetDir, file=sys.stderr)
     ftp.cwd(targetDir)
 
     # put the file
 
     if (options.debug == True):
-        print >>sys.stderr, "putting file: ", filePath
+        print("putting file: ", filePath, file=sys.stderr)
 
     fp = open(filePath, 'rb')
     ftp.storbinary('STOR ' + fileName, fp)
@@ -270,18 +270,18 @@ def parseArgs():
         options.debug = True
 
     if (options.debug == True):
-        print >>sys.stderr, "Options:"
-        print >>sys.stderr, "  debug? ", options.debug
-        print >>sys.stderr, "  verbose? ", options.verbose
-        print >>sys.stderr, "  validTime: ", options.validTime
-        print >>sys.stderr, "  monitorDir: ", options.monitorDir
-        print >>sys.stderr, "  relDataPath: ", options.relDataPath
-        print >>sys.stderr, "  fileName: ", options.fileName
-        print >>sys.stderr, "  ftpServer: ", options.ftpServer
-        print >>sys.stderr, "  targetDir: ", options.targetDir
-        print >>sys.stderr, "  category: ", options.category
-        print >>sys.stderr, "  platform: ", options.platform
-        print >>sys.stderr, "  removeAfterCopy: ", options.removeAfterCopy
+        print("Options:", file=sys.stderr)
+        print("  debug? ", options.debug, file=sys.stderr)
+        print("  verbose? ", options.verbose, file=sys.stderr)
+        print("  validTime: ", options.validTime, file=sys.stderr)
+        print("  monitorDir: ", options.monitorDir, file=sys.stderr)
+        print("  relDataPath: ", options.relDataPath, file=sys.stderr)
+        print("  fileName: ", options.fileName, file=sys.stderr)
+        print("  ftpServer: ", options.ftpServer, file=sys.stderr)
+        print("  targetDir: ", options.targetDir, file=sys.stderr)
+        print("  category: ", options.category, file=sys.stderr)
+        print("  platform: ", options.platform, file=sys.stderr)
+        print("  removeAfterCopy: ", options.removeAfterCopy, file=sys.stderr)
 
 ########################################################################
 # Run a command in a shell, wait for it to complete
@@ -289,17 +289,17 @@ def parseArgs():
 def runCommand(cmd):
 
     if (options.debug == True):
-        print >>sys.stderr, "running cmd:",cmd
+        print("running cmd:",cmd, file=sys.stderr)
     
     try:
         retcode = subprocess.call(cmd, shell=True)
         if retcode < 0:
-            print >>sys.stderr, "Child was terminated by signal: ", -retcode
+            print("Child was terminated by signal: ", -retcode, file=sys.stderr)
         else:
             if (options.debug == True):
-                print >>sys.stderr, "Child returned code: ", retcode
+                print("Child returned code: ", retcode, file=sys.stderr)
     except OSError as e:
-        print >>sys.stderr, "Execution failed:", e
+        print("Execution failed:", e, file=sys.stderr)
 
 ########################################################################
 # kick off main method
