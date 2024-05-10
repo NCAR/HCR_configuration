@@ -412,6 +412,15 @@ fields = {
     color_map = "ldr.colors",
     shortcut = "r"
   }
+  ,
+  {
+    label = "NCP_short",
+    raw_name = "NCP_short",
+    filtered_name = "",
+    units = "",
+    color_map = "ncp.colors",
+    shortcut = "b"
+  }
 };
 
 ///////////// background_render_mins //////////////////
