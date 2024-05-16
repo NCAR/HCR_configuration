@@ -22,246 +22,336 @@ edgesS=-30:0.5:100;
 
 dbzAllS=zeros(1,length(edges)-1);
 dbz1kmS=zeros(1,length(edges)-1);
-dbz5kmS=zeros(1,length(edges)-1);
+dbz6kmS=zeros(1,length(edges)-1);
 
 snrAllS=zeros(1,length(edgesS)-1);
 snr1kmS=zeros(1,length(edgesS)-1);
-snr5kmS=zeros(1,length(edgesS)-1);
+snr6kmS=zeros(1,length(edgesS)-1);
 
 dbzAllL=zeros(1,length(edges)-1);
 dbz1kmL=zeros(1,length(edges)-1);
-dbz5kmL=zeros(1,length(edges)-1);
+dbz6kmL=zeros(1,length(edges)-1);
 
 snrAllL=zeros(1,length(edgesS)-1);
 snr1kmL=zeros(1,length(edgesS)-1);
-snr5kmL=zeros(1,length(edgesS)-1);
+snr6kmL=zeros(1,length(edgesS)-1);
 
 %% Run processing
 
 % Go through flights
-for ii=1:size(caseList,1)
-    
+for ii=2:size(caseList,1)
+
+    disp(['IOP ',num2str(ii),' of ',num2str(size(caseList,1))]);
+
     startTime=datetime(caseList(ii,1:6));
-    endTimeAll=datetime(caseList(ii,7:12));
-            
-    % Go through hours
-    while startTime<endTimeAll
-        disp(startTime);
-        
-        endTime=startTime+hours(1);
+    endTime=datetime(caseList(ii,7:12));
 
-        data=[];
-                   
-        data.DBZ_short=[];
-        data.DBZ_long=[];
-        data.SNRVC_short=[];
-        data.SNRVC_long=[];
-                              
-        %% Load data
-        % Make list of files within the specified time frame
-        fileList=makeFileList(indir,startTime,endTime,'xxxxxx20YYMMDDxhhmmss',1);
-                
-        % Load data
-        data=read_HCR(fileList,data,startTime,endTime);
-                
-        asl=HCRrange2asl(data.range,data.elevation,data.altitude);
-        
-        dbzStemp=data.DBZ_short;
-        dbzLtemp=data.DBZ_long;
-        snrStemp=data.SNRVC_short;
-        snrLtemp=data.SNRVC_long;
-                
-        % Remove bang
-        dbzStemp(1:14,:)=nan;
-        snrStemp(1:14,:)=nan;
-        dbzLtemp(1:14,:)=nan;
-        snrLtemp(1:14,:)=nan;
-        % Remove data that is 300 m or below from the surface
-        dbzStemp(asl<300)=nan;
-        snrStemp(asl<300)=nan;
-        dbzLtemp(asl<300)=nan;
-        snrLtemp(asl<300)=nan;
-                
-        histDBZs=histcounts(dbzStemp,edges);
-        dbzAllS=dbzAllS+histDBZs;
-        histDBZl=histcounts(dbzLtemp,edges);
-        dbzAllL=dbzAllL+histDBZl;
-        
-        histSNRs=histcounts(snrStemp,edgesS);
-        snrAllS=snrAllS+histSNRs;
-        histSNRl=histcounts(snrLtemp,edgesS);
-        snrAllL=snrAllL+histSNRl;
-        
-        range1km=find(data.range>=990 & data.range <=1010);
-        range5km=find(data.range>=4990 & data.range <=5010);
-        
-        histDBZ1kmS=histcounts(dbzStemp(range1km),edges);
-        histDBZ5kmS=histcounts(dbzStemp(range5km),edges);
-        histDBZ1kmL=histcounts(dbzLtemp(range1km),edges);
-        histDBZ5kmL=histcounts(dbzLtemp(range5km),edges);
-        
-        histSNR1kmS=histcounts(snrStemp(range1km),edgesS);
-        histSNR5kmS=histcounts(snrStemp(range5km),edgesS);
-        histSNR1kmL=histcounts(snrLtemp(range1km),edgesS);
-        histSNR5kmL=histcounts(snrLtemp(range5km),edgesS);
-        
-        dbz1kmS=dbz1kmS+histDBZ1kmS;
-        dbz5kmS=dbz5kmS+histDBZ5kmS;
-        dbz1kmL=dbz1kmL+histDBZ1kmL;
-        dbz5kmL=dbz5kmL+histDBZ5kmL;
-        
-        snr1kmS=snr1kmS+histSNR1kmS;
-        snr5kmS=snr5kmS+histSNR5kmS;
-        snr1kmL=snr1kmL+histSNR1kmL;
-        snr5kmL=snr5kmL+histSNR5kmL;
-        
-        startTime=endTime;
-    end
+    data=[];
+
+    data.DBZ_short=[];
+    data.DBZ_long=[];
+    data.SNRVC_short=[];
+    data.SNRVC_long=[];
+
+    %% Load data
+    % Make list of files within the specified time frame
+    fileList=makeFileList(indir,startTime,endTime,'xxxxxx20YYMMDDxhhmmss',1);
+
+    % Load data
+    data=read_HCR(fileList,data,startTime,endTime);
+
+    asl=HCRrange2asl(data.range,data.elevation,data.altitude);
+
+    dbzStemp=data.DBZ_short;
+    dbzLtemp=data.DBZ_long;
+    snrStemp=data.SNRVC_short;
+    snrLtemp=data.SNRVC_long;
+
+    % Censor data
+    maskS=~isnan(dbzStemp);
+    maskL=~isnan(dbzLtemp);
+    maskS(1:30,:)=0;
+    maskL(1:30,:)=0;
+    maskS(isinf(dbzStemp))=0;
+    maskL(isinf(dbzLtemp))=0;
+
+    maskS=bwareaopen(maskS,200);
+    maskL=bwareaopen(maskL,200);
+
+    dbzStemp(maskS==0)=nan;
+    dbzLtemp(maskL==0)=nan;
+    snrStemp(maskS==0)=nan;
+    snrLtemp(maskL==0)=nan;
+
+    histDBZs=histcounts(dbzStemp,edges);
+    dbzAllS=dbzAllS+histDBZs;
+    histDBZl=histcounts(dbzLtemp,edges);
+    dbzAllL=dbzAllL+histDBZl;
+
+    histSNRs=histcounts(snrStemp,edgesS);
+    snrAllS=snrAllS+histSNRs;
+    histSNRl=histcounts(snrLtemp,edgesS);
+    snrAllL=snrAllL+histSNRl;
+
+    range1km=find(data.range>=800 & data.range <=1200);
+    range6km=find(data.range>=5900 & data.range <=6100);
+
+    histDBZ1kmS=histcounts(dbzStemp(range1km),edges);
+    histDBZ6kmS=histcounts(dbzStemp(range6km),edges);
+    histDBZ1kmL=histcounts(dbzLtemp(range1km),edges);
+    histDBZ6kmL=histcounts(dbzLtemp(range6km),edges);
+
+    histSNR2kmS=histcounts(snrStemp(range1km),edgesS);
+    histSNR8kmS=histcounts(snrStemp(range6km),edgesS);
+    histSNR2kmL=histcounts(snrLtemp(range1km),edgesS);
+    histSNR8kmL=histcounts(snrLtemp(range6km),edgesS);
+
+    dbz1kmS=dbz1kmS+histDBZ1kmS;
+    dbz6kmS=dbz6kmS+histDBZ6kmS;
+    dbz1kmL=dbz1kmL+histDBZ1kmL;
+    dbz6kmL=dbz6kmL+histDBZ6kmL;
+
+    snr1kmS=snr1kmS+histSNR2kmS;
+    snr6kmS=snr6kmS+histSNR8kmS;
+    snr1kmL=snr1kmL+histSNR2kmL;
+    snr6kmL=snr6kmL+histSNR8kmL;
+
+    shortLongFrac=sum(maskS(:))/sum(maskL(:));
+
 end
-    %% All
+%% Bar plot
 close all
-    f1 = figure('Position',[200 500 1000 1250],'DefaultAxesFontSize',12);
+f1 = figure('Position',[200 500 2500 1250],'DefaultAxesFontSize',12);
 
-t = tiledlayout(4,2,'TileSpacing','tight','Padding','tight');
+t = tiledlayout(3,4,'TileSpacing','tight','Padding','tight');
 s1=nexttile(1);
-    
-    bar(edges(1:end-1)+0.25,dbzAllS,1);
-    xlabel('dBZ');
-    title([project,' DBZ short']);
-    xlim([-65 20]);
-    grid on
-    box on
-        
-    s2=nexttile(2);
-    bar(edges(1:end-1)+0.25,dbzAllS,1);
-    xlabel('dBZ');
-    title(['DBZ short lower end']);
-    xlim([-65 -40]);
-    grid on
-    box on
 
-    s3=nexttile(3);
-    
-    bar(edges(1:end-1)+0.25,dbzAllL,1);
-    xlabel('dBZ');
-    title([project,' DBZ long']);
-    xlim([-65 20]);
-    grid on
-    box on
-        
-    s4=nexttile(4);
-    bar(edges(1:end-1)+0.25,dbzAllL,1);
-    xlabel('dBZ');
-    title(['DBZ long lower end']);
-    xlim([-65 -40]);
-    grid on
-    box on
-    
-    s5=nexttile(5);
-    bar(edgesS(1:end-1)+0.25,snrAllS,1);
-    xlabel('dB');
-    title(['SNRVC short']);
-    xlim([-25 70]);
-    grid on
-    box on
-    
-    s6=nexttile(6);
-    bar(edgesS(1:end-1)+0.25,snrAllS,1);
-    xlabel('dB');
-    title(['SNRVC short lower end']);
-    xlim([-25 -5]);
-    grid on
-    box on
+b=bar(edges(1:end-1)+0.25,cat(1,dbzAllS,dbzAllL),'GroupWidth',1,'BarWidth',1);
+xlabel('dBZ');
+title([project,' DBZ']);
+xlim([-65 20]);
+grid on
+box on
+legend({'Short';'Long'},'Location','northwest')
 
-    s7=nexttile(7);
-    bar(edgesS(1:end-1)+0.25,snrAllL,1);
-    xlabel('dB');
-    title(['SNRVC long']);
-    xlim([-25 70]);
-    grid on
-    box on
-    
-    s8=nexttile(8);
-    bar(edgesS(1:end-1)+0.25,snrAllL,1);
-    xlabel('dB');
-    title(['SNRVC long lower end']);
-    xlim([-25 -5]);
-    grid on
-    box on
-            
-    set(gcf,'PaperPositionMode','auto')
-    print(f1,[figdir,project,'_minDBZ'],'-dpng','-r0')
-    
-    %% 1km
-    
-    f2=figure('DefaultAxesFontSize',12);
-    set(f2,'Position',[200 500 1300 800]);
-       
-    subplot(2,2,1)
-    
-    bar(edges(1:end-1)+0.25,dbz1kmS,1);
-    xlabel('dBZ');
-    title([project,' DBZ at 1 km range']);
-    xlim([-50 30]);
-    
-    subplot(2,2,2)
-    
-    bar(edges(1:end-1)+0.25,dbz1kmS,1);
-    xlabel('dBZ');
-    title(['DBZ lower end']);
-    xlim([-50 -20]);
-    
-    subplot(2,2,3)
-    
-    bar(edgesS(1:end-1)+0.25,snr1kmS,1);
-    xlabel('dB');
-    title(['SNRVC at 1 km range']);
-    xlim([-25 50]);
-    
-    subplot(2,2,4)
-    
-    bar(edgesS(1:end-1)+0.25,snr1kmS,1);
-    xlabel('dB');
-    title(['SNRVC lower end']);
-    xlim([-25 -5]);
-            
-    set(gcf,'PaperPositionMode','auto')
-    print(f2,[figdir,project,'_minDBZ_1km'],'-dpng','-r0')
-    savefig([figdir,project,'_minDBZ_1km.fig'])
-    
-    %% 5km
-    
-    f3=figure('DefaultAxesFontSize',12);
-    set(f3,'Position',[200 500 1300 800]);
-       
-    subplot(2,2,1)
-    
-    bar(edges(1:end-1)+0.25,dbz5kmS,1);
-    xlabel('dBZ');
-    title([project,' DBZ at 5 km range']);
-    xlim([-40 40]);
-    
-    subplot(2,2,2)
-    
-    bar(edges(1:end-1)+0.25,dbz5kmS,1);
-    xlabel('dBZ');
-    title(['DBZ lower end']);
-    xlim([-40 -10]);
-    
-    subplot(2,2,3)
-    
-    bar(edgesS(1:end-1)+0.25,snr5kmS,1);
-    xlabel('dB');
-    title(['SNRVC at 5 km range']);
-    xlim([-25 50]);
-    
-    subplot(2,2,4)
-    
-    bar(edgesS(1:end-1)+0.25,snr5kmS,1);
-    xlabel('dB');
-    title(['SNRVC lower end']);
-    xlim([-25 -5]);
-            
-    set(gcf,'PaperPositionMode','auto')
-    print(f3,[figdir,project,'_minDBZ_5km'],'-dpng','-r0')
-    
+s2=nexttile(2);
+bar(edges(1:end-1)+0.25,cat(1,dbzAllS,dbzAllL),'GroupWidth',1,'BarWidth',1);
+xlabel('dBZ');
+title(['DBZ lower end']);
+xlim([-65 -45]);
+grid on
+box on
+legend({'Short';'Long'},'Location','northwest')
+
+s3=nexttile(3);
+bar(edgesS(1:end-1)+0.25,cat(1,snrAllS,snrAllL),'GroupWidth',1,'BarWidth',1);
+xlabel('dB');
+title(['SNRVC']);
+xlim([-20 50]);
+grid on
+box on
+legend({'Short';'Long'},'Location','northeast')
+
+s4=nexttile(4);
+bar(edgesS(1:end-1)+0.25,cat(1,snrAllS,snrAllL),'GroupWidth',1,'BarWidth',1);
+xlabel('dB');
+title(['SNRVC lower end']);
+xlim([-20 0]);
+grid on
+box on
+legend({'Short';'Long'},'Location','northwest')
+
+s5=nexttile(5);
+b=bar(edges(1:end-1)+0.25,cat(1,dbz1kmS,dbz1kmL),'GroupWidth',1,'BarWidth',1);
+xlabel('dBZ');
+title([project,' DBZ 1 km']);
+xlim([-55 15]);
+grid on
+box on
+legend({'Short';'Long'},'Location','northwest')
+
+s6=nexttile(6);
+bar(edges(1:end-1)+0.25,cat(1,dbz1kmS,dbz1kmL),'GroupWidth',1,'BarWidth',1);
+xlabel('dBZ');
+title(['DBZ 1 km lower end']);
+xlim([-55 -35]);
+grid on
+box on
+legend({'Short';'Long'},'Location','northwest')
+
+s7=nexttile(7);
+bar(edgesS(1:end-1)+0.25,cat(1,snr1kmS,snr1kmL),'GroupWidth',1,'BarWidth',1);
+xlabel('dB');
+title(['SNRVC 1 km']);
+xlim([-20 45]);
+grid on
+box on
+legend({'Short';'Long'},'Location','northeast')
+
+s8=nexttile(8);
+bar(edgesS(1:end-1)+0.25,cat(1,snr1kmS,snr1kmL),'GroupWidth',1,'BarWidth',1);
+xlabel('dB');
+title(['SNRVC 1 km lower end']);
+xlim([-20 0]);
+grid on
+box on
+legend({'Short';'Long'},'Location','northwest')
+
+s9=nexttile(9);
+b=bar(edges(1:end-1)+0.25,cat(1,dbz6kmS,dbz6kmL),'GroupWidth',1,'BarWidth',1);
+xlabel('dBZ');
+title([project,' DBZ 6 km']);
+xlim([-40 -10]);
+grid on
+box on
+legend({'Short';'Long'},'Location','northwest')
+
+s10=nexttile(10);
+bar(edges(1:end-1)+0.25,cat(1,dbz6kmS,dbz6kmL),'GroupWidth',1,'BarWidth',1);
+xlabel('dBZ');
+title(['DBZ 6 km lower end']);
+xlim([-40 -20]);
+grid on
+box on
+legend({'Short';'Long'},'Location','northwest')
+
+s11=nexttile(11);
+bar(edgesS(1:end-1)+0.25,cat(1,snr6kmS,snr6kmL),'GroupWidth',1,'BarWidth',1);
+xlabel('dB');
+title(['SNRVC 6 km']);
+xlim([-20 5]);
+grid on
+box on
+legend({'Short';'Long'},'Location','northwest')
+
+s12=nexttile(12);
+bar(edgesS(1:end-1)+0.25,cat(1,snr6kmS,snr6kmL),'GroupWidth',1,'BarWidth',1);
+xlabel('dB');
+title(['SNRVC 6 km lower end']);
+xlim([-20 -10]);
+grid on
+box on
+legend({'Short';'Long'},'Location','northwest')
+
+set(gcf,'PaperPositionMode','auto')
+print(f1,[figdir,project,'_sensitivity'],'-dpng','-r0')
+
+%% Reflectivity
+
+close all
+
+%colDiff=cat(1,[0,0,0],velCols);
+colDiff=cat(1,[0,0,0],jet(21));
+colJet=cat(1,[0,0,0],jet);
+ylims=[0,8];
+climsDBZ=[-50,15];
+climsSNR=[-30,50];
+climsDiffDBZ=[-5,5];
+climsDiffSNR=[-10,10];
+
+pix=100;
+
+f1 = figure('Position',[200 500 2400 1200],'DefaultAxesFontSize',12);
+
+t = tiledlayout(3,2,'TileSpacing','tight','Padding','tight');
+
+s1=nexttile(1);
+
+dbzStemp(isnan(dbzStemp))=-999;
+
+hold on
+surf(data.time(1:pix:length(data.time)),data.range(:,1:pix:length(data.time))./1000,dbzStemp(:,1:pix:length(data.time)),'edgecolor','none');
+view(2);
+ylabel('Range (km)');
+clim(climsDBZ);
+s1.Colormap=colJet;
+colorbar
+grid on
+box on
+title('DBZ short (dBZ)')
+ylim(ylims);
+xlim([data.time(1),data.time(end)]);
+
+s2=nexttile(2);
+
+snrStemp(isnan(snrStemp))=-999;
+
+hold on
+surf(data.time(1:pix:length(data.time)),data.range(:,1:pix:length(data.time))./1000,snrStemp(:,1:pix:length(data.time)),'edgecolor','none');
+view(2);
+ylabel('Range (km)');
+clim(climsSNR);
+s2.Colormap=colJet;
+colorbar
+grid on
+box on
+title('SNR short (dB)')
+ylim(ylims);
+xlim([data.time(1),data.time(end)]);
+
+s3=nexttile(3);
+
+dbzLtemp(isnan(dbzLtemp))=-99;
+
+hold on
+surf(data.time(1:pix:length(data.time)),data.range(:,1:pix:length(data.time))./1000,dbzLtemp(:,1:pix:length(data.time)),'edgecolor','none');
+view(2);
+ylabel('Range (km)');
+clim(climsDBZ);
+s3.Colormap=colJet;
+colorbar
+grid on
+box on
+title('DBZ long (dBZ)')
+ylim(ylims);
+xlim([data.time(1),data.time(end)]);
+
+s4=nexttile(4);
+
+snrLtemp(isnan(snrLtemp))=-99;
+
+hold on
+surf(data.time(1:pix:length(data.time)),data.range(:,1:pix:length(data.time))./1000,snrLtemp(:,1:pix:length(data.time)),'edgecolor','none');
+view(2);
+ylabel('Range (km)');
+clim(climsSNR);
+s4.Colormap=colJet;
+colorbar
+grid on
+box on
+title('SNR long (dB)')
+ylim(ylims);
+xlim([data.time(1),data.time(end)]);
+
+s5=nexttile(5);
+
+hold on
+surf(data.time(1:pix:length(data.time)),data.range(:,1:pix:length(data.time))./1000,dbzStemp(:,1:pix:length(data.time))-dbzLtemp(:,1:pix:length(data.time)),'edgecolor','none');
+view(2);
+ylabel('Range (km)');
+clim(climsDiffDBZ);
+s5.Colormap=colDiff;
+colorbar
+grid on
+box on
+title('DBZ short - long (dB)')
+ylim(ylims);
+xlim([data.time(1),data.time(end)]);
+
+s6=nexttile(6);
+
+hold on
+surf(data.time(1:pix:length(data.time)),data.range(:,1:pix:length(data.time))./1000,snrStemp(:,1:pix:length(data.time))-snrLtemp(:,1:pix:length(data.time)),'edgecolor','none');
+view(2);
+ylabel('Range (km)');
+clim(climsDiffSNR);
+s6.Colormap=colDiff;
+colorbar
+grid on
+box on
+title('SNR short - long (dB)')
+ylim(ylims);
+xlim([data.time(1),data.time(end)]);
+
+set(gcf,'PaperPositionMode','auto')
+print(f1,[figdir,project,'_reflectivity'],'-dpng','-r0')
