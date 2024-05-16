@@ -190,7 +190,7 @@ begin_in_archive_mode = TRUE;
 // Type: string
 //
 
-archive_start_time = "2022 05 03 17 30 00";
+archive_start_time = "2022 05 10 17 55 00";
 
 ///////////// archive_time_span_secs //////////////////
 //
@@ -202,7 +202,7 @@ archive_start_time = "2022 05 03 17 30 00";
 // Type: double
 //
 
-archive_time_span_secs = 600;
+archive_time_span_secs = 900;
 
 ///////////// archive_data_url ////////////////////////
 //
@@ -349,34 +349,16 @@ fields = {
     filtered_name = "",
     units = "dBZ",
     color_map = "dbz_w.colors",
-    shortcut = "0"
+    shortcut = "1"
   }
-  // ,
-  // {
-  //   label = "DBZHC_short",
-  //   raw_name = "DBZHC_short",
-  //   filtered_name = "",
-  //   units = "dBZ",
-  //   color_map = "dbz_w.colors",
-  //   shortcut = "0"
-  // }
-  // ,
-  // {
-  //   label = "DBZVC_short",
-  //   raw_name = "DBZVC_short",
-  //   filtered_name = "",
-  //   units = "dBZ",
-  //   color_map = "dbz_w.colors",
-  //   shortcut = "0"
-  // }
   ,
   {
     label = "VEL_unfold",
     raw_name = "VEL_unfold",
     filtered_name = "",
     units = "m/s",
-    color_map = "vel.colors",
-    shortcut = "1"
+    color_map = "hcr_vel_blueYellow.colors",
+    shortcut = "2"
   }
   ,
   {
@@ -384,27 +366,9 @@ fields = {
     raw_name = "VEL_short",
     filtered_name = "",
     units = "m/s",
-    color_map = "vel_w_8.colors",
-    shortcut = "1"
+    color_map = "hcr_vel_blueYellow.colors",
+    shortcut = "3"
   }
-  // ,
-  // {
-  //   label = "VEL_VERT_short",
-  //   raw_name = "VEL_VERT_short",
-  //   filtered_name = "",
-  //   units = "m/s",
-  //   color_map = "vel_w_8.colors",
-  //   shortcut = "2"
-  // }
-  // ,
-  // {
-  //   label = "VEL_RAW_short",
-  //   raw_name = "VEL_RAW_short",
-  //   filtered_name = "",
-  //   units = "m/s",
-  //   color_map = "vel_w_8.colors",
-  //   shortcut = "2"
-  // }
   ,
   {
     label = "WIDTH_short",
@@ -412,61 +376,16 @@ fields = {
     filtered_name = "",
     units = "m/s",
     color_map = "width_w.colors",
-    shortcut = "5"
+    shortcut = "4"
   }
   ,
   {
     label = "SNRVC_short",
-    raw_name = "SNR_short",
+    raw_name = "SNRVC_short",
     filtered_name = "",
     units = "dB",
     color_map = "snr.colors",
-    shortcut = "6"
-  }
-  // ,
-  // {
-  //   label = "SNRHC_short",
-  //   raw_name = "SNRHC_short",
-  //   filtered_name = "",
-  //   units = "dB",
-  //   color_map = "snr.colors",
-  //   shortcut = "7"
-  // }
-  // ,
-  // {
-  //   label = "SNRVC_short",
-  //   raw_name = "SNRVC_short",
-  //   filtered_name = "",
-  //   units = "dB",
-  //   color_map = "snr.colors",
-  //   shortcut = "8"
-  // }
-  // ,
-  // {
-  //   label = "SNRHX_short",
-  //   raw_name = "SNRHX_short",
-  //   filtered_name = "",
-  //   units = "dB",
-  //   color_map = "snr.colors",
-  //   shortcut = "9"
-  // }
-  // ,
-  // {
-  //   label = "SNRVX_short",
-  //   raw_name = "SNRVX_short",
-  //   filtered_name = "",
-  //   units = "dB",
-  //   color_map = "snr.colors",
-  //   shortcut = "a"
-  // }
-  ,
-  {
-    label = "DBMHC_short",
-    raw_name = "DBMHC_short",
-    filtered_name = "",
-    units = "dBm",
-    color_map = "dbm.colors",
-    shortcut = "b"
+    shortcut = "5"
   }
   ,
   {
@@ -475,26 +394,17 @@ fields = {
     filtered_name = "",
     units = "dBm",
     color_map = "dbm.colors",
-    shortcut = "c"
+    shortcut = "6"
   }
-  // ,
-  // {
-  //   label = "DBMHX_short",
-  //   raw_name = "DBMHX_short",
-  //   filtered_name = "",
-  //   units = "dBm",
-  //   color_map = "dbm.colors",
-  //   shortcut = "d"
-  // }
-  // ,
-  // {
-  //   label = "DBMVX_short",
-  //   raw_name = "DBMVX_short",
-  //   filtered_name = "",
-  //   units = "dBm",
-  //   color_map = "dbm.colors",
-  //   shortcut = "e"
-  // }
+  ,
+  {
+    label = "DBMHX_short",
+    raw_name = "DBMHX_short",
+    filtered_name = "",
+    units = "dBm",
+    color_map = "dbm.colors",
+    shortcut = "7"
+  }
   ,
   {
     label = "NCP_short",
@@ -502,35 +412,17 @@ fields = {
     filtered_name = "",
     units = "",
     color_map = "ncp.colors",
-    shortcut = "f"
+    shortcut = "8"
   }
   ,
   {
     label = "LDRV_short",
-    raw_name = "LDR_short",
+    raw_name = "LDRV_short",
     filtered_name = "",
     units = "dB",
     color_map = "ldr.colors",
-    shortcut = "g"
+    shortcut = "9"
   }
-  // ,
-  // {
-  //   label = "LDRH_short",
-  //   raw_name = "LDRH_short",
-  //   filtered_name = "",
-  //   units = "dB",
-  //   color_map = "ldr.colors",
-  //   shortcut = "h"
-  // }
-  // ,
-  // {
-  //   label = "LDRV_short",
-  //   raw_name = "LDRV_short",
-  //   filtered_name = "",
-  //   units = "dB",
-  //   color_map = "ldr.colors",
-  //   shortcut = "i"
-  // }
   ,
   {
     label = "DBZ_long",
@@ -538,53 +430,17 @@ fields = {
     filtered_name = "",
     units = "dBZ",
     color_map = "dbz_w.colors",
-    shortcut = "0"
+    shortcut = "a"
   }
-  // ,
-  // {
-  //   label = "DBZHC_long",
-  //   raw_name = "DBZHC_long",
-  //   filtered_name = "",
-  //   units = "dBZ",
-  //   color_map = "dbz_w.colors",
-  //   shortcut = "0"
-  // }
-  // ,
-  // {
-  //   label = "DBZVC_long",
-  //   raw_name = "DBZVC_long",
-  //   filtered_name = "",
-  //   units = "dBZ",
-  //   color_map = "dbz_w.colors",
-  //   shortcut = "0"
-  // }
   ,
   {
     label = "VEL_long",
     raw_name = "VEL_long",
     filtered_name = "",
     units = "m/s",
-    color_map = "vel_w_8.colors",
-    shortcut = "1"
+    color_map = "hcr_vel_blueYellow.colors",
+    shortcut = "b"
   }
-  // ,
-  // {
-  //   label = "VEL_VERT_long",
-  //   raw_name = "VEL_VERT_long",
-  //   filtered_name = "",
-  //   units = "m/s",
-  //   color_map = "vel_w_8.colors",
-  //   shortcut = "2"
-  // }
-  // ,
-  // {
-  //   label = "VEL_RAW_long",
-  //   raw_name = "VEL_RAW_long",
-  //   filtered_name = "",
-  //   units = "m/s",
-  //   color_map = "vel_w_8.colors",
-  //   shortcut = "2"
-  // }
   ,
   {
     label = "WIDTH_long",
@@ -592,89 +448,35 @@ fields = {
     filtered_name = "",
     units = "m/s",
     color_map = "width_w.colors",
-    shortcut = "5"
+    shortcut = "c"
   }
   ,
   {
     label = "SNRVC_long",
-    raw_name = "SNR_long",
+    raw_name = "SNRVC_long",
     filtered_name = "",
     units = "dB",
     color_map = "snr.colors",
-    shortcut = "6"
+    shortcut = "d"
   }
-  // ,
-  // {
-  //   label = "SNRHC_long",
-  //   raw_name = "SNRHC_long",
-  //   filtered_name = "",
-  //   units = "dB",
-  //   color_map = "snr.colors",
-  //   shortcut = "7"
-  // }
-  // ,
-  // {
-  //   label = "SNRVC_long",
-  //   raw_name = "SNRVC_long",
-  //   filtered_name = "",
-  //   units = "dB",
-  //   color_map = "snr.colors",
-  //   shortcut = "8"
-  // }
-  // ,
-  // {
-  //   label = "SNRHX_long",
-  //   raw_name = "SNRHX_long",
-  //   filtered_name = "",
-  //   units = "dB",
-  //   color_map = "snr.colors",
-  //   shortcut = "9"
-  // }
-  // ,
-  // {
-  //   label = "SNRVX_long",
-  //   raw_name = "SNRVX_long",
-  //   filtered_name = "",
-  //   units = "dB",
-  //   color_map = "snr.colors",
-  //   shortcut = "a"
-  // }
   ,
   {
-    label = "DBMHC_long",
-    raw_name = "DBMHC_long",
+    label = "DBMVC_long",
+    raw_name = "DBMVC_long",
     filtered_name = "",
     units = "dBm",
     color_map = "dbm.colors",
-    shortcut = "b"
+    shortcut = "e"
   }
-  // ,
-  // {
-  //   label = "DBMVC_long",
-  //   raw_name = "DBMVC_long",
-  //   filtered_name = "",
-  //   units = "dBm",
-  //   color_map = "dbm.colors",
-  //   shortcut = "c"
-  // }
-  // ,
-  // {
-  //   label = "DBMHX_long",
-  //   raw_name = "DBMHX_long",
-  //   filtered_name = "",
-  //   units = "dBm",
-  //   color_map = "dbm.colors",
-  //   shortcut = "d"
-  // }
-  // ,
-  // {
-  //   label = "DBMVX_long",
-  //   raw_name = "DBMVX_long",
-  //   filtered_name = "",
-  //   units = "dBm",
-  //   color_map = "dbm.colors",
-  //   shortcut = "e"
-  // }
+  ,
+  {
+    label = "DBMHX_long",
+    raw_name = "DBMHX_long",
+    filtered_name = "",
+    units = "dBm",
+    color_map = "dbm.colors",
+    shortcut = "f"
+  }
   ,
   {
     label = "NCP_long",
@@ -682,35 +484,17 @@ fields = {
     filtered_name = "",
     units = "",
     color_map = "ncp.colors",
-    shortcut = "f"
+    shortcut = "g"
   }
   ,
   {
     label = "LDRV_long",
-    raw_name = "LDR_long",
+    raw_name = "LDRV_long",
     filtered_name = "",
     units = "dB",
     color_map = "ldr.colors",
-    shortcut = "g"
+    shortcut = "h"
   }
-  // ,
-  // {
-  //   label = "LDRH_long",
-  //   raw_name = "LDRH_long",
-  //   filtered_name = "",
-  //   units = "dB",
-  //   color_map = "ldr.colors",
-  //   shortcut = "h"
-  // }
-  // ,
-  // {
-  //   label = "LDRV_long",
-  //   raw_name = "LDRV_long",
-  //   filtered_name = "",
-  //   units = "dB",
-  //   color_map = "ldr.colors",
-  //   shortcut = "i"
-  // }
 };
 
 ///////////// background_render_mins //////////////////
@@ -815,7 +599,7 @@ override_radar_name = TRUE;
 // Type: string
 //
 
-radar_name = "HCR-100hz-combined";
+radar_name = "HCR-10hz-combined";
 
 ///////////// display_site_name ///////////////////////
 //
@@ -845,7 +629,7 @@ override_site_name = FALSE;
 // Type: string
 //
 
-site_name = "GV";
+site_name = "FL1";
 
 //======================================================================
 //
@@ -861,7 +645,7 @@ site_name = "GV";
 // Type: int
 //
 
-main_window_width = 1200;
+main_window_width = 1400;
 
 ///////////// main_window_height //////////////////////
 //
@@ -871,7 +655,7 @@ main_window_width = 1200;
 // Type: int
 //
 
-main_window_height = 600;
+main_window_height = 700;
 
 ///////////// main_window_start_x /////////////////////
 //
@@ -1372,7 +1156,7 @@ rhi_rendering_beam_width = 1;
 // Type: double
 //
 
-bscan_time_span_secs = 30;
+bscan_time_span_secs = 900;
 
 ///////////// bscan_truncate_start_time ///////////////
 //
@@ -1518,7 +1302,7 @@ bscan_max_altitude_km = $(BSCAN_MAX_ALTITUDE_KM);
 // Type: boolean
 //
 
-bscan_altitude_in_feet = TRUE;
+bscan_altitude_in_feet = FALSE;
 
 ///////////// bscan_range_in_feet /////////////////////
 //
