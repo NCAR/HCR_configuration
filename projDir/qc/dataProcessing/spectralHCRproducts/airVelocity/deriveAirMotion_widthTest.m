@@ -239,7 +239,7 @@ for aa=1:length(caseStart)
 
             %% Correct time domain width
             widthSquares=momentsTimeOne.width(:,ii).^2-widthCorrDelta(ii).^2;
-            widthSquares(widthSquares<0.1)=0.1;
+            widthSquares(widthSquares<0.1)=0.01;
             momentsTimeOne.widthCorr(:,ii)=sqrt(widthSquares);
 
             %% Spectra
