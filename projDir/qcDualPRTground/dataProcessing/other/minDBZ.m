@@ -39,7 +39,7 @@ snr6kmL=zeros(1,length(edgesS)-1);
 %% Run processing
 
 % Go through flights
-for ii=3:size(caseList,1)
+for ii=1:size(caseList,1)
 
     disp(['IOP ',num2str(ii),' of ',num2str(size(caseList,1))]);
 
