@@ -10,8 +10,8 @@ qualityCF='qc3';
 freqData='10hz';
 qcVersion='v3.1';
 
-plotInds=0;
-%plotInds=(1:50:500);
+%plotInds=0;
+plotInds=(1:50:500);
 
 outTime=0.1; % Desired output time resolution in seconds. Must be less than or equal to one second.
 sampleTime=0.1; % Length of sample in seconds.

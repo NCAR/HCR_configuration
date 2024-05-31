@@ -4,11 +4,11 @@ close all;
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-project='spicule'; %socrates, aristo, cset, otrec
+project='otrec'; %socrates, aristo, cset, otrec
 quality='ts'; %field, qc1, or qc2
-qualityCF='qc1';
+qualityCF='qc3';
 freqData='10hz';
-qcVersion='v1.2';
+qcVersion='v3.2';
 
 plotInds=0;
 %plotInds=(1:50:500);
@@ -54,7 +54,6 @@ for aa=1:length(caseStart)
     dataCF.VEL_RAW=[];
     dataCF.VEL_CORR=[];
     dataCF.VEL_MASKED=[];
-    dataCF.WIDTH=[];
     dataCF.eastward_velocity=[];
     dataCF.northward_velocity=[];
          
@@ -141,6 +140,7 @@ for aa=1:length(caseStart)
         momentsTimeOne.velRawDeAliased=nan(size(data.range,1),beamNum);
         momentsTimeOne.vel=nan(size(data.range,1),beamNum);
         momentsTimeOne.width=nan(size(data.range,1),beamNum);
+        momentsTimeOne.widthCorr=nan(size(data.range,1),beamNum);
         momentsTimeOne.dbz=nan(size(data.range,1),beamNum);
         momentsTimeOne.snr=nan(size(data.range,1),beamNum);
         momentsTimeOne.skew=nan(size(data.range,1),beamNum);
@@ -237,6 +237,11 @@ for aa=1:length(caseStart)
             %% Correct time domain velocity for aircraft motion and bias
             momentsTimeOne.vel(:,ii)=momentsTimeOne.velRawDeAliased(:,ii)+velBiasCorrection(:,cfInd);
 
+            %% Correct time domain width
+            widthSquares=momentsTimeOne.width(:,ii).^2-widthCorrDelta(ii).^2;
+            widthSquares(widthSquares<0.1)=0.01;
+            momentsTimeOne.widthCorr(:,ii)=sqrt(widthSquares);
+
             %% Spectra
             [specPowerLin,specPowerDB]=getSpectra(cIQ);
           
@@ -254,16 +259,13 @@ for aa=1:length(caseStart)
 
             % This step removes the noise, de-aliases, (and corrects for
             % spectral broadening)
-            [powerRMnoiseDBcorrected,powerRMnoiseDBsmooth,specVelAdj,specVelAdjSmooth]=noisePeaksAirVel_widthTest(specPowerDB.V, ...
+            [powerRMnoiseDBcorrected,powerRMnoise,powerRMnoiseDBsmooth,specVelAdj,specVelAdjSmooth]=noisePeaksAirVel_widthTest(specPowerDB.V, ...
                 momentsTimeOne.velRawDeAliased(:,ii),dataThis,widthCorrDelta(cfInd));
             specVelRMnoise=specVelAdj;
             specVelRMnoise(isnan(powerRMnoiseDBcorrected))=nan;
 
             specVelRMnoiseSmooth=specVelAdjSmooth;
             specVelRMnoiseSmooth(isnan(powerRMnoiseDBsmooth))=nan;
-
-            powerRMnoise=specPowerDB.V;
-            powerRMnoise(isnan(powerRMnoiseDBsmooth))=nan;
 
             % Remove aircraft motion
             specVelAdj=specVelAdj+velBiasCorrection(:,cfInd);
@@ -327,6 +329,8 @@ for aa=1:length(caseStart)
         momentsSpecSmooth.(fieldsTs{ll})=momentsSpecSmooth.(fieldsTs{ll})(:,indTs);
         momentsSpecCorrected.(fieldsTs{ll})=momentsSpecCorrected.(fieldsTs{ll})(:,indTs);
     end
+
+    dataCF=rmfield(dataCF,'beamWidth');
 
     fieldsCf=fieldnames(dataCF);
     for ll=1:length(fieldsCf)
