@@ -734,7 +734,7 @@ fields = {
 // Type: double
 //
 
-background_render_mins = 1440;
+background_render_mins = 3;
 
 ///////////// use_field_label_in_title ////////////////
 //
