@@ -7,25 +7,25 @@
 cd /scr/virga1/rsfdata/projects/meow/hcr
 
 echo "---------- logs ----------"
-rsync -av hcr@hcr-router.fl-guest.ucar.edu:/data/hcr/data.archiver/logs/restart/202405\* logs/restart
-rsync -av hcr@hcr-router.fl-guest.ucar.edu:/data/hcr/data.archiver/logs/status/202405\* logs/status
+rsync -av hcr@hcr-router.fl-guest.ucar.edu:/data/hcr/data.archiver/logs/restart/202406\* logs/restart
+rsync -av hcr@hcr-router.fl-guest.ucar.edu:/data/hcr/data.archiver/logs/status/202406\* logs/status
 
 echo "---------- monitoring ----------"
-rsync -av hcr@hcr-router.fl-guest.ucar.edu:/data/hcr/data.archiver/monitoring/catalog/202405\* monitoring/catalog
+rsync -av hcr@hcr-router.fl-guest.ucar.edu:/data/hcr/data.archiver/monitoring/catalog/202406\* monitoring/catalog
 
 echo "---------- spdb ----------"
-rsync -av hcr@hcr-router.fl-guest.ucar.edu:/data/hcr/data.archiver/spdb/monitor/hcr/202405\* spdb/monitor/hcr
+rsync -av hcr@hcr-router.fl-guest.ucar.edu:/data/hcr/data.archiver/spdb/monitor/hcr/202406\* spdb/monitor/hcr
 
 echo "---------- images ----------"
-rsync -av hcr@hcr-router.fl-guest.ucar.edu:/data/hcr/data.archiver/images/catalog/202405\* images/catalog
+rsync -av hcr@hcr-router.fl-guest.ucar.edu:/data/hcr/data.archiver/images/catalog/202406\* images/catalog
 
 echo "---------- 10 hz cfradial combined ----------"
-rsync -av hcr@hcr-router.fl-guest.ucar.edu:/data/hcr/data.archiver/cfradial/moments/10hz_combined/202405\* cfradial/moments/10hz_combined
+rsync -av hcr@hcr-router.fl-guest.ucar.edu:/data/hcr/data.archiver/cfradial/moments/10hz_combined/202406\* cfradial/moments/10hz_combined
 
 echo "---------- 100 hz cfradial long ----------"
-rsync -av hcr@hcr-router.fl-guest.ucar.edu:/data/hcr/data.archiver/cfradial/moments/100hz_long/202405\* cfradial/moments/100hz_long
+rsync -av hcr@hcr-router.fl-guest.ucar.edu:/data/hcr/data.archiver/cfradial/moments/100hz_long/202406\* cfradial/moments/100hz_long
 echo "---------- 100 hz cfradial short ----------"
-rsync -av hcr@hcr-router.fl-guest.ucar.edu:/data/hcr/data.archiver/cfradial/moments/100hz_short/202405\* cfradial/moments/100hz_short
+rsync -av hcr@hcr-router.fl-guest.ucar.edu:/data/hcr/data.archiver/cfradial/moments/100hz_short/202406\* cfradial/moments/100hz_short
 
 echo "---------- time series ----------"
-rsync -av hcr@hcr-router.fl-guest.ucar.edu:/data/hcr/data.archiver/time_series/wband/save/202405\* time_series/wband/save
+rsync -av hcr@hcr-router.fl-guest.ucar.edu:/data/hcr/data.archiver/time_series/wband/save/202406\* time_series/wband/save
