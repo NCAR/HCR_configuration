@@ -96,6 +96,11 @@ for jj=2:length(fileList)
             end
         end
     end
+    if size(indata.time,2)~=size(indata.(allVars{1}),2)
+        disp(['Time and data length do not match up at ',datestr(indata.time(end),'yyyy-mm-dd HH:MM:SS')]);
+        disp(['File ',infile]);
+        error('Stopping.')
+    end
 end
 
 timeInds=find(indata.time>=startTime & indata.time<=endTime);

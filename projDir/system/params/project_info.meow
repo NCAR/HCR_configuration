@@ -6,7 +6,7 @@
 
 setenv PROJECT_NAME meow
 
-setenv  BSCAN_MAX_ALTITUDE_KM      10.0
+setenv  BSCAN_MAX_ALTITUDE_KM      14.0
 setenv  BSCAN_MIN_ALTITUDE_KM      1.5
 
 setenv PROJ_DIR ~/git/HCR_configuration/projDir
