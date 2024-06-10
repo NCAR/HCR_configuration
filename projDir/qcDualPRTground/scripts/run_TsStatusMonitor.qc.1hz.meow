@@ -4,7 +4,7 @@ source ~/git/HCR_configuration/projDir/system/params/project_info.meow
 
 cd $PROJ_DIR/qc/params
 
-TsStatusMonitor -params TsStatusMonitor.qc -debug \
+TsStatusMonitor -params TsStatusMonitor.qc.1hz -debug \
     -start "2024 05 10 00 00 00" -end "2024 06 30 00 00 00"
 
 
