@@ -259,7 +259,7 @@ for aa=1:length(caseStart)
 
             % This step removes the noise, de-aliases, (and corrects for
             % spectral broadening)
-            [powerRMnoiseDBcorrected,powerRMnoise,powerRMnoiseDBsmooth,specVelAdj,specVelAdjSmooth]=noisePeaksAirVel_widthTest(specPowerDB.V, ...
+            [powerRMnoiseDBcorrected,powerRMnoise,powerRMnoiseDBsmooth,specVelAdj,specVelAdjSmooth]=noisePeaksAirVel_smoothingTest(specPowerDB.V, ...
                 momentsTimeOne.velRawDeAliased(:,ii),dataThis,widthCorrDelta(cfInd));
             specVelRMnoise=specVelAdj;
             specVelRMnoise(isnan(powerRMnoiseDBcorrected))=nan;
