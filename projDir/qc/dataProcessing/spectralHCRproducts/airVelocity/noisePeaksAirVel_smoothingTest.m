@@ -1,9 +1,14 @@
-function [powerRMnoiseAvRM,powerRMnoise,powerRMnoiseAvRMS,velOut,velOutS]=noisePeaksAirVel_smoothingTest(specDB,velIn,data,widthC)
+function [err]=noisePeaksAirVel_smoothingTest(specDB,velIn,data,widthC,err,figdir)
 % Find mean noise and noise threshold with following
 % Hildebrand and Sekhon, 1974 https://doi.org/10.1175/1520-0450(1974)013%3C0808:ODOTNL%3E2.0.CO;2
 % Adjust spectra so they fit in the boundaries
 
 sampleNum=length(data.time);
+
+if sampleNum~=987
+    return
+end
+
 halfSN=round(sampleNum/2);
 
 duplicateSpec=7;
@@ -40,6 +45,32 @@ movAv2(:,end-round(sampleNum/3):end)=nan;
 
 loopInds=find(any(~isnan(specDB),2));
 
+%% Create random split indices
+ind1=[];
+ind2=[];
+
+for bb=1:10
+    randP=randperm(100);
+    ind1=cat(2,ind1,randP(1:2:100)+100*(bb-1));
+    ind2=cat(2,ind2,randP(2:2:100)+100*(bb-1));
+end
+
+ind1=sort(ind1);
+ind2=sort(ind2);
+
+ind1(ind1>sampleNum-1)=[];
+ind2(ind2>sampleNum-1)=[];
+
+oneMinTwo=length(ind1)-length(ind2);
+moveInds=abs(oneMinTwo/2);
+if oneMinTwo<0
+    ind1=cat(2,ind1,ind2(end-moveInds+1:end));
+    ind2(end-moveInds+1:end)=[];
+elseif oneMinTwo>0
+    ind2=cat(2,ind2,ind1(end-moveInds+1:end));
+    ind1(end-moveInds+1:end)=[];
+end
+
 for aa=1:size(loopInds,1)
     ii=loopInds(aa); % ii is the range index
 
@@ -55,99 +86,6 @@ for aa=1:size(loopInds,1)
     [noiseThreshAll(ii),meanNoiseAll(ii)]=findNoiseThresh(testPow,meanOverPoints);
 
     % Correct for aircraft width
-    [powWidthCorr,powFilt]=smoothingTest(testPow,widthC,testVel,noiseThreshAll(ii),sampleNum);
-    powWClarge=repmat(powWidthCorr,1,duplicateSpec+2);
-    powShift=powWClarge(sampleNum*2-minIndTest:sampleNum*2-minIndTest+length(velSpecLarge)-1);
-
-    powSlarge=repmat(powFilt,1,duplicateSpec+2);
-    powShiftS=powSlarge(sampleNum*2-minIndTest:sampleNum*2-minIndTest+length(velSpecLarge)-1);
-
-    % Remove noise below threshold for corrected
-    thisMovRM=powShift;
-    thisMovRM(thisMovRM<noiseThreshAll(ii))=nan;
-    thisMask1=~isnan(thisMovRM);
-    thisMovRM(thisMask1==0)=nan;
-
-    % Find indices of maxima
-    maxMov=max(thisMov,[],2,'omitmissing');
-    maxInds=find(thisMov==maxMov);
-
-    % Find correct velocity
-    velAtInds=velSpecLarge(maxInds);
-    [~,velDiffMin]=min(abs(velAtInds-velIn(ii)));
-    velDiffMinInd=maxInds(velDiffMin);
-
-    smallerInds=largeInds(velDiffMinInd-halfSN:velDiffMinInd+halfSN);
-    smallerMask=thisMask1(smallerInds);
-    smallerMov=thisMov(smallerInds);
-    maxInd1=find(smallerMov==maxMov);
-
-    specRegs=bwconncomp(smallerMask);
-
-    for jj=1:specRegs.NumObjects
-        if ~ismember(maxInd1,specRegs.PixelIdxList{jj})
-            smallerMask(specRegs.PixelIdxList{jj})=0;
-        end
-    end
-
-    maskOneInd=find(smallerMask,1,'first');
-    finalInds=smallerInds(maskOneInd):smallerInds(maskOneInd)+sampleNum-1;
-
-     if ~isempty(finalInds)
-        largeMask=zeros(size(largeInds));
-        largeMask(smallerInds)=smallerMask;
-
-        thisMovRM(largeMask==0)=nan;
-        thisMovRM=thisMovRM(finalInds);
-       
-        thisVel=velSpecLarge(finalInds);
-
-        powerRMnoiseAvRM(ii,:)=thisMovRM;
-        velOut(ii,:)=thisVel;
-    else
-        continue
-    end
-
-    % Remove noise below threshold for smooth
-    thisMovRMS=powShiftS;
-    thisMovRMS(thisMovRMS<noiseThreshAll(ii))=nan;
-    thisMask1=~isnan(thisMovRMS);
-    thisMovRMS(thisMask1==0)=nan;
-
-    % Find correct velocity
-    smallerMask=thisMask1(smallerInds);
-    smallerMov=thisMov(smallerInds);
-    maxInd1=find(smallerMov==maxMov);
-
-    specRegs=bwconncomp(smallerMask);
-
-    for jj=1:specRegs.NumObjects
-        if ~ismember(maxInd1,specRegs.PixelIdxList{jj})
-            smallerMask(specRegs.PixelIdxList{jj})=0;
-        end
-    end
-
-    maskOneInd=find(smallerMask,1,'first');
-    finalInds=smallerInds(maskOneInd):smallerInds(maskOneInd)+sampleNum-1;
-
-    if ~isempty(finalInds)
-        largeMask=zeros(size(largeInds));
-        largeMask(smallerInds)=smallerMask;
-
-        thisMovRMS(largeMask==0)=nan;
-        thisMovRMS=thisMovRMS(finalInds);
-
-        thisPowOrigRMnoise=powerSpecLarge(ii,finalInds);
-        thisPowOrigRMnoise(isnan(thisMovRMS))=nan;
-        powerRMnoise(ii,:)=thisPowOrigRMnoise;
-
-        thisVelS=velSpecLarge(finalInds);
-
-        velOutS(ii,:)=thisVelS;
-       
-        powerRMnoiseAvRMS(ii,:)=thisMovRMS;
-    else
-        continue
-    end
+    [err]=smoothingTest(testPow,widthC,testVel,noiseThreshAll(ii),sampleNum,err,ind1,ind2,figdir);
 end
 end

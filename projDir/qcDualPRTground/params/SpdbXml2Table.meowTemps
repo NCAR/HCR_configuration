@@ -276,6 +276,34 @@ xml_entries = {
     label = "PentekBoardTemp",
     required = FALSE
   }
+  ,
+  {
+    xml_tag_list = "<HcrTransmitterStatus><BodyCurrent>",
+    specify_label = TRUE,
+    label = "BodyCurrent",
+    required = FALSE
+  }
+  ,
+  {
+    xml_tag_list = "<HcrTransmitterStatus><CathodeVoltage>",
+    specify_label = TRUE,
+    label = "CathodeVoltage",
+    required = FALSE
+  }
+  ,
+  {
+    xml_tag_list = "<HcrTransmitterStatus><CollectorCurrent>",
+    specify_label = TRUE,
+    label = "CollectorCurrent",
+    required = FALSE
+  }
+  ,
+  {
+    xml_tag_list = "<HcrReceiverStatus><Locked15_5GHzPLO>",
+    specify_label = TRUE,
+    label = "Locked15_5GHzPLO",
+    required = FALSE
+  }
 };
 
 //======================================================================

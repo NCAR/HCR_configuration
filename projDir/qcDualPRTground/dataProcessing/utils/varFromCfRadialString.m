@@ -7,11 +7,8 @@ try
     tempInds=find(cellfun(@isempty,temp_lines)==0);
     tempCellsLines=status_xml_lines(tempInds);
     tempCellsSplit = regexp(tempCellsLines, '[><]', 'split');
-    outValue=str2num(tempCellsSplit{1,1}{1,3});
-    if size(tempCellsSplit,1)>1
-        disp(['More than one line with ' varName ' found.']);
-        disp('Check if the first one is really the one you want.');
-    end
+    rightCell=find(cellfun(@(c) any(strcmp(c, varName)),tempCellsSplit));
+    outValue=str2num(tempCellsSplit{rightCell,1}{1,3});
 catch
     disp(['Variable ' varName ' not found. Passing NAN.']);
     outValue=nan;

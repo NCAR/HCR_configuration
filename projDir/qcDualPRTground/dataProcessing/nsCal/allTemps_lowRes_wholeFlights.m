@@ -19,7 +19,7 @@ indir=HCRdir(project,quality,qcVersion,freqData);
 figdir=[indir(1:end-14),'temperatures/'];
 
 
-for jj=1:size(caseList,1)
+for jj=7:size(caseList,1)
     
     disp(['IOP ',num2str(jj),' of ',num2str(size(caseList,1))]);
     startTime=datetime(caseList(jj,1:6));
