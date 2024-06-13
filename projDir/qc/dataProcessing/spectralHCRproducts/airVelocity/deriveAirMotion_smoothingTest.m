@@ -374,6 +374,7 @@ H=histcounts(bestZeroAll,numZero-0.5);
 [maxH,maxIndH]=max(H);
 
 %% Plot
+
 close all
 
 f1 = figure('Position',[200 500 700 850],'DefaultAxesFontSize',12,'renderer','painters');
@@ -385,35 +386,35 @@ hold on
 l1=plot(numZero,errMean,'-b','LineWidth',2);
 l2=plot(numZero,errMean+errStd,'-k','LineWidth',0.7);
 plot(numZero,errMean-errStd,'-k','LineWidth',0.7);
-ylim([3,6]);
+ylim([2,6]);
 
 scatter(bestZero,minErr,60,'filled','red')
 legend([l1,l2],{'Mean','St. dev.'},'Location','southeast')
 
-text(bestZero,minErr-0.3,['Minimum error at ',num2str(bestZero),' zeros.'],'fontsize',12)
+text(50,2.7,['Minimum error at ',num2str(bestZero),' non-zeros.'],'fontsize',12)
 
-text(bestZero,5.8,['Number of spectra: ',num2str(size(errAll,2)/2),' x2'],'fontsize',14)
-text(bestZero,5.6,['Error without smoothing: ',num2str(errMean(end),3)],'fontsize',12)
+text(50,5.8,['Number of spectra: ',num2str(size(errAll,2)/2),' x2'],'fontsize',12)
+text(50,5.6,['Error without smoothing: ',num2str(errMean(end),3)],'fontsize',12)
 
 grid on
 box on
 
-xlabel('Number of zeros')
+xlabel('Number of non-zeros')
 ylabel('Root mean square error')
 
-title('RMSE vs number of zeros')
+title('RMSE vs number of non-zeros')
 
 s2=nexttile(2);
 
 bar(numZero(1:end-1),H,1)
 
-xlabel('Number of zeros');
+xlabel('Number of non-zeros');
 title('Distribution of minima')
 
 grid on
 box on
 
-text(151,2000,['Peak at ',num2str(numZero(maxIndH)),' zeros.'],'fontsize',12)
+text(151,22000,['Peak at ',num2str(numZero(maxIndH)),' non-zeros.'],'fontsize',12)
 
 set(gcf,'PaperPositionMode','auto')
 print(f1,[figdir,project,'_smoothingAnalysis_random'],'-dpng','-r0');
