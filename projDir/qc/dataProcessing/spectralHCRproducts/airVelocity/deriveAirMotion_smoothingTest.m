@@ -10,8 +10,8 @@ qualityCF='qc1';
 freqData='10hz';
 qcVersion='v1.2';
 
-plotInds=0;
-%plotInds=(1:50:500);
+%plotInds=0;
+plotInds=(1:50:500);
 
 outTime=0.1; % Desired output time resolution in seconds. Must be less than or equal to one second.
 sampleTime=0.1; % Length of sample in seconds.
@@ -58,6 +58,7 @@ for aa=1:length(caseStart)
     dataCF.VEL_RAW=[];
     dataCF.VEL_CORR=[];
     dataCF.VEL_MASKED=[];
+    %dataCF.SNR=[];
     dataCF.eastward_velocity=[];
     dataCF.northward_velocity=[];
          
@@ -253,6 +254,10 @@ for aa=1:length(caseStart)
             specPowerLin.V(isnan(momentsTimeOne.vel(:,ii)),:)=nan;
             specPowerDB.V(isnan(momentsTimeOne.vel(:,ii)),:)=nan;
 
+            % % Censor on SNR
+            % snrThresh=20;
+            % specPowerDB.V(dataCF.SNR(:,cfInd)<snrThresh,:)=nan;
+
             %% Remove noise, find edge points and peaks
             if ismember(ii,plotInds)
                 plotTime=momentsTimeOne.time(ii);
@@ -264,7 +269,7 @@ for aa=1:length(caseStart)
             % This step removes the noise, de-aliases, (and corrects for
             % spectral broadening)
             [err]=noisePeaksAirVel_smoothingTest(specPowerDB.V, ...
-                momentsTimeOne.velRawDeAliased(:,ii),dataThis,widthCorrDelta(cfInd),err,figdir);
+                momentsTimeOne.velRawDeAliased(:,ii),dataThis,widthCorrDelta(cfInd),err,figdir,plotTime);
         end
 
         %% Add to output
@@ -297,6 +302,7 @@ for aa=1:length(caseStart)
     errStd=std(err,0,2);
 
     [minErr,minInd]=min(errMean);
+    [minStd,minStdInd]=min(errStd);
 
     numZero=2:250;
 
@@ -321,21 +327,31 @@ for aa=1:length(caseStart)
     l1=plot(numZero,errMean,'-b','LineWidth',2);
     l2=plot(numZero,errMean+errStd,'-k','LineWidth',0.7);
     plot(numZero,errMean-errStd,'-k','LineWidth',0.7);
-    ylim([2,6]);
+    ylim([4.5,7]);
 
     scatter(bestZero,minErr,60,'filled','red')
-    legend([l1,l2],{'Mean','St. dev.'},'Location','southeast')
+    scatter(numZero(maxIndH),errMean(maxIndH),60,'filled','green')
 
-    text(50,2.7,['Minimum error at ',num2str(bestZero),' non-zeros.'],'fontsize',12)
+    text(50,6.8,['Number of spectra: ',num2str(size(err,2)/2),' x2'],'fontsize',12)
+    text(50,6.6,['Error without smoothing: ',num2str(errMean(end),3)],'fontsize',12)
+    text(50,6.4,['Error at peak of ',num2str(numZero(maxIndH)),' non-zeros: ',num2str(errMean(maxIndH))],'fontsize',12)
+    text(50,6.2,['Minimum error at ',num2str(bestZero),' non-zeros: ',num2str(minErr)],'fontsize',12)
+    text(50,6.0,['Minimum standard deviation at ',num2str(numZero(minStdInd)),' non-zeros: ',num2str(minStd)],'fontsize',12)
 
-    text(50,5.8,['Number of spectra: ',num2str(size(err,2)/2),' x2'],'fontsize',12)
-    text(50,5.6,['Error without smoothing: ',num2str(errMean(end),3)],'fontsize',12)
+    ylabel('Root mean square error')
+
+    yyaxis right
+    l3=plot(numZero,errStd,'-c','LineWidth',2);
+    ylim([0.2,0.45]);
+    scatter(numZero(minStdInd),minStd,60,'filled','magenta')
+
+    legend([l1,l2,l3],{'Mean','St. dev.','St. dev.'},'Location','southeast')
 
     grid on
     box on
 
     xlabel('Number of non-zeros')
-    ylabel('Root mean square error')
+    ylabel('Standard deviation')
 
     title('RMSE vs number of non-zeros')
 
@@ -349,10 +365,8 @@ for aa=1:length(caseStart)
     grid on
     box on
 
-    text(151,2000,['Peak at ',num2str(numZero(maxIndH)),' non-zeros.'],'fontsize',12)
-
     set(gcf,'PaperPositionMode','auto')
-    print(f1,[figdir,project,'_smoothingAnalysis_random_',datestr(momentsSpecBasic.time(1),'yyyymmdd_HHMMSS'),'_to_',datestr(momentsSpecBasic.time(end),'yyyymmdd_HHMMSS')],'-dpng','-r0');
+    print(f1,[figdir,project,'_smoothingAnalysis_everyOther_',datestr(momentsSpecBasic.time(1),'yyyymmdd_HHMMSS'),'_to_',datestr(momentsSpecBasic.time(end),'yyyymmdd_HHMMSS')],'-dpng','-r0');
 
     errAll=cat(2,errAll,err);
 end
@@ -361,6 +375,7 @@ errMean=mean(errAll,2);
 errStd=std(errAll,0,2);
 
 [minErr,minInd]=min(errMean);
+[minStd,minStdInd]=min(errStd);
 
 numZero=2:250;
 
@@ -374,7 +389,6 @@ H=histcounts(bestZeroAll,numZero-0.5);
 [maxH,maxIndH]=max(H);
 
 %% Plot
-
 close all
 
 f1 = figure('Position',[200 500 700 850],'DefaultAxesFontSize',12,'renderer','painters');
@@ -386,15 +400,17 @@ hold on
 l1=plot(numZero,errMean,'-b','LineWidth',2);
 l2=plot(numZero,errMean+errStd,'-k','LineWidth',0.7);
 plot(numZero,errMean-errStd,'-k','LineWidth',0.7);
-ylim([2,6]);
+ylim([4.5,7]);
 
 scatter(bestZero,minErr,60,'filled','red')
+scatter(numZero(maxIndH),errMean(maxIndH),60,'filled','green')
 legend([l1,l2],{'Mean','St. dev.'},'Location','southeast')
 
-text(50,2.7,['Minimum error at ',num2str(bestZero),' non-zeros.'],'fontsize',12)
+text(50,4.9,['Error at peak: ',num2str(errMean(maxIndH))],'fontsize',12)
+text(50,4.7,['Minimum error at ',num2str(bestZero),' non-zeros: ',num2str(minErr)],'fontsize',12)
 
-text(50,5.8,['Number of spectra: ',num2str(size(errAll,2)/2),' x2'],'fontsize',12)
-text(50,5.6,['Error without smoothing: ',num2str(errMean(end),3)],'fontsize',12)
+text(50,6.8,['Number of spectra: ',num2str(size(errAll,2)/2),' x2'],'fontsize',12)
+text(50,6.6,['Error without smoothing: ',num2str(errMean(end),3)],'fontsize',12)
 
 grid on
 box on
@@ -414,7 +430,7 @@ title('Distribution of minima')
 grid on
 box on
 
-text(151,22000,['Peak at ',num2str(numZero(maxIndH)),' non-zeros.'],'fontsize',12)
+text(151,1400,['Peak at ',num2str(numZero(maxIndH)),' non-zeros.'],'fontsize',12)
 
 set(gcf,'PaperPositionMode','auto')
-print(f1,[figdir,project,'_smoothingAnalysis_random'],'-dpng','-r0');
+print(f1,[figdir,project,'_smoothingAnalysis_everyOther'],'-dpng','-r0');
