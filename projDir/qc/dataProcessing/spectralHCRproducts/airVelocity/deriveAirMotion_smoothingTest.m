@@ -36,11 +36,13 @@ caseEnd=datetime(caseList.Var7,caseList.Var8,caseList.Var9, ...
     caseList.Var10,caseList.Var11,caseList.Var12);
 
 errAll=[];
+residAll=[];
 
 for aa=1:length(caseStart)
     tic
 
     err=[];
+    resid=[];
 
     plotTimeAll=[];
     disp(['Case ',num2str(aa),' of ',num2str(length(caseStart))]);
@@ -268,8 +270,8 @@ for aa=1:length(caseStart)
 
             % This step removes the noise, de-aliases, (and corrects for
             % spectral broadening)
-            [err]=noisePeaksAirVel_smoothingTest(specPowerDB.V, ...
-                momentsTimeOne.velRawDeAliased(:,ii),dataThis,widthCorrDelta(cfInd),err,figdir,plotTime);
+            [err,resid]=noisePeaksAirVel_smoothingTest(specPowerDB.V, ...
+                momentsTimeOne.velRawDeAliased(:,ii),dataThis,widthCorrDelta(cfInd),err,resid,figdir,plotTime);
         end
 
         %% Add to output
@@ -300,6 +302,8 @@ for aa=1:length(caseStart)
 
     errMean=mean(err,2);
     errStd=std(err,0,2);
+
+    residStd=std(resid);
 
     [minErr,minInd]=min(errMean);
     [minStd,minStdInd]=min(errStd);
@@ -338,6 +342,8 @@ for aa=1:length(caseStart)
     text(50,6.2,['Minimum error at ',num2str(bestZero),' non-zeros: ',num2str(minErr)],'fontsize',12)
     text(50,6.0,['Minimum standard deviation at ',num2str(numZero(minStdInd)),' non-zeros: ',num2str(minStd)],'fontsize',12)
 
+    text(50,4.7,['Standard deviation of noise: ',num2str(residStd)],'fontsize',12)
+
     ylabel('Root mean square error')
 
     yyaxis right
@@ -369,10 +375,13 @@ for aa=1:length(caseStart)
     print(f1,[figdir,project,'_smoothingAnalysis_everyOther_',datestr(momentsSpecBasic.time(1),'yyyymmdd_HHMMSS'),'_to_',datestr(momentsSpecBasic.time(end),'yyyymmdd_HHMMSS')],'-dpng','-r0');
 
     errAll=cat(2,errAll,err);
+    residAll=cat(2,residAll,resid);
 end
 
 errMean=mean(errAll,2);
 errStd=std(errAll,0,2);
+
+residStd=std(residAll,0,2);
 
 [minErr,minInd]=min(errMean);
 [minStd,minStdInd]=min(errStd);
@@ -404,19 +413,29 @@ ylim([4.5,7]);
 
 scatter(bestZero,minErr,60,'filled','red')
 scatter(numZero(maxIndH),errMean(maxIndH),60,'filled','green')
-legend([l1,l2],{'Mean','St. dev.'},'Location','southeast')
-
-text(50,4.9,['Error at peak: ',num2str(errMean(maxIndH))],'fontsize',12)
-text(50,4.7,['Minimum error at ',num2str(bestZero),' non-zeros: ',num2str(minErr)],'fontsize',12)
 
 text(50,6.8,['Number of spectra: ',num2str(size(errAll,2)/2),' x2'],'fontsize',12)
 text(50,6.6,['Error without smoothing: ',num2str(errMean(end),3)],'fontsize',12)
+text(50,6.4,['Error at peak of ',num2str(numZero(maxIndH)),' non-zeros: ',num2str(errMean(maxIndH))],'fontsize',12)
+text(50,6.2,['Minimum error at ',num2str(bestZero),' non-zeros: ',num2str(minErr)],'fontsize',12)
+text(50,6.0,['Minimum standard deviation at ',num2str(numZero(minStdInd)),' non-zeros: ',num2str(minStd)],'fontsize',12)
+
+text(50,4.7,['Standard deviation of noise: ',num2str(residStd)],'fontsize',12)
+
+ylabel('Root mean square error')
+
+yyaxis right
+l3=plot(numZero,errStd,'-c','LineWidth',2);
+ylim([0.2,0.45]);
+scatter(numZero(minStdInd),minStd,60,'filled','magenta')
+
+legend([l1,l2,l3],{'Mean','St. dev.','St. dev.'},'Location','southeast')
 
 grid on
 box on
 
 xlabel('Number of non-zeros')
-ylabel('Root mean square error')
+ylabel('Standard deviation')
 
 title('RMSE vs number of non-zeros')
 
@@ -429,8 +448,6 @@ title('Distribution of minima')
 
 grid on
 box on
-
-text(151,1400,['Peak at ',num2str(numZero(maxIndH)),' non-zeros.'],'fontsize',12)
 
 set(gcf,'PaperPositionMode','auto')
 print(f1,[figdir,project,'_smoothingAnalysis_everyOther'],'-dpng','-r0');

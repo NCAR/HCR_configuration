@@ -1,4 +1,4 @@
-function [err]=noisePeaksAirVel_smoothingTest(specDB,velIn,data,widthC,err,figdir,plotTime)
+function [err,resid]=noisePeaksAirVel_smoothingTest(specDB,velIn,data,widthC,err,resid,figdir,plotTime)
 % Find mean noise and noise threshold with following
 % Hildebrand and Sekhon, 1974 https://doi.org/10.1175/1520-0450(1974)013%3C0808:ODOTNL%3E2.0.CO;2
 % Adjust spectra so they fit in the boundaries
@@ -43,32 +43,6 @@ movAv2(:,end-round(sampleNum/3):end)=nan;
 
 loopInds=find(any(~isnan(specDB),2));
 
-%% Create random split indices
-ind1=[];
-ind2=[];
-
-for bb=1:10
-    randP=randperm(100);
-    ind1=cat(2,ind1,randP(1:2:100)+100*(bb-1));
-    ind2=cat(2,ind2,randP(2:2:100)+100*(bb-1));
-end
-
-ind1=sort(ind1);
-ind2=sort(ind2);
-
-ind1(ind1>sampleNum-1)=[];
-ind2(ind2>sampleNum-1)=[];
-
-oneMinTwo=length(ind1)-length(ind2);
-moveInds=abs(oneMinTwo/2);
-if oneMinTwo<0
-    ind1=cat(2,ind1,ind2(end-moveInds+1:end));
-    ind2(end-moveInds+1:end)=[];
-elseif oneMinTwo>0
-    ind2=cat(2,ind2,ind1(end-moveInds+1:end));
-    ind1(end-moveInds+1:end)=[];
-end
-
 for aa=1:size(loopInds,1)
     ii=loopInds(aa); % ii is the range index
 
@@ -83,11 +57,22 @@ for aa=1:size(loopInds,1)
     % Find noise floor and noise threshold
     [noiseThreshAll(ii),meanNoiseAll(ii)]=findNoiseThresh(testPow,meanOverPoints);
 
+    % Mean velocity
+    noiseLinV=10.^(data.noise_v./10);
+    sigInLin=10.^(testPow./10)-noiseLinV;
+
+    % VEL
+    meanVel=sum(sigInLin.*testVel,'omitmissing')/sum(sigInLin,'omitmissing');
+
     filterAt=8;
 
     % Correct for aircraft width
     [err,errCat,sigWidthCorr,sigFiltered,signalIn1,signalIn2,sigFiltered1,sigFiltered2,inds1,inds2]= ...
-        smoothingTest(filterAt,testPow,widthC,testVel,noiseThreshAll(ii),sampleNum,err,ind1,ind2,figdir);
+        smoothingTest(filterAt,testPow,meanVel,widthC,testVel,sampleNum,err);
+
+    % Calculate standar deviation of noise
+    resid=cat(2,resid,testPow-sigFiltered(filterAt-1,:));
+
 
     if ismember(ii,plotRangeInds) & ~isempty(plotTime)
 
