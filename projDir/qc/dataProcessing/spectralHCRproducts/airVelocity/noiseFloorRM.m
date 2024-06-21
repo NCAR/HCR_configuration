@@ -23,7 +23,7 @@ testValley=min(sigWidthCorr)+noiseStd;
 if ~isempty(vIVs)
     valDiff=1;
     ii=1;
-    while valDiff>0
+    while valDiff>0 & ii<=size(vIVs,1)
         valDiff=vIVs(ii,2)-testValley;
         if valDiff>0
             pIV(pIV(:,2)>vIVs(ii,2),:)=nan;
