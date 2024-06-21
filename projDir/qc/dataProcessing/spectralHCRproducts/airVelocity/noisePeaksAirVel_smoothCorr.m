@@ -1,17 +1,15 @@
 function [powerRMnoiseAvRM,powerRMnoise,powerRMnoiseAvRMS,velOut,velOutS]=noisePeaksAirVel_smoothCorr(specDB,velIn,data,widthC,figdir,plotTime)
-% Find mean noise and noise threshold with following
-% Hildebrand and Sekhon, 1974 https://doi.org/10.1175/1520-0450(1974)013%3C0808:ODOTNL%3E2.0.CO;2
-% Adjust spectra so they fit in the boundaries
-powerRMnoiseAvRM=[];
-powerRMnoise=[];
-powerRMnoiseAvRMS=[];
-velOut=[];
-velOutS=[];
+
+powerRMnoiseAvRM=nan(size(specDB));
+powerRMnoise=nan(size(specDB));
+powerRMnoiseAvRMS=nan(size(specDB));
+velOut=nan(size(specDB));
+%velOutS=nan(size(specDB));
 
 
 % Decide if and what to plot
-plotAll=1; % Set to 1 if everything should be plotted. Plots won't be saved.
-showPlot='on';
+plotAll=0; % Set to 1 if everything should be plotted. Plots won't be saved.
+showPlot='off';
 
 if plotAll
     plotRangeInds=18:10:size(specDB,1);
@@ -21,8 +19,9 @@ else
 end
 
 sampleNum=length(data.time);
+halfSN=round(sampleNum/2);
 
-duplicateSpec=7;
+duplicateSpec=9;
 
 % Add spectra side by side
 powerSpecLarge=repmat(specDB,1,duplicateSpec);
@@ -30,16 +29,17 @@ powerSpecLarge=repmat(specDB,1,duplicateSpec);
 velSpecLarge=-duplicateSpec*pi:2*pi/(sampleNum):duplicateSpec*pi;
 velSpecLarge=velSpecLarge(1:end-1).*data.lambda./(4*pi.*repmat(data.prt,1,duplicateSpec));
 
-meanNoiseAll=nan(size(specDB,1),1);
-noiseThreshAll=meanNoiseAll;
+largeInds=1:length(velSpecLarge);
+
+noiseFloorAll=nan(size(specDB,1),1);
 
 %% Remove noise
 % Moving average
-meanOverPoints=round(sampleNum/3);
+meanOverPoints=round(sampleNum/2);
 movAv=movmedian(powerSpecLarge,meanOverPoints,2);
 
-movAv(:,1:round(sampleNum/3))=nan;
-movAv(:,end-round(sampleNum/3):end)=nan;
+movAv(:,1:meanOverPoints)=nan;
+movAv(:,end-meanOverPoints:end)=nan;
 
 [~,minIndTest]=min(movAv,[],2);
 
@@ -69,34 +69,103 @@ filterAt=8;
 sigPeaks=islocalmax(sigWidthCorr,2);
 sigValleys=islocalmin(sigWidthCorr,2);
 
+% Find noise floor and put spectra back together
 noiseStd=5.52;
+
+minIndTest(minIndTest>sampleNum)=minIndTest(minIndTest>sampleNum)-sampleNum;
 
 for aa=1:size(loopInds,1)
     ii=loopInds(aa); % ii is the range index
 
     % Find noise floor and remove noise
-    [sigWidthCorrRMnoise,noiseThresh]=noiseFloorRM(sigWidthCorr(ii,:),noiseStd,sigPeaks(ii,:),sigValleys(ii,:),testVel(ii,:),fakeMeanVel(ii));
+    [sigWidthCorrRMnoise,noiseFloorAll(ii),peaksOut]=noiseFloorRM(sigWidthCorr(ii,:),noiseStd,sigPeaks(ii,:),sigValleys(ii,:),testVel(ii,:),fakeMeanVel(ii));
+
+    % Create new large spectrum
+    newSpecLarge=repmat(sigWidthCorrRMnoise,1,duplicateSpec);
+    
+    % Check for two data stretches
+    rmNoiseInds=find(~isnan(sigWidthCorrRMnoise));
+    testDiff=diff(rmNoiseInds);
+    if max(abs(testDiff))>1
+        if ~isnan(sigWidthCorrRMnoise(1)) & ~isnan(sigWidthCorrRMnoise(end))
+            firstNan=find(isnan(sigWidthCorrRMnoise),1,'first');
+            newSpecLarge(1:firstNan)=nan;
+        else
+            stopHere=1;
+        end
+    end
+    newSpecLarge=cat(2,nan(1,minIndTest(ii)),newSpecLarge);
+    newSpecLarge(end-minIndTest(ii)+1:end)=[];
+
+    firstPowInd=find(~isnan(newSpecLarge),1,'first');
+
+    peaksOut(:,1)=peaksOut(:,1)-firstPowInd+minIndTest(ii)+1;
+
+    filteredSpecLarge=repmat(sigFiltered(ii,:),1,duplicateSpec);
+    filteredSpecLarge=cat(2,nan(1,minIndTest(ii)),filteredSpecLarge);
+    filteredSpecLarge(end-minIndTest(ii)+1:end)=[];
+
+    wcSpecLarge=repmat(sigWidthCorr(ii,:),1,duplicateSpec);
+    wcSpecLarge=cat(2,nan(1,minIndTest(ii)),wcSpecLarge);
+    wcSpecLarge(end-minIndTest(ii)+1:end)=[];
+
+    newSpecLargeCut=newSpecLarge;
+    newSpecLargeCut(1:firstPowInd-1)=[];
+
+    specVelLargeCut=velSpecLarge;
+    specVelLargeCut(1:firstPowInd-1)=[];
+
+    % Find indices of maxima
+    maxSpecLarge=max(newSpecLargeCut,[],2,'omitmissing');
+    maxInds=find(newSpecLargeCut==maxSpecLarge);
+
+    % Find correct velocity
+    velAtInds=specVelLargeCut(maxInds);
+    [~,velDiffMin]=min(abs(velAtInds-velIn(ii)));
+    velDiffMinInd=maxInds(velDiffMin);
+
+    sampleMult=floor(velDiffMinInd/sampleNum);
+    getIndsStart=sampleMult*sampleNum+firstPowInd;
+
+    % Fill output variables
+    powerRMnoiseAvRM(ii,:)=newSpecLarge(getIndsStart:getIndsStart+sampleNum-1);
+
+    powerOrig=powerSpecLarge(ii,getIndsStart:getIndsStart+sampleNum-1);
+    powOrigRMnoise=powerOrig;
+    powOrigRMnoise(isnan(powerRMnoiseAvRM(ii,:)))=nan;
+    powerRMnoise(ii,:)=powOrigRMnoise;
+
+    powerSmooth=filteredSpecLarge(getIndsStart:getIndsStart+sampleNum-1);
+    powerSmooth(isnan(powerRMnoiseAvRM(ii,:)))=nan;
+    powerRMnoiseAvRMS(ii,:)=powerSmooth;
+
+    velOut(ii,:)=velSpecLarge(getIndsStart:getIndsStart+sampleNum-1);
 
     if ismember(ii,plotRangeInds) & ~isempty(plotTime)
 
         close all
 
         %close all
-        f1=figure('Position',[200 500 1000 1100],'DefaultAxesFontSize',12,'renderer','painters','visible',showPlot);
-        t = tiledlayout(3,1,'TileSpacing','tight','Padding','tight');
-       
+        f1=figure('Position',[200 500 1000 500],'DefaultAxesFontSize',12,'renderer','painters','visible',showPlot);
+        t = tiledlayout(1,1,'TileSpacing','tight','Padding','tight');
+
         s1=nexttile(1);
 
         hold on
-        plot(testVel(ii,:),testPow(ii,:),'-b','LineWidth',1)
-        plot(testVel(ii,:),sigFiltered(ii,:),'-g','LineWidth',2)
-        plot(testVel(ii,:),sigWidthCorr(ii,:),'-k','LineWidth',2)
-        plot(testVel(ii,:),sigWidthCorrRMnoise,'-r','LineWidth',2)
+        plot(velOut(ii,:),powerOrig,'-b','LineWidth',0.5);
+        l1=plot(velOut(ii,:),powerRMnoise(ii,:),'-b','LineWidth',1);
+        plot(velOut(ii,:),filteredSpecLarge(getIndsStart:getIndsStart+sampleNum-1),'-g','LineWidth',1);
+        l2=plot(velOut(ii,:),powerRMnoiseAvRMS(ii,:),'-g','LineWidth',2);
+        plot(velOut(ii,:),wcSpecLarge(getIndsStart:getIndsStart+sampleNum-1),'-r','LineWidth',1);
+        l3=plot(velOut(ii,:),powerRMnoiseAvRM(ii,:),'-r','LineWidth',2);
+        l4=plot(velOut(ii,:),repmat(noiseFloorAll(ii),size(velOut(ii,:))),'-c','LineWidth',1.5);
+        l5=scatter(velOut(ii,peaksOut(:,1)),peaksOut(:,2),70,'m','filled','MarkerEdgeColor','black');
         hold off
 
-        xlim([testVel(ii,1),testVel(ii,end)]);
+        xlim([velOut(ii,1),velOut(ii,end)]);
 
-        legend({'Original signal','Filtered','Filtered width corrected','Without noise'},'Location','northoutside','Orientation','horizontal');
+        legend([l1,l2,l3,l4,l5],{'Original','Filtered','Filtered width corr','Noise floor','Peaks'}, ...
+            'Location','northoutside','Orientation','horizontal');
 
         grid on
         box on
@@ -107,4 +176,5 @@ for aa=1:size(loopInds,1)
         end
     end
 end
+velOutS=velOut;
 end

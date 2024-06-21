@@ -4,8 +4,8 @@ function plotWidths(moments,momentsSpBasic,momentsSpNoNoise,momentsSpSmooth,mome
 aslGood=momentsSpBasic.asl(~isnan(momentsSpBasic.velRaw))./1000;
 ylims=[0,max(aslGood)+0.5];
 
-climsWidth=[0,1.5];
-climsDiff=[-0.5,0.5];
+climsWidth=[0,2];
+climsDiff=[-0.8,0.8];
 colTwo=cat(1,[0,0,0],velCols);
 colDiff=cat(1,[0,0,0],jet);
 

@@ -28,7 +28,7 @@ end
 allVars=fieldnames(indata);
 timeDim=size(indata.time);
 if max(timeDim)==1
-    disp('Time dimension is one. Use more data.');
+    disp(['Time dimension is one in file ',infile]);
 end
 
 if timeDim(1)>timeDim(2)

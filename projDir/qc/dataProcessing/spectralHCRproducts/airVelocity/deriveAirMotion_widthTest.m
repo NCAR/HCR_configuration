@@ -10,8 +10,8 @@ qualityCF='qc1';
 freqData='10hz';
 qcVersion='v1.2';
 
-plotInds=0;
-%plotInds=(1:50:500);
+%plotInds=0;
+plotInds=(1:50:500);
 
 outTime=0.1; % Desired output time resolution in seconds. Must be less than or equal to one second.
 sampleTime=0.1; % Length of sample in seconds.
@@ -35,7 +35,7 @@ caseStart=datetime(caseList.Var1,caseList.Var2,caseList.Var3, ...
 caseEnd=datetime(caseList.Var7,caseList.Var8,caseList.Var9, ...
     caseList.Var10,caseList.Var11,caseList.Var12);
 
-for aa=1:length(caseStart)
+for aa=3:length(caseStart)
     tic
 
     plotTimeAll=[];
