@@ -1,4 +1,4 @@
-function plotWidths(moments,momentsSpBasic,momentsSpNoNoise,momentsSpSmooth,momentsSpCorrected,cf,figdir,project,showPlot)
+function plotWidths(moments,momentsSpBasic,momentsSpNoNoise,momentsSpSmooth,momentsSpCorrected,cf,plotTimeAll,figdir,project,showPlot)
 %moments.vel(:,moments.elevation>0,:)=-moments.vel(:,moments.elevation>0,:);
 
 aslGood=momentsSpBasic.asl(~isnan(momentsSpBasic.velRaw))./1000;
@@ -30,6 +30,15 @@ box on
 title('Time domain raw (m s^{-1})')
 ylim(ylims);
 xlim([moments.time(1),moments.time(end)]);
+
+plotRangeInds=[20:20:700];
+for kk=1:length(plotTimeAll)
+    times=repmat(plotTimeAll(kk),length(plotRangeInds),1);
+    alts=momentsSpBasic.asl(plotRangeInds,momentsSpBasic.time==plotTimeAll(kk));
+    scatter(times,alts./1000,36,'k','+');
+end
+
+s1.SortMethod='childorder';
 
 s2=nexttile(2);
 
@@ -165,19 +174,35 @@ title('Spectral domain, noise removed - filtered (m s^{-1})')
 ylim(ylims);
 xlim([moments.time(1),moments.time(end)]);
 
+% s10=nexttile(10);
+% 
+% momentsSpNoNoise.width(momentsSpNoNoise.width==-999)=-99;
+% 
+% surf(moments.time,moments.asl./1000,moments.width-momentsSpNoNoise.width,'edgecolor','none');
+% view(2);
+% ylabel('Altitude (km)');
+% clim(climsDiff);
+% s10.Colormap=colTwo;
+% colorbar
+% grid on
+% box on
+% title('Time domain - spectral domain noise removed (m s^{-1})')
+% ylim(ylims);
+% xlim([moments.time(1),moments.time(end)]);
+
 s10=nexttile(10);
 
-momentsSpNoNoise.width(momentsSpNoNoise.width==-999)=-99;
+momentsSpNoNoise.velRaw(isnan(momentsSpCorrected.velRaw))=-999;
 
-surf(moments.time,moments.asl./1000,moments.width-momentsSpNoNoise.width,'edgecolor','none');
+surf(moments.time,moments.asl./1000,momentsSpNoNoise.velRaw,'edgecolor','none');
 view(2);
 ylabel('Altitude (km)');
-clim(climsDiff);
+clim([-15,15]);
 s10.Colormap=colTwo;
 colorbar
 grid on
 box on
-title('Time domain - spectral domain noise removed (m s^{-1})')
+title('Velocity spectral domain filtered and corrected (m s^{-1})')
 ylim(ylims);
 xlim([moments.time(1),moments.time(end)]);
 

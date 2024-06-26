@@ -35,7 +35,7 @@ caseStart=datetime(caseList.Var1,caseList.Var2,caseList.Var3, ...
 caseEnd=datetime(caseList.Var7,caseList.Var8,caseList.Var9, ...
     caseList.Var10,caseList.Var11,caseList.Var12);
 
-for aa=3:length(caseStart)
+for aa=1:length(caseStart)
     tic
 
     plotTimeAll=[];
@@ -346,6 +346,6 @@ for aa=3:length(caseStart)
     momentsTime.asl=HCRrange2asl(momentsTime.range,momentsTime.elevation,momentsTime.altitude);
     momentsSpecBasic.asl=HCRrange2asl(momentsSpecBasic.range,momentsSpecBasic.elevation,momentsSpecBasic.altitude);
 
-    plotWidths(momentsTime,momentsSpecBasic,momentsSpecNoNoise,momentsSpecSmooth,momentsSpecCorrected,dataCF,figdir,project,showPlot);
+    plotWidths(momentsTime,momentsSpecBasic,momentsSpecNoNoise,momentsSpecSmooth,momentsSpecCorrected,dataCF,plotTimeAll,figdir,project,showPlot);
     
 end

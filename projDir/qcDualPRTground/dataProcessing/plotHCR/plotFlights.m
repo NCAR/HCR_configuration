@@ -21,7 +21,7 @@ figdir=[indir(1:end-14),'flightPlots/'];
 %% Run processing
 
 % Go through flights
-for ii=9:size(caseList,1)
+for ii=10:size(caseList,1)
 
     disp(['IOP ',num2str(ii),' of ',num2str(size(caseList,1))]);
 

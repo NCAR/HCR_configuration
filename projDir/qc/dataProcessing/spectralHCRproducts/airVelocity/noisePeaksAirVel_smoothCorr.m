@@ -100,6 +100,7 @@ for aa=1:size(loopInds,1)
     firstPowInd=find(~isnan(newSpecLarge),1,'first');
 
     peaksOut(:,1)=peaksOut(:,1)-firstPowInd+minIndTest(ii)+1;
+    peaksOut(peaksOut(:,1)<0,1)=peaksOut(peaksOut(:,1)<0,1)+sampleNum;
 
     filteredSpecLarge=repmat(sigFiltered(ii,:),1,duplicateSpec);
     filteredSpecLarge=cat(2,nan(1,minIndTest(ii)),filteredSpecLarge);
