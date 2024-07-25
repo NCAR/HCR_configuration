@@ -37,12 +37,14 @@ caseEnd=datetime(caseList.Var7,caseList.Var8,caseList.Var9, ...
 
 errAll=[];
 residAll=[];
+velAircAll=[];
 
 for aa=1:length(caseStart)
     tic
 
     err=[];
     resid=[];
+    velAirc=[];
 
     plotTimeAll=[];
     disp(['Case ',num2str(aa),' of ',num2str(length(caseStart))]);
@@ -272,6 +274,8 @@ for aa=1:length(caseStart)
             % spectral broadening)
             [err,resid]=noisePeaksAirVel_smoothingTest(specPowerDB.V, ...
                 momentsTimeOne.velRawDeAliased(:,ii),dataThis,widthCorrDelta(cfInd),err,resid,figdir,plotTime);
+
+            velAirc=cat(2,velAirc,repmat(velAircraft(cfInd),1,size(err,2)-size(velAirc,2)));
         end
 
         %% Add to output
@@ -376,6 +380,8 @@ for aa=1:length(caseStart)
 
     errAll=cat(2,errAll,err);
     residAll=cat(2,residAll,resid);
+    velAircAll=cat(2,velAircAll,velAirc);
+
 end
 
 errMean=mean(errAll,2);
@@ -451,3 +457,53 @@ box on
 
 set(gcf,'PaperPositionMode','auto')
 print(f1,[figdir,project,'_smoothingAnalysis_everyOther'],'-dpng','-r0');
+
+%% Split up by aircraft speed
+
+minSpeed=min(velAircAll);
+maxSpeed=max(velAircAll);
+
+startInt=floor(minSpeed/10)*10;
+endInt=ceil(maxSpeed/10)*10;
+
+edgesInt=startInt:10:endInt;
+edgesHalf=edgesInt(1:end-1)+5;
+
+peakNum=nan(length(edgesInt)-1,1);
+
+for ii=1:length(edgesInt)-1
+
+    speedInds=find(velAircAll>edgesInt(ii) & velAircAll<=edgesInt(ii+1));
+    if isempty(speedInds)
+        continue
+    end
+    errAllInt=errAll(:,speedInds);
+    [minErrAllInt,minIndAllInt]=min(errAllInt,[],1);
+    bestZeroAllInt=numZero(minIndAllInt);
+
+    Hint=histcounts(bestZeroAllInt,numZero-0.5);
+
+    [maxHint,maxIndHint]=max(Hint);
+
+    peakNum(ii)=numZero(maxIndHint);
+end
+
+%% Scatter plot
+close all
+
+f1 = figure('Position',[200 500 700 500],'DefaultAxesFontSize',12,'renderer','painters');
+
+scatter(edgesHalf,peakNum,'filled');
+xlim([edgesInt(1),edgesInt(end)]);
+ylim([min(peakNum)-1,max(peakNum)+1]);
+
+xlabel('Aircraft speed (m s^{-1})')
+ylabel('Peak at number of non-zeros')
+
+title(['Ideal smoothing vs aircraft speed: ',project]);
+
+grid on
+box on
+
+set(gcf,'PaperPositionMode','auto')
+print(f1,[figdir,project,'_smoothingAnalysis_everyOther_aircraftSpeed'],'-dpng','-r0');
