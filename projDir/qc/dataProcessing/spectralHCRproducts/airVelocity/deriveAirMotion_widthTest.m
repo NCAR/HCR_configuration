@@ -254,6 +254,7 @@ for aa=1:length(caseStart)
                 plotTime=momentsTimeOne.time(ii);
                 plotTimeAll=cat(1,plotTimeAll,plotTime);
             else
+                
                 plotTime=[];
             end
 

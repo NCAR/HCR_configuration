@@ -1,4 +1,4 @@
-function [sigWidthCorrRMnoise,noiseThresh,peaksOut]=noiseFloorRM_HilSek(sigWidthCorr,noiseStd,sigPeaks,sigValleys,testVel,fakeMeanVel)
+function [sigWidthCorrRMnoise,noiseThresh,peaksOut]=noiseFloorRM_HilSek(sigWidthCorr,noiseStd,sigPeaks,sigValleys,testVel,fakeMeanVel,aa)
 peakInds=find(sigPeaks==1);
 if sigWidthCorr(2)<sigWidthCorr(1) & sigWidthCorr(end-1)<sigWidthCorr(end)
     if sigWidthCorr(1)>sigWidthCorr(end)
@@ -50,8 +50,8 @@ if isempty(noiseThresh)
     noiseThresh=testValley;
 end
 
-avNum=10;
-[noiseThresh2,meanNoise,R2]=findNoiseThresh(sigWidthCorr,avNum);
+avNum=1;
+[noiseThresh2,meanNoise,R2]=findNoiseThresh_plotR1R2(sigWidthCorr,avNum,aa);
 
 plot(sigWidthCorr)
 hold on

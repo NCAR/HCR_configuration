@@ -79,7 +79,7 @@ for aa=1:size(loopInds,1)
 
     % Find noise floor and remove noise
     %[sigWidthCorrRMnoise,noiseFloorAll(ii),peaksOut]=noiseFloorRM(sigWidthCorr(ii,:),noiseStd,sigPeaks(ii,:),sigValleys(ii,:),testVel(ii,:),fakeMeanVel(ii));
-    [sigWidthCorrRMnoise,noiseFloorAll(ii),peaksOut]=noiseFloorRM_HilSek(sigWidthCorr(ii,:),noiseStd,sigPeaks(ii,:),sigValleys(ii,:),testVel(ii,:),fakeMeanVel(ii));
+    [sigWidthCorrRMnoise,noiseFloorAll(ii),peaksOut]=noiseFloorRM_HilSek(sigWidthCorr(ii,:),noiseStd,sigPeaks(ii,:),sigValleys(ii,:),testVel(ii,:),fakeMeanVel(ii),aa);
 
     % Create new large spectrum
     newSpecLarge=repmat(sigWidthCorrRMnoise,1,duplicateSpec);
@@ -178,5 +178,5 @@ for aa=1:size(loopInds,1)
         end
     end
 end
-velOutS=velOut;
+ velOutS=velOut;
 end
