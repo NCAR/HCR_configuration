@@ -1,4 +1,4 @@
-function [noiseThresh,meanNoise,R2]=findNoiseThresh_plotR1R2(powIn,avNum,aa)
+function [noiseThresh,meanNoise,R2]=findNoiseThresh_plotR2(powIn,avNum,aa)
 % Find noise threshold and mean noise following
 % Hildebrand and Sekhon, 1974 https://doi.org/10.1175/1520-0450(1974)013%3C0808:ODOTNL%3E2.0.CO;2
 close all
