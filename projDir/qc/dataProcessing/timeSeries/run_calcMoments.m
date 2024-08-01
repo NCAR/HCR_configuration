@@ -19,7 +19,7 @@ sampleTime=0.1; % Length of sample in seconds.
 dataDirTS=HCRdir(project,quality,qcVersion,freqData);
 dataDirCF=HCRdir(project,qualityCF,qcVersion,freqData);
 
-figdir=[dataDirCF(1:end-5),'airMotion/cases/width/'];
+figdir=[dataDirCF(1:end-5),'spectralMoments/'];
 
 showPlot='on';
 
@@ -260,7 +260,7 @@ for aa=1:length(caseStart)
 
             % This step removes the noise, de-aliases, and corrects for
             % spectral broadening
-            [powerRMnoiseDBcorrected,powerRMnoise,powerRMnoiseDBsmooth,specVelAdj,specVelAdjSmooth]=noisePeaksAirVel_smoothCorr(specPowerDB.V, ...
+            [powerRMnoiseDBcorrected,powerRMnoise,powerRMnoiseDBsmooth,specVelAdj,specVelAdjSmooth]=noisePeaks_smoothCorr(specPowerDB.V, ...
                 momentsTimeOne.velRawDeAliased(:,ii),dataThis,widthCorrDelta(cfInd),figdir,plotTime);
             specVelRMnoise=specVelAdj;
             specVelRMnoise(isnan(powerRMnoiseDBcorrected))=nan;

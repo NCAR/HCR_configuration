@@ -4,11 +4,11 @@ close all;
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-project='otrec'; %socrates, aristo, cset, otrec
+project='cset'; %socrates, aristo, cset, otrec
 quality='ts'; %field, qc1, or qc2
 qualityCF='qc3';
 freqData='10hz';
-qcVersion='v3.2';
+qcVersion='v3.1';
 
 %plotInds=0;
 plotInds=(1:50:500);
@@ -19,7 +19,7 @@ sampleTime=0.1; % Length of sample in seconds.
 dataDirTS=HCRdir(project,quality,qcVersion,freqData);
 dataDirCF=HCRdir(project,qualityCF,qcVersion,freqData);
 
-figdir=[dataDirCF(1:end-5),'airMotion/cases/smoothingTest/'];
+figdir=[dataDirCF(1:end-5),'spectralMoments/smoothingTest/'];
 
 showPlot='on';
 
@@ -272,7 +272,7 @@ for aa=1:length(caseStart)
 
             % This step removes the noise, de-aliases, (and corrects for
             % spectral broadening)
-            [err,resid]=noisePeaksAirVel_smoothingTest(specPowerDB.V, ...
+            [err,resid]=noisePeaks_smoothingTest(specPowerDB.V, ...
                 momentsTimeOne.velRawDeAliased(:,ii),dataThis,widthCorrDelta(cfInd),err,resid,figdir,plotTime);
 
             velAirc=cat(2,velAirc,repmat(velAircraft(cfInd),1,size(err,2)-size(velAirc,2)));

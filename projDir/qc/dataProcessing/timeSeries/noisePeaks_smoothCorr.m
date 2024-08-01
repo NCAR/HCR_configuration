@@ -1,4 +1,4 @@
-function [powerRMnoiseAvRM,powerRMnoise,powerRMnoiseAvRMS,velOut,velOutS]=noisePeaksAirVel_smoothCorr(specDB,velIn,data,widthC,figdir,plotTime)
+function [powerRMnoiseAvRM,powerRMnoise,powerRMnoiseAvRMS,velOut,velOutS]=noisePeaks_smoothCorr(specDB,velIn,data,widthC,figdir,plotTime)
 
 powerRMnoiseAvRM=nan(size(specDB));
 powerRMnoise=nan(size(specDB));
