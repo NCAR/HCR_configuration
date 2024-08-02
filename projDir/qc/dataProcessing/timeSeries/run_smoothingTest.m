@@ -4,11 +4,11 @@ close all;
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-project='cset'; %socrates, aristo, cset, otrec
+project='socrates'; %socrates, aristo, cset, otrec
 quality='ts'; %field, qc1, or qc2
 qualityCF='qc3';
 freqData='10hz';
-qcVersion='v3.1';
+qcVersion='v3.2';
 
 %plotInds=0;
 plotInds=(1:50:500);
@@ -23,7 +23,7 @@ figdir=[dataDirCF(1:end-5),'spectralMoments/smoothingTest/'];
 
 showPlot='on';
 
-casefile=['~/git/HCR_configuration/projDir/qc/dataProcessing/HCRproducts/caseFiles/airMotion_',project,'.txt'];
+casefile=['~/git/HCR_configuration/projDir/qc/dataProcessing/HCRproducts/caseFiles/spectralSmoothing_',project,'.txt'];
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

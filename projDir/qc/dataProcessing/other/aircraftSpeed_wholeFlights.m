@@ -3,19 +3,13 @@
 clear all;
 close all;
 
-project='cset'; %socrates, aristo, cset
+project='socrates'; %socrates, aristo, cset
 quality='qc3'; %field, qc1, or qc2
-qcVersion='v3.1';
+qcVersion='v3.2';
 freqData='10hz'; % 10hz, 100hz, or 2hz
 whichModel='era5';
 
-plotYes=1;
-showPlot='off';
-
-saveData=1;
-
-thresholds.meltProbLow=0.4;
-thresholds.meltProbHigh=0.55;
+showPlot='on';
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
@@ -25,9 +19,7 @@ caseList = table2array(readtable(infile));
 
 indir=HCRdir(project,quality,qcVersion,freqData);
 
-[~,outdir]=modelDir(project,whichModel,quality,qcVersion,freqData);
-
-figdir=[indir(1:end-5),'meltLayer/wholeFlights/'];
+figdir=[indir(1:end-5),'aircraftSpeed/wholeFlights/'];
 
 if ~exist(figdir, 'dir')
     mkdir(figdir)
@@ -54,98 +46,53 @@ for aa=1:size(caseList,1)
 
     data=[];
 
-    data.DBZ_MASKED=[];
-    data.VEL_MASKED=[];
-    data.TEMP=[];
-    data.WIDTH=[];
-    data.FLAG=[];
-    data.TOPO=[];
-
-    % Check if LDR_MASKED is available
-    try
-        velTest=ncread(fileList{1},'LDR_MASKED');
-        data.LDR_MASKED=[];
-    catch
-        data.LDR=[];
-    end
+    data.altitude=[];
+    data.eastward_velocity=[];
+    data.northward_velocity=[];
 
     % Load data
     data=read_HCR(fileList,data,startTime,endTime);
 
-    if isfield(data,'LDR_MASKED')
-        data.LDR=data.LDR_MASKED;
-        data=rmfield(data,'LDR_MASKED');
-    end
-
-    data.LDR(data.FLAG~=1)=nan;
-
-    % SPICULE has noisy LDR data that needs to be pre-processed
-    if strcmp(project,'spicule')
-        disp('Pre-processing LDR ...');
-        data.LDR=preProcessLDR(data.LDR);
-    end
-
-    %% Find melting layer
-
-    disp('Finding melting layer ...')
-    data=f_meltLayer_advanced(data,thresholds,figdir);
-
-    %% Save
-    if saveData
-        disp('Saving meltLayer field ...')
-
-        meltLayer=data.meltLayer;
-        save([outdir,whichModel,'.meltLayer.',datestr(data.time(1),'YYYYmmDD_HHMMSS'),'_to_',...
-            datestr(data.time(end),'YYYYmmDD_HHMMSS'),'.Flight',num2str(aa),'.mat'],'meltLayer');
-    end
+    velAircraft=sqrt(data.eastward_velocity.^2+data.northward_velocity.^2);
 
     %% Plot in hourly increments
 
-    if plotYes
-        disp('Plotting ...');
-        ylimits=[0,6];
-        startPlot=startTime;
+    close all
 
-        while startPlot<endTime
+    disp('Plotting ...');
+    ylimitsSpeed=[0,270];
+    ylimitsAlt=[0,15];
 
-            endPlot=startPlot+minutes(20);
-            indsTest=find(data.time>=startPlot & data.time<=endPlot);
-            if length(indsTest)==0
-                startPlot=endPlot;
-                continue
-            end
-            
-            newInds=indsTest(1):round(length(indsTest)/2000):indsTest(end);
+    f1 = figure('Position',[200 500 1300 800],'DefaultAxesFontSize',12,'visible',showPlot);
+    t = tiledlayout(2,1,'TileSpacing','tight','Padding','tight');
 
-            % Resample for plotting
-            newDBZ=data.DBZ_MASKED(:,newInds);
-            if sum(sum(~isnan(newDBZ)))>300
+    ax=nexttile(1);
 
-                newLDR=data.LDR(:,newInds);
-                velPlot=data.VEL_MASKED;
-                velPlot(:,data.elevation>0)=-velPlot(:,data.elevation>0);
-                newVEL=velPlot(:,newInds);
-                newVELdiff=data.velDiff(:,newInds);
-                newDBZdiff=data.dbzDiff(:,newInds);
-                newMeltLayer=data.meltLayer(:,newInds);
-                newASL=data.asl(:,newInds);
-                newTime=data.time(newInds);
+    plot(data.time,velAircraft,'-b','LineWidth',2);
+    xlim([data.time(1),data.time(end)]);
+    ylim(ylimitsSpeed);
+    ylabel('Aircraft speed (m s^{-1})')
 
-                newProb=data.meltProb(:,newInds);
-                newProb(newProb<0.1)=nan;
+    yticks(5:20:300);
 
-                timeInds=find(data.time>=newTime(1) & data.time<=newTime(end));
-                timeForMask=data.time(timeInds);
-                aslForMask=data.asl(:,timeInds);
-                maskForPlot=data.meltMask(:,timeInds);
-                timeMat=repmat(timeForMask,size(data.DBZ_MASKED,1),1);
+    grid on
+    box on
 
-                close all
+    title(['Flight ',num2str(aa),'. Aircraft speed']);
 
-                meltTestPlot1;
-                meltTestPlot2;
-            end
-            startPlot=endPlot;
-        end
-    end
+    ax=nexttile(2);
+
+    plot(data.time,data.altitude./1000,'-b','LineWidth',2);
+    xlim([data.time(1),data.time(end)]);
+    ylim(ylimitsAlt);
+    ylabel('Aircraft altitude (km)')
+
+    grid on
+    box on
+
+    title(['Aircraft altitude']);
+
+    set(gcf,'PaperPositionMode','auto')
+    print(f1,[figdir,project,'_aircraftSpeed_Flight',num2str(aa),'.png'],'-dpng','-r0');
+
 end
