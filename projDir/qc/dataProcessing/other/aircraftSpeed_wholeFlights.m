@@ -73,7 +73,7 @@ for aa=1:size(caseList,1)
     ylim(ylimitsSpeed);
     ylabel('Aircraft speed (m s^{-1})')
 
-    yticks(5:20:300);
+    yticks(-5:20:300);
 
     grid on
     box on

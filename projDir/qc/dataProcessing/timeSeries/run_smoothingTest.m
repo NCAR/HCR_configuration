@@ -39,6 +39,9 @@ errAll=[];
 residAll=[];
 velAircAll=[];
 
+errCases=cell(length(caseStart),1);
+velAircCases=cell(length(caseStart),1);
+
 for aa=1:length(caseStart)
     tic
 
@@ -346,7 +349,8 @@ for aa=1:length(caseStart)
     text(50,6.2,['Minimum error at ',num2str(bestZero),' non-zeros: ',num2str(minErr)],'fontsize',12)
     text(50,6.0,['Minimum standard deviation at ',num2str(numZero(minStdInd)),' non-zeros: ',num2str(minStd)],'fontsize',12)
 
-    text(50,4.7,['Standard deviation of noise: ',num2str(residStd)],'fontsize',12)
+    text(50,4.9,['Standard deviation of noise: ',num2str(residStd)],'fontsize',12)
+    text(50,4.7,['Mean aircraft speed: ',num2str(mean(velAirc)),' m s^{-1}'],'fontsize',12)
 
     ylabel('Root mean square error')
 
@@ -378,9 +382,13 @@ for aa=1:length(caseStart)
     set(gcf,'PaperPositionMode','auto')
     print(f1,[figdir,project,'_smoothingAnalysis_everyOther_',datestr(momentsSpecBasic.time(1),'yyyymmdd_HHMMSS'),'_to_',datestr(momentsSpecBasic.time(end),'yyyymmdd_HHMMSS')],'-dpng','-r0');
 
+    %% Add to output
     errAll=cat(2,errAll,err);
     residAll=cat(2,residAll,resid);
     velAircAll=cat(2,velAircAll,velAirc);
+
+    errCases{aa}=err;
+    velAircCases{aa}=velAirc;
 
 end
 
@@ -507,3 +515,5 @@ box on
 
 set(gcf,'PaperPositionMode','auto')
 print(f1,[figdir,project,'_smoothingAnalysis_everyOther_aircraftSpeed'],'-dpng','-r0');
+
+save([figdir,project,'_smoothingAnalysis_everyOther_aircraftSpeed.mat'],'velAircAll','errAll','numZero');
