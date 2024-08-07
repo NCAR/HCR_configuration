@@ -517,3 +517,43 @@ set(gcf,'PaperPositionMode','auto')
 print(f1,[figdir,project,'_smoothingAnalysis_everyOther_aircraftSpeed'],'-dpng','-r0');
 
 save([figdir,project,'_smoothingAnalysis_everyOther_aircraftSpeed.mat'],'velAircAll','errAll','numZero');
+
+%% Plot cases
+
+% Collect data for scatter plot
+peakNumCases=nan(length(errCases),1);
+velAircMeanC=nan(length(errCases),1);
+
+for ii=1:length(errCases)
+    errC=errCases{ii};
+    [minErrC,minIndErrC]=min(errC,[],1);
+    bestZeroErrC=numZero(minIndErrC);
+
+    HC=histcounts(bestZeroErrC,numZero-0.5);
+
+    [maxHC,maxIndHC]=max(HC);
+
+    peakNumCases(ii)=numZero(maxIndHC);
+
+    velAircC=velAircCases{ii};
+    velAircMeanC(ii)=mean(velAircC);
+end
+
+f2 = figure('Position',[200 500 700 500],'DefaultAxesFontSize',12,'renderer','painters');
+
+scatter(velAircMeanC,peakNumCases,'filled');
+xlim([edgesInt(1),edgesInt(end)]);
+ylim([min(peakNumCases)-1,max(peakNumCases)+1]);
+
+xlabel('Aircraft speed (m s^{-1})')
+ylabel('Peak at number of non-zeros')
+
+title(['Ideal smoothing vs aircraft speed for cases: ',project]);
+
+grid on
+box on
+
+set(gcf,'PaperPositionMode','auto')
+print(f2,[figdir,project,'_smoothingAnalysis_everyOther_aircraftSpeed_cases'],'-dpng','-r0');
+
+save([figdir,project,'_smoothingAnalysis_everyOther_aircraftSpeed_cases.mat'],'velAircMeanC','peakNumCases');
