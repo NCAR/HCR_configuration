@@ -31,7 +31,7 @@ for ii=11:size(caseList,1)
     data=[];
 
     data.DBZ_long=[];
-   
+       
     %% Load data
     % Make list of files within the specified time frame
     fileList=makeFileList(indir,startTime,endTime,'xxxxxx20YYMMDDxhhmmss',1);

@@ -1,0 +1,31 @@
+#! /bin/csh
+
+# script to rsync meow data to /scr/virga1/rsfdata
+
+# go to the virga directory
+
+cd /scr/virga1/rsfdata/projects/meow/hcr/labTesting
+
+echo "---------- logs ----------"
+rsync -av hcr@hcr-router:/data/hcr/data.archiver/logs/restart/202408\* logs/restart
+rsync -av hcr@hcr-router:/data/hcr/data.archiver/logs/status/202408\* logs/status
+
+echo "---------- monitoring ----------"
+rsync -av hcr@hcr-router:/data/hcr/data.archiver/monitoring/catalog/202408\* monitoring/catalog
+
+echo "---------- spdb ----------"
+rsync -av hcr@hcr-router:/data/hcr/data.archiver/spdb/monitor/hcr/202408\* spdb/monitor/hcr
+
+echo "---------- images ----------"
+rsync -av hcr@hcr-router:/data/hcr/data.archiver/images/catalog/202408\* images/catalog
+
+echo "---------- 10 hz cfradial combined ----------"
+rsync -av hcr@hcr-router:/data/hcr/data.archiver/cfradial/moments/10hz_combined/202408\* cfradial/moments/10hz_combined
+
+echo "---------- 100 hz cfradial long ----------"
+rsync -av hcr@hcr-router:/data/hcr/data.archiver/cfradial/moments/100hz_long/202408\* cfradial/moments/100hz_long
+echo "---------- 100 hz cfradial short ----------"
+rsync -av hcr@hcr-router:/data/hcr/data.archiver/cfradial/moments/100hz_short/202408\* cfradial/moments/100hz_short
+
+#echo "---------- time series ----------"
+#rsync -av hcr@hcr-router:/data/hcr/data.archiver/time_series/wband/save/202406\* time_series/wband/save

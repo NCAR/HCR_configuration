@@ -3,7 +3,7 @@
 clear all;
 close all;
 
-project='socrates'; %socrates, aristo, cset
+project='otrec'; %socrates, aristo, cset
 quality='qc3'; %field, qc1, or qc2
 qcVersion='v3.2';
 freqData='10hz'; % 10hz, 100hz, or 2hz
@@ -27,7 +27,7 @@ end
 
 % Loop through cases
 
-for aa=1:size(caseList,1)
+for aa=19:size(caseList,1)
 
     disp(['Flight ',num2str(aa)]);
     disp('Loading HCR data.')
@@ -60,7 +60,7 @@ for aa=1:size(caseList,1)
     close all
 
     disp('Plotting ...');
-    ylimitsSpeed=[0,270];
+    ylimitsSpeed=[0,280];
     ylimitsAlt=[0,15];
 
     f1 = figure('Position',[200 500 1300 800],'DefaultAxesFontSize',12,'visible',showPlot);
@@ -73,7 +73,7 @@ for aa=1:size(caseList,1)
     ylim(ylimitsSpeed);
     ylabel('Aircraft speed (m s^{-1})')
 
-    yticks(-5:20:300);
+    yticks(0:10:300);
 
     grid on
     box on
