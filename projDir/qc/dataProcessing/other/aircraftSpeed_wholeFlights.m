@@ -27,7 +27,7 @@ end
 
 % Loop through cases
 
-for aa=19:size(caseList,1)
+for aa=1:size(caseList,1)
 
     disp(['Flight ',num2str(aa)]);
     disp('Loading HCR data.')

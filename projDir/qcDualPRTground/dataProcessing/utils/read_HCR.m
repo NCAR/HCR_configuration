@@ -96,7 +96,7 @@ for jj=2:length(fileList)
             end
         end
     end
-    if size(indata.time,2)~=size(indata.(allVars{1}),2)
+    if size(indata.time,2)~=size(indata.(allVars{4}),2)
         disp(['Time and data length do not match up at ',datestr(indata.time(end),'yyyy-mm-dd HH:MM:SS')]);
         disp(['File ',infile]);
         error('Stopping.')

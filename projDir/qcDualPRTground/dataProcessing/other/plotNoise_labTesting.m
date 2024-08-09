@@ -13,7 +13,7 @@ infile=['~/git/HCR_configuration/projDir/qcDualPRTground/dataProcessing/scriptsF
 
 caseList = table2array(readtable(infile));
 
-indir='/scr/virga1/rsfdata/projects/meow/hcr/labTesting/cfradial/moments/100hz_short/';
+indir='/scr/virga1/rsfdata/projects/meow/hcr/labTesting/cfradial/moments/10hz.short.test/';
 
 figdir='/scr/virga1/rsfdata/projects/meow/hcr/cfradial/moments/noise/labTesting/';
 
@@ -27,6 +27,8 @@ for ii=1:size(caseList,1)
 
     startTime=datetime(caseList(ii,1:6));
     endTime=datetime(caseList(ii,7:12));
+
+    startTime=datetime(2024,8,6,14,36,0);
 
     data=[];
 

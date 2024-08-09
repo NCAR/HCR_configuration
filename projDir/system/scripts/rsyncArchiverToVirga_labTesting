@@ -26,6 +26,8 @@ echo "---------- 100 hz cfradial long ----------"
 rsync -av hcr@hcr-router:/data/hcr/data.archiver/cfradial/moments/100hz_long/202408\* cfradial/moments/100hz_long
 echo "---------- 100 hz cfradial short ----------"
 rsync -av hcr@hcr-router:/data/hcr/data.archiver/cfradial/moments/100hz_short/202408\* cfradial/moments/100hz_short
+rsync -av hcr@hcr-router:/data/hcr/data.archiver/cfradial/moments/100hz.short.test/202408\* cfradial/moments/100hz.short.test
+rsync -av hcr@hcr-router:/data/hcr/data.archiver/cfradial/moments/10hz.short.test/202408\* cfradial/moments/10hz.short.test
 
 #echo "---------- time series ----------"
 #rsync -av hcr@hcr-router:/data/hcr/data.archiver/time_series/wband/save/202406\* time_series/wband/save
