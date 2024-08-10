@@ -276,7 +276,7 @@ for aa=1:length(caseStart)
             % This step removes the noise, de-aliases, (and corrects for
             % spectral broadening)
             [err,resid]=noisePeaks_smoothingTest(specPowerDB.V, ...
-                momentsTimeOne.velRawDeAliased(:,ii),dataThis,widthCorrDelta(cfInd),err,resid,figdir,plotTime);
+                momentsTimeOne.velRawDeAliased(:,ii),dataThis,widthCorrDelta(cfInd),velAircraft(cfInd),err,resid,figdir,plotTime);
 
             velAirc=cat(2,velAirc,repmat(velAircraft(cfInd),1,size(err,2)-size(velAirc,2)));
         end
@@ -516,7 +516,7 @@ box on
 set(gcf,'PaperPositionMode','auto')
 print(f1,[figdir,project,'_smoothingAnalysis_everyOther_aircraftSpeed'],'-dpng','-r0');
 
-save([figdir,project,'_smoothingAnalysis_everyOther_aircraftSpeed.mat'],'velAircAll','errAll','numZero');
+save([figdir,project,'_smoothingAnalysis_everyOther_aircraftSpeed.mat'],'edgesHalf','peakNum');
 
 %% Plot cases
 

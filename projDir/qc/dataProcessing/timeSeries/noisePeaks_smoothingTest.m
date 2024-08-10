@@ -1,4 +1,4 @@
-function [err,resid]=noisePeaks_smoothingTest(specDB,velIn,data,widthC,err,resid,figdir,plotTime)
+function [err,resid]=noisePeaks_smoothingTest(specDB,velIn,data,widthC,aircVel,err,resid,figdir,plotTime)
 % Find mean noise and noise threshold with following
 % Hildebrand and Sekhon, 1974 https://doi.org/10.1175/1520-0450(1974)013%3C0808:ODOTNL%3E2.0.CO;2
 % Adjust spectra so they fit in the boundaries
@@ -64,7 +64,8 @@ for aa=1:size(loopInds,1)
     % VEL
     meanVel=sum(sigInLin.*testVel,'omitmissing')/sum(sigInLin,'omitmissing');
 
-    filterAt=8;
+    %filterAt=8;
+    filterAt=round(0.00022396*aircVel^2-0.10542*aircVel+18.132);
 
     % Correct for aircraft width
     [err,errCat,sigWidthCorr,sigFiltered,signalIn1,signalIn2,sigFiltered1,sigFiltered2,inds1,inds2]= ...
@@ -123,7 +124,7 @@ for aa=1:size(loopInds,1)
 
         xlim([testVel(1),testVel(end)]);
 
-        legend('Original signal','Filtered','Filtered width corrected')
+        legend('Original signal','Filtered',['Filtered width corrected (',num2str(filterAt),' nz)']);
 
         grid on
         box on
