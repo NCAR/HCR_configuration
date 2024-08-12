@@ -260,8 +260,9 @@ for aa=1:length(caseStart)
 
             % This step removes the noise, de-aliases, and corrects for
             % spectral broadening
-            [powerRMnoiseDBcorrected,powerRMnoise,powerRMnoiseDBsmooth,specVelAdj,specVelAdjSmooth]=noisePeaks_smoothCorr(specPowerDB.V, ...
-                momentsTimeOne.velRawDeAliased(:,ii),dataThis,widthCorrDelta(cfInd),figdir,plotTime);
+            [powerRMnoiseDBcorrected,powerRMnoise,powerRMnoiseDBsmooth,specVelAdj,specVelAdjSmooth]= ...
+                noisePeaks_smoothCorr(specPowerDB.V,momentsTimeOne.velRawDeAliased(:,ii), ...
+                dataThis,widthCorrDelta(cfInd),velAircraft(cfInd),figdir,plotTime);
             specVelRMnoise=specVelAdj;
             specVelRMnoise(isnan(powerRMnoiseDBcorrected))=nan;
 

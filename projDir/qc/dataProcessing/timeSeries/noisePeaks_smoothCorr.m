@@ -1,4 +1,4 @@
-function [powerRMnoiseAvRM,powerRMnoise,powerRMnoiseAvRMS,velOut,velOutS]=noisePeaks_smoothCorr(specDB,velIn,data,widthC,figdir,plotTime)
+function [powerRMnoiseAvRM,powerRMnoise,powerRMnoiseAvRMS,velOut,velOutS]=noisePeaks_smoothCorr(specDB,velIn,data,widthC,aircVel,figdir,plotTime)
 
 powerRMnoiseAvRM=nan(size(specDB));
 powerRMnoise=nan(size(specDB));
@@ -19,7 +19,6 @@ else
 end
 
 sampleNum=length(data.time);
-halfSN=round(sampleNum/2);
 
 duplicateSpec=9;
 
@@ -28,8 +27,6 @@ powerSpecLarge=repmat(specDB,1,duplicateSpec);
 
 velSpecLarge=-duplicateSpec*pi:2*pi/(sampleNum):duplicateSpec*pi;
 velSpecLarge=velSpecLarge(1:end-1).*data.lambda./(4*pi.*repmat(data.prt,1,duplicateSpec));
-
-largeInds=1:length(velSpecLarge);
 
 noiseFloorAll=nan(size(specDB,1),1);
 
@@ -62,7 +59,7 @@ sigInLin=10.^(testPow./10)-noiseLinV;
 fakeMeanVel=sum(sigInLin.*testVel,2,'omitmissing')./sum(sigInLin,2,'omitmissing');
 
 % Filter and correct for aircraft width
-filterAt=8;
+filterAt=round(0.00022396*aircVel^2-0.10542*aircVel+18.132);
 [sigWidthCorr,sigFiltered]=smoothAircraftWidthCorr(filterAt,testPow,fakeMeanVel,widthC,testVel,sampleNum);
 
 % Peaks and valleys
@@ -79,7 +76,7 @@ for aa=1:size(loopInds,1)
 
     % Find noise floor and remove noise
     %[sigWidthCorrRMnoise,noiseFloorAll(ii),peaksOut]=noiseFloorRM(sigWidthCorr(ii,:),noiseStd,sigPeaks(ii,:),sigValleys(ii,:),testVel(ii,:),fakeMeanVel(ii));
-    [sigWidthCorrRMnoise,noiseFloorAll(ii),peaksOut]=noiseFloorRM_HilSek(sigWidthCorr(ii,:),noiseStd,sigPeaks(ii,:),sigValleys(ii,:),testVel(ii,:),fakeMeanVel(ii),aa);
+    [sigWidthCorrRMnoise,noiseFloorAll(ii),peaksOut]=noiseFloorRM(sigWidthCorr(ii,:),noiseStd,sigPeaks(ii,:),sigValleys(ii,:),testVel(ii,:),fakeMeanVel(ii),aa);
 
     % Create new large spectrum
     newSpecLarge=repmat(sigWidthCorrRMnoise,1,duplicateSpec);
