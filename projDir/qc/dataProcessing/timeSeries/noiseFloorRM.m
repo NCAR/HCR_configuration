@@ -69,12 +69,6 @@ if max(abs(testDiff))>1
         end
     end
 end
-% % Test velocity
-% [~,velInd]=min(abs(testVel-fakeMeanVel));
-%
-% if ~ismember(velInd,rmNoiseInds)
-%     sigWidthCorrRMnoise(:)=nan;
-% end
 
 %% Return peaks
 rmNoiseInds2=find(~isnan(sigWidthCorrRMnoise));

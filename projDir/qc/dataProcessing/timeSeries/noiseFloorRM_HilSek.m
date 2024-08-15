@@ -40,24 +40,20 @@ maxInd=find(pIV(:,2)==max(sigWidthCorr));
 
 pIV(maxInd,:)=[];
 
-% if isempty(pIV)
-%     pIV=[1,sigWidthCorr(1),;length(sigWidthCorr),sigWidthCorr(end)];
-% end
+%noiseThresh=max(pIV(:,2));
 
-noiseThresh=max(pIV(:,2));
+avNum=12;
+[noiseThresh,meanNoise,R2]=findNoiseThresh(sigWidthCorr,avNum);
 
 if isempty(noiseThresh)
     noiseThresh=testValley;
 end
 
-avNum=1;
-[noiseThresh2,meanNoise,R2]=findNoiseThresh_plotR1R2(sigWidthCorr,avNum,aa);
-
-plot(sigWidthCorr)
-hold on
-plot([0,length(sigWidthCorr)],[noiseThresh,noiseThresh]);
-plot([0,length(sigWidthCorr)],[noiseThresh2,noiseThresh2]);
-hold off
+% plot(sigWidthCorr)
+% hold on
+% plot([0,length(sigWidthCorr)],[noiseThresh,noiseThresh]);
+% plot([0,length(sigWidthCorr)],[noiseThresh2,noiseThresh2]);
+% hold off
 
 sigWidthCorrRMnoise=sigWidthCorr;
 sigWidthCorrRMnoise(sigWidthCorrRMnoise<=noiseThresh)=nan;

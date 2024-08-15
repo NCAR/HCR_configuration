@@ -27,13 +27,6 @@ while R2<1
             break
         end
     else
-        % % R1
-        % xCalc=1:length(powLin);
-        % sig2r=(sum(xCalc.^2.*powLin,'omitmissing')./sum(powLin,'omitmissing')) ...
-        %     -(sum(xCalc.*powLin,'omitmissing')./sum(powLin,'omitmissing')).^2;
-        % sigN2=sampleNum.^2/12;
-        % R1=sigN2/sig2r;
-
         % R2
         meanNoise=sum(powLin)/sampleNum;
         Q=sum(powLin.^2/sampleNum)-meanNoise.^2;

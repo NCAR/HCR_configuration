@@ -10,8 +10,8 @@ qualityCF='qc1';
 freqData='10hz';
 qcVersion='v1.2';
 
-plotInds=0;
-%plotInds=(1:50:500);
+%plotInds=0;
+plotInds=(1:50:500);
 
 outTime=0.1; % Desired output time resolution in seconds. Must be less than or equal to one second.
 sampleTime=0.1; % Length of sample in seconds.
@@ -42,6 +42,7 @@ for aa=1:length(caseStart)
     disp(['Case ',num2str(aa),' of ',num2str(length(caseStart))]);
 
     startTime=caseStart(aa);
+    %startTime=datetime(2021,5,29,19,11,11);
     endTime=caseEnd(aa);
 
     %% CfRadial Moments
@@ -154,9 +155,11 @@ for aa=1:length(caseStart)
         momentsTimeOne.time=goodTimes(1:beamNum)';
 
         momentsSpecBasicOne=momentsTimeOne;
-        momentsSpecNoNoiseOne=momentsTimeOne;
         momentsSpecSmoothOne=momentsTimeOne;
-        momentsSpecCorrectedOne=momentsTimeOne;
+        momentsSpecSmoothCorrOne=momentsTimeOne;
+        momentsSpecBasicRMnoiseOne=momentsTimeOne;
+
+        noiseFloor=nan(size(data.range,1),beamNum);
 
         % Loop through beams
         for ii=1:beamNum
@@ -193,20 +196,20 @@ for aa=1:length(caseStart)
             momentsSpecBasicOne.azimuth_vc(ii)=median(dataThis.azimuth_vc);
             momentsSpecBasicOne.altitude(:,ii)=median(dataThis.altitude);
 
-            momentsSpecNoNoiseOne.range(:,ii)=dataThis.range;
-            momentsSpecNoNoiseOne.elevation(ii)=median(dataThis.elevation);
-            momentsSpecNoNoiseOne.azimuth_vc(ii)=median(dataThis.azimuth_vc);
-            momentsSpecNoNoiseOne.altitude(:,ii)=median(dataThis.altitude);
+            momentsSpecSmoothCorrOne.range(:,ii)=dataThis.range;
+            momentsSpecSmoothCorrOne.elevation(ii)=median(dataThis.elevation);
+            momentsSpecSmoothCorrOne.azimuth_vc(ii)=median(dataThis.azimuth_vc);
+            momentsSpecSmoothCorrOne.altitude(:,ii)=median(dataThis.altitude);
 
             momentsSpecSmoothOne.range(:,ii)=dataThis.range;
             momentsSpecSmoothOne.elevation(ii)=median(dataThis.elevation);
             momentsSpecSmoothOne.azimuth_vc(ii)=median(dataThis.azimuth_vc);
             momentsSpecSmoothOne.altitude(:,ii)=median(dataThis.altitude);
 
-            momentsSpecCorrectedOne.range(:,ii)=dataThis.range;
-            momentsSpecCorrectedOne.elevation(ii)=median(dataThis.elevation);
-            momentsSpecCorrectedOne.azimuth_vc(ii)=median(dataThis.azimuth_vc);
-            momentsSpecCorrectedOne.altitude(:,ii)=median(dataThis.altitude);
+            momentsSpecBasicRMnoiseOne.range(:,ii)=dataThis.range;
+            momentsSpecBasicRMnoiseOne.elevation(ii)=median(dataThis.elevation);
+            momentsSpecBasicRMnoiseOne.azimuth_vc(ii)=median(dataThis.azimuth_vc);
+            momentsSpecBasicRMnoiseOne.altitude(:,ii)=median(dataThis.altitude);
 
             %% Find time index in CF moments
             cfInd=find(abs(etime(datevec(dataCF.time),datevec(momentsTimeOne.time(ii))))<0.0001);
@@ -260,14 +263,11 @@ for aa=1:length(caseStart)
 
             % This step removes the noise, de-aliases, and corrects for
             % spectral broadening
-            [powerRMnoiseDBcorrected,powerRMnoise,powerRMnoiseDBsmooth,specVelAdj,specVelAdjSmooth]= ...
+            [powerOrig,powerOrigRMnoise,powerSmooth,powerSmoothCorr,specVelAdj,noiseFloor(:,ii)]= ...
                 noisePeaks_smoothCorr(specPowerDB.V,momentsTimeOne.velRawDeAliased(:,ii), ...
                 dataThis,widthCorrDelta(cfInd),velAircraft(cfInd),figdir,plotTime);
             specVelRMnoise=specVelAdj;
-            specVelRMnoise(isnan(powerRMnoiseDBcorrected))=nan;
-
-            specVelRMnoiseSmooth=specVelAdjSmooth;
-            specVelRMnoiseSmooth(isnan(powerRMnoiseDBsmooth))=nan;
+            specVelRMnoise(isnan(powerSmoothCorr))=nan;
 
             % Remove aircraft motion
             specVelAdj=specVelAdj+velBiasCorrection(:,cfInd);
@@ -275,19 +275,21 @@ for aa=1:length(caseStart)
             
             %% Spectral moments
 
-            momentsSpecBasicOne=calcMomentsSpec_higherMoments(specPowerDB.V,specVelAdj,ii,momentsSpecBasicOne,dataThis);
-            momentsSpecNoNoiseOne=calcMomentsSpec_higherMoments(powerRMnoise,specVelRMnoiseSmooth,ii,momentsSpecNoNoiseOne,dataThis);
-            momentsSpecSmoothOne=calcMomentsSpec_higherMoments(powerRMnoiseDBsmooth,specVelRMnoiseSmooth,ii,momentsSpecSmoothOne,dataThis);
-            momentsSpecCorrectedOne=calcMomentsSpec_higherMoments(powerRMnoiseDBcorrected,specVelRMnoise,ii,momentsSpecCorrectedOne,dataThis);
+            momentsSpecBasicOne=calcMomentsSpec_higherMoments(powerOrig,specVelAdj,ii,momentsSpecBasicOne);
+            momentsSpecBasicRMnoiseOne=calcMomentsSpec_higherMoments(powerOrigRMnoise,specVelRMnoise,ii,momentsSpecBasicRMnoiseOne);
+            momentsSpecSmoothOne=calcMomentsSpec_higherMoments(powerSmooth,specVelRMnoise,ii,momentsSpecSmoothOne);
+            momentsSpecSmoothCorrOne=calcMomentsSpec_higherMoments(powerSmoothCorr,specVelRMnoise,ii,momentsSpecSmoothCorrOne);
+            
         end
 
         %% Add to output
         if bb==1
             momentsTime=momentsTimeOne;
             momentsSpecBasic=momentsSpecBasicOne;
-            momentsSpecNoNoise=momentsSpecNoNoiseOne;
             momentsSpecSmooth=momentsSpecSmoothOne;
-            momentsSpecCorrected=momentsSpecCorrectedOne;
+            momentsSpecSmoothCorr=momentsSpecSmoothCorrOne;
+            momentsSpecBasicCorrRMnoise=momentsSpecBasicRMnoiseOne;
+            noiseFloorAll=noiseFloor;
         else
             dataFields=fields(momentsTime);
 
@@ -299,10 +301,12 @@ for aa=1:length(caseStart)
 
             for hh=1:length(dataFields1)
                 momentsSpecBasic.(dataFields1{hh})=cat(2,momentsSpecBasic.(dataFields1{hh}),momentsSpecBasicOne.(dataFields1{hh}));
-                momentsSpecNoNoise.(dataFields1{hh})=cat(2,momentsSpecNoNoise.(dataFields1{hh}),momentsSpecNoNoiseOne.(dataFields1{hh}));
+                momentsSpecSmoothCorr.(dataFields1{hh})=cat(2,momentsSpecSmoothCorr.(dataFields1{hh}),momentsSpecSmoothCorrOne.(dataFields1{hh}));
                 momentsSpecSmooth.(dataFields1{hh})=cat(2,momentsSpecSmooth.(dataFields1{hh}),momentsSpecSmoothOne.(dataFields1{hh}));
-                momentsSpecCorrected.(dataFields1{hh})=cat(2,momentsSpecCorrected.(dataFields1{hh}),momentsSpecCorrectedOne.(dataFields1{hh}));
+                momentsSpecBasicCorrRMnoise.(dataFields1{hh})=cat(2,momentsSpecBasicCorrRMnoise.(dataFields1{hh}),momentsSpecBasicRMnoiseOne.(dataFields1{hh}));
             end
+
+            noiseFloorAll=cat(2,noiseFloorAll,noiseFloor);
         end
        
     end
@@ -327,9 +331,10 @@ for aa=1:length(caseStart)
     for ll=1:length(fieldsTs)
         momentsTime.(fieldsTs{ll})=momentsTime.(fieldsTs{ll})(:,indTs);
         momentsSpecBasic.(fieldsTs{ll})=momentsSpecBasic.(fieldsTs{ll})(:,indTs);
-        momentsSpecNoNoise.(fieldsTs{ll})=momentsSpecNoNoise.(fieldsTs{ll})(:,indTs);
+        momentsSpecSmoothCorr.(fieldsTs{ll})=momentsSpecSmoothCorr.(fieldsTs{ll})(:,indTs);
         momentsSpecSmooth.(fieldsTs{ll})=momentsSpecSmooth.(fieldsTs{ll})(:,indTs);
-        momentsSpecCorrected.(fieldsTs{ll})=momentsSpecCorrected.(fieldsTs{ll})(:,indTs);
+        momentsSpecBasicCorrRMnoise.(fieldsTs{ll})=momentsSpecBasicCorrRMnoise.(fieldsTs{ll})(:,indTs);
+        noiseFloorAll=noiseFloorAll(:,indTs);
     end
 
     dataCF=rmfield(dataCF,'beamWidth');
@@ -343,11 +348,21 @@ for aa=1:length(caseStart)
 
     close all
 
-    disp('Plotting widths ...');
+    disp('Plotting ...');
 
     momentsTime.asl=HCRrange2asl(momentsTime.range,momentsTime.elevation,momentsTime.altitude);
     momentsSpecBasic.asl=HCRrange2asl(momentsSpecBasic.range,momentsSpecBasic.elevation,momentsSpecBasic.altitude);
 
-    plotWidths(momentsTime,momentsSpecBasic,momentsSpecNoNoise,momentsSpecSmooth,momentsSpecCorrected,dataCF,plotTimeAll,figdir,project,showPlot);
-    
+    plotBasicMoments(momentsTime,dataCF,plotTimeAll,figdir,project,showPlot);
+    plotVels(momentsTime,momentsSpecBasic,momentsSpecBasicCorrRMnoise,momentsSpecSmooth,momentsSpecSmoothCorr,...
+        dataCF,plotTimeAll,figdir,project,showPlot);
+    plotWidths(momentsTime,momentsSpecBasic,momentsSpecBasicCorrRMnoise,momentsSpecSmooth,momentsSpecSmoothCorr,...
+        dataCF,plotTimeAll,figdir,project,showPlot);
+    plotSkews(momentsTime,momentsSpecBasic,momentsSpecBasicCorrRMnoise,momentsSpecSmooth,momentsSpecSmoothCorr,...
+        dataCF,plotTimeAll,figdir,project,showPlot);
+    plotKurtosis(momentsTime,momentsSpecBasic,momentsSpecBasicCorrRMnoise,momentsSpecSmooth,momentsSpecSmoothCorr,...
+        dataCF,plotTimeAll,figdir,project,showPlot);
+
+    plotNoiseFloor(momentsTime,noiseFloorAll,dataCF,plotTimeAll,figdir,project,showPlot);
+
 end

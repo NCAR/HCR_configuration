@@ -1,18 +1,15 @@
-function plotWidths(moments,momentsSpBasic,momentsSpNoNoise,momentsSpSmooth,momentsSpCorrected,cf,plotTimeAll,figdir,project,showPlot)
-%moments.vel(:,moments.elevation>0,:)=-moments.vel(:,moments.elevation>0,:);
+function plotWidths(moments,momentsSpBasic,momentsSpBasicRMnoise,momentsSpSmooth,momentsSpSmoothCorr,cf,plotTimeAll,figdir,project,showPlot)
 
 aslGood=momentsSpBasic.asl(~isnan(momentsSpBasic.velRaw))./1000;
 ylims=[0,max(aslGood)+0.5];
 
 climsWidth=[0,2];
-climsDiff=[-0.8,0.8];
-colTwo=cat(1,[0,0,0],velCols);
 colDiff=cat(1,[0,0,0],jet);
 
 %% Figure
-f1 = figure('Position',[200 500 2400 1250],'DefaultAxesFontSize',12,'visible',showPlot);
+f1 = figure('Position',[200 500 1600 1250],'DefaultAxesFontSize',12,'visible',showPlot);
 
-t = tiledlayout(4,3,'TileSpacing','tight','Padding','tight');
+t = tiledlayout(3,2,'TileSpacing','tight','Padding','tight');
 
 s1=nexttile(1);
 
@@ -42,40 +39,6 @@ s1.SortMethod='childorder';
 
 s2=nexttile(2);
 
-momentsSpBasic.width(isnan(momentsSpBasic.width))=-99;
-
-hold on
-surf(momentsSpBasic.time,momentsSpBasic.asl./1000,momentsSpBasic.width,'edgecolor','none');
-view(2);
-ylabel('Altitude (km)');
-clim(climsWidth);
-s2.Colormap=colDiff;
-colorbar
-grid on
-box on
-title('Spectral domain basic with noise (m s^{-1})')
-ylim(ylims);
-xlim([moments.time(1),moments.time(end)]);
-
-s3=nexttile(3);
-
-momentsSpNoNoise.width(isnan(momentsSpNoNoise.width))=-99;
-
-hold on
-surf(momentsSpBasic.time,momentsSpBasic.asl./1000,momentsSpNoNoise.width,'edgecolor','none');
-view(2);
-ylabel('Altitude (km)');
-clim(climsWidth);
-s3.Colormap=colDiff;
-colorbar
-grid on
-box on
-title('Spectral domain noise removed (m s^{-1})')
-ylim(ylims);
-xlim([moments.time(1),moments.time(end)]);
-
-s4=nexttile(4);
-
 moments.widthCorr(isnan(cf.VEL_MASKED))=-99;
 
 hold on
@@ -83,7 +46,7 @@ surf(moments.time,moments.asl./1000,moments.widthCorr,'edgecolor','none');
 view(2);
 ylabel('Altitude (km)');
 clim(climsWidth);
-s4.Colormap=colDiff;
+s2.Colormap=colDiff;
 colorbar
 grid on
 box on
@@ -91,25 +54,41 @@ title('Time domain corrected (m s^{-1})')
 ylim(ylims);
 xlim([moments.time(1),moments.time(end)]);
 
+s3=nexttile(3);
 
-s5=nexttile(5);
-
-momentsSpCorrected.width(isnan(momentsSpCorrected.width))=-99;
+momentsSpBasic.width(isnan(momentsSpBasic.width))=-99;
 
 hold on
-surf(momentsSpBasic.time,momentsSpBasic.asl./1000,momentsSpCorrected.width,'edgecolor','none');
+surf(momentsSpBasic.time,momentsSpBasic.asl./1000,momentsSpBasic.width,'edgecolor','none');
 view(2);
 ylabel('Altitude (km)');
 clim(climsWidth);
-s5.Colormap=colDiff;
+s3.Colormap=colDiff;
 colorbar
 grid on
 box on
-title('Spectral domain filtered and corrected (m s^{-1})')
+title('Spectral domain raw (m s^{-1})')
 ylim(ylims);
 xlim([moments.time(1),moments.time(end)]);
 
-s6=nexttile(6);
+s4=nexttile(4);
+
+momentsSpBasicRMnoise.width(isnan(momentsSpBasicRMnoise.width))=-99;
+
+hold on
+surf(momentsSpBasic.time,momentsSpBasic.asl./1000,momentsSpBasicRMnoise.width,'edgecolor','none');
+view(2);
+ylabel('Altitude (km)');
+clim(climsWidth);
+s4.Colormap=colDiff;
+colorbar
+grid on
+box on
+title('Spectral domain raw noise removed (m s^{-1})')
+ylim(ylims);
+xlim([moments.time(1),moments.time(end)]);
+
+s5=nexttile(5);
 
 momentsSpSmooth.width(isnan(momentsSpSmooth.width))=-99;
 
@@ -118,7 +97,7 @@ surf(momentsSpBasic.time,momentsSpBasic.asl./1000,momentsSpSmooth.width,'edgecol
 view(2);
 ylabel('Altitude (km)');
 clim(climsWidth);
-s6.Colormap=colDiff;
+s5.Colormap=colDiff;
 colorbar
 grid on
 box on
@@ -126,116 +105,20 @@ title('Spectral domain filtered (m s^{-1})')
 ylim(ylims);
 xlim([moments.time(1),moments.time(end)]);
 
-s7=nexttile(7);
+s6=nexttile(6);
 
-moments.width(moments.width==-99)=-999;
-
-surf(moments.time,moments.asl./1000,moments.width-moments.widthCorr,'edgecolor','none');
-view(2);
-ylabel('Altitude (km)');
-clim(climsDiff);
-s7.Colormap=colTwo;
-colorbar
-grid on
-box on
-title('Time domain, raw - corrected (m s^{-1})')
-ylim(ylims);
-xlim([moments.time(1),moments.time(end)]);
-
-s8=nexttile(8);
-moments.widthCorr(momentsSpCorrected.width==-99)=-99;
-moments.widthCorr(moments.widthCorr==-99)=-999;
-
-surf(moments.time,moments.asl./1000,moments.widthCorr-momentsSpCorrected.width,'edgecolor','none');
-view(2);
-ylabel('Altitude (km)');
-clim(climsDiff);
-s8.Colormap=colTwo;
-colorbar
-grid on
-box on
-title('Corrected, time - spectral domain (m s^{-1})')
-ylim(ylims);
-xlim([moments.time(1),moments.time(end)]);
-
-s9=nexttile(9);
-
-momentsSpNoNoise.width(momentsSpNoNoise.width==-99)=-999;
-
-surf(moments.time,moments.asl./1000,momentsSpNoNoise.width-momentsSpSmooth.width,'edgecolor','none');
-view(2);
-ylabel('Altitude (km)');
-clim(climsDiff);
-s9.Colormap=colTwo;
-colorbar
-grid on
-box on
-title('Spectral domain, noise removed - filtered (m s^{-1})')
-ylim(ylims);
-xlim([moments.time(1),moments.time(end)]);
-
-% s10=nexttile(10);
-% 
-% momentsSpNoNoise.width(momentsSpNoNoise.width==-999)=-99;
-% 
-% surf(moments.time,moments.asl./1000,moments.width-momentsSpNoNoise.width,'edgecolor','none');
-% view(2);
-% ylabel('Altitude (km)');
-% clim(climsDiff);
-% s10.Colormap=colTwo;
-% colorbar
-% grid on
-% box on
-% title('Time domain - spectral domain noise removed (m s^{-1})')
-% ylim(ylims);
-% xlim([moments.time(1),moments.time(end)]);
-
-s10=nexttile(10);
-
-momentsSpNoNoise.velRaw(isnan(momentsSpCorrected.velRaw))=-999;
-
-surf(moments.time,moments.asl./1000,momentsSpNoNoise.velRaw,'edgecolor','none');
-view(2);
-ylabel('Altitude (km)');
-clim([-15,15]);
-s10.Colormap=colTwo;
-colorbar
-grid on
-box on
-title('Velocity spectral domain filtered and corrected (m s^{-1})')
-ylim(ylims);
-xlim([moments.time(1),moments.time(end)]);
-
-s11=nexttile(11);
-
-momentsSpSmooth.width(momentsSpSmooth.width==-99)=-999;
-
-surf(moments.time,moments.asl./1000,momentsSpSmooth.width-momentsSpCorrected.width,'edgecolor','none');
-view(2);
-ylabel('Altitude (km)');
-clim(climsDiff);
-s11.Colormap=colTwo;
-colorbar
-grid on
-box on
-title('Spectral domain, filtered - corrected (m s^{-1})')
-ylim(ylims);
-xlim([moments.time(1),moments.time(end)]);
-
-s12=nexttile(12);
-
-moments.snr(isnan(moments.vel))=-99;
+momentsSpSmoothCorr.width(isnan(momentsSpSmoothCorr.width))=-99;
 
 hold on
-surf(moments.time,moments.asl./1000,moments.snr,'edgecolor','none');
+surf(momentsSpBasic.time,momentsSpBasic.asl./1000,momentsSpSmoothCorr.width,'edgecolor','none');
 view(2);
 ylabel('Altitude (km)');
-clim([-10,50]);
-s12.Colormap=colDiff;
+clim(climsWidth);
+s6.Colormap=colDiff;
 colorbar
 grid on
 box on
-title('SNR (dB)')
+title('Spectral domain filtered and corrected (m s^{-1})')
 ylim(ylims);
 xlim([moments.time(1),moments.time(end)]);
 

@@ -1,11 +1,12 @@
-function [powerRMnoiseAvRM,powerRMnoise,powerRMnoiseAvRMS,velOut,velOutS]=noisePeaks_smoothCorr(specDB,velIn,data,widthC,aircVel,figdir,plotTime)
+function [powerOrig,powerOrigRMnoise,powerSmooth,powerSmoothCorr,velOut,noiseFloorAll]=noisePeaks_smoothCorr(specDB,velIn,data,widthC,aircVel,figdir,plotTime)
+powerOrig=nan(size(specDB));
+powerOrigRMnoise=nan(size(specDB));
+powerSmooth=nan(size(specDB));
+powerSmoothCorr=nan(size(specDB));
 
-powerRMnoiseAvRM=nan(size(specDB));
-powerRMnoise=nan(size(specDB));
-powerRMnoiseAvRMS=nan(size(specDB));
+powerSmoothAll=nan(size(specDB));
+powerSmoothCorrAll=nan(size(specDB));
 velOut=nan(size(specDB));
-%velOutS=nan(size(specDB));
-
 
 % Decide if and what to plot
 plotAll=0; % Set to 1 if everything should be plotted. Plots won't be saved.
@@ -75,8 +76,12 @@ for aa=1:size(loopInds,1)
     ii=loopInds(aa); % ii is the range index
 
     % Find noise floor and remove noise
-    %[sigWidthCorrRMnoise,noiseFloorAll(ii),peaksOut]=noiseFloorRM(sigWidthCorr(ii,:),noiseStd,sigPeaks(ii,:),sigValleys(ii,:),testVel(ii,:),fakeMeanVel(ii));
-    [sigWidthCorrRMnoise,noiseFloorAll(ii),peaksOut]=noiseFloorRM(sigWidthCorr(ii,:),noiseStd,sigPeaks(ii,:),sigValleys(ii,:),testVel(ii,:),fakeMeanVel(ii),aa);
+    [sigWidthCorrRMnoise,noiseFloorAll(ii),peaksOut]=noiseFloorRM(sigWidthCorr(ii,:),noiseStd,sigPeaks(ii,:),sigValleys(ii,:),testVel(ii,:),fakeMeanVel(ii));
+    %[sigWidthCorrRMnoise,noiseFloorAll(ii),peaksOut]=noiseFloorRM_HilSek(sigWidthCorr(ii,:),noiseStd,sigPeaks(ii,:),sigValleys(ii,:),testVel(ii,:),fakeMeanVel(ii),aa);
+
+    if all(isnan(sigWidthCorrRMnoise))
+        continue
+    end
 
     % Create new large spectrum
     newSpecLarge=repmat(sigWidthCorrRMnoise,1,duplicateSpec);
@@ -126,22 +131,35 @@ for aa=1:size(loopInds,1)
     sampleMult=floor(velDiffMinInd/sampleNum);
     getIndsStart=sampleMult*sampleNum+firstPowInd;
 
-    % Fill output variables
-    powerRMnoiseAvRM(ii,:)=newSpecLarge(getIndsStart:getIndsStart+sampleNum-1);
-
-    powerOrig=powerSpecLarge(ii,getIndsStart:getIndsStart+sampleNum-1);
-    powOrigRMnoise=powerOrig;
-    powOrigRMnoise(isnan(powerRMnoiseAvRM(ii,:)))=nan;
-    powerRMnoise(ii,:)=powOrigRMnoise;
-
-    powerSmooth=filteredSpecLarge(getIndsStart:getIndsStart+sampleNum-1);
-    powerSmooth(isnan(powerRMnoiseAvRM(ii,:)))=nan;
-    powerRMnoiseAvRMS(ii,:)=powerSmooth;
-
     velOut(ii,:)=velSpecLarge(getIndsStart:getIndsStart+sampleNum-1);
 
-    if ismember(ii,plotRangeInds) & ~isempty(plotTime)
+    powerSmoothCorr(ii,:)=newSpecLarge(getIndsStart:getIndsStart+sampleNum-1);
 
+    % Velocity test
+    y=10.^(powerSmoothCorr(ii,:)./10);
+    velSpec=sum(y.*velOut(ii,:),2,'omitnan')./sum(y,2,'omitnan');
+
+    if abs(velIn(ii)-velSpec)>1
+        stop1=1;
+    %     powerSmoothCorr(ii,:)=nan;
+    %     velOut(ii,:)=nan;
+    %     continue
+    end
+
+    % Fill output variables
+    powerSmoothAll(ii,:)=filteredSpecLarge(getIndsStart:getIndsStart+sampleNum-1);
+    powerSmoothCorrAll(ii,:)=wcSpecLarge(getIndsStart:getIndsStart+sampleNum-1);
+    
+    powerOrig(ii,:)=powerSpecLarge(ii,getIndsStart:getIndsStart+sampleNum-1);
+    powOrigRMnoiseOne=powerOrig(ii,:);
+    powOrigRMnoiseOne(isnan(powerSmoothCorr(ii,:)))=nan;
+    powerOrigRMnoise(ii,:)=powOrigRMnoiseOne;
+
+    powerSmoothRMnoise=powerSmoothAll(ii,:);
+    powerSmoothRMnoise(isnan(powerSmoothCorr(ii,:)))=nan;
+    powerSmooth(ii,:)=powerSmoothRMnoise;
+
+    if ismember(ii,plotRangeInds) & ~isempty(plotTime)
         close all
 
         %close all
@@ -151,14 +169,17 @@ for aa=1:size(loopInds,1)
         s1=nexttile(1);
 
         hold on
-        plot(velOut(ii,:),powerOrig,'-b','LineWidth',0.5);
-        l1=plot(velOut(ii,:),powerRMnoise(ii,:),'-b','LineWidth',1);
-        plot(velOut(ii,:),filteredSpecLarge(getIndsStart:getIndsStart+sampleNum-1),'-g','LineWidth',1);
-        l2=plot(velOut(ii,:),powerRMnoiseAvRMS(ii,:),'-g','LineWidth',2);
-        plot(velOut(ii,:),wcSpecLarge(getIndsStart:getIndsStart+sampleNum-1),'-r','LineWidth',1);
-        l3=plot(velOut(ii,:),powerRMnoiseAvRM(ii,:),'-r','LineWidth',2);
+        plot(velOut(ii,:),powerOrig(ii,:),'-b','LineWidth',0.5);
+        l1=plot(velOut(ii,:),powerOrigRMnoise(ii,:),'-b','LineWidth',1);
+        plot(velOut(ii,:),powerSmoothAll(ii,:),'-g','LineWidth',1);
+        l2=plot(velOut(ii,:),powerSmooth(ii,:),'-g','LineWidth',2);
+        plot(velOut(ii,:),powerSmoothCorrAll(ii,:),'-r','LineWidth',1);
+        l3=plot(velOut(ii,:),powerSmoothCorr(ii,:),'-r','LineWidth',2);
         l4=plot(velOut(ii,:),repmat(noiseFloorAll(ii),size(velOut(ii,:))),'-c','LineWidth',1.5);
         l5=scatter(velOut(ii,peaksOut(:,1)),peaksOut(:,2),70,'m','filled','MarkerEdgeColor','black');
+        ylims=s1.YLim;
+        plot([velIn(ii),velIn(ii)],ylims,'-k','LineWidth',2);
+        plot([velSpec,velSpec],ylims,'-m','LineWidth',2);
         hold off
 
         xlim([velOut(ii,1),velOut(ii,end)]);
@@ -175,5 +196,4 @@ for aa=1:size(loopInds,1)
         end
     end
 end
- velOutS=velOut;
 end
