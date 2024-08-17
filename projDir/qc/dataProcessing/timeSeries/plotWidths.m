@@ -28,14 +28,14 @@ title('Time domain raw (m s^{-1})')
 ylim(ylims);
 xlim([moments.time(1),moments.time(end)]);
 
-plotRangeInds=[20:20:700];
-for kk=1:length(plotTimeAll)
-    times=repmat(plotTimeAll(kk),length(plotRangeInds),1);
-    alts=momentsSpBasic.asl(plotRangeInds,momentsSpBasic.time==plotTimeAll(kk));
-    scatter(times,alts./1000,36,'k','+');
-end
-
-s1.SortMethod='childorder';
+% plotRangeInds=[20:20:700];
+% for kk=1:length(plotTimeAll)
+%     times=repmat(plotTimeAll(kk),length(plotRangeInds),1);
+%     alts=momentsSpBasic.asl(plotRangeInds,momentsSpBasic.time==plotTimeAll(kk));
+%     scatter(times,alts./1000,36,'k','+');
+% end
+% 
+% s1.SortMethod='childorder';
 
 s2=nexttile(2);
 

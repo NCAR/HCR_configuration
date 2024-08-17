@@ -2,7 +2,7 @@
 function [sigWidthCorr,sigFiltered]=smoothAircraftWidthCorr(filterAt,signalIn,meanVel,corrFactor,xVel,sampleNum)
 
 % Gaussian fit of correction signal
-yWC=exp(-0.5.*((xVel-meanVel)/corrFactor).^2);
+yWC=exp(-0.5.*((xVel-meanVel)./corrFactor).^2);
 
 %% IFFT
 
@@ -14,11 +14,13 @@ ifftYC=ifftYC+10^(-7);
 %% Correction
 
 yC=ifftY./abs(ifftYC);
-yC(:,filterAt:end-filterAt+2)=0;
+for ii=1:length(filterAt)
+    yC(ii,filterAt(ii):end-filterAt(ii)+2)=0;
 
-%% Original uncorrected but filtered
+    %% Original uncorrected but filtered
 
-ifftY(:,filterAt:end-filterAt+2)=0;
+    ifftY(ii,filterAt(ii):end-filterAt(ii)+2)=0;
+end
 
 %% FFT back
 fftY=fft(yC,[],2);
