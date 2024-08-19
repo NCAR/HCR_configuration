@@ -1,5 +1,5 @@
 % Correct spectrum for broadening due to aircraft motion
-function [err,errCat,sigWidthCorr,sigFiltered,signalIn1,signalIn2,sigFiltered1,sigFiltered2,inds1,inds2]=smoothingTest(filterAt,signalIn,meanVel,corrFactor,xVel,sampleNum,err)
+function [err,errCat,velAirc,sigWidthCorr,sigFiltered,signalIn1,signalIn2,sigFiltered1,sigFiltered2,inds1,inds2]=smoothingTest(filterAt,signalIn,meanVel,corrFactor,xVel,sampleNum,err,velAirc,vaII)
 
 inds1=1:2:length(signalIn);
 signalIn1=signalIn(inds1);
@@ -13,7 +13,7 @@ if length(signalIn1)~=length(signalIn2)
 end
 
 % Gaussian fit of correction signal
-yWC=exp(-0.5.*((xVel-meanVel)./corrFactor).^2);
+yWC=exp(-0.5.*((xVel-meanVel)/corrFactor).^2);
 
 %% IFFT
 
@@ -28,19 +28,17 @@ ifftYC=ifftYC+10^(-7);
 notZero=2:250;
 
 yC=ifftY./abs(ifftYC);
-for ii=1:length(filterAt)
-    yC(ii,filterAt(ii):end-filterAt(ii)+2)=0;
-end
+yC(filterAt:end-filterAt+2)=0;
 
 %% Original uncorrected but filtered
 
-ifftYuf=repmat(ifftY,length(notZero),1,length(filterAt));
-ifftYuf1=repmat(ifftY1,length(notZero),1,length(filterAt));
-ifftYuf2=repmat(ifftY2,length(notZero),1,length(filterAt));
+ifftYuf=repmat(ifftY,length(notZero),1);
+ifftYuf1=repmat(ifftY1,length(notZero),1);
+ifftYuf2=repmat(ifftY2,length(notZero),1);
 for ii=1:length(notZero)
-    ifftYuf(ii,notZero(ii):end-notZero(ii)+2,:)=0;
-    ifftYuf1(ii,notZero(ii):end-notZero(ii)+2,:)=0;
-    ifftYuf2(ii,notZero(ii):end-notZero(ii)+2,:)=0;
+    ifftYuf(ii,notZero(ii):end-notZero(ii)+2)=0;
+    ifftYuf1(ii,notZero(ii):end-notZero(ii)+2)=0;
+    ifftYuf2(ii,notZero(ii):end-notZero(ii)+2)=0;
 end
 
 %% FFT back
@@ -54,13 +52,14 @@ sigFiltered2=real(fft(ifftYuf2,[],2));
 
 %% Error
 
-err12=squeeze(rmse(sigFiltered1,signalIn2,2));
-err21=squeeze(rmse(sigFiltered2,signalIn1,2));
+err12=rmse(sigFiltered1,signalIn2,2);
+err21=rmse(sigFiltered2,signalIn1,2);
 
 errCat=cat(2,err12,err21);
 
 try
     err=cat(2,err,errCat);
+    velAirc=cat(2,velAirc,[vaII,vaII]);
 end
 
 end

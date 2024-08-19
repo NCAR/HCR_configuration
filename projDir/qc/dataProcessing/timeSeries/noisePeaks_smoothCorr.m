@@ -10,7 +10,7 @@ velOut=nan(size(specDB));
 
 % Decide if and what to plot
 plotAll=0; % Set to 1 if everything should be plotted. Plots won't be saved.
-showPlot='off';
+showPlot='on';
 
 if plotAll
     plotRangeInds=18:1:size(specDB,1);
@@ -236,6 +236,9 @@ for aa=1:size(loopInds,1)
 
         legend([l1,l2,l3,l4,l5],{'Original','Filtered','Filtered width corr','Noise floor','Peaks'}, ...
             'Location','northoutside','Orientation','horizontal');
+
+        xlabel('Velocity (m s^{-1})');
+        ylabel('Power (dB)')
 
         grid on
         box on

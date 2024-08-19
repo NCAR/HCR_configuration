@@ -1,4 +1,4 @@
-function [err,resid]=noisePeaks_smoothingTest(specDB,velIn,data,widthC,aircVel,err,resid,figdir,plotTime)
+function [err,resid,velAirc]=noisePeaks_smoothingTest(specDB,velIn,data,widthC,headwind,err,resid,velAirc,figdir,plotTime)
 % Find mean noise and noise threshold with following
 % Hildebrand and Sekhon, 1974 https://doi.org/10.1175/1520-0450(1974)013%3C0808:ODOTNL%3E2.0.CO;2
 % Adjust spectra so they fit in the boundaries
@@ -65,19 +65,14 @@ for aa=1:size(loopInds,1)
     meanVel=sum(sigInLin.*testVel,'omitmissing')/sum(sigInLin,'omitmissing');
 
     %filterAt=8;
-    filterAt=round(0.00022396.*aircVel.^2-0.10542.*aircVel+18.132);
-    filterAt=fillmissing(filterAt,'nearest');
+    filterAt=round(0.00022396*headwind(ii)^2-0.10542*headwind(ii)+18.132);
 
     % Correct for aircraft width
-    [err,errCat,sigWidthCorr,sigFiltered,signalIn1,signalIn2,sigFiltered1,sigFiltered2,inds1,inds2]= ...
-        smoothingTest(filterAt,testPow,meanVel,widthC,testVel,sampleNum,err);
+    [err,errCat,velAirc,sigWidthCorr,sigFiltered,signalIn1,signalIn2,sigFiltered1,sigFiltered2,inds1,inds2]= ...
+        smoothingTest(filterAt,testPow,meanVel,widthC(ii),testVel,sampleNum,err,velAirc,headwind(ii));
 
     % Calculate standar deviation of noise
-    % for kk=1:length(filterAt)
-    % residAdd=testPow-sigFiltered(filterAt(kk)-1,:);
-    % end
-    % resid=cat(2,resid,residAdd);
-    resid=nan;
+    resid=cat(2,resid,testPow-sigFiltered(filterAt-1,:));
 
 
     if ismember(ii,plotRangeInds) & ~isempty(plotTime)
