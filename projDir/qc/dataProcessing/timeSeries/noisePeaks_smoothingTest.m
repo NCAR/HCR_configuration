@@ -5,7 +5,7 @@ function [err,resid,velAirc]=noisePeaks_smoothingTest(specDB,velIn,data,widthC,h
 
 % Decide if and what to plot
 plotAll=0; % Set to 1 if everything should be plotted. Plots won't be saved.
-showPlot='off';
+showPlot='on';
 
 if plotAll
     plotRangeInds=18:10:size(specDB,1);
@@ -66,6 +66,9 @@ for aa=1:size(loopInds,1)
 
     %filterAt=8;
     filterAt=round(0.00022396*headwind(ii)^2-0.10542*headwind(ii)+18.132);
+    if isnan(filterAt)
+        continue
+    end
 
     % Correct for aircraft width
     [err,errCat,velAirc,sigWidthCorr,sigFiltered,signalIn1,signalIn2,sigFiltered1,sigFiltered2,inds1,inds2]= ...

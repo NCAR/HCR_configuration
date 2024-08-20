@@ -1,8 +1,8 @@
 function plotSkews(moments,momentsSpBasic,momentsSpBasicRMnoise,momentsSpSmooth,momentsSpSmoothCorr,cf,plotTimeAll,figdir,project,showPlot)
-momentsSpBasic.skew(:,momentsSpBasic.elevation>0,:)=-momentsSpBasic.skew(:,momentsSpBasic.elevation>0,:);
-momentsSpBasicRMnoise.skew(:,momentsSpBasic.elevation>0,:)=-momentsSpBasicRMnoise.skew(:,momentsSpBasic.elevation>0,:);
-momentsSpSmooth.skew(:,momentsSpBasic.elevation>0,:)=-momentsSpSmooth.skew(:,momentsSpBasic.elevation>0,:);
-momentsSpSmoothCorr.skew(:,momentsSpBasic.elevation>0,:)=-momentsSpSmoothCorr.skew(:,momentsSpBasic.elevation>0,:);
+% momentsSpBasic.skew(:,momentsSpBasic.elevation>0,:)=-momentsSpBasic.skew(:,momentsSpBasic.elevation>0,:);
+% momentsSpBasicRMnoise.skew(:,momentsSpBasic.elevation>0,:)=-momentsSpBasicRMnoise.skew(:,momentsSpBasic.elevation>0,:);
+% momentsSpSmooth.skew(:,momentsSpBasic.elevation>0,:)=-momentsSpSmooth.skew(:,momentsSpBasic.elevation>0,:);
+% momentsSpSmoothCorr.skew(:,momentsSpBasic.elevation>0,:)=-momentsSpSmoothCorr.skew(:,momentsSpBasic.elevation>0,:);
 
 aslGood=momentsSpBasic.asl(~isnan(momentsSpBasic.skew))./1000;
 ylims=[0,max(aslGood)+0.5];

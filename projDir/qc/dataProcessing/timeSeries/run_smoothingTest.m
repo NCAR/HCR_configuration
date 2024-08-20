@@ -4,7 +4,7 @@ close all;
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-project='otrec'; %socrates, aristo, cset, otrec
+project='socrates'; %socrates, aristo, cset, otrec
 quality='ts'; %field, qc1, or qc2
 qualityCF='qc3';
 freqData='10hz';
@@ -42,7 +42,7 @@ velAircAll=[];
 errCases=cell(length(caseStart),1);
 velAircCases=cell(length(caseStart),1);
 
-for aa=1:length(caseStart)
+for aa=10:length(caseStart)
     tic
 
     err=[];
@@ -65,9 +65,8 @@ for aa=1:length(caseStart)
     dataCF.VEL_RAW=[];
     dataCF.VEL_CORR=[];
     dataCF.VEL_MASKED=[];
-    dataCF.U=[];
-    dataCF.V=[];
-    %dataCF.SNR=[];
+    % dataCF.U=[];
+    % dataCF.V=[];
     dataCF.eastward_velocity=[];
     dataCF.northward_velocity=[];
          
@@ -75,13 +74,19 @@ for aa=1:length(caseStart)
     dataCF.beamWidth=ncread(fileListMoments{1},'radar_beam_width_v');
 
     % Find width correction factor
-    uHeadwind=dataCF.eastward_velocity-dataCF.U;
-    vHeadwind=dataCF.northward_velocity-dataCF.V;
-    %velAircraft=sqrt(dataCF.eastward_velocity.^2+dataCF.northward_velocity.^2);
-    velHeadwind=sqrt(uHeadwind.^2+vHeadwind.^2);
-    widthCorrDelta=abs(0.3.*velHeadwind.*sin(deg2rad(dataCF.elevation)).*deg2rad(dataCF.beamWidth));
-    %widthCorrDelta=fillmissing(widthCorrDelta,'nearest',1);
-        
+    % Aircraft speed
+    velTestWind=sqrt(dataCF.eastward_velocity.^2+dataCF.northward_velocity.^2);
+    widthCorrDelta=abs(0.3.*velTestWind.*sin(deg2rad(dataCF.elevation)).*deg2rad(dataCF.beamWidth));
+    widthCorrDelta=fillmissing(widthCorrDelta,'nearest',1);
+    widthCorrDelta=repmat(widthCorrDelta,size(dataCF.range,1),1);
+    velTestWind=repmat(velTestWind,size(dataCF.range,1),1);
+
+    % Or headwind
+    % uHeadwind=dataCF.eastward_velocity-dataCF.U;
+    % vHeadwind=dataCF.northward_velocity-dataCF.V;
+    % velTestWind=sqrt(uHeadwind.^2+vHeadwind.^2);
+    % widthCorrDelta=abs(0.3.*velTestWind.*sin(deg2rad(dataCF.elevation)).*deg2rad(dataCF.beamWidth));
+
     % Velocity bias term
     velBiasCorrection=dataCF.VEL_CORR-dataCF.VEL_RAW;
         
@@ -282,7 +287,7 @@ for aa=1:length(caseStart)
             % This step removes the noise, de-aliases, (and corrects for
             % spectral broadening)
             [err,resid,velAirc]=noisePeaks_smoothingTest(specPowerDB.V, ...
-                momentsTimeOne.velRawDeAliased(:,ii),dataThis,widthCorrDelta(:,cfInd),velHeadwind(:,cfInd),err,resid,velAirc,figdir,plotTime);
+                momentsTimeOne.velRawDeAliased(:,ii),dataThis,widthCorrDelta(:,cfInd),velTestWind(:,cfInd),err,resid,velAirc,figdir,plotTime);
 
             %velAirc=cat(2,velAirc,repmat(velHeadwind(:,cfInd),1,size(err,2)-size(velAirc,2)));
         end
