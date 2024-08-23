@@ -7,11 +7,11 @@ addpath(genpath('~/git/HCR_configuration/projDir/qcDualPRTground/dataProcessing/
 
 project='meow'; %socrates, aristo, cset, otrec
 quality='qc0'; %field, qc1, or qc2
-freqData='100hz_long';
+freqData='10hz_combined';
 qcVersion='';
 
-startTime=datetime(2024,6,24,22,31,0);
-endTime=datetime(2024,6,24,22,39,0);
+startTime=datetime(2024,5,10,17,41,0);
+endTime=datetime(2024,5,10,17,45,0);
 
 indir=HCRdir(project,quality,qcVersion,freqData);
 
@@ -36,6 +36,7 @@ fileList=makeFileList(indir,startTime,endTime,'xxxxxx20YYMMDDxhhmmss',1);
 data=[];
 
 data.DBZ_long=[];
+data.DBZ_short=[];
 
 data=read_HCR(fileList,data,startTime,endTime);
 
