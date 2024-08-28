@@ -232,15 +232,18 @@ def ftpFile(fileName, filePath):
 
     sftpClient = sshClient.open_sftp()
 
-    # make dir in case needed
+    # if targetDir doesn't exist (i.e., if we can't list its contents), try to create it
 
     try:
-        sftpClient.mkdir(targetDir)
-    except Exception as e:
-        cwd = sftpClient.getcwd()
-        logger.error("'SFTP mkdir %s' failed (from working directory %s): %s"
-                      % (targetDir, cwd, e))
-        sys.exit(1)
+        sftpClient.listdir(targetDir)
+    except Exception:
+        try:
+            sftpClient.mkdir(targetDir)
+            logger.info("Created remote target directory %s" % (targetDir))
+        except Exception as e:
+            logger.error("failed to create remote target directory %s: %s"
+                         % (targetDir, e))
+            sys.exit(1)
 
     # go to target dir
 
