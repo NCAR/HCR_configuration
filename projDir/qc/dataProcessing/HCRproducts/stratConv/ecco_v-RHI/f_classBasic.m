@@ -109,11 +109,11 @@ maskConv=conv>=mixedConv;
 horLarge2=imdilate(maskConv, strel('line', 50,0));
 
 % Enlarge conv
-convLarge1=imdilate(maskConv, strel('disk', 3));
-convLarge=imclose(convLarge1,strel('disk', 5));
+convLarge1=imdilate(maskConv, strel('disk', 3)); % Default 3
+convLarge=imclose(convLarge1,strel('disk', 5)); % Default 5
 convLarge(isnan(conv))=0;
 convLarge=imfill(convLarge,'holes');
-convLarge=imerode(convLarge,strel('disk', 3));
+convLarge=imerode(convLarge,strel('disk', 3)); % Default 3
 
 % Make sure we don't enlarge into unconnected areas
 convRays=find(any(convLarge==1,1));

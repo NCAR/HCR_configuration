@@ -19,16 +19,17 @@ figdir='/scr/cirrus3/rsfdata/projects/precip/grids/spol/radarPolar/qc2/rate/plot
 % Set showPlot below to either 'on' or 'off'. If 'on', the figures will pop up on
 % the screen and also be saved. If 'off', they will be only saved but will
 % not show on the screen while the code runs.
-showPlot='on';
+showPlot='off';
 
 startTime=datetime(2022,6,8,0,0,0);
-endTime=datetime(2022,6,8,0,15,0);
+endTime=datetime(2022,6,8,0,30,0);
 
 %% Tuning parameters
 
 % These two tuning parameters affect the classification
-pixRadDBZ=5; % Horizontal number of pixels over which reflectivity texture is calculated.
-upperLimDBZ=30; % This affects how reflectivity texture translates into convectivity.
+pixRadDBZ=132; % Horizontal number of pixels over which reflectivity texture is calculated.
+% 3 km: 79; 5 km: 132; 7 km 185
+upperLimDBZ=35; % This affects how reflectivity texture translates into convectivity.
 
 %% Loop through the files
 fileList=makeFileList(dataDir,startTime,endTime,'xxxxxxxxxxxxxxxxxxxxxxxxxxxxx20YYMMDDxhhmmss',1);
@@ -56,15 +57,35 @@ for aa=1:length(fileList)
         
         dataPol=dataFile(ii);
 
+        if dataPol.time(1)<startTime
+            continue
+        end
+
         %% Interpolate data
-        [phi,r]=meshgrid(deg2rad(dataPol.elevation),dataPol.range);
+
+        disp(['RHI ',num2str(ii),' of ',num2str(size(dataFile,2))]);
+        disp('Interpolating to Cartesian grid ...');
+
+        elevPad=cat(1,nan,dataPol.elevation,nan);
+        elevPad=fillmissing(elevPad,'linear');
+
+        rangePad=cat(2,nan,dataPol.range,nan);
+        rangePad=fillmissing(rangePad,'linear');
+
+        [phi,r]=meshgrid(deg2rad(elevPad),rangePad);
         [Xin,Yin]=pol2cart(phi,r);
 
-        [X,Y]=meshgrid(dataPol.range(1):(dataPol.range(2)-dataPol.range(1))/4:dataPol.range(end),0:0.1:20);
+        [X,Y]=meshgrid(dataPol.range(1):(dataPol.range(2)-dataPol.range(1))/4:dataPol.range(end),-5:0.1:25);
 
-        data.DBZ=griddata(double(Xin),double(Yin),dataPol.DBZ_F',double(X),double(Y),'nearest');
-        data.TEMP=griddata(double(Xin),double(Yin),dataPol.TEMP_FOR_PID',double(X),double(Y),'nearest');
-
+        dbzIn=dataPol.DBZ_F';
+        dbzIn=padarray(dbzIn,[1,1],nan,'both');
+        intDBZ=scatteredInterpolant(double(Xin(:)),double(Yin(:)),dbzIn(:),'nearest');
+        data.DBZ=intDBZ(double(X),double(Y));
+        tempIn=dataPol.TEMP_FOR_PID';
+        tempIn=padarray(tempIn,[1,1],nan,'both');
+        intTEMP=scatteredInterpolant(double(Xin(:)),double(Yin(:)),tempIn(:),'nearest');
+        data.TEMP=intTEMP(double(X),double(Y));
+       
         %% Prepare data
                
         % % Remove specles
@@ -77,6 +98,8 @@ for aa=1:length(fileList)
         data.MELTING_LAYER=nan(size(data.DBZ));
         data.MELTING_LAYER(data.TEMP<=0)=20;
         data.MELTING_LAYER(data.TEMP>0)=10;
+
+        data.TOPO=0;
 
         %% Texture from reflectivity
 
@@ -102,7 +125,7 @@ for aa=1:length(fileList)
 
         disp('Sub classification ...');
 
-        classSub=f_classSub(classBasic,data.asl,data.TOPO,data.MELTING_LAYER,data.TEMP);
+        classSub=f_classSub_RHI(classBasic,Y,data.TOPO,data.MELTING_LAYER,data.TEMP);
 
         %% Plot
 
@@ -121,11 +144,6 @@ for aa=1:length(fileList)
         classSubPlot(classSub==36)=8;
         classSubPlot(classSub==38)=9;
 
-        % Set up the 1D classification at the bottom of the plot
-        stratConv1D=max(classSubPlot,[],1);
-        time1D=data.time(~isnan(stratConv1D));
-        stratConv1D=stratConv1D(~isnan(stratConv1D));
-
         % Set up color maps
         colmapSC=[0,0.1,0.6;
             0.38,0.42,0.96;
@@ -137,102 +155,103 @@ for aa=1:length(fileList)
             0.99,0.77,0.22;
             0.7,0,0];
 
-        col1D=colmapSC(stratConv1D,:);
-
         % Determine upper limit of y axis based on where the valid data ends
-        ylimUpper=(max(data.asl(~isnan(data.DBZ)))./1000)+0.5;
-        % Altitude of the labels within the subplots
-        textAlt=ylimUpper-1;
-        % Time of the labels within the subplots
-        textDate=data.time(1)+seconds(5);
-
+        ylimUpper=25;
+               
         close all
 
-        f1 = figure('Position',[200 500 1600 1100],'DefaultAxesFontSize',12,'visible',showPlot);
-
+        f1 = figure('Position',[200 500 1200 1200],'DefaultAxesFontSize',12,'visible',showPlot);
         colormap('jet');
-
-        % Plot reflectivity
-        s1=subplot(4,1,1);
-
+        t = tiledlayout(4,1,'TileSpacing','tight','Padding','tight');
+        
+        % Plot polar reflectivity
+        s1=nexttile(1);
+        
         hold on
-        surf(data.time,data.asl./1000,data.DBZ,'edgecolor','none');
+        surf(Xin(2:end-1,2:end-1),Yin(2:end-1,2:end-1),dataPol.DBZ_F','edgecolor','none');
         view(2);
         ylabel('Altitude (km)');
-        clim([-10 60]);
-        ylim([0 ylimUpper]);
-        xlim([data.time(1),data.time(end)]);
-        set(gca,'XTickLabel',[]);
+        clim([-10 50]);
+        xlim([0,max(dataPol.range)]);
+        ylim([-5,25]);
+
+        xlabel('Range (km)');
+        ylabel('Altitude (km)');
+
         cb1=colorbar;
         grid on
         box on
 
-        text(textDate,textAlt,'(a) Reflectivity (dBZ)','FontSize',11,'FontWeight','bold');
+        title('Polar reflectivity (dBZ)');
+
+        % Plot Cartesian reflectivity
+        s2=nexttile(2);
+        
+        hold on
+        surf(X,Y,data.DBZ,'edgecolor','none');
+        view(2);
+        ylabel('Altitude (km)');
+        clim([-10 50]);
+        xlim([0,max(dataPol.range)]);
+        ylim([-5,25]);
+
+        xlabel('Range (km)');
+        ylabel('Altitude (km)');
+
+        cb2=colorbar;
+        grid on
+        box on
+
+        title('Cartesian reflectivity (dBZ)');
 
         % Plot convectivity
-        s2=subplot(4,1,2);
-
+        s3=nexttile(3);
+        
         hold on
-        surf(data.time,data.asl./1000,convDBZ,'edgecolor','none');
+        surf(X,Y,convDBZ,'edgecolor','none');
         view(2);
         ylabel('Altitude (km)');
         clim([0 1]);
-        ylim([0 ylimUpper]);
-        xlim([data.time(1),data.time(end)]);
-        cb2=colorbar;
-        set(gca,'XTickLabel',[]);
+        xlim([0,max(dataPol.range)]);
+        ylim([-5,25]);
+
+        xlabel('Range (km)');
+        ylabel('Altitude (km)');
+
+        cb3=colorbar;
         grid on
         box on
-        text(textDate,textAlt,'(b) Convectivity','FontSize',11,'FontWeight','bold');
 
-        % Plot the 1D classification at the very bottom (needs to be done
-        % before the last plot for matlab specific reasons)
-        s5=subplot(30,1,30);
-
-        hold on
-        scat1=scatter(time1D,ones(size(time1D)),10,col1D,'filled');
-        set(gca,'clim',[0,1]);
-        set(gca,'YTickLabel',[]);
-        s5.Colormap=colmapSC;
-        xlim([data.time(1),data.time(end)]);
-        grid on
-        box on
+        title('Convectivity');
 
         % Plot classification
-        s4=subplot(4,1,3);
-
+        s4=nexttile(4);
+        
         hold on
-        surf(data.time,data.asl./1000,classSubPlot,'edgecolor','none');
+        surf(X,Y,classSubPlot,'edgecolor','none');
         view(2);
         ylabel('Altitude (km)');
-        clim([0 10]);
-        ylim([0 ylimUpper]);
-        xlim([data.time(1),data.time(end)]);
+        clim([-10 60]);
+        xlim([0,max(dataPol.range)]);
+        ylim([-5,25]);
+
+        xlabel('Range (km)');
+        ylabel('Altitude (km)');
+
         s4.Colormap=colmapSC;
         clim([0.5 9.5]);
         cb4=colorbar;
         cb4.Ticks=1:9;
         cb4.TickLabels={'Strat Low','Strat Mid','Strat High','Mixed',...
             'Conv','Conv Elev','Conv Shallow','Conv Mid','Conv Deep'};
-        set(gca,'XTickLabel',[]);
+                
         grid on
         box on
-        text(textDate,textAlt,'(c) Echo type','FontSize',11,'FontWeight','bold');
 
-        % Matlab by default creates a lot of white space so we reposition the
-        % panels to avoid that
-        s1.Position=[0.049 0.69 0.82 0.29];
-        s2.Position=[0.049 0.38 0.82 0.29];
-        s4.Position=[0.049 0.07 0.82 0.29];
-        s5.Position=[0.049 0.035 0.82 0.02];
-
-        % The color bars also need to be repositioned
-        cb1.Position=[0.875,0.69,0.02,0.29];
-        cb2.Position=[0.875,0.38,0.02,0.29];
-        cb4.Position=[0.875,0.07,0.02,0.29];
+        title('Echo type');
 
         % Save the figure based on the start and end time
         set(gcf,'PaperPositionMode','auto')
-        print(f1,[figdir,'apr3_',datestr(data.time(1),'yyyymmdd_HHMMSS'),'_to_',datestr(data.time(end),'yyyymmdd_HHMMSS'),'.png'],'-dpng','-r0')
+        print(f1,[figdir,'spol_',datestr(dataPol.time(1),'yyyymmdd_HHMMSS'),'.png'],'-dpng','-r0')
     end
 end

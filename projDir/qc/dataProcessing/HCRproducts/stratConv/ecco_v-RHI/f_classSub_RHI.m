@@ -1,4 +1,4 @@
-function classSub=f_classSub(classIn,asl,topo,melt,temp)
+function classSub=f_classSub_RHI(classIn,asl,topo,melt,temp)
 
 % 14 strat low
 % 16 strat mid
@@ -19,7 +19,7 @@ convMask(classIn==3)=1;
 convAreas=bwconncomp(convMask);
 
 % Calculate distance between asl and topo
-distAslTopo=asl-topo;
+distAslTopo=asl*1000-topo;
 
 for ii=1:convAreas.NumObjects
     % Check if near surface
