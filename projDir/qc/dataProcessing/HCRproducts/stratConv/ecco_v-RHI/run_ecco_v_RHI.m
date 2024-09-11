@@ -29,7 +29,14 @@ endTime=datetime(2022,6,8,0,30,0);
 % These two tuning parameters affect the classification
 pixRadDBZ=132; % Horizontal number of pixels over which reflectivity texture is calculated.
 % 3 km: 79; 5 km: 132; 7 km 185
+% Lower values tend to lead to more stratiform precipitation.
 upperLimDBZ=35; % This affects how reflectivity texture translates into convectivity.
+% Higher values lead to more stratiform precipitation.
+dbzBase=0; % Reflectivity base value which is subtracted from DBZ.
+% Suggested values are: 0 dBZ for S, C, X, and Ku-band;
+% -10 dBZ for Ka-band; -20 dBZ for W-band
+stratMixed=0.4; % Convectivity boundary between strat and mixed.
+mixedConv=0.5; % Convectivity boundary between mixed and conv.
 
 %% Loop through the files
 fileList=makeFileList(dataDir,startTime,endTime,'xxxxxxxxxxxxxxxxxxxxxxxxxxxxx20YYMMDDxhhmmss',1);
@@ -105,7 +112,6 @@ for aa=1:length(fileList)
 
         disp('Calculating reflectivity texture ...');
 
-        dbzBase=0; % Reflectivity base value which is subtracted from DBZ.
         dbzText=f_reflTexture(data.DBZ,pixRadDBZ,dbzBase);
 
         %% Convectivity
@@ -116,16 +122,13 @@ for aa=1:length(fileList)
 
         disp('Basic classification ...');
 
-        stratMixed=0.4; % Convectivity boundary between strat and mixed.
-        mixedConv=0.5; % Convectivity boundary between mixed and conv.
-
         classBasic=f_classBasic(convDBZ,stratMixed,mixedConv,data.MELTING_LAYER);
 
         %% Sub classification
 
         disp('Sub classification ...');
 
-        classSub=f_classSub_RHI(classBasic,Y,data.TOPO,data.MELTING_LAYER,data.TEMP);
+        classSub=f_classSub(classBasic,Y.*1000,data.TOPO,data.MELTING_LAYER,data.TEMP);
 
         %% Plot
 

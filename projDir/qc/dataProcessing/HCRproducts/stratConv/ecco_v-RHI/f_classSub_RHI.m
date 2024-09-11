@@ -19,7 +19,7 @@ convMask(classIn==3)=1;
 convAreas=bwconncomp(convMask);
 
 % Calculate distance between asl and topo
-distAslTopo=asl*1000-topo;
+distAslTopo=asl-topo;
 
 for ii=1:convAreas.NumObjects
     % Check if near surface
