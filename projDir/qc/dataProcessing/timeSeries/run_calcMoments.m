@@ -188,6 +188,7 @@ for aa=1:length(caseStart)
 
             % Window
             win=window(@hamming,sampleNum);  % Default window is Hamming
+            %win=window(@tukeywin,sampleNum,0.5); % Tukey window
             winWeight=sampleNum/sum(win);
             winNorm=win*winWeight;
 
