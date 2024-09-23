@@ -1,4 +1,5 @@
-function [powerOrig,powerOrigRMnoise,powerSmooth,powerSmoothCorr,velOut,noiseFloorAll]=noisePeaks_smoothCorr(specDB,velIn,data,widthC,aircVel,figdir,plotTime)
+function [powerOrig,powerOrigRMnoise,powerSmooth,powerSmoothCorr,velOut,noiseFloorAll,peakIndsAll1,peakIndsAll2]= ...
+    noisePeaks_smoothCorr(specDB,velIn,data,widthC,aircVel,figdir,plotTime)
 powerOrig=nan(size(specDB));
 powerOrigRMnoise=nan(size(specDB));
 powerSmooth=nan(size(specDB));
