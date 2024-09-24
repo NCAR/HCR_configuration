@@ -4,11 +4,11 @@ close all;
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-project='spicule'; %socrates, aristo, cset, otrec
+project='otrec'; %socrates, aristo, cset, otrec
 quality='ts'; %field, qc1, or qc2
-qualityCF='qc1';
+qualityCF='qc3';
 freqData='10hz';
-qcVersion='v1.2';
+qcVersion='v3.2';
 
 plotInds=0;
 %plotInds=(1:50:500);
@@ -21,7 +21,7 @@ dataDirCF=HCRdir(project,qualityCF,qcVersion,freqData);
 
 figdir=[dataDirCF(1:end-5),'specParams/'];
 
-showPlot='off';
+showPlot='on';
 
 casefile=['~/git/HCR_configuration/projDir/qc/dataProcessing/HCRproducts/caseFiles/airMotion_',project,'.txt'];
 
@@ -301,8 +301,6 @@ for aa=1:length(caseStart)
             for hh=1:length(dataFields1)
                 momentsSpecSmoothCorr.(dataFields1{hh})=cat(2,momentsSpecSmoothCorr.(dataFields1{hh}),momentsSpecSmoothCorrOne.(dataFields1{hh}));
             end
-
-            noiseFloorAll=cat(2,noiseFloorAll,noiseFloor);
         end
        
     end
@@ -326,10 +324,11 @@ for aa=1:length(caseStart)
     fieldsTs=fieldnames(momentsTime);
     for ll=1:length(fieldsTs)
         momentsTime.(fieldsTs{ll})=momentsTime.(fieldsTs{ll})(:,indTs);
-        momentsSpecSmoothCorr.(fieldsTs{ll})=momentsSpecSmoothCorr.(fieldsTs{ll})(:,indTs);
     end
-
-    noiseFloorAll=noiseFloorAll(:,indTs);
+    fieldsSpec=fieldnames(momentsSpecSmoothCorr);
+    for ll=1:length(fieldsSpec)
+        momentsSpecSmoothCorr.(fieldsSpec{ll})=momentsSpecSmoothCorr.(fieldsSpec{ll})(:,indTs);
+    end
 
     dataCF=rmfield(dataCF,'beamWidth');
 
@@ -345,18 +344,9 @@ for aa=1:length(caseStart)
     disp('Plotting ...');
 
     momentsTime.asl=HCRrange2asl(momentsTime.range,momentsTime.elevation,momentsTime.altitude);
-    momentsSpecBasic.asl=HCRrange2asl(momentsSpecBasic.range,momentsSpecBasic.elevation,momentsSpecBasic.altitude);
+    momentsSpecSmoothCorr.asl=HCRrange2asl(momentsSpecSmoothCorr.range,momentsSpecSmoothCorr.elevation,momentsSpecSmoothCorr.altitude);
 
-    plotBasicMoments(momentsTime,dataCF,plotTimeAll,figdir,project,showPlot);
-    plotVels(momentsTime,momentsSpecBasic,momentsSpecBasicCorrRMnoise,momentsSpecSmooth,momentsSpecSmoothCorr,...
-        dataCF,plotTimeAll,figdir,project,showPlot);
-    plotWidths(momentsTime,momentsSpecBasic,momentsSpecBasicCorrRMnoise,momentsSpecSmooth,momentsSpecSmoothCorr,...
-        dataCF,plotTimeAll,figdir,project,showPlot);
-    plotSkews(momentsTime,momentsSpecBasic,momentsSpecBasicCorrRMnoise,momentsSpecSmooth,momentsSpecSmoothCorr,...
-        dataCF,plotTimeAll,figdir,project,showPlot);
-    plotKurtosis(momentsTime,momentsSpecBasic,momentsSpecBasicCorrRMnoise,momentsSpecSmooth,momentsSpecSmoothCorr,...
-        dataCF,plotTimeAll,figdir,project,showPlot);
-
-    plotNoiseFloor(momentsTime,noiseFloorAll,dataCF,plotTimeAll,figdir,project,showPlot);
-
+    plotAllMoments(momentsTime,dataCF,momentsSpecSmoothCorr,figdir,project,showPlot);   
+    plotSpecParams(momentsTime,momentsSpecSmoothCorr,figdir,project,showPlot);
+    
 end

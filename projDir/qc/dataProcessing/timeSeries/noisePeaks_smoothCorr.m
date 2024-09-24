@@ -1,4 +1,4 @@
-function [powerOrig,powerOrigRMnoise,powerSmooth,powerSmoothCorr,velOut,noiseFloorAll,peakIndsAll1,peakIndsAll2]= ...
+function [powerOrig,powerOrigRMnoise,powerSmooth,powerSmoothCorr,velOut,noiseFloorAllMov,peakIndsAll1,peakIndsAll2]= ...
     noisePeaks_smoothCorr(specDB,velIn,data,widthC,aircVel,figdir,plotTime)
 powerOrig=nan(size(specDB));
 powerOrigRMnoise=nan(size(specDB));
@@ -132,9 +132,28 @@ for aa=1:size(loopInds,1)
     end
     % Create new large spectrum
     newSpecLarge=repmat(sigWidthCorrRMnoise,1,duplicateSpec);
-    
+
     newSpecLarge=cat(2,nan(1,minIndTest(ii)),newSpecLarge);
     newSpecLarge(end-minIndTest(ii)+1:end)=[];
+
+    % Remove spectra pieces that are not complete
+    largeMask=~isnan(newSpecLarge);
+    statsLM=regionprops(largeMask,'Area','PixelIdxList');
+    areas=[statsLM.Area];
+    ua=unique(areas);
+    if length(ua)>1
+        countRegs=nan(1,length(ua));
+        for kk=1:length(ua)
+            countRegs(kk)=sum(areas==ua(kk));
+        end
+        remove1=find(countRegs==1);
+        if ~isempty(remove1)
+            for ll=1:length(remove1)
+                regInd=find(areas==ua(remove1(ll)));
+                newSpecLarge(statsLM(regInd).PixelIdxList)=nan;
+            end
+        end
+    end
 
     firstPowInd=find(~isnan(newSpecLarge),1,'first');
 
