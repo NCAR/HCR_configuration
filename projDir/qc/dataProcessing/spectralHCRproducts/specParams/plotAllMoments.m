@@ -1,9 +1,9 @@
-function plotAllMoments(moments,cf,momentsSpec,figdir,project,showPlot)
+function plotAllMoments(cf,momentsSpec,figdir,project,showPlot)
 
-momentsSpec.velRaw(:,moments.elevation>0)=-momentsSpec.velRaw(:,moments.elevation>0);
-momentsSpec.skew(:,moments.elevation>0)=-momentsSpec.skew(:,moments.elevation>0);
+momentsSpec.velRaw(:,momentsSpec.elevation>0)=-momentsSpec.velRaw(:,momentsSpec.elevation>0);
+momentsSpec.skew(:,momentsSpec.elevation>0)=-momentsSpec.skew(:,momentsSpec.elevation>0);
 
-aslGood=moments.asl(~isnan(moments.vel))./1000;
+aslGood=momentsSpec.asl(~isnan(momentsSpec.velRaw))./1000;
 ylims=[0,max(aslGood)+0.5];
 
 climsDbz=[-40,30];
@@ -26,7 +26,7 @@ s1=nexttile(1);
 cf.DBZ(isnan(cf.VEL_MASKED))=-999;
 
 hold on
-surf(moments.time,moments.asl./1000,cf.DBZ,'edgecolor','none');
+surf(momentsSpec.time,momentsSpec.asl./1000,cf.DBZ,'edgecolor','none');
 view(2);
 ylabel('Altitude (km)');
 clim(climsDbz);
@@ -36,7 +36,7 @@ grid on
 box on
 title('Time domain reflectivity (dBZ)')
 ylim(ylims);
-xlim([moments.time(1),moments.time(end)]);
+xlim([momentsSpec.time(1),momentsSpec.time(end)]);
 
 s2=nexttile(2);
 
@@ -44,7 +44,7 @@ cf.LDR(isnan(cf.VEL_MASKED))=-999;
 cf.LDR(isnan(cf.LDR))=-999;
 
 hold on
-surf(moments.time,moments.asl./1000,cf.LDR,'edgecolor','none');
+surf(momentsSpec.time,momentsSpec.asl./1000,cf.LDR,'edgecolor','none');
 view(2);
 ylabel('Altitude (km)');
 clim(climsLdr);
@@ -54,7 +54,7 @@ grid on
 box on
 title('Time domain linear depolarization ratio (dB)')
 ylim(ylims);
-xlim([moments.time(1),moments.time(end)]);
+xlim([momentsSpec.time(1),momentsSpec.time(end)]);
 
 s3=nexttile(3);
 
@@ -71,7 +71,7 @@ grid on
 box on
 title('Spectral domain velocity (m s^{-1})')
 ylim(ylims);
-xlim([moments.time(1),moments.time(end)]);
+xlim([momentsSpec.time(1),momentsSpec.time(end)]);
 
 s4=nexttile(4);
 
@@ -88,7 +88,7 @@ grid on
 box on
 title('Spectral domain width (m s^{-1})')
 ylim(ylims);
-xlim([moments.time(1),moments.time(end)]);
+xlim([momentsSpec.time(1),momentsSpec.time(end)]);
 
 s5=nexttile(5);
 
@@ -106,7 +106,7 @@ grid on
 box on
 title('Spectral domain skewness (m s^{-1})')
 ylim(ylims);
-xlim([moments.time(1),moments.time(end)]);
+xlim([momentsSpec.time(1),momentsSpec.time(end)]);
 
 s6=nexttile(6);
 
@@ -124,9 +124,9 @@ grid on
 box on
 title('Spectral domain kurtosis (m s^{-1})')
 ylim(ylims);
-xlim([moments.time(1),moments.time(end)]);
+xlim([momentsSpec.time(1),momentsSpec.time(end)]);
 
 
 set(gcf,'PaperPositionMode','auto')
-print(f1,[figdir,project,'_moments_',datestr(moments.time(1),'yyyymmdd_HHMMSS'),'_to_',datestr(moments.time(end),'yyyymmdd_HHMMSS')],'-dpng','-r0');
+print(f1,[figdir,project,'_moments_',datestr(momentsSpec.time(1),'yyyymmdd_HHMMSS'),'_to_',datestr(momentsSpec.time(end),'yyyymmdd_HHMMSS')],'-dpng','-r0');
 end

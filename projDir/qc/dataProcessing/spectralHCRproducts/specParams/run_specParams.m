@@ -4,7 +4,7 @@ close all;
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-project='otrec'; %socrates, aristo, cset, otrec
+project='socrates'; %socrates, aristo, cset, otrec
 quality='ts'; %field, qc1, or qc2
 qualityCF='qc3';
 freqData='10hz';
@@ -56,6 +56,7 @@ for aa=1:length(caseStart)
     dataCF.VEL_CORR=[];
     dataCF.VEL_MASKED=[];
     dataCF.LDR=[];
+    dataCF.SNR=[];
     % dataCF.U=[];
     % dataCF.V=[];
     dataCF.eastward_velocity=[];
@@ -346,7 +347,7 @@ for aa=1:length(caseStart)
     momentsTime.asl=HCRrange2asl(momentsTime.range,momentsTime.elevation,momentsTime.altitude);
     momentsSpecSmoothCorr.asl=HCRrange2asl(momentsSpecSmoothCorr.range,momentsSpecSmoothCorr.elevation,momentsSpecSmoothCorr.altitude);
 
-    plotAllMoments(momentsTime,dataCF,momentsSpecSmoothCorr,figdir,project,showPlot);   
-    plotSpecParams(momentsTime,momentsSpecSmoothCorr,figdir,project,showPlot);
+    plotAllMoments(dataCF,momentsSpecSmoothCorr,figdir,project,showPlot);   
+    plotSpecParams(momentsSpecSmoothCorr,figdir,project,showPlot);
     
 end

@@ -1,24 +1,24 @@
-function plotSpecParams(moments,momentsSpec,figdir,project,showPlot)
+function plotSpecParams(momentsSpec,figdir,project,showPlot)
 
 lslopeOrig=momentsSpec.lslope;
 rslopeOrig=momentsSpec.rslope;
-momentsSpec.lslope(:,moments.elevation>0)=-rslopeOrig(:,moments.elevation>0);
-momentsSpec.rslope(:,moments.elevation>0)=-lslopeOrig(:,moments.elevation>0);
+momentsSpec.lslope(:,momentsSpec.elevation>0)=-rslopeOrig(:,momentsSpec.elevation>0);
+momentsSpec.rslope(:,momentsSpec.elevation>0)=-lslopeOrig(:,momentsSpec.elevation>0);
 
 levelOrig=momentsSpec.level;
 revelOrig=momentsSpec.revel;
-momentsSpec.level(:,moments.elevation>0)=-revelOrig(:,moments.elevation>0);
-momentsSpec.revel(:,moments.elevation>0)=-levelOrig(:,moments.elevation>0);
+momentsSpec.level(:,momentsSpec.elevation>0)=-revelOrig(:,momentsSpec.elevation>0);
+momentsSpec.revel(:,momentsSpec.elevation>0)=-levelOrig(:,momentsSpec.elevation>0);
 
 lpvelOrig=momentsSpec.lpvel;
 rpvelOrig=momentsSpec.rpvel;
-momentsSpec.lpvel(:,moments.elevation>0)=-rpvelOrig(:,moments.elevation>0);
-momentsSpec.rpvel(:,moments.elevation>0)=-lpvelOrig(:,moments.elevation>0);
+momentsSpec.lpvel(:,momentsSpec.elevation>0)=-rpvelOrig(:,momentsSpec.elevation>0);
+momentsSpec.rpvel(:,momentsSpec.elevation>0)=-lpvelOrig(:,momentsSpec.elevation>0);
 
 momentsSpec.lpvel(isnan(momentsSpec.rpvel))=nan;
 momentsSpec.rpvel(isnan(momentsSpec.lpvel))=nan;
 
-aslGood=moments.asl(~isnan(moments.vel))./1000;
+aslGood=momentsSpec.asl(~isnan(momentsSpec.velRaw))./1000;
 ylims=[0,max(aslGood)+0.5];
 
 climsLrwidth=[0,13];
@@ -51,7 +51,7 @@ grid on
 box on
 title('Left edge to right edge width (m s^{-1})')
 ylim(ylims);
-xlim([moments.time(1),moments.time(end)]);
+xlim([momentsSpec.time(1),momentsSpec.time(end)]);
 
 s3=nexttile(3);
 
@@ -69,7 +69,7 @@ grid on
 box on
 title('Left slope (dB s m^{-1})')
 ylim(ylims);
-xlim([moments.time(1),moments.time(end)]);
+xlim([momentsSpec.time(1),momentsSpec.time(end)]);
 
 s4=nexttile(4);
 
@@ -87,7 +87,7 @@ grid on
 box on
 title('Right slope (dB s m^{-1})')
 ylim(ylims);
-xlim([moments.time(1),moments.time(end)]);
+xlim([momentsSpec.time(1),momentsSpec.time(end)]);
 
 s5=nexttile(5);
 
@@ -105,7 +105,7 @@ grid on
 box on
 title('Left edge velocity (m s^{-1})')
 ylim(ylims);
-xlim([moments.time(1),moments.time(end)]);
+xlim([momentsSpec.time(1),momentsSpec.time(end)]);
 
 s6=nexttile(6);
 
@@ -123,7 +123,7 @@ grid on
 box on
 title('Right edge velocity (m s^{-1})')
 ylim(ylims);
-xlim([moments.time(1),moments.time(end)]);
+xlim([momentsSpec.time(1),momentsSpec.time(end)]);
 
 s7=nexttile(7);
 
@@ -141,7 +141,7 @@ grid on
 box on
 title('Left peak velocity (m s^{-1})')
 ylim(ylims);
-xlim([moments.time(1),moments.time(end)]);
+xlim([momentsSpec.time(1),momentsSpec.time(end)]);
 
 s8=nexttile(8);
 
@@ -159,8 +159,8 @@ grid on
 box on
 title('Right peak velocity (m s^{-1})')
 ylim(ylims);
-xlim([moments.time(1),moments.time(end)]);
+xlim([momentsSpec.time(1),momentsSpec.time(end)]);
 
 set(gcf,'PaperPositionMode','auto')
-print(f1,[figdir,project,'_specParams_',datestr(moments.time(1),'yyyymmdd_HHMMSS'),'_to_',datestr(moments.time(end),'yyyymmdd_HHMMSS')],'-dpng','-r0');
+print(f1,[figdir,project,'_specParams_',datestr(momentsSpec.time(1),'yyyymmdd_HHMMSS'),'_to_',datestr(momentsSpec.time(end),'yyyymmdd_HHMMSS')],'-dpng','-r0');
 end
