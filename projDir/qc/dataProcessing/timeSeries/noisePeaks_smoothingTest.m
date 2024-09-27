@@ -5,7 +5,7 @@ function [err,resid,velAirc]=noisePeaks_smoothingTest(specDB,velIn,data,widthC,h
 
 % Decide if and what to plot
 plotAll=0; % Set to 1 if everything should be plotted. Plots won't be saved.
-showPlot='on';
+showPlot='off';
 
 if plotAll
     plotRangeInds=18:10:size(specDB,1);

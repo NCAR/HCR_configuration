@@ -42,7 +42,7 @@ velAircAll=[];
 errCases=cell(length(caseStart),1);
 velAircCases=cell(length(caseStart),1);
 
-for aa=10:length(caseStart)
+for aa=1:length(caseStart)
     tic
 
     err=[];
