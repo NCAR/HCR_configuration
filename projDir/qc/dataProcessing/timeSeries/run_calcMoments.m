@@ -4,11 +4,11 @@ close all;
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-project='socrates'; %socrates, aristo, cset, otrec
+project='spicule'; %socrates, aristo, cset, otrec
 quality='ts'; %field, qc1, or qc2
-qualityCF='qc3';
+qualityCF='qc1';
 freqData='10hz';
-qcVersion='v3.2';
+qcVersion='v1.2';
 
 %plotInds=0;
 plotInds=(1:50:500);
@@ -35,7 +35,7 @@ caseStart=datetime(caseList.Var1,caseList.Var2,caseList.Var3, ...
 caseEnd=datetime(caseList.Var7,caseList.Var8,caseList.Var9, ...
     caseList.Var10,caseList.Var11,caseList.Var12);
 
-for aa=3:length(caseStart)
+for aa=1:length(caseStart)
     tic
 
     plotTimeAll=[];

@@ -78,6 +78,7 @@ l2=plot(xlim1,[spectra.noiseFloor,spectra.noiseFloor],'-c','LineWidth',2);
 l3=plot(spectra.uncorrFilteredDB,'-','LineWidth',2,'Color',[0.8,0,0.8]);
 l4=plot(spectra.corrDB,'-g','LineWidth',2);
 ylabel('Power (dB)');
+xlabel('Spectral bin number');
 ylim([-80,-20]);
 xlim(xlim1);
 
