@@ -21,31 +21,51 @@ showPlot='on';
 fileList=dir([indir,'*.mat']);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Loop through filed
+disp('Aggregating data ...')
 
+% Loop through files and aggregate data
+caseStartInd=1;
 for aa=1:length(fileList)
-    
-    disp(['Case ',num2str(aa),' of ',num2str(length(fileList))]);
-   
+
     load([fileList(aa).folder,'/',fileList(aa).name]);
 
-    %% Scale and prepare input
-    vars={'DBZ','VEL','WIDTH','SKEW','KURT','MELTING_LAYER'};
-    dataForML=prepForML(specData,vars);
+    if aa==1
+        allVars=fields(specData);
+        specDataAll=specData;
+    else
+        caseStartInd=cat(1,caseStartInd,length(specDataAll.time)+1);
+        for ii=1:length(allVars)
+            specDataAll.(allVars{ii})=cat(2,specDataAll.(allVars{ii}),specData.(allVars{ii}));
+        end
+    end
+end
 
-    %% K-means clustering
+%% Scale and prepare input
+vars={'DBZ','VEL','WIDTH','SKEW','KURT'};
+dataForML=prepForML(specDataAll,vars);
 
-    numLabel=10;
-    [nRow,nCol]=size(specData.(vars{1}));
-    [labelsInNum,labelsOptEll,labNumEll]=mlLabels(dataForML,numLabel,nRow,nCol);
+%% K-means clustering
 
-    %% Plot labels
+disp('Clustering ...');
+numLabel=10;
+[nRow,nCol]=size(specDataAll.(vars{1}));
+[labelsInNum,labelsOptEll,labNumEll]=mlLabels(dataForML,numLabel,nRow,nCol);
 
+%% Plot labels
+caseEndInd=caseStartInd-1;
+caseEndInd(1)=[];
+caseEndInd=cat(1,caseEndInd,length(specDataAll.time));
+
+disp('Plotting ...');
+for aa=1:length(fileList)
     close all
 
-    disp('Plotting ...');
-
-    aslGood=specData.asl(~isnan(specData.DBZ))./1000;
+    time=specDataAll.time(caseStartInd(aa):caseEndInd(aa));
+    asl=specDataAll.asl(:,caseStartInd(aa):caseEndInd(aa));
+    labelsInNumC=labelsInNum(:,caseStartInd(aa):caseEndInd(aa));
+    labelsOptEllC=labelsOptEll(:,caseStartInd(aa):caseEndInd(aa));
+    
+    aslGood=asl(~isnan(labelsInNumC))./1000;
     ylims=[0,max(aslGood)+0.5];
 
     f1 = figure('Position',[200 500 700 800],'DefaultAxesFontSize',12,'visible',showPlot);
@@ -55,7 +75,7 @@ for aa=1:length(fileList)
     s1=nexttile(1);
 
     hold on
-    surf(specData.time,specData.asl./1000,labelsInNum,'edgecolor','none');
+    surf(time,asl./1000,labelsInNumC,'edgecolor','none');
     view(2);
     ylabel('Altitude (km)');
     clim([0.5,numLabel+0.5]);
@@ -65,12 +85,12 @@ for aa=1:length(fileList)
     box on
     title('k-means labels')
     ylim(ylims);
-    xlim([specData.time(1),specData.time(end)]);
+    xlim([time(1),time(end)]);
 
     s2=nexttile(2);
 
     hold on
-    surf(specData.time,specData.asl./1000,labelsOptEll,'edgecolor','none');
+    surf(time,asl./1000,labelsOptEllC,'edgecolor','none');
     view(2);
     ylabel('Altitude (km)');
     clim([0.5,labNumEll+0.5]);
@@ -80,10 +100,10 @@ for aa=1:length(fileList)
     box on
     title('k-means labels ellbow optimized')
     ylim(ylims);
-    xlim([specData.time(1),specData.time(end)]);
+    xlim([time(1),time(end)]);
 
     set(gcf,'PaperPositionMode','auto')
-    print(f1,[figdir,project,'_kmLabels_',datestr(specData.time(1),'yyyymmdd_HHMMSS'),'_to_',datestr(specData.time(end),'yyyymmdd_HHMMSS')],'-dpng','-r0');
+    print(f1,[figdir,project,'_kmLabels_',datestr(time(1),'yyyymmdd_HHMMSS'),'_to_',datestr(time(end),'yyyymmdd_HHMMSS')],'-dpng','-r0');
     
     %% Plot moments and spec params
     %plotAllMoments(dataCF,momentsSpecSmoothCorr,figdir,project,showPlot);
