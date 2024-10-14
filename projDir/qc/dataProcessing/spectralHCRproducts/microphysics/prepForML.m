@@ -22,12 +22,6 @@ for ii=1:length(vars)
     varThis(varThis>lims.(vars{ii})(2))=lims.(vars{ii})(2);
     varScaled=1/(lims.(vars{ii})(2)-lims.(vars{ii})(1)).*(varThis-lims.(vars{ii})(1));
 
-    % colmap=turbo(10);
-    % surf(varScaled,'EdgeColor','none');
-    % colormap(colmap)
-    % view(2)
-    % colorbar
-
     stackVars=cat(3,stackVars,varScaled);
 end
 
