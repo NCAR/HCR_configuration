@@ -11,16 +11,19 @@ freqData='10hz';
 qcVersion='v1.2';
 
 numFiles=30; % Maximum 25
+version='version7';
 
 dataDirCF=HCRdir(project,qualityCF,qcVersion,freqData);
 
-%indir=[dataDirCF(1:end-5),'microPhys/matFiles/'];
-figdir=[dataDirCF(1:end-5),'microPhys/training/'];
+indir=[dataDirCF(1:end-5),'microPhys/training/',version,'/'];
+figdir=[dataDirCF(1:end-5),'microPhys/training/',version,'use/'];
 
 showPlot='on';
 
-fileList=readtable('~/git/HCR_configuration/projDir/qc/dataProcessing/HCRproducts/caseFiles/trainMicroPhys.txt','Delimiter',' ');
+fileList=readtable('~/git/HCR_configuration/projDir/qc/dataProcessing/HCRproducts/caseFiles/useMicroPhys.txt','Delimiter',' ');
 %fileList=dir([indir,'*.mat']);
+
+load([indir,'centers.mat']);
 
 gapL=round(size(fileList,1)/numFiles);
 fileInds=1:gapL:size(fileList,1);
@@ -49,23 +52,26 @@ for bb=1:length(fileInds)
     end
 end
 
-%% Scale and prepare input
-%vars={'DBZ','VEL','WIDTH','SKEW','KURT'}; % Version 1 (10), Version 4 (15), Version 5 (20)
-%vars={'DBZ','VEL','WIDTH','SKEW','KURT','EE_WIDTH','L_SLOPE','R_SLOPE','MELTING_LAYER'}; % Version 2 (20)
-%vars={'DBZ','VEL','WIDTH','SKEW','KURT','EE_WIDTH','L_SLOPE','R_SLOPE'}; % Version 3 (15)
-%vars={'VEL','WIDTH','SKEW','KURT'}; % Version 6 (20),
-vars={'VEL','WIDTH','SKEW','KURT','EE_WIDTH','L_SLOPE','R_SLOPE'}; % Version 7 (20)
+%% Adding to cluster
 
+disp('Adding to cluster ...');
 dataForML=prepForML(specDataAll,vars);
 
-%% K-means clustering
+goodInds=~any(isnan(dataForML),2);
+dataGood=dataForML(goodInds==1,:);
 
-disp('Clustering ...');
-numLabel=20;
+D=pdist2(dataGood,centersKmeans,'seuclidean');
+[~,kInds]=min(D,[],2);
+
+kIndsAll=nan(size(dataForML,1),1);
+kIndsAll(goodInds==1)=kInds;
+
 [nRow,nCol]=size(specDataAll.(vars{1}));
-[labelsKmeans]=mlLabels(dataForML,numLabel,nRow,nCol);
+labelsKmeans=reshape(kIndsAll,nRow,nCol);
 
 %% Plot
+numLabel=size(centersKmeans,1);
+
 caseEndInd=caseStartInd-1;
 caseEndInd(1)=[];
 caseEndInd=cat(1,caseEndInd,length(specDataAll.time));

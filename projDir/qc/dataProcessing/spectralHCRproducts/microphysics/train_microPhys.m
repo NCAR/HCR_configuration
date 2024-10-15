@@ -63,7 +63,9 @@ dataForML=prepForML(specDataAll,vars);
 disp('Clustering ...');
 numLabel=20;
 [nRow,nCol]=size(specDataAll.(vars{1}));
-[labelsKmeans]=mlLabels(dataForML,numLabel,nRow,nCol);
+[labelsKmeans,centersKmeans]=mlLabels(dataForML,numLabel,nRow,nCol);
+
+save([figdir,'centers.mat'],'centersKmeans','vars');
 
 %% Plot
 caseEndInd=caseStartInd-1;

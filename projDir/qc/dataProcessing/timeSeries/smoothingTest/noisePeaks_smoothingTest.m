@@ -16,7 +16,7 @@ end
 
 sampleNum=length(data.time);
 
-if sampleNum~=987
+if sampleNum<95 | sampleNum>105
     return
 end
 
