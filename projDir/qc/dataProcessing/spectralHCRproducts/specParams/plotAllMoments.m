@@ -38,23 +38,25 @@ title('Time domain reflectivity (dBZ)')
 ylim(ylims);
 xlim([momentsSpec.time(1),momentsSpec.time(end)]);
 
-s2=nexttile(2);
+if isfield(cf,'LDR')
+    s2=nexttile(2);
 
-cf.LDR(isnan(cf.VEL_MASKED))=-999;
-cf.LDR(isnan(cf.LDR))=-999;
+    cf.LDR(isnan(cf.VEL_MASKED))=-999;
+    cf.LDR(isnan(cf.LDR))=-999;
 
-hold on
-surf(momentsSpec.time,momentsSpec.asl./1000,cf.LDR,'edgecolor','none');
-view(2);
-ylabel('Altitude (km)');
-clim(climsLdr);
-s2.Colormap=col1;
-colorbar
-grid on
-box on
-title('Time domain linear depolarization ratio (dB)')
-ylim(ylims);
-xlim([momentsSpec.time(1),momentsSpec.time(end)]);
+    hold on
+    surf(momentsSpec.time,momentsSpec.asl./1000,cf.LDR,'edgecolor','none');
+    view(2);
+    ylabel('Altitude (km)');
+    clim(climsLdr);
+    s2.Colormap=col1;
+    colorbar
+    grid on
+    box on
+    title('Time domain linear depolarization ratio (dB)')
+    ylim(ylims);
+    xlim([momentsSpec.time(1),momentsSpec.time(end)]);
+end
 
 s3=nexttile(3);
 
