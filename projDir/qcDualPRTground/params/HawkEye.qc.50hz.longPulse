@@ -70,7 +70,7 @@ register_with_procmap = FALSE;
 // Type: string
 //
 
-instance = "archive.50hz.longPulse";
+instance = "qc.50hz.longPulse";
 
 //======================================================================
 //
@@ -110,7 +110,7 @@ input_mode = IWRF_FMQ_INPUT;
 // Type: string
 //
 
-input_fmq_url = "/tmp/fmq/moments/archive.50hz.longPulse/shmem_20512";
+input_fmq_url = "/tmp/fmq/moments/qc.50hz.longPulse/shmem_20512";
 
 ///////////// seek_to_start_of_fmq ////////////////////
 //

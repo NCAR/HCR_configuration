@@ -70,7 +70,7 @@ register_with_procmap = FALSE;
 // Type: string
 //
 
-instance = "archive.50hz.shortPulse";
+instance = "qc.50hz.shortPulse";
 
 //======================================================================
 //
@@ -110,7 +110,7 @@ input_mode = IWRF_FMQ_INPUT;
 // Type: string
 //
 
-input_fmq_url = "/tmp/fmq/moments/archive.50hz.shortPulse/shmem_20256";
+input_fmq_url = "/tmp/fmq/moments/qc.50hz.shortPulse/shmem_20256";
 
 ///////////// seek_to_start_of_fmq ////////////////////
 //
@@ -178,7 +178,7 @@ beam_queue_size = 1000;
 // Type: boolean
 //
 
-begin_in_archive_mode = FALSE;
+begin_in_archive_mode = TRUE;
 
 ///////////// archive_start_time //////////////////////
 //

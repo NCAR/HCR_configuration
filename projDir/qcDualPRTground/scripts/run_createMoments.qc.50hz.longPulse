@@ -1,0 +1,8 @@
+#! /bin/csh
+
+source ~/git/HCR_configuration/projDir/system/params/project_info.meow
+
+cd $PROJ_DIR/qcDualPRTground/scripts
+
+./createMoments.qc.50hz.longPulse >& /tmp/createMoments.qc.50hz.longPulse.log &
+

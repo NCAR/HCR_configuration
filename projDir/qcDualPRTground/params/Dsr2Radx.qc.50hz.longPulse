@@ -44,7 +44,7 @@ debug = DEBUG_OFF;
 // Type: string
 //
 
-instance = "moments.50hz.shortPulse";
+instance = "qc.50hz.longPulse";
 
 ///////////// procmap_register_interval ///////////////
 //
@@ -76,7 +76,7 @@ procmap_register_interval = 60;
 // Type: string
 //
 
-input_fmq_url = "/tmp/fmq/moments/archive.50hz.shortPulse/shmem_20256";
+input_fmq_url = "/tmp/fmq/moments/qc.50hz.longPulse/shmem_20512";
 
 ///////////// seek_to_end_of_input ////////////////////
 //
@@ -1799,7 +1799,7 @@ output_fields = {
 
 output_data_set = {
   {
-    output_dir = "$(DATA_DIR)/$(QC_VERSION)/$(QC_SUB_VERSION)/cfradial/moments/50hz_shortPulse",
+    output_dir = "$(DATA_DIR)/$(QC_VERSION)/$(QC_SUB_VERSION)/cfradial/moments/50hz_longPulse",
     format = OUTPUT_FORMAT_CFRADIAL
   }
 };
