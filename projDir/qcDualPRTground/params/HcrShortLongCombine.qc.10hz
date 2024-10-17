@@ -57,7 +57,7 @@ register_with_procmap = TRUE;
 //
 // Type: string
 
-instance = "archive";
+instance = "qc.10hz";
 
 //======================================================================
 //
@@ -92,7 +92,7 @@ mode = ARCHIVE;
 //
 // Type: string
 
-input_dir_short = "$(DATA_DIR)/cfradial/moments/100hz_short";
+input_dir_short = "$(DATA_DIR)/$(QC_VERSION)/$(QC_SUB_VERSION)/cfradial/moments/50hz_shortPulse";
 
 ///////////// input_dir_long //////////////////////////
 //
@@ -102,7 +102,7 @@ input_dir_short = "$(DATA_DIR)/cfradial/moments/100hz_short";
 //
 // Type: string
 
-input_dir_long = "$(DATA_DIR)/cfradial/moments/100hz_long";
+input_dir_long = "$(DATA_DIR)/$(QC_VERSION)/$(QC_SUB_VERSION)/cfradial/moments/50hz_longPulse";
 
 ///////////// input_fmq_url_short /////////////////////
 //
@@ -112,7 +112,7 @@ input_dir_long = "$(DATA_DIR)/cfradial/moments/100hz_long";
 //
 // Type: string
 
-input_fmq_url_short = "/tmp/fmq/moments/100hz.shortPulse/shmem_20140";
+input_fmq_url_short = "/tmp/fmq/moments/qc.50hz.shortPulse/shmem_20256";
 
 ///////////// input_fmq_url_long //////////////////////
 //
@@ -122,7 +122,7 @@ input_fmq_url_short = "/tmp/fmq/moments/100hz.shortPulse/shmem_20140";
 //
 // Type: string
 
-input_fmq_url_long = "/tmp/fmq/moments/100hz.longPulse/shmem_20120";
+input_fmq_url_long = "/tmp/fmq/moments/qc.50hz.longPulse/shmem_20512";
 
 ///////////// seek_to_end_of_input_fmq ////////////////
 //
@@ -502,7 +502,7 @@ output_format = OUTPUT_FORMAT_CFRADIAL;
 //
 // Type: string
 
-output_dir = "$(DATA_DIR)/cfradial/moments/100hz_combined";
+output_dir = "$(DATA_DIR)/$(QC_VERSION)/$(QC_SUB_VERSION)/cfradial/moments/10hz_combined";
 
 ///////////// output_filename_mode ////////////////////
 //
@@ -654,7 +654,7 @@ write_latest_data_info = FALSE;
 //
 // Type: string
 
-output_fmq_url = "fmqp:://localhost::/tmp/fmq/moments/100hz.combined/shmem_20200";
+output_fmq_url = "/tmp/fmq/moments/qc.10hz.combined/shmem_20300";
 
 ///////////// output_fmq_compress /////////////////////
 //
