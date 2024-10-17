@@ -49,7 +49,7 @@ beam_count_for_debug_print = 30;
 //
 // Type: string
 
-instance = "archive.50hz.shortPulse";
+instance = "archive.50hz.longPulse";
 
 //======================================================================
 //
@@ -900,7 +900,7 @@ moments_params = {
 //
 // Type: int
 
-min_n_samples = 90;
+min_n_samples = 60;
 
 ///////////// max_n_samples ///////////////////////////
 //
@@ -937,7 +937,7 @@ specify_fixed_pulse_width = TRUE;
 //
 // Type: double
 
-fixed_pulse_width_us = 0.256;
+fixed_pulse_width_us = 0.512;
 
 ///////////// control_beam_indexing_from_time_series //
 //
@@ -1194,7 +1194,7 @@ spectrum_width_method = WIDTH_METHOD_R0R1;
 //
 // Type: string
 
-startup_cal_file = "$(HOME)/git/HCR_configuration/projDir/calibration/data/wband_256ns/combined/TsCalAuto_Wband-HCR-256ns_20240415_234224.xml";
+startup_cal_file = "$(HOME)/git/HCR_configuration/projDir/calibration/data/wband_512ns/combined/TsCalAuto_Wband-HCR-512ns_20240415_232321.xml";
 
 ///////////// set_cal_by_pulse_width //////////////////
 //
@@ -3821,7 +3821,7 @@ spec_cmd_threshold_for_moments = 0.7;
 //
 // Type: string
 
-output_fmq_url = "/tmp/fmq/moments/archive.50hz.shortPulse/shmem_20256";
+output_fmq_url = "/tmp/fmq/moments/archive.50hz.longPulse/shmem_20512";
 
 ///////////// output_moments_in_radx_format ///////////
 //
