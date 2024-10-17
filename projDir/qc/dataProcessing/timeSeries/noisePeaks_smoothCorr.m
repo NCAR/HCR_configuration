@@ -1,5 +1,5 @@
 function [powerOrig,powerOrigRMnoise,powerSmooth,powerSmoothCorr,velOut,noiseFloorAllMov,peakIndsAll1,peakIndsAll2]= ...
-    noisePeaks_smoothCorr(specDB,velIn,data,widthC,aircVel,figdir,plotTime)
+    noisePeaks_smoothCorr(specDB,velIn,data,widthC,aircVel,sampleTime,figdir,plotTime)
 powerOrig=nan(size(specDB));
 powerOrigRMnoise=nan(size(specDB));
 powerSmooth=nan(size(specDB));
@@ -73,7 +73,13 @@ sigInLin=10.^(testPow./10);
 fakeMeanVel=sum(sigInLin.*testVel,2,'omitmissing')./sum(sigInLin,2,'omitmissing');
 
 % Filter and correct for aircraft width
-filterAt=round(0.00022396.*aircVel.^2-0.10542.*aircVel+18.132);
+if sampleTime==0.1
+    filterAt=round(0.00022396.*aircVel.^2-0.10542.*aircVel+18.132);
+elseif sampleTime==0.01
+    filterAt=round(0.000126.*aircVel.^2-0.0548.*aircVel+10.7);
+else
+    error('Sample time must be 0.1 or 0.01.')
+end
 filterAt=fillmissing(filterAt,'nearest');
 [sigWidthCorr,sigFiltered]=smoothAircraftWidthCorr(filterAt,testPow,fakeMeanVel,widthC,testVel,sampleNum);
 
@@ -106,8 +112,14 @@ for aa=1:size(loopInds,1)
         for jj=1:regs.NumObjects
             maxReg=max(sigWidthCorrRMnoise(regs.PixelIdxList{jj}));
             spreadReg=maxReg-noiseFloorAllMov(ii);
-            if spread~=spreadReg & (spreadReg<1 | spreadReg/spread<0.3)
-                sigWidthCorrRMnoise(regs.PixelIdxList{jj})=nan;
+            if sampleTime==0.1
+                if spread~=spreadReg & (spreadReg<1 | spreadReg/spread<0.3)
+                    sigWidthCorrRMnoise(regs.PixelIdxList{jj})=nan;
+                end
+            else
+                if spread~=spreadReg & (spreadReg<5 | spreadReg/spread<0.3)
+                    sigWidthCorrRMnoise(regs.PixelIdxList{jj})=nan;
+                end
             end
         end
         if cutReg
@@ -138,19 +150,32 @@ for aa=1:size(loopInds,1)
 
     % Remove spectra pieces that are not complete
     largeMask=~isnan(newSpecLarge);
-    statsLM=regionprops(largeMask,'Area','PixelIdxList');
-    areas=[statsLM.Area];
-    ua=unique(areas);
-    if length(ua)>1
-        countRegs=nan(1,length(ua));
-        for kk=1:length(ua)
-            countRegs(kk)=sum(areas==ua(kk));
+    diffLA=diff(largeMask);
+    startLA=find(diffLA==1)+1;
+    endLA=find(diffLA==-1);
+
+    if ~isempty(startLA) & ~isempty(endLA)
+        if endLA(1)<startLA(1)
+            startLA=[1,startLA];
         end
-        remove1=find(countRegs==1);
-        if ~isempty(remove1)
-            for ll=1:length(remove1)
-                regInd=find(areas==ua(remove1(ll)));
-                newSpecLarge(statsLM(regInd).PixelIdxList)=nan;
+        if endLA(end)<startLA(end)
+            endLA=[endLA,length(newSpecLarge)];
+        end
+
+        areas=endLA-startLA+1;
+
+        ua=unique(areas);
+        if length(ua)>1
+            countRegs=nan(1,length(ua));
+            for kk=1:length(ua)
+                countRegs(kk)=sum(areas==ua(kk));
+            end
+            remove1=find(countRegs==1);
+            if ~isempty(remove1)
+                for ll=1:length(remove1)
+                    regInd=find(areas==ua(remove1(ll)));
+                    newSpecLarge(startLA(regInd):endLA(regInd))=nan;
+                end
             end
         end
     end
@@ -168,6 +193,11 @@ for aa=1:size(loopInds,1)
     end
     peakVals=sigWidthCorrRMnoise(peakInds);
     pIV=cat(2,peakInds',peakVals');
+    pIV(any(isnan(pIV),2),:)=[];
+    if size(pIV,1)>2
+        pIV=sortrows(pIV,2,'descend');
+        pIV=pIV(1:2,:);
+    end
 
     peaksOut=pIV;
     peaksOut(:,1)=peaksOut(:,1)-firstPowInd+minIndTest(ii)+1;
@@ -242,7 +272,7 @@ for aa=1:size(loopInds,1)
         l2=plot(velOut(ii,:),powerSmooth(ii,:),'-g','LineWidth',2);
         plot(velOut(ii,:),powerSmoothCorrAll(ii,:),'-r','LineWidth',1);
         l3=plot(velOut(ii,:),powerSmoothCorr(ii,:),'-r','LineWidth',2);
-        l4=plot(velOut(ii,:),repmat(noiseFloorAll(ii),size(velOut(ii,:))),'-c','LineWidth',1.5);
+        l4=plot(velOut(ii,:),repmat(noiseFloorAllMov(ii),size(velOut(ii,:))),'-c','LineWidth',1.5);
         l5=scatter(velOut(ii,peakIndsAll1(ii,1)),peakIndsAll1(ii,2),70,'m','filled','MarkerEdgeColor','black');
         if ~isnan(peakIndsAll2(ii,1))
             scatter(velOut(ii,peakIndsAll2(ii,1)),peakIndsAll2(ii,2),70,'m','filled','MarkerEdgeColor','black');

@@ -190,7 +190,7 @@ begin_in_archive_mode = TRUE;
 // Type: string
 //
 
-archive_start_time = "2014 12 01 18 40 00";
+archive_start_time = "2024 06 14 19 30 00";
 
 ///////////// archive_time_span_secs //////////////////
 //
@@ -360,33 +360,33 @@ fields = {
     color_map = "vel_w_4.colors",
     shortcut = "1"
   }
-  ,
-  {
-    label = "VEL_RAW",
-    raw_name = "VEL_RAW",
-    filtered_name = "",
-    units = "m/s",
-    color_map = "vel_w_4.colors",
-    shortcut = "2"
-  }
-  ,
-  {
-    label = "VEL8",
-    raw_name = "VEL",
-    filtered_name = "",
-    units = "m/s",
-    color_map = "vel_w_8.colors",
-    shortcut = "3"
-  }
-  ,
-  {
-    label = "VEL_RAW8",
-    raw_name = "VEL_RAW",
-    filtered_name = "",
-    units = "m/s",
-    color_map = "vel_w_8.colors",
-    shortcut = "4"
-  }
+  // ,
+  // {
+  //   label = "VEL_RAW",
+  //   raw_name = "VEL_RAW",
+  //   filtered_name = "",
+  //   units = "m/s",
+  //   color_map = "vel_w_4.colors",
+  //   shortcut = "2"
+  // }
+  // ,
+  // {
+  //   label = "VEL8",
+  //   raw_name = "VEL",
+  //   filtered_name = "",
+  //   units = "m/s",
+  //   color_map = "vel_w_8.colors",
+  //   shortcut = "3"
+  // }
+  // ,
+  // {
+  //   label = "VEL_RAW8",
+  //   raw_name = "VEL_RAW",
+  //   filtered_name = "",
+  //   units = "m/s",
+  //   color_map = "vel_w_8.colors",
+  //   shortcut = "4"
+  // }
   ,
   {
     label = "WIDTH",
@@ -396,24 +396,24 @@ fields = {
     color_map = "width_w.colors",
     shortcut = "5"
   }
-  ,
-  {
-    label = "SNR",
-    raw_name = "SNR",
-    filtered_name = "",
-    units = "dB",
-    color_map = "snr.colors",
-    shortcut = "6"
-  }
-  ,
-  {
-    label = "SNRHC",
-    raw_name = "SNRHC",
-    filtered_name = "",
-    units = "dB",
-    color_map = "snr.colors",
-    shortcut = "7"
-  }
+  // ,
+  // {
+  //   label = "SNR",
+  //   raw_name = "SNR",
+  //   filtered_name = "",
+  //   units = "dB",
+  //   color_map = "snr.colors",
+  //   shortcut = "6"
+  // }
+  // ,
+  // {
+  //   label = "SNRHC",
+  //   raw_name = "SNRHC",
+  //   filtered_name = "",
+  //   units = "dB",
+  //   color_map = "snr.colors",
+  //   shortcut = "7"
+  // }
   ,
   {
     label = "SNRVC",
@@ -432,24 +432,24 @@ fields = {
     color_map = "snr.colors",
     shortcut = "9"
   }
-  ,
-  {
-    label = "SNRVX",
-    raw_name = "SNRVX",
-    filtered_name = "",
-    units = "dB",
-    color_map = "snr.colors",
-    shortcut = "a"
-  }
-  ,
-  {
-    label = "DBMHC",
-    raw_name = "DBMHC",
-    filtered_name = "",
-    units = "dBm",
-    color_map = "dbm.colors",
-    shortcut = "b"
-  }
+  // ,
+  // {
+  //   label = "SNRVX",
+  //   raw_name = "SNRVX",
+  //   filtered_name = "",
+  //   units = "dB",
+  //   color_map = "snr.colors",
+  //   shortcut = "a"
+  // }
+  // ,
+  // {
+  //   label = "DBMHC",
+  //   raw_name = "DBMHC",
+  //   filtered_name = "",
+  //   units = "dBm",
+  //   color_map = "dbm.colors",
+  //   shortcut = "b"
+  // }
   ,
   {
     label = "DBMVC",
@@ -468,15 +468,15 @@ fields = {
     color_map = "dbm.colors",
     shortcut = "d"
   }
-  ,
-  {
-    label = "DBMVX",
-    raw_name = "DBMVX",
-    filtered_name = "",
-    units = "dBm",
-    color_map = "dbm.colors",
-    shortcut = "e"
-  }
+  // ,
+  // {
+  //   label = "DBMVX",
+  //   raw_name = "DBMVX",
+  //   filtered_name = "",
+  //   units = "dBm",
+  //   color_map = "dbm.colors",
+  //   shortcut = "e"
+  // }
   ,
   {
     label = "NCP",
@@ -495,24 +495,24 @@ fields = {
     color_map = "ldr.colors",
     shortcut = "g"
   }
-  ,
-  {
-    label = "LDRH",
-    raw_name = "LDRH",
-    filtered_name = "",
-    units = "dB",
-    color_map = "ldr.colors",
-    shortcut = "h"
-  }
-  ,
-  {
-    label = "LDRV",
-    raw_name = "LDRV",
-    filtered_name = "",
-    units = "dB",
-    color_map = "ldr.colors",
-    shortcut = "i"
-  }
+  // ,
+  // {
+  //   label = "LDRH",
+  //   raw_name = "LDRH",
+  //   filtered_name = "",
+  //   units = "dB",
+  //   color_map = "ldr.colors",
+  //   shortcut = "h"
+  // }
+  // ,
+  // {
+  //   label = "LDRV",
+  //   raw_name = "LDRV",
+  //   filtered_name = "",
+  //   units = "dB",
+  //   color_map = "ldr.colors",
+  //   shortcut = "i"
+  // }
 };
 
 ///////////// background_render_mins //////////////////
@@ -1704,7 +1704,7 @@ bscan_instrument_height_color = "blue";
 // Type: boolean
 //
 
-bscan_add_distance_to_time_axis = TRUE;
+bscan_add_distance_to_time_axis = FALSE;
 
 ///////////// bscan_n_segments_for_computing_distance /
 //

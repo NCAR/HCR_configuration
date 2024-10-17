@@ -278,7 +278,7 @@ for aa=1:length(caseStart)
             % spectral broadening
             [powerOrig,powerOrigRMnoise,powerSmooth,powerSmoothCorr,specVelAdj,noiseFloor(:,ii),~,~]= ...
                 noisePeaks_smoothCorr(specPowerDB.V,momentsTimeOne.velRawDeAliased(:,ii), ...
-                dataThis,widthCorrDelta(:,cfInd),velTestWind(:,cfInd),figdir,plotTime);
+                dataThis,widthCorrDelta(:,cfInd),velTestWind(:,cfInd),sampleTime,figdir,plotTime);
             specVelRMnoise=specVelAdj;
             specVelRMnoise(isnan(powerSmoothCorr))=nan;
 

@@ -42,7 +42,6 @@ for aa=1:length(caseStart)
     disp(['Case ',num2str(aa),' of ',num2str(length(caseStart))]);
 
     startTime=caseStart(aa);
-    %startTime=datetime(2021,5,29,19,11,11);
     endTime=caseEnd(aa);
 
     %% CfRadial Moments
@@ -53,10 +52,7 @@ for aa=1:length(caseStart)
     dataCF=[];
     dataCF.DBZ=[];
     dataCF.VEL_RAW=[];
-    dataCF.VEL_CORR=[];
     dataCF.VEL_MASKED=[];
-    % dataCF.U=[];
-    % dataCF.V=[];
     dataCF.eastward_velocity=[];
     dataCF.northward_velocity=[];
          
@@ -70,15 +66,9 @@ for aa=1:length(caseStart)
     widthCorrDelta=fillmissing(widthCorrDelta,'nearest',1);
     widthCorrDelta=repmat(widthCorrDelta,size(dataCF.range,1),1);  
     velTestWind=repmat(velTestWind,size(dataCF.range,1),1);
-
-    % Or headwind
-    % uHeadwind=dataCF.eastward_velocity-dataCF.U;
-    % vHeadwind=dataCF.northward_velocity-dataCF.V;
-    % velTestWind=sqrt(uHeadwind.^2+vHeadwind.^2);
-    % widthCorrDelta=abs(0.3.*velTestWind.*sin(deg2rad(dataCF.elevation)).*deg2rad(dataCF.beamWidth));
     
     % Velocity bias term
-    velBiasCorrection=dataCF.VEL_CORR-dataCF.VEL_RAW;
+    velBiasCorrection=dataCF.VEL_MASKED-dataCF.VEL_RAW;
         
     %% Time series
     fileListTS=makeFileList(dataDirTS,startTime+seconds(1),endTime-seconds(1),'20YYMMDDxhhmmss',1);
@@ -147,33 +137,18 @@ for aa=1:length(caseStart)
         %% Calculate moments
 
         disp('Calculating moments ...')
-        momentsTimeOne.powerV=nan(size(data.range,1),beamNum);
-        momentsTimeOne.powerH=nan(size(data.range,1),beamNum);
-        momentsTimeOne.velRaw=nan(size(data.range,1),beamNum);
-        momentsTimeOne.velRawDeAliased=nan(size(data.range,1),beamNum);
-        momentsTimeOne.vel=nan(size(data.range,1),beamNum);
-        momentsTimeOne.width=nan(size(data.range,1),beamNum);
-        momentsTimeOne.widthCorr=nan(size(data.range,1),beamNum);
-        momentsTimeOne.dbz=nan(size(data.range,1),beamNum);
-        momentsTimeOne.snr=nan(size(data.range,1),beamNum);
-        momentsTimeOne.skew=nan(size(data.range,1),beamNum);
-        momentsTimeOne.kurt=nan(size(data.range,1),beamNum);
-        momentsTimeOne.ldr=nan(size(data.range,1),beamNum);
-        momentsTimeOne.ncp=nan(size(data.range,1),beamNum);
-        momentsTimeOne.range=nan(size(data.range,1),beamNum);
-        momentsTimeOne.altitude=nan(1,beamNum);
-        momentsTimeOne.elevation=nan(1,beamNum);
-        momentsTimeOne.azimuth_vc=nan(1,beamNum);
-        momentsTimeOne.time=goodTimes(1:beamNum)';
-
-        momentsSpecSmoothCorrOne=momentsTimeOne;
-        momentsSpecSmoothCorrOne.lrwidth=nan(size(data.range,1),beamNum);
-        momentsSpecSmoothCorrOne.lslope=nan(size(data.range,1),beamNum);
-        momentsSpecSmoothCorrOne.rslope=nan(size(data.range,1),beamNum);
-        momentsSpecSmoothCorrOne.level=nan(size(data.range,1),beamNum);
-        momentsSpecSmoothCorrOne.revel=nan(size(data.range,1),beamNum);
-        momentsSpecSmoothCorrOne.lpvel=nan(size(data.range,1),beamNum);
-        momentsSpecSmoothCorrOne.rpvel=nan(size(data.range,1),beamNum);
+        momentsSpecOne.velRaw=nan(size(data.range,1),beamNum);
+        momentsSpecOne.width=nan(size(data.range,1),beamNum);
+        momentsSpecOne.skew=nan(size(data.range,1),beamNum);
+        momentsSpecOne.kurt=nan(size(data.range,1),beamNum);
+        momentsSpecOne.lrwidth=nan(size(data.range,1),beamNum);
+        momentsSpecOne.lslope=nan(size(data.range,1),beamNum);
+        momentsSpecOne.rslope=nan(size(data.range,1),beamNum);
+        momentsSpecOne.level=nan(size(data.range,1),beamNum);
+        momentsSpecOne.revel=nan(size(data.range,1),beamNum);
+        momentsSpecOne.lpvel=nan(size(data.range,1),beamNum);
+        momentsSpecOne.rpvel=nan(size(data.range,1),beamNum);
+        momentsSpecOne.time=goodTimes(1:beamNum)';
 
         noiseFloor=nan(size(data.range,1),beamNum);
 
@@ -202,61 +177,23 @@ for aa=1:length(caseStart)
             % IQ
             cIQ.v=winNorm'.*(dataThis.IVc+i*dataThis.QVc)./sqrt(sampleNum);
                         
-            %% Other variables
-            momentsTimeOne.range(:,ii)=dataThis.range;
-            momentsTimeOne.elevation(ii)=median(dataThis.elevation);
-            momentsTimeOne.azimuth_vc(ii)=median(dataThis.azimuth_vc);
-            momentsTimeOne.altitude(ii)=median(dataThis.altitude);
-
-            momentsSpecSmoothCorrOne.range(:,ii)=dataThis.range;
-            momentsSpecSmoothCorrOne.elevation(ii)=median(dataThis.elevation);
-            momentsSpecSmoothCorrOne.azimuth_vc(ii)=median(dataThis.azimuth_vc);
-            momentsSpecSmoothCorrOne.altitude(:,ii)=median(dataThis.altitude);
-
             %% Find time index in CF moments
-            [minTimeDiff,cfInd]=min(abs(etime(datevec(dataCF.time),datevec(momentsTimeOne.time(ii)))));
+            [minTimeDiff,cfInd]=min(abs(etime(datevec(dataCF.time),datevec(momentsSpecOne.time(ii)))));
             
             if minTimeDiff>0.1
                 continue
             end
 
-            %% Time moments
-            momentsTimeOne=calcMomentsTime(cIQ,ii,momentsTimeOne,dataThis);
-
-            % Censor on CF moments
-            momentsTimeOne.velRaw(isnan(dataCF.VEL_MASKED(:,cfInd)),ii)=nan;
-
-            %% Correct time domain velocity folding
-
-            deAliasDiffT=momentsTimeOne.velRaw(:,ii)+velBiasCorrection(:,cfInd)-dataCF.VEL_MASKED(:,cfInd);
-
-            deAliasMaskT=zeros(size(deAliasDiffT));
-           
-            for jj=1:3
-                deAliasMaskT(deAliasDiffT>checkFold(jj)*toVel-5)=checkFold(jj)*toVel;
-                deAliasMaskT(deAliasDiffT<-(checkFold(jj)*toVel-5))=-checkFold(jj)*toVel;
-            end
-
-            momentsTimeOne.velRawDeAliased(:,ii)=momentsTimeOne.velRaw(:,ii)-deAliasMaskT;
-            
-            %% Correct time domain velocity for aircraft motion and bias
-            momentsTimeOne.vel(:,ii)=momentsTimeOne.velRawDeAliased(:,ii)+velBiasCorrection(:,cfInd);
-
-            %% Correct time domain width
-            widthSquares=momentsTimeOne.width(:,ii).^2-widthCorrDelta(:,cfInd).^2;
-            widthSquares(widthSquares<0.1)=0.01;
-            momentsTimeOne.widthCorr(:,ii)=sqrt(widthSquares);
-
             %% Spectra
             [specPowerLin,specPowerDB]=getSpectra(cIQ);
           
              % Censor
-            specPowerLin.V(isnan(momentsTimeOne.vel(:,ii)),:)=nan;
-            specPowerDB.V(isnan(momentsTimeOne.vel(:,ii)),:)=nan;
+            specPowerLin.V(isnan(dataCF.VEL_MASKED(:,cfInd)),:)=nan;
+            specPowerDB.V(isnan(dataCF.VEL_MASKED(:,cfInd)),:)=nan;
 
             %% Remove noise, find edge points and peaks
             if ismember(ii,plotInds)
-                plotTime=momentsTimeOne.time(ii);
+                plotTime=momentsSpecOne.time(ii);
                 plotTimeAll=cat(1,plotTimeAll,plotTime);
             else
                 
@@ -266,39 +203,31 @@ for aa=1:length(caseStart)
             % This step removes the noise, de-aliases, and corrects for
             % spectral broadening
             [powerOrig,powerOrigRMnoise,powerSmooth,powerSmoothCorr,specVelAdj,noiseFloor(:,ii),peaks1,peaks2]= ...
-                noisePeaks_smoothCorr(specPowerDB.V,momentsTimeOne.velRawDeAliased(:,ii), ...
-                dataThis,widthCorrDelta(:,cfInd),velTestWind(:,cfInd),figdir,plotTime);
+                noisePeaks_smoothCorr(specPowerDB.V,dataCF.VEL_MASKED(:,cfInd), ...
+                dataThis,widthCorrDelta(:,cfInd),velTestWind(:,cfInd),sampleTime,figdir,plotTime);
             specVelRMnoise=specVelAdj;
             specVelRMnoise(isnan(powerSmoothCorr))=nan;
 
             % Remove aircraft motion
-            specVelAdj=specVelAdj+velBiasCorrection(:,cfInd);
             specVelRMnoise=specVelRMnoise+velBiasCorrection(:,cfInd);
             
             %% Spectral moments
 
-            momentsSpecSmoothCorrOne=calcMomentsSpec_higherMoments(powerSmoothCorr,specVelRMnoise,ii,momentsSpecSmoothCorrOne);
+            momentsSpecOne=calcMomentsSpec_higherMoments(powerSmoothCorr,specVelRMnoise,ii,momentsSpecOne);
             
              %% Spectral parameters
-            momentsSpecSmoothCorrOne=calcSpecParams(powerSmoothCorr,specVelRMnoise,peaks1,peaks2,noiseFloor(:,ii),ii,momentsSpecSmoothCorrOne);
+            momentsSpecOne=calcSpecParams(powerSmoothCorr,specVelRMnoise,peaks1,peaks2,noiseFloor(:,ii),ii,momentsSpecOne);
             
         end
 
         %% Add to output
         if bb==1
-            momentsTime=momentsTimeOne;
-            momentsSpecSmoothCorr=momentsSpecSmoothCorrOne;
+            momentsSpec=momentsSpecOne;
         else
-            dataFields=fields(momentsTime);
-
-            for hh=1:length(dataFields)
-                momentsTime.(dataFields{hh})=cat(2,momentsTime.(dataFields{hh}),momentsTimeOne.(dataFields{hh}));
-            end
-
-            dataFields1=fields(momentsSpecSmoothCorrOne);
+            dataFields1=fields(momentsSpecOne);
 
             for hh=1:length(dataFields1)
-                momentsSpecSmoothCorr.(dataFields1{hh})=cat(2,momentsSpecSmoothCorr.(dataFields1{hh}),momentsSpecSmoothCorrOne.(dataFields1{hh}));
+                momentsSpec.(dataFields1{hh})=cat(2,momentsSpec.(dataFields1{hh}),momentsSpecOne.(dataFields1{hh}));
             end
         end
        
@@ -308,14 +237,13 @@ for aa=1:length(caseStart)
 
     eSecs=toc;
 
-    eData=momentsTime.time(end)-momentsTime.time(1);
+    eData=momentsSpec.time(end)-momentsSpec.time(1);
     timePerMin=eSecs/60/minutes(eData);
     disp(['Total: ',num2str(eSecs/60),' minutes. Per data minute: ',num2str(timePerMin),' minutes.']);
 
     %% Combine to 10 hz
 
     momentsSC10=[];
-    momentsSC10.powerV=nan(size(dataCF.VEL_MASKED));
     momentsSC10.velRaw=nan(size(dataCF.VEL_MASKED));
     momentsSC10.width=nan(size(dataCF.VEL_MASKED));
     momentsSC10.skew=nan(size(dataCF.VEL_MASKED));
@@ -330,13 +258,13 @@ for aa=1:length(caseStart)
 
     fieldsTs=fieldnames(momentsSC10);
     for kk=1:length(dataCF.time)
-        [minTD,matchTime]=min(abs(etime(datevec(momentsSpecSmoothCorr.time),datevec(dataCF.time(kk)))));
-        if minTD>0.0001
+        [minTD,matchTime]=min(abs(etime(datevec(momentsSpec.time),datevec(dataCF.time(kk)))));
+        if minTD>0.05
             continue
         end
-        tenInds=max([1,matchTime-4]):min([length(momentsSpecSmoothCorr.time),matchTime+5]);
+        tenInds=max([1,matchTime-4]):min([length(momentsSpec.time),matchTime+5]);
         for ll=1:length(fieldsTs)
-            momentsSC10.(fieldsTs{ll})(:,kk)=mean(momentsSpecSmoothCorr.(fieldsTs{ll})(:,tenInds),2,'omitnan');
+            momentsSC10.(fieldsTs{ll})(:,kk)=mean(momentsSpec.(fieldsTs{ll})(:,tenInds),2,'omitnan');
         end
     end
 
@@ -347,29 +275,6 @@ for aa=1:length(caseStart)
     momentsSC10.longitude=dataCF.longitude;
     momentsSC10.latitude=dataCF.latitude;
     momentsSC10.altitude=dataCF.altitude;
-
-    %% Match times
-    % cfRound=dateshift(dataCF.time,'start','minute')+seconds(round(second(dataCF.time),1));
-    % 
-    % indTs=ismember(tsRound,cfRound);
-    % indCf=ismember(cfRound,tsRound);
-    % 
-    % for ll=1:length(fieldsTs)
-    %     momentsTime.(fieldsTs{ll})=momentsTime.(fieldsTs{ll})(:,indTs);
-    %     momentsSpecBasic.(fieldsTs{ll})=momentsSpecBasic.(fieldsTs{ll})(:,indTs);
-    %     momentsSpecSmoothCorr.(fieldsTs{ll})=momentsSpecSmoothCorr.(fieldsTs{ll})(:,indTs);
-    %     momentsSpecSmooth.(fieldsTs{ll})=momentsSpecSmooth.(fieldsTs{ll})(:,indTs);
-    %     momentsSpecBasicCorrRMnoise.(fieldsTs{ll})=momentsSpecBasicCorrRMnoise.(fieldsTs{ll})(:,indTs);
-    % end
-    % 
-    % noiseFloorAll=noiseFloorAll(:,indTs);
-    % 
-    % dataCF=rmfield(dataCF,'beamWidth');
-    % 
-    % fieldsCf=fieldnames(dataCF);
-    % for ll=1:length(fieldsCf)
-    %     dataCF.(fieldsCf{ll})=dataCF.(fieldsCf{ll})(:,indTs);
-    % end
 
     %% Plot
 

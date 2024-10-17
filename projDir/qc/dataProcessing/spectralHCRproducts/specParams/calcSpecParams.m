@@ -1,10 +1,11 @@
 function momentsSpecSmoothCorrOne=calcSpecParams(powerS,specVel,peaks1,peaks2,noiseFloor,ii,momentsSpecSmoothCorrOne)
-loopInds=find(any(~isnan(powerS),2));
 
 % Find the major peak if there are two
 maxPeak=peaks1;
 peakDiff=peaks2(:,2)-peaks1(:,2);
 maxPeak(peakDiff>0,:)=peaks2(peakDiff>0,:);
+
+loopInds=find(any(~isnan(peaks1),2));
 
 for aa=1:size(loopInds,1)
     jj=loopInds(aa); % ii is the range index
@@ -21,17 +22,13 @@ for aa=1:size(loopInds,1)
     % Left to right edge width
     momentsSpecSmoothCorrOne.lrwidth(jj,ii)=velThis(rind)-velThis(1);
     % Left and right slope
-    if ~isnan(maxPeak(jj,1))
-        momentsSpecSmoothCorrOne.lslope(jj,ii)=(noiseFloor(jj)-maxPeak(jj,2))/(velThis(1)-velThis(maxPeak(jj,1)));
-        momentsSpecSmoothCorrOne.rslope(jj,ii)=(noiseFloor(jj)-maxPeak(jj,2))/(velThis(rind)-velThis(maxPeak(jj,1)));
-    end
+    momentsSpecSmoothCorrOne.lslope(jj,ii)=(noiseFloor(jj)-maxPeak(jj,2))/(velThis(1)-velThis(maxPeak(jj,1)));
+    momentsSpecSmoothCorrOne.rslope(jj,ii)=(noiseFloor(jj)-maxPeak(jj,2))/(velThis(rind)-velThis(maxPeak(jj,1)));
     % Left and right edge velocity
     momentsSpecSmoothCorrOne.level(jj,ii)=velThis(1);
     momentsSpecSmoothCorrOne.revel(jj,ii)=velThis(rind);
     % Left and right peak velocity
-    if ~isnan(peaks1(jj,1))
-        momentsSpecSmoothCorrOne.lpvel(jj,ii)=velThis(peaks1(jj,1));
-    end
+    momentsSpecSmoothCorrOne.lpvel(jj,ii)=velThis(peaks1(jj,1));
     if ~isnan(peaks2(jj,1))
         momentsSpecSmoothCorrOne.rpvel(jj,ii)=velThis(peaks2(jj,1));
     end

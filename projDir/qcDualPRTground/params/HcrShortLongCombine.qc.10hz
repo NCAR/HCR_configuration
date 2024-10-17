@@ -1,5 +1,5 @@
 /**********************************************************************
- * TDRP params for HcrShortLongCombine
+ * TDRP params for ./HcrShortLongCombine
  **********************************************************************/
 
 //======================================================================
@@ -46,7 +46,7 @@ debug = DEBUG_OFF;
 //
 // Type: boolean
 
-register_with_procmap = TRUE;
+register_with_procmap = FALSE;
 
 ///////////// instance ////////////////////////////////
 //
@@ -71,11 +71,14 @@ instance = "qc.10hz";
 //
 
 //
-// REALTIME: read data from two moments FMQ, combine the dwells and 
+// REALTIME: we read data from two moments FMQ, combine the dwells and 
 //   write to an output queue. 
 //
-// ARCHIVE: move through the data between the start and end times set on 
-//   the command line.
+// ARCHIVE: we read the moments data from CfRadial files, between the 
+//   start and end times set on the command line.
+//
+// In both REALTIME and ARCHIVE mode, we write the resulting moments to 
+//   an output FMQ.
 //
 // Type: enum
 // Options:
@@ -83,26 +86,6 @@ instance = "qc.10hz";
 //     ARCHIVE
 
 mode = ARCHIVE;
-
-///////////// input_dir_short /////////////////////////
-//
-// Input directory short.
-//
-// ARCHIVE mode only. Directory for short pulse files.
-//
-// Type: string
-
-input_dir_short = "$(DATA_DIR)/$(QC_VERSION)/$(QC_SUB_VERSION)/cfradial/moments/50hz_shortPulse";
-
-///////////// input_dir_long //////////////////////////
-//
-// Input directory long.
-//
-// ARCHIVE mode only. Directory for long pulse files.
-//
-// Type: string
-
-input_dir_long = "$(DATA_DIR)/$(QC_VERSION)/$(QC_SUB_VERSION)/cfradial/moments/50hz_longPulse";
 
 ///////////// input_fmq_url_short /////////////////////
 //
@@ -136,12 +119,152 @@ input_fmq_url_long = "/tmp/fmq/moments/qc.50hz.longPulse/shmem_20512";
 
 seek_to_end_of_input_fmq = TRUE;
 
+///////////// input_dir_short /////////////////////////
+//
+// Input directory short.
+//
+// ARCHIVE mode only. Directory for short pulse files.
+//
+// Type: string
+
+input_dir_short = "$(DATA_DIR)/$(QC_VERSION)/$(QC_SUB_VERSION)/cfradial/moments/50hz_shortPulse";
+
+///////////// input_dir_long //////////////////////////
+//
+// Input directory long.
+//
+// ARCHIVE mode only. Directory for long pulse files.
+//
+// Type: string
+
+input_dir_long = "$(DATA_DIR)/$(QC_VERSION)/$(QC_SUB_VERSION)/cfradial/moments/50hz_longPulse";
+
 //======================================================================
 //
-// LIMIT RANGE?.
+// OVERRIDE PLATFORM TYPE?.
 //
 //======================================================================
  
+///////////// override_platform_type //////////////////
+//
+// Option to override platform type on read. If true, the file will be 
+//   read in, the platform type will be changed, and then any post-read 
+//   processing will be performed.
+//
+// 	PLATFORM_FIXED  - radar is in a fixed location
+// 	PLATFORM_VEHICLE -  radar is mounted on a land vehicle
+// 	PLATFORM_SHIP - radar is mounted on a ship
+// 	PLATFORM_AIRCRAFT_FORE - forward-looking on aircraft
+// 	PLATFORM_AIRCRAFT_AFT - backward-looking on aircraft
+// 	PLATFORM_AIRCRAFT_TAIL - tail - e.g. ELDORA
+// 	PLATFORM_AIRCRAFT_BELLY -  belly radar on aircraft
+// 	PLATFORM_AIRCRAFT_ROOF - roof radar on aircraft
+// 	PLATFORM_AIRCRAFT_NOSE - radar in nose radome on aircraft
+// 	PLATFORM_SATELLITE_ORBIT - orbiting satellite
+// 	PLATFORM_SATELLITE_GEOSTAT - geostationary satellite.
+//
+// Type: boolean
+
+override_platform_type = FALSE;
+
+///////////// platform_type ///////////////////////////
+//
+// Platform type.
+//
+// See override_platform_type.
+//
+// Type: enum
+// Options:
+//     PLATFORM_FIXED
+//     PLATFORM_VEHICLE
+//     PLATFORM_SHIP
+//     PLATFORM_AIRCRAFT_FORE
+//     PLATFORM_AIRCRAFT_AFT
+//     PLATFORM_AIRCRAFT_TAIL
+//     PLATFORM_AIRCRAFT_BELLY
+//     PLATFORM_AIRCRAFT_ROOF
+//     PLATFORM_AIRCRAFT_NOSE
+//     PLATFORM_SATELLITE_ORBIT
+//     PLATFORM_SATELLITE_GEOSTAT
+
+platform_type = PLATFORM_AIRCRAFT_FORE;
+
+//======================================================================
+//
+// OVERRIDE PRIMARY AXIS?.
+//
+//======================================================================
+ 
+///////////// override_primary_axis ///////////////////
+//
+// Option to override primary axis on read. If true, the file will be 
+//   read in, the primary axis will be changed, and then any post-read 
+//   processing will be performed.
+//
+// 	PRIMARY_AXIS_Z - vertical
+// 	PRIMARY_AXIS_Y - longitudinal axis of platform
+// 	PRIMARY_AXIS_X - lateral axis of platform
+// 	PRIMARY_AXIS_Z_PRIME - inverted vertical
+// 	PRIMARY_AXIS_Y_PRIME - ELDORA, HRD tail
+// 	PRIMARY_AXIS_X_PRIME - translated lateral.
+//
+// Type: boolean
+
+override_primary_axis = FALSE;
+
+///////////// primary_axis ////////////////////////////
+//
+// Platform type.
+//
+// See override_primary_axis.
+//
+// Type: enum
+// Options:
+//     PRIMARY_AXIS_Z
+//     PRIMARY_AXIS_Y
+//     PRIMARY_AXIS_X
+//     PRIMARY_AXIS_Z_PRIME
+//     PRIMARY_AXIS_Y_PRIME
+//     PRIMARY_AXIS_X_PRIME
+
+primary_axis = PRIMARY_AXIS_Y_PRIME;
+
+//======================================================================
+//
+// OVERRIDE SWEEP MODE?.
+//
+//======================================================================
+ 
+///////////// override_sweep_mode /////////////////////
+//
+// Option to override the sweep modes in the data.
+//
+// If TRUE, the mode for all sweeps is set to sweep_mode.
+//
+// Type: boolean
+
+override_sweep_mode = FALSE;
+
+///////////// sweep_mode //////////////////////////////
+//
+// Sweep mode for all sweeps.
+//
+// See override_sweep_mode.
+//
+// Type: enum
+// Options:
+//     SWEEP_MODE_SECTOR
+//     SWEEP_MODE_RHI
+//     SWEEP_MODE_VERTICAL_POINTING
+//     SWEEP_MODE_AZIMUTH_SURVEILLANCE
+//     SWEEP_MODE_ELEVATION_SURVEILLANCE
+//     SWEEP_MODE_SUNSCAN
+//     SWEEP_MODE_POINTING
+//     SWEEP_MODE_SUNSCAN_RHI
+//     SWEEP_MODE_ELECTRONIC_STEERING
+
+sweep_mode = SWEEP_MODE_AZIMUTH_SURVEILLANCE;
+
 ///////////// set_max_range ///////////////////////////
 //
 // Option to set the max range for any ray.
@@ -349,300 +472,7 @@ correct_velocity_for_platform_vertical_motion = FALSE;
 
 //======================================================================
 //
-// OPTION TO SPECIFY OUTPUT FIELD NAMES AND ENCODING.
-//
-//======================================================================
- 
-///////////// set_output_fields ///////////////////////
-//
-// Set the field names and output encoding.
-//
-// If false, all fields will be used.
-//
-// Type: boolean
-
-set_output_fields = FALSE;
-
-///////////// output_fields ///////////////////////////
-//
-// Output field details.
-//
-// Set the details for the output fields. The output_field_name is the 
-//   ndtCDF variable name. Set the long name to a more descriptive name. 
-//   Set the standard name to the CF standard name for this field. If the 
-//   long name or standard name are empty, the existing names are used. If 
-//   SCALING_SPECIFIED, then the scale and offset is used.
-//
-// Type: struct
-//   typedef struct {
-//      string input_field_name;
-//      string output_field_name;
-//      string long_name;
-//      string standard_name;
-//      string output_units;
-//      output_encoding_t encoding;
-//        Options:
-//          OUTPUT_ENCODING_ASIS
-//          OUTPUT_ENCODING_FLOAT32
-//          OUTPUT_ENCODING_INT32
-//          OUTPUT_ENCODING_INT16
-//          OUTPUT_ENCODING_INT08
-//      output_scaling_t output_scaling;
-//        Options:
-//          SCALING_DYNAMIC
-//          SCALING_SPECIFIED
-//      double output_scale;
-//      double output_offset;
-//   }
-//
-// 1D array - variable length.
-
-output_fields = {
-  {
-    input_field_name = "DBZ",
-    output_field_name = "DBZ",
-    long_name = "reflectivity",
-    standard_name = "equivalent_reflectivity_factor",
-    output_units = "dBZ",
-    encoding = OUTPUT_ENCODING_ASIS,
-    output_scaling = SCALING_DYNAMIC,
-    output_scale = 0.01,
-    output_offset = 0
-  }
-  ,
-  {
-    input_field_name = "VEL",
-    output_field_name = "VEL",
-    long_name = "radial_velocity",
-    standard_name = "radial_velocity_of_scatterers_away_from_instrument",
-    output_units = "m/s",
-    encoding = OUTPUT_ENCODING_ASIS,
-    output_scaling = SCALING_DYNAMIC,
-    output_scale = 0.01,
-    output_offset = 0
-  }
-};
-
-///////////// exclude_specified_fields ////////////////
-//
-// Option to exclude fields in the specified list.
-//
-// If true, the specified fields will be excluded. This may be easier 
-//   than specifiying all of the fields to be included, if that list is 
-//   very long.
-//
-// Type: boolean
-
-exclude_specified_fields = FALSE;
-
-///////////// excluded_fields /////////////////////////
-//
-// List of fields to be excluded.
-//
-// List the names to be excluded.
-//
-// Type: string
-// 1D array - variable length.
-
-excluded_fields = {
- "DBZ",
- "VEL"
-};
-
-//======================================================================
-//
-// OPTION TO SPECIFY OUTPUT ENCODING FOR ALL FIELDS.
-//
-//======================================================================
- 
-///////////// set_output_encoding_for_all_fields //////
-//
-// Option to set output encoding for all fields.
-//
-// Type: boolean
-
-set_output_encoding_for_all_fields = FALSE;
-
-///////////// output_encoding /////////////////////////
-//
-// Output encoding for all fields, if requested.
-//
-// Type: enum
-// Options:
-//     OUTPUT_ENCODING_ASIS
-//     OUTPUT_ENCODING_FLOAT32
-//     OUTPUT_ENCODING_INT32
-//     OUTPUT_ENCODING_INT16
-//     OUTPUT_ENCODING_INT08
-
-output_encoding = OUTPUT_ENCODING_ASIS;
-
-//======================================================================
-//
-// WRITE CFRADIAL FILES.
-//
-//======================================================================
- 
-///////////// output_format ///////////////////////////
-//
-// Format for the output files.
-//
-// Type: enum
-// Options:
-//     OUTPUT_FORMAT_CFRADIAL
-//     OUTPUT_FORMAT_CFRADIAL2
-
-output_format = OUTPUT_FORMAT_CFRADIAL;
-
-///////////// output_dir //////////////////////////////
-//
-// Output directory path.
-//
-// Files will be written to this directory.
-//
-// Type: string
-
-output_dir = "$(DATA_DIR)/$(QC_VERSION)/$(QC_SUB_VERSION)/cfradial/moments/10hz_combined";
-
-///////////// output_filename_mode ////////////////////
-//
-// Mode for computing output file name.
-//
-// START_AND_END_TIMES: include both start and end times in file name. 
-//   START_TIME_ONLY: include only start time in file name. END_TIME_ONLY: 
-//   include only end time in file name. SPECIFY_FILE_NAME: file of this 
-//   name will be written to output_dir.
-//
-// Type: enum
-// Options:
-//     START_AND_END_TIMES
-//     START_TIME_ONLY
-//     END_TIME_ONLY
-//     SPECIFY_FILE_NAME
-
-output_filename_mode = START_AND_END_TIMES;
-
-///////////// output_filename_prefix //////////////////
-//
-// Optional prefix for output filename.
-//
-// If empty, the standard prefix will be used.
-//
-// Type: string
-
-output_filename_prefix = "";
-
-///////////// write_output_files_on_time_boundaries ///
-//
-// Option to write the output files on time boundaries.
-//
-// See 'output_file_time_interval_secs'.
-//
-// Type: boolean
-
-write_output_files_on_time_boundaries = FALSE;
-
-///////////// output_file_time_interval_secs //////////
-//
-// Time interval at which files will be written out (secs).
-//
-// See 'split_output_files_on_time'. To make sense, this interval should 
-//   divide evenly into an hour - i.e. 3600.
-//
-// Type: int
-
-output_file_time_interval_secs = 600;
-
-///////////// include_instrument_name_in_file_name ////
-//
-// Option to include the instrument name in the file name.
-//
-// Only applies to CfRadial files. If true, the instrument name will be 
-//   included just before the volume number in the output file name.
-//
-// Type: boolean
-
-include_instrument_name_in_file_name = TRUE;
-
-///////////// include_subsecs_in_file_name ////////////
-//
-// Option to include sub-seconds in date-time part of file name.
-//
-// Default is true. Only applies to CfRadial files. If true, the 
-//   millisecs of the start and end time will be included in the file 
-//   name.
-//
-// Type: boolean
-
-include_subsecs_in_file_name = TRUE;
-
-///////////// include_scan_type_in_file_name //////////
-//
-// Option to include the scan type in the file name.
-//
-// Default is true. Only applies to CfRadial files. If true, the scan 
-//   type (SUR, SEC, RHI, VER etc) will be included in the file name.
-//
-// Type: boolean
-
-include_scan_type_in_file_name = TRUE;
-
-///////////// use_hyphen_in_file_name_datetime_part ///
-//
-// Option to use a hyphen between date and time in filename.
-//
-// Default is false. Only applies to CfRadial files. Normally an 
-//   underscore is used.
-//
-// Type: boolean
-
-use_hyphen_in_file_name_datetime_part = FALSE;
-
-///////////// output_filename /////////////////////////
-//
-// Name of output file.
-//
-// Applies only if output_filename_mode is SPECIFY_FILE_NAME. File of 
-//   this name will be written to output_dir.
-//
-// Type: string
-
-output_filename = "cfradial.test.nc";
-
-///////////// append_day_dir_to_output_dir ////////////
-//
-// Add the day directory to the output directory.
-//
-// Path will be output_dir/yyyymmdd/filename.
-//
-// Type: boolean
-
-append_day_dir_to_output_dir = TRUE;
-
-///////////// append_year_dir_to_output_dir ///////////
-//
-// Add the year directory to the output directory.
-//
-// Path will be output_dir/yyyy/yyyymmdd/filename.
-//
-// Type: boolean
-
-append_year_dir_to_output_dir = FALSE;
-
-///////////// write_latest_data_info //////////////////
-//
-// Option to write out _latest_data_info files.
-//
-// If true, the _latest_data_info files will be written after the 
-//   converted file is written.
-//
-// Type: boolean
-
-write_latest_data_info = FALSE;
-
-//======================================================================
-//
-// OUTPUT IN FMQ MODE.
+// OUTPUT FMQ.
 //
 //======================================================================
  
@@ -672,7 +502,7 @@ output_fmq_compress = FALSE;
 //
 // Type: int
 
-output_fmq_n_slots = 5000;
+output_fmq_n_slots = 100;
 
 ///////////// output_fmq_buf_size /////////////////////
 //
@@ -697,7 +527,7 @@ output_fmq_buf_size = 100000000;
 //
 // Type: boolean
 
-output_fmq_write_blocking = FALSE;
+output_fmq_write_blocking = TRUE;
 
 ///////////// output_fmq_data_mapper_report_interval //
 //
