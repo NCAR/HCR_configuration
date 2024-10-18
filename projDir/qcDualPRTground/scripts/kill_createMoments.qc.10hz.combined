@@ -1,0 +1,6 @@
+#! /bin/csh
+
+snuff createMoments.qc.10hz.combined
+snuff "HcrShortLongCombine -params HcrShortLongCombine.qc.10hz"
+snuff "Dsr2Radx -params Dsr2Radx.qc.10hz.combined"
+

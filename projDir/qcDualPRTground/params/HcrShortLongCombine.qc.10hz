@@ -484,7 +484,7 @@ correct_velocity_for_platform_vertical_motion = FALSE;
 //
 // Type: string
 
-output_fmq_url = "/tmp/fmq/moments/qc.10hz.combined/shmem_20300";
+output_fmq_url = "/tmp/fmq/moments/qc.10hz.combined";
 
 ///////////// output_fmq_compress /////////////////////
 //
@@ -502,7 +502,7 @@ output_fmq_compress = FALSE;
 //
 // Type: int
 
-output_fmq_n_slots = 100;
+output_fmq_n_slots = 50;
 
 ///////////// output_fmq_buf_size /////////////////////
 //
@@ -510,7 +510,7 @@ output_fmq_n_slots = 100;
 //
 // Type: int
 
-output_fmq_buf_size = 100000000;
+output_fmq_buf_size = 1000000000;
 
 ///////////// output_fmq_write_blocking ///////////////
 //

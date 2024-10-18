@@ -1,0 +1,49 @@
+#! /bin/csh
+
+source ~/git/HCR_configuration/projDir/system/params/project_info.meow
+
+cd $PROJ_DIR/qcDualPRTground/params
+
+# start Dsr2Radx, which reads the moments from the FMQ and writes cfradial files 
+
+snuff "Dsr2Radx -params Dsr2Radx.qc.10hz.combined"
+Dsr2Radx -params Dsr2Radx.qc.10hz.combined -debug >& /tmp/Dsr2Radx.qc.10hz.combined.log &
+
+# combine the 50hz short and long into 10hz dwells
+                       
+HcrShortLongCombine -params HcrShortLongCombine.qc.10hz -debug -start "2024 05 03 00 00 00" -end "2024 07 01 00 00 00" >& /tmp/HcrShortLongCombine.10hz.combined.log &
+
+# HcrShortLongCombine -params HcrShortLongCombine.qc.10hz -debug -start "2024 05 06 00 00 00" -end "2024 05 06 23 59 59" >& /tmp/HcrShortLongCombine.10hz.combined.20240506.log
+
+# HcrShortLongCombine -params HcrShortLongCombine.qc.10hz -debug -start "2024 05 07 00 00 00" -end "2024 05 07 23 59 59" >& /tmp/HcrShortLongCombine.10hz.combined.20240507.log
+
+# HcrShortLongCombine -params HcrShortLongCombine.qc.10hz -debug -start "2024 05 08 00 00 00" -end "2024 05 08 23 59 59" >& /tmp/HcrShortLongCombine.10hz.combined.20240508.log
+
+# HcrShortLongCombine -params HcrShortLongCombine.qc.10hz -debug -start "2024 05 09 00 00 00" -end "2024 05 09 23 59 59" >& /tmp/HcrShortLongCombine.10hz.combined.20240509.log
+
+# HcrShortLongCombine -params HcrShortLongCombine.qc.10hz -debug -start "2024 05 10 00 00 00" -end "2024 05 10 23 59 59" >& /tmp/HcrShortLongCombine.10hz.combined.20240510.log
+
+# HcrShortLongCombine -params HcrShortLongCombine.qc.10hz -debug -start "2024 05 20 00 00 00" -end "2024 05 20 23 59 59" >& /tmp/HcrShortLongCombine.10hz.combined.20240520.log
+
+# HcrShortLongCombine -params HcrShortLongCombine.qc.10hz -debug -start "2024 05 21 00 00 00" -end "2024 05 21 23 59 59" >& /tmp/HcrShortLongCombine.10hz.combined.20240521.log
+
+# HcrShortLongCombine -params HcrShortLongCombine.qc.10hz -debug -start "2024 05 22 00 00 00" -end "2024 05 22 23 59 59" >& /tmp/HcrShortLongCombine.10hz.combined.20240522.log
+
+# HcrShortLongCombine -params HcrShortLongCombine.qc.10hz -debug -start "2024 05 29 00 00 00" -end "2024 05 29 23 59 59" >& /tmp/HcrShortLongCombine.10hz.combined.20240529.log
+
+# HcrShortLongCombine -params HcrShortLongCombine.qc.10hz -debug -start "2024 05 30 00 00 00" -end "2024 05 30 23 59 59" >& /tmp/HcrShortLongCombine.10hz.combined.20240530.log
+
+# HcrShortLongCombine -params HcrShortLongCombine.qc.10hz -debug -start "2024 05 03 00 00 00" -end "2024 05 03 23 59 59" >& /tmp/HcrShortLongCombine.10hz.combined.20240503.log
+
+# HcrShortLongCombine -params HcrShortLongCombine.qc.10hz -debug -start "2024 06 07 00 00 00" -end "2024 06 07 23 59 59" >& /tmp/HcrShortLongCombine.10hz.combined.20240607.log
+
+# HcrShortLongCombine -params HcrShortLongCombine.qc.10hz -debug -start "2024 06 10 00 00 00" -end "2024 06 10 23 59 59" >& /tmp/HcrShortLongCombine.10hz.combined.20240610.log
+
+# HcrShortLongCombine -params HcrShortLongCombine.qc.10hz -debug -start "2024 06 14 00 00 00" -end "2024 06 14 23 59 59" >& /tmp/HcrShortLongCombine.10hz.combined.20240614.log
+
+# HcrShortLongCombine -params HcrShortLongCombine.qc.10hz -debug -start "2024 06 20 00 00 00" -end "2024 06 20 23 59 59" >& /tmp/HcrShortLongCombine.10hz.combined.20240620.log
+
+# HcrShortLongCombine -params HcrShortLongCombine.qc.10hz -debug -start "2024 06 24 00 00 00" -end "2024 06 24 23 59 59" >& /tmp/HcrShortLongCombine.10hz.combined.20240624.log
+
+# HcrShortLongCombine -params HcrShortLongCombine.qc.10hz -debug -start "2024 06 27 00 00 00" -end "2024 06 27 23 59 59" >& /tmp/HcrShortLongCombine.10hz.combined.20240627.log
+

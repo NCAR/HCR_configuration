@@ -76,7 +76,7 @@ procmap_register_interval = 60;
 // Type: string
 //
 
-input_fmq_url = "/tmp/fmq/moments/qc.10hz.combined/shmem_20300";
+input_fmq_url = "/tmp/fmq/moments/qc.10hz.combined";
 
 ///////////// seek_to_end_of_input ////////////////////
 //
@@ -1592,171 +1592,315 @@ debug_auto_detection = FALSE;
 
 output_fields = {
   {
-    dsr_name = "DBZ",
-    output_name = "DBZ",
-    long_name = "reflectivity",
+    dsr_name = "DBZ_short",
+    output_name = "DBZ_short",
+    long_name = "reflectivity_short_pulse",
     standard_name = "equivalent_reflectivity_factor",
     output_units = "dBZ",
     output_encoding = OUTPUT_FLOAT
   }
   ,
   {
-    dsr_name = "DBZHC",
-    output_name = "DBZHC",
-    long_name = "reflectivity_h_channel",
+    dsr_name = "DBZ_long",
+    output_name = "DBZ_long",
+    long_name = "reflectivity_long_pulse",
     standard_name = "equivalent_reflectivity_factor",
     output_units = "dBZ",
     output_encoding = OUTPUT_FLOAT
   }
   ,
   {
-    dsr_name = "DBZVC",
-    output_name = "DBZVC",
-    long_name = "reflectivity_v_channel",
+    dsr_name = "DBZHC_short",
+    output_name = "DBZHC_short",
+    long_name = "reflectivity_h_channel_short_pulse",
     standard_name = "equivalent_reflectivity_factor",
     output_units = "dBZ",
     output_encoding = OUTPUT_FLOAT
   }
   ,
   {
-    dsr_name = "VEL",
-    output_name = "VEL",
-    long_name = "doppler_velocity",
+    dsr_name = "DBZHC_long",
+    output_name = "DBZHC_long",
+    long_name = "reflectivity_h_channel_long_pulse",
+    standard_name = "equivalent_reflectivity_factor",
+    output_units = "dBZ",
+    output_encoding = OUTPUT_FLOAT
+  }
+  ,
+  {
+    dsr_name = "DBZVC_short",
+    output_name = "DBZVC_short",
+    long_name = "reflectivity_v_channel_short_pulse",
+    standard_name = "equivalent_reflectivity_factor",
+    output_units = "dBZ",
+    output_encoding = OUTPUT_FLOAT
+  }
+  ,
+  {
+    dsr_name = "DBZVC_long",
+    output_name = "DBZVC_long",
+    long_name = "reflectivity_v_channel_long_pulse",
+    standard_name = "equivalent_reflectivity_factor",
+    output_units = "dBZ",
+    output_encoding = OUTPUT_FLOAT
+  }
+  ,
+  {
+    dsr_name = "VEL_unfold",
+    output_name = "VEL_unfold",
+    long_name = "doppler_velocity_unfolded",
     standard_name = "radial_velocity_of_scatterers_away_from_instrument",
     output_units = "m/s",
     output_encoding = OUTPUT_FLOAT
   }
   ,
   {
-    dsr_name = "VEL_RAW",
-    output_name = "VEL_RAW",
-    long_name = "doppler_velocity_uncorrected_for_motion",
+    dsr_name = "VEL_short",
+    output_name = "VEL_short",
+    long_name = "doppler_velocity_short_prt",
     standard_name = "radial_velocity_of_scatterers_away_from_instrument",
     output_units = "m/s",
     output_encoding = OUTPUT_FLOAT
   }
   ,
   {
-    dsr_name = "WIDTH",
-    output_name = "WIDTH",
-    long_name = "spectrum_width",
+    dsr_name = "VEL_long",
+    output_name = "VEL_long",
+    long_name = "doppler_velocity_long_prt",
+    standard_name = "radial_velocity_of_scatterers_away_from_instrument",
+    output_units = "m/s",
+    output_encoding = OUTPUT_FLOAT
+  }
+  ,
+  {
+    dsr_name = "VEL_RAW_short",
+    output_name = "VEL_RAW_short",
+    long_name = "doppler_velocity_uncorrected_for_motion_short_prt",
+    standard_name = "radial_velocity_of_scatterers_away_from_instrument",
+    output_units = "m/s",
+    output_encoding = OUTPUT_FLOAT
+  }
+  ,
+  {
+    dsr_name = "VEL_RAW_long",
+    output_name = "VEL_RAW_long",
+    long_name = "doppler_velocity_uncorrected_for_motion_long_prt",
+    standard_name = "radial_velocity_of_scatterers_away_from_instrument",
+    output_units = "m/s",
+    output_encoding = OUTPUT_FLOAT
+  }
+  ,
+  {
+    dsr_name = "WIDTH_short",
+    output_name = "WIDTH_short",
+    long_name = "spectrum_width_short_prt",
     standard_name = "doppler_spectrum_width",
     output_units = "m/s",
     output_encoding = OUTPUT_FLOAT
   }
   ,
   {
-    dsr_name = "SNR",
-    output_name = "SNR",
-    long_name = "signal_to_noise_ratio",
-    standard_name = "signal_to_noise_ratio",
-    output_units = "dB",
+    dsr_name = "WIDTH_long",
+    output_name = "WIDTH_long",
+    long_name = "spectrum_width_long_prt",
+    standard_name = "doppler_spectrum_width",
+    output_units = "m/s",
     output_encoding = OUTPUT_FLOAT
   }
   ,
   {
-    dsr_name = "SNRHC",
-    output_name = "SNRHC",
-    long_name = "signal_to_noise_ratio_co_polar_h",
+    dsr_name = "SNRHC_short",
+    output_name = "SNRHC_short",
+    long_name = "signal_to_noise_ratio_co_polar_h_short_pulse",
     standard_name = "signal_to_noise_ratio_co_polar_h",
     output_units = "dB",
     output_encoding = OUTPUT_FLOAT
   }
   ,
   {
-    dsr_name = "SNRVC",
-    output_name = "SNRVC",
-    long_name = "signal_to_noise_ratio_co_polar_v",
+    dsr_name = "SNRHC_long",
+    output_name = "SNRHC_long",
+    long_name = "signal_to_noise_ratio_co_polar_h_long_pulse",
+    standard_name = "signal_to_noise_ratio_co_polar_h",
+    output_units = "dB",
+    output_encoding = OUTPUT_FLOAT
+  }
+  ,
+  {
+    dsr_name = "SNRVC_short",
+    output_name = "SNRVC_short",
+    long_name = "signal_to_noise_ratio_co_polar_v_short_pulse",
     standard_name = "signal_to_noise_ratio_co_polar_v",
     output_units = "dB",
     output_encoding = OUTPUT_FLOAT
   }
   ,
   {
-    dsr_name = "SNRHX",
-    output_name = "SNRHX",
-    long_name = "signal_to_noise_ratio_cross_polar_h",
+    dsr_name = "SNRVC_long",
+    output_name = "SNRVC_long",
+    long_name = "signal_to_noise_ratio_co_polar_v_long_pulse",
+    standard_name = "signal_to_noise_ratio_co_polar_v",
+    output_units = "dB",
+    output_encoding = OUTPUT_FLOAT
+  }
+  ,
+  {
+    dsr_name = "SNRHX_short",
+    output_name = "SNRHX_short",
+    long_name = "signal_to_noise_ratio_cross_polar_h_short_pulse",
     standard_name = "signal_to_noise_ratio_cross_polar_h",
     output_units = "dB",
     output_encoding = OUTPUT_FLOAT
   }
   ,
   {
-    dsr_name = "SNRVX",
-    output_name = "SNRVX",
-    long_name = "signal_to_noise_ratio_cross_polar_v",
+    dsr_name = "SNRHX_long",
+    output_name = "SNRHX_long",
+    long_name = "signal_to_noise_ratio_cross_polar_h_long_pulse",
+    standard_name = "signal_to_noise_ratio_cross_polar_h",
+    output_units = "dB",
+    output_encoding = OUTPUT_FLOAT
+  }
+  ,
+  {
+    dsr_name = "SNRVX_short",
+    output_name = "SNRVX_short",
+    long_name = "signal_to_noise_ratio_cross_polar_v_short_pulse",
     standard_name = "signal_to_noise_ratio_cross_polar_v",
     output_units = "dB",
     output_encoding = OUTPUT_FLOAT
   }
   ,
   {
-    dsr_name = "DBMHC",
-    output_name = "DBMHC",
-    long_name = "log_power_co_polar_h",
+    dsr_name = "SNRVX_long",
+    output_name = "SNRVX_long",
+    long_name = "signal_to_noise_ratio_cross_polar_v_long_pulse",
+    standard_name = "signal_to_noise_ratio_cross_polar_v",
+    output_units = "dB",
+    output_encoding = OUTPUT_FLOAT
+  }
+  ,
+  {
+    dsr_name = "DBMHC_short",
+    output_name = "DBMHC_short",
+    long_name = "log_power_co_polar_h_short_pulse",
     standard_name = "log_power_co_polar_h",
     output_units = "dBm",
     output_encoding = OUTPUT_FLOAT
   }
   ,
   {
-    dsr_name = "DBMVC",
-    output_name = "DBMVC",
-    long_name = "log_power_co_polar_v",
+    dsr_name = "DBMHC_long",
+    output_name = "DBMHC_long",
+    long_name = "log_power_co_polar_h_long_pulse",
+    standard_name = "log_power_co_polar_h",
+    output_units = "dBm",
+    output_encoding = OUTPUT_FLOAT
+  }
+  ,
+  {
+    dsr_name = "DBMVC_short",
+    output_name = "DBMVC_short",
+    long_name = "log_power_co_polar_v_short_pulse",
     standard_name = "log_power_co_polar_v",
     output_units = "dBm",
     output_encoding = OUTPUT_FLOAT
   }
   ,
   {
-    dsr_name = "DBMHX",
-    output_name = "DBMHX",
-    long_name = "log_power_cross_polar_h",
+    dsr_name = "DBMVC_long",
+    output_name = "DBMVC_long",
+    long_name = "log_power_co_polar_v_long_pulse",
+    standard_name = "log_power_co_polar_v",
+    output_units = "dBm",
+    output_encoding = OUTPUT_FLOAT
+  }
+  ,
+  {
+    dsr_name = "DBMHX_short",
+    output_name = "DBMHX_short",
+    long_name = "log_power_cross_polar_h_short_pulse",
     standard_name = "log_power_cross_polar_h",
     output_units = "dBm",
     output_encoding = OUTPUT_FLOAT
   }
   ,
   {
-    dsr_name = "DBMVX",
-    output_name = "DBMVX",
-    long_name = "log_power_cross_polar_v",
+    dsr_name = "DBMHX_long",
+    output_name = "DBMHX_long",
+    long_name = "log_power_cross_polar_h_long_pulse",
+    standard_name = "log_power_cross_polar_h",
+    output_units = "dBm",
+    output_encoding = OUTPUT_FLOAT
+  }
+  ,
+  {
+    dsr_name = "DBMVX_short",
+    output_name = "DBMVX_short",
+    long_name = "log_power_cross_polar_v_short_pulse",
     standard_name = "log_power_cross_polar_v",
     output_units = "dBm",
     output_encoding = OUTPUT_FLOAT
   }
   ,
   {
-    dsr_name = "NCP",
-    output_name = "NCP",
-    long_name = "normalized_coherent_power",
+    dsr_name = "DBMVX_long",
+    output_name = "DBMVX_long",
+    long_name = "log_power_cross_polar_v_long_pulse",
+    standard_name = "log_power_cross_polar_v",
+    output_units = "dBm",
+    output_encoding = OUTPUT_FLOAT
+  }
+  ,
+  {
+    dsr_name = "NCP_short",
+    output_name = "NCP_short",
+    long_name = "normalized_coherent_power_short_prt",
     standard_name = "normalized_coherent_power",
     output_units = "",
     output_encoding = OUTPUT_FLOAT
   }
   ,
   {
-    dsr_name = "LDR",
-    output_name = "LDR",
-    long_name = "linear_depolarization_ratio",
-    standard_name = "log_linear_depolarization_ratio",
-    output_units = "dB",
+    dsr_name = "NCP_long",
+    output_name = "NCP_long",
+    long_name = "normalized_coherent_power_long_prt",
+    standard_name = "normalized_coherent_power",
+    output_units = "",
     output_encoding = OUTPUT_FLOAT
   }
   ,
   {
-    dsr_name = "LDRH",
-    output_name = "LDRH",
-    long_name = "linear_depolarization_ratio_hc_to_vx",
+    dsr_name = "LDRH_short",
+    output_name = "LDRH_short",
+    long_name = "linear_depolarization_ratio_hc_to_vx_short_pulse",
     standard_name = "log_linear_depolarization_ratio_h",
     output_units = "dB",
     output_encoding = OUTPUT_FLOAT
   }
   ,
   {
-    dsr_name = "LDRV",
-    output_name = "LDRV",
-    long_name = "linear_depolarization_ratio_vc_to_hx",
+    dsr_name = "LDRH_long",
+    output_name = "LDRH_long",
+    long_name = "linear_depolarization_ratio_hc_to_vx_long_pulse",
+    standard_name = "log_linear_depolarization_ratio_h",
+    output_units = "dB",
+    output_encoding = OUTPUT_FLOAT
+  }
+  ,
+  {
+    dsr_name = "LDRV_short",
+    output_name = "LDRV_short",
+    long_name = "linear_depolarization_ratio_vc_to_hx_short_pulse",
+    standard_name = "log_linear_depolarization_ratio_v",
+    output_units = "dB",
+    output_encoding = OUTPUT_FLOAT
+  }
+  ,
+  {
+    dsr_name = "LDRV_long",
+    output_name = "LDRV_long",
+    long_name = "linear_depolarization_ratio_vc_to_hx_long_pulse",
     standard_name = "log_linear_depolarization_ratio_v",
     output_units = "dB",
     output_encoding = OUTPUT_FLOAT
