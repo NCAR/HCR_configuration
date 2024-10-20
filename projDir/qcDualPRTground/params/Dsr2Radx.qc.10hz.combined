@@ -730,7 +730,7 @@ filter_when_scan_idle = FALSE;
 // Type: boolean
 //
 
-filter_when_scan_pointing = TRUE;
+filter_when_scan_pointing = FALSE;
 
 //======================================================================
 //
@@ -753,7 +753,7 @@ filter_when_scan_pointing = TRUE;
 // Type: boolean
 //
 
-convert_to_predominant_gate_geometry = TRUE;
+convert_to_predominant_gate_geometry = FALSE;
 
 ///////////// convert_to_finest_gate_geometry /////////
 //
@@ -841,7 +841,7 @@ interpolate_to_output_gate_geometry = FALSE;
 // Type: boolean
 //
 
-find_sweep_numbers_using_histogram = TRUE;
+find_sweep_numbers_using_histogram = FALSE;
 
 ///////////// use_target_angles_for_hist //////////////
 //

@@ -110,7 +110,7 @@ input_mode = IWRF_FMQ_INPUT;
 // Type: string
 //
 
-input_fmq_url = "/tmp/fmq/moments/qc.10hz.combined/shmem_20300";
+input_fmq_url = "/tmp/fmq/moments/qc.10hz.combined";
 
 ///////////// seek_to_start_of_fmq ////////////////////
 //
@@ -2041,7 +2041,7 @@ bscan_archive_dwell_secs = 0.1;
 //     DWELL_STATS_MIDDLE
 //
 
-bscan_dwell_stats = DWELL_STATS_MIDDLE;
+bscan_dwell_stats = DWELL_STATS_MEDIAN;
 
 //======================================================================
 //

@@ -11,6 +11,8 @@ Dsr2Radx -params Dsr2Radx.qc.10hz.combined -debug >& /tmp/Dsr2Radx.qc.10hz.combi
 
 # combine the 50hz short and long into 10hz dwells
                        
+#HcrShortLongCombine -params HcrShortLongCombine.qc.10hz -debug -start "2024 06 14 00 00 00" -end "2024 06 15 00 00 00" >& /tmp/HcrShortLongCombine.10hz.combined.log &
+
 HcrShortLongCombine -params HcrShortLongCombine.qc.10hz -debug -start "2024 05 03 00 00 00" -end "2024 07 01 00 00 00" >& /tmp/HcrShortLongCombine.10hz.combined.log &
 
 # HcrShortLongCombine -params HcrShortLongCombine.qc.10hz -debug -start "2024 05 06 00 00 00" -end "2024 05 06 23 59 59" >& /tmp/HcrShortLongCombine.10hz.combined.20240506.log

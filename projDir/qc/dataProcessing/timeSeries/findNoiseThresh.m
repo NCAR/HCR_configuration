@@ -62,32 +62,52 @@ function [noiseThresh,meanNoiseOut,R2]=findNoiseThresh(powIn,avNum)
 % noiseThresh=real(10*log10(noiseThreshMax));
 % meanNoiseOut=10*log10(meanNoiseMax);
 
-%% Second version
+%% Third version
+% powLin2=10.^(powIn./10);
+% powLin2(isnan(powLin2))=[];
+% 
+% testThresh=sort(powLin2);
+% testThresh=repmat(testThresh',1,size(testThresh,2));
+% 
+% testPow=testThresh';
+% 
+% testPow(testPow>testThresh)=nan;
+% sampleNum2=sum(~isnan(testPow),2);
+% meanNoiseMat=sum(testPow,2,'omitmissing')./sampleNum2;
+% Qmat=sum(testPow.^2./sampleNum2,2,'omitmissing')-meanNoiseMat.^2;
+% R2mat=meanNoiseMat.^2./(Qmat*avNum);
+% 
+% R2ind=find(R2mat>=1,1,'last');
+% noiseThreshMax2=testThresh(R2ind,1);
+% meanNoiseMax2=meanNoiseMat(R2ind);
+% 
+% noiseThresh3=real(10*log10(noiseThreshMax2));
+% meanNoiseOut3=10*log10(meanNoiseMax2);
+% R23=R2mat(R2ind);
 
-low10=prctile(powIn,10);
-noiseTop=10.^((low10+20)./10);
+%% Third version loop
+
 powLin2=10.^(powIn./10);
-powLin2(isnan(powLin2))=[];
 
-noiseBottom=min(powLin2);
-spacing=0.00000001;
+testThresh=sort(powLin2,'descend');
 
-testThresh=noiseBottom:spacing:noiseTop;
-testThresh=repmat(testThresh',1,size(powIn,2));
-testPow=repmat(powLin2,size(testThresh,1),1);
+testPow=testThresh;
 
-testPow(testPow>testThresh)=nan;
-sampleNum2=sum(~isnan(testPow),2);
-%sampleNum=repmat(sampleNum,1,size(powIn,2));
-meanNoiseMat=sum(testPow,2,'omitmissing')./sampleNum2;
-Qmat=sum(testPow.^2./sampleNum2,2,'omitmissing')-meanNoiseMat.^2;
-R2mat=meanNoiseMat.^2./(Qmat*avNum);
+ii=1;
+R2=0;
 
-R2ind=find(R2mat>=1,1,'last');
-noiseThreshMax2=testThresh(R2ind,1);
-meanNoiseMax2=meanNoiseMat(R2ind);
+while R2<1
+testPow(testPow>testThresh(ii))=[];
+sampleNum=length(testPow);
+meanNoise=sum(testPow)./sampleNum;
+Q=sum(testPow.^2./sampleNum)-meanNoise.^2;
+R2=meanNoise.^2./(Q*avNum);
+ii=ii+1;
+end
 
-noiseThresh=real(10*log10(noiseThreshMax2));
-meanNoiseOut=10*log10(meanNoiseMax2);
-R2=R2mat(R2ind);
+noisePow=powLin2;
+noisePow(noisePow>testThresh(ii-1))=[];
+meanNoisePow=sum(noisePow)./sampleNum;
+noiseThresh=real(10*log10(testThresh(ii-1)));
+meanNoiseOut=10*log10(meanNoisePow);
 end

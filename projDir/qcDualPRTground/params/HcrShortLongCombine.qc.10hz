@@ -320,7 +320,7 @@ dwell_length_secs = 0.1;
 //     DWELL_STATS_MIDDLE
 //     DWELL_STATS_DISCRETE_MODE
 
-dwell_stats_method = DWELL_STATS_MEAN;
+dwell_stats_method = DWELL_STATS_MEDIAN;
 
 ///////////// dwell_stats_max_fraction_missing ////////
 //
