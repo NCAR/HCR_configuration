@@ -24,7 +24,7 @@ setenv COMBINED_MOMENTS_FMQ /tmp/fmq/moments/qc.10hz.combined.20240506
 
 Dsr2Radx -params Dsr2Radx.qc.10hz.combined -instance 20240506 -debug >& /tmp/Dsr2Radx.qc.10hz.combined.20240506.log &
 
-HcrShortLongCombine -params HcrShortLongCombine.qc.10hz -instance 20240506 -debug -start "2024 05 06 00 00 00" -end "2024 05 04 00 00 00" >& /tmp/HcrShortLongCombine.10hz.combined.20240506.log &
+HcrShortLongCombine -params HcrShortLongCombine.qc.10hz -instance 20240506 -debug -start "2024 05 06 00 00 00" -end "2024 05 07 00 00 00" >& /tmp/HcrShortLongCombine.10hz.combined.20240506.log &
 
 # 20240507
 
@@ -32,7 +32,7 @@ setenv COMBINED_MOMENTS_FMQ /tmp/fmq/moments/qc.10hz.combined.20240507
 
 Dsr2Radx -params Dsr2Radx.qc.10hz.combined -instance 20240507 -debug >& /tmp/Dsr2Radx.qc.10hz.combined.20240507.log &
 
-HcrShortLongCombine -params HcrShortLongCombine.qc.10hz -instance 20240507 -debug -start "2024 05 07 00 00 00" -end "2024 05 04 00 00 00" >& /tmp/HcrShortLongCombine.10hz.combined.20240507.log &
+HcrShortLongCombine -params HcrShortLongCombine.qc.10hz -instance 20240507 -debug -start "2024 05 07 00 00 00" -end "2024 05 08 00 00 00" >& /tmp/HcrShortLongCombine.10hz.combined.20240507.log &
 
 # 20240508
 
@@ -40,7 +40,7 @@ setenv COMBINED_MOMENTS_FMQ /tmp/fmq/moments/qc.10hz.combined.20240508
 
 Dsr2Radx -params Dsr2Radx.qc.10hz.combined -instance 20240508 -debug >& /tmp/Dsr2Radx.qc.10hz.combined.20240508.log &
 
-HcrShortLongCombine -params HcrShortLongCombine.qc.10hz -instance 20240508 -debug -start "2024 05 08 00 00 00" -end "2024 05 04 00 00 00" >& /tmp/HcrShortLongCombine.10hz.combined.20240508.log &
+HcrShortLongCombine -params HcrShortLongCombine.qc.10hz -instance 20240508 -debug -start "2024 05 08 00 00 00" -end "2024 05 09 00 00 00" >& /tmp/HcrShortLongCombine.10hz.combined.20240508.log &
 
 # 20240509
 
@@ -48,7 +48,7 @@ setenv COMBINED_MOMENTS_FMQ /tmp/fmq/moments/qc.10hz.combined.20240509
 
 Dsr2Radx -params Dsr2Radx.qc.10hz.combined -instance 20240509 -debug >& /tmp/Dsr2Radx.qc.10hz.combined.20240509.log &
 
-HcrShortLongCombine -params HcrShortLongCombine.qc.10hz -instance 20240509 -debug -start "2024 05 09 00 00 00" -end "2024 05 04 00 00 00" >& /tmp/HcrShortLongCombine.10hz.combined.20240509.log &
+HcrShortLongCombine -params HcrShortLongCombine.qc.10hz -instance 20240509 -debug -start "2024 05 09 00 00 00" -end "2024 05 10 00 00 00" >& /tmp/HcrShortLongCombine.10hz.combined.20240509.log &
 
 # 20240510
 
@@ -56,7 +56,7 @@ setenv COMBINED_MOMENTS_FMQ /tmp/fmq/moments/qc.10hz.combined.20240510
 
 Dsr2Radx -params Dsr2Radx.qc.10hz.combined -instance 20240510 -debug >& /tmp/Dsr2Radx.qc.10hz.combined.20240510.log &
 
-HcrShortLongCombine -params HcrShortLongCombine.qc.10hz -instance 20240510 -debug -start "2024 05 10 00 00 00" -end "2024 05 04 00 00 00" >& /tmp/HcrShortLongCombine.10hz.combined.20240510.log &
+HcrShortLongCombine -params HcrShortLongCombine.qc.10hz -instance 20240510 -debug -start "2024 05 10 00 00 00" -end "2024 05 11 00 00 00" >& /tmp/HcrShortLongCombine.10hz.combined.20240510.log &
 
 # 20240520
 
@@ -64,7 +64,7 @@ setenv COMBINED_MOMENTS_FMQ /tmp/fmq/moments/qc.10hz.combined.20240520
 
 Dsr2Radx -params Dsr2Radx.qc.10hz.combined -instance 20240520 -debug >& /tmp/Dsr2Radx.qc.10hz.combined.20240520.log &
 
-HcrShortLongCombine -params HcrShortLongCombine.qc.10hz -instance 20240520 -debug -start "2024 05 20 00 00 00" -end "2024 05 04 00 00 00" >& /tmp/HcrShortLongCombine.10hz.combined.20240520.log &
+HcrShortLongCombine -params HcrShortLongCombine.qc.10hz -instance 20240520 -debug -start "2024 05 20 00 00 00" -end "2024 05 21 00 00 00" >& /tmp/HcrShortLongCombine.10hz.combined.20240520.log &
 
 # 20240521
 
@@ -72,7 +72,7 @@ setenv COMBINED_MOMENTS_FMQ /tmp/fmq/moments/qc.10hz.combined.20240521
 
 Dsr2Radx -params Dsr2Radx.qc.10hz.combined -instance 20240521 -debug >& /tmp/Dsr2Radx.qc.10hz.combined.20240521.log &
 
-HcrShortLongCombine -params HcrShortLongCombine.qc.10hz -instance 20240521 -debug -start "2024 05 21 00 00 00" -end "2024 05 04 00 00 00" >& /tmp/HcrShortLongCombine.10hz.combined.20240521.log &
+HcrShortLongCombine -params HcrShortLongCombine.qc.10hz -instance 20240521 -debug -start "2024 05 21 00 00 00" -end "2024 05 22 00 00 00" >& /tmp/HcrShortLongCombine.10hz.combined.20240521.log &
 
 # 20240522
 
@@ -80,7 +80,7 @@ setenv COMBINED_MOMENTS_FMQ /tmp/fmq/moments/qc.10hz.combined.20240522
 
 Dsr2Radx -params Dsr2Radx.qc.10hz.combined -instance 20240522 -debug >& /tmp/Dsr2Radx.qc.10hz.combined.20240522.log &
 
-HcrShortLongCombine -params HcrShortLongCombine.qc.10hz -instance 20240522 -debug -start "2024 05 22 00 00 00" -end "2024 05 04 00 00 00" >& /tmp/HcrShortLongCombine.10hz.combined.20240522.log &
+HcrShortLongCombine -params HcrShortLongCombine.qc.10hz -instance 20240522 -debug -start "2024 05 22 00 00 00" -end "2024 05 23 00 00 00" >& /tmp/HcrShortLongCombine.10hz.combined.20240522.log &
 
 # 20240529
 
@@ -88,7 +88,7 @@ setenv COMBINED_MOMENTS_FMQ /tmp/fmq/moments/qc.10hz.combined.20240529
 
 Dsr2Radx -params Dsr2Radx.qc.10hz.combined -instance 20240529 -debug >& /tmp/Dsr2Radx.qc.10hz.combined.20240529.log &
 
-HcrShortLongCombine -params HcrShortLongCombine.qc.10hz -instance 20240529 -debug -start "2024 05 29 00 00 00" -end "2024 05 04 00 00 00" >& /tmp/HcrShortLongCombine.10hz.combined.20240529.log &
+HcrShortLongCombine -params HcrShortLongCombine.qc.10hz -instance 20240529 -debug -start "2024 05 29 00 00 00" -end "2024 05 30 00 00 00" >& /tmp/HcrShortLongCombine.10hz.combined.20240529.log &
 
 # 20240530
 
@@ -96,7 +96,7 @@ setenv COMBINED_MOMENTS_FMQ /tmp/fmq/moments/qc.10hz.combined.20240530
 
 Dsr2Radx -params Dsr2Radx.qc.10hz.combined -instance 20240530 -debug >& /tmp/Dsr2Radx.qc.10hz.combined.20240530.log &
 
-HcrShortLongCombine -params HcrShortLongCombine.qc.10hz -instance 20240530 -debug -start "2024 05 30 00 00 00" -end "2024 05 04 00 00 00" >& /tmp/HcrShortLongCombine.10hz.combined.20240530.log &
+HcrShortLongCombine -params HcrShortLongCombine.qc.10hz -instance 20240530 -debug -start "2024 05 30 00 00 00" -end "2024 05 31 00 00 00" >& /tmp/HcrShortLongCombine.10hz.combined.20240530.log &
 
 # 20240607
 
@@ -104,7 +104,7 @@ setenv COMBINED_MOMENTS_FMQ /tmp/fmq/moments/qc.10hz.combined.20240607
 
 Dsr2Radx -params Dsr2Radx.qc.10hz.combined -instance 20240607 -debug >& /tmp/Dsr2Radx.qc.10hz.combined.20240607.log &
 
-HcrShortLongCombine -params HcrShortLongCombine.qc.10hz -instance 20240607 -debug -start "2024 06 07 00 00 00" -end "2024 06 04 00 00 00" >& /tmp/HcrShortLongCombine.10hz.combined.20240607.log &
+HcrShortLongCombine -params HcrShortLongCombine.qc.10hz -instance 20240607 -debug -start "2024 06 07 00 00 00" -end "2024 06 08 00 00 00" >& /tmp/HcrShortLongCombine.10hz.combined.20240607.log &
 
 # 20240610
 
@@ -112,7 +112,7 @@ setenv COMBINED_MOMENTS_FMQ /tmp/fmq/moments/qc.10hz.combined.20240610
 
 Dsr2Radx -params Dsr2Radx.qc.10hz.combined -instance 20240610 -debug >& /tmp/Dsr2Radx.qc.10hz.combined.20240610.log &
 
-HcrShortLongCombine -params HcrShortLongCombine.qc.10hz -instance 20240610 -debug -start "2024 06 10 00 00 00" -end "2024 06 04 00 00 00" >& /tmp/HcrShortLongCombine.10hz.combined.20240610.log &
+HcrShortLongCombine -params HcrShortLongCombine.qc.10hz -instance 20240610 -debug -start "2024 06 10 00 00 00" -end "2024 06 11 00 00 00" >& /tmp/HcrShortLongCombine.10hz.combined.20240610.log &
 
 # 20240614
 
@@ -120,7 +120,7 @@ setenv COMBINED_MOMENTS_FMQ /tmp/fmq/moments/qc.10hz.combined.20240614
 
 Dsr2Radx -params Dsr2Radx.qc.10hz.combined -instance 20240614 -debug >& /tmp/Dsr2Radx.qc.10hz.combined.20240614.log &
 
-HcrShortLongCombine -params HcrShortLongCombine.qc.10hz -instance 20240614 -debug -start "2024 06 14 00 00 00" -end "2024 06 04 00 00 00" >& /tmp/HcrShortLongCombine.10hz.combined.20240614.log &
+HcrShortLongCombine -params HcrShortLongCombine.qc.10hz -instance 20240614 -debug -start "2024 06 14 00 00 00" -end "2024 06 15 00 00 00" >& /tmp/HcrShortLongCombine.10hz.combined.20240614.log &
 
 # 20240620
 
@@ -128,7 +128,7 @@ setenv COMBINED_MOMENTS_FMQ /tmp/fmq/moments/qc.10hz.combined.20240620
 
 Dsr2Radx -params Dsr2Radx.qc.10hz.combined -instance 20240620 -debug >& /tmp/Dsr2Radx.qc.10hz.combined.20240620.log &
 
-HcrShortLongCombine -params HcrShortLongCombine.qc.10hz -instance 20240620 -debug -start "2024 06 20 00 00 00" -end "2024 06 04 00 00 00" >& /tmp/HcrShortLongCombine.10hz.combined.20240620.log &
+HcrShortLongCombine -params HcrShortLongCombine.qc.10hz -instance 20240620 -debug -start "2024 06 20 00 00 00" -end "2024 06 21 00 00 00" >& /tmp/HcrShortLongCombine.10hz.combined.20240620.log &
 
 # 20240624
 
@@ -136,7 +136,7 @@ setenv COMBINED_MOMENTS_FMQ /tmp/fmq/moments/qc.10hz.combined.20240624
 
 Dsr2Radx -params Dsr2Radx.qc.10hz.combined -instance 20240624 -debug >& /tmp/Dsr2Radx.qc.10hz.combined.20240624.log &
 
-HcrShortLongCombine -params HcrShortLongCombine.qc.10hz -instance 20240624 -debug -start "2024 06 24 00 00 00" -end "2024 06 04 00 00 00" >& /tmp/HcrShortLongCombine.10hz.combined.20240624.log &
+HcrShortLongCombine -params HcrShortLongCombine.qc.10hz -instance 20240624 -debug -start "2024 06 24 00 00 00" -end "2024 06 25 00 00 00" >& /tmp/HcrShortLongCombine.10hz.combined.20240624.log &
 
 # 20240627
 
@@ -144,5 +144,5 @@ setenv COMBINED_MOMENTS_FMQ /tmp/fmq/moments/qc.10hz.combined.20240627
 
 Dsr2Radx -params Dsr2Radx.qc.10hz.combined -instance 20240627 -debug >& /tmp/Dsr2Radx.qc.10hz.combined.20240627.log &
 
-HcrShortLongCombine -params HcrShortLongCombine.qc.10hz -instance 20240627 -debug -start "2024 06 27 00 00 00" -end "2024 06 04 00 00 00" >& /tmp/HcrShortLongCombine.10hz.combined.20240627.log &
+HcrShortLongCombine -params HcrShortLongCombine.qc.10hz -instance 20240627 -debug -start "2024 06 27 00 00 00" -end "2024 06 28 00 00 00" >& /tmp/HcrShortLongCombine.10hz.combined.20240627.log &
 
