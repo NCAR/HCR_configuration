@@ -76,7 +76,7 @@ procmap_register_interval = 60;
 // Type: string
 //
 
-input_fmq_url = "/tmp/fmq/moments/qc.10hz.combined";
+input_fmq_url = "$(COMBINED_MOMENTS_FMQ)";
 
 ///////////// seek_to_end_of_input ////////////////////
 //

@@ -25,4 +25,7 @@ mkdir -p $LOG_DIR
 # This is commented because velcorr is run from matlab
 # setenv WAVE_FILTER_LENGTH_SECS 20
 
+# FMQ for combined 10hz moments
+
+setenv COMBINED_MOMENTS_FMQ /tmp/fmq/moments/qc.10hz.combined
 
