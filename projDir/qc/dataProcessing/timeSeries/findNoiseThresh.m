@@ -81,9 +81,9 @@ function [noiseThresh,meanNoiseOut,R2]=findNoiseThresh(powIn,avNum)
 % noiseThreshMax2=testThresh(R2ind,1);
 % meanNoiseMax2=meanNoiseMat(R2ind);
 % 
-% noiseThresh3=real(10*log10(noiseThreshMax2));
-% meanNoiseOut3=10*log10(meanNoiseMax2);
-% R23=R2mat(R2ind);
+% noiseThresh=real(10*log10(noiseThreshMax2));
+% meanNoiseOut=10*log10(meanNoiseMax2);
+% R2=R2mat(R2ind);
 
 %% Third version loop
 
@@ -97,12 +97,12 @@ ii=1;
 R2=0;
 
 while R2<1
-testPow(testPow>testThresh(ii))=[];
-sampleNum=length(testPow);
-meanNoise=sum(testPow)./sampleNum;
-Q=sum(testPow.^2./sampleNum)-meanNoise.^2;
-R2=meanNoise.^2./(Q*avNum);
-ii=ii+1;
+    testPow(testPow>testThresh(ii))=[];
+    sampleNum=length(testPow);
+    meanNoise=sum(testPow)./sampleNum;
+    Q=sum(testPow.^2./sampleNum)-meanNoise.^2;
+    R2=meanNoise.^2./(Q*avNum);
+    ii=ii+1;
 end
 
 noisePow=powLin2;

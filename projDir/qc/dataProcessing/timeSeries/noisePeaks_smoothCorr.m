@@ -45,21 +45,37 @@ testPow=nan(size(specDB,1),sampleNum);
 testVel=nan(size(specDB,1),sampleNum);
 
 % Noise floor averaging number
+% avNum=3;
+% noiseFloorAll=nan(size(specDB,1),1);
+% 
+% for aa=1:size(loopInds,1)
+%     ii=loopInds(aa); % ii is the range index
+%     testPow(ii,:)=powerSpecLarge(ii,minIndTest(ii):minIndTest(ii)+sampleNum-1);
+%     testVel(ii,:)=velSpecLarge(minIndTest(ii):minIndTest(ii)+sampleNum-1);
+% 
+%     % Find noise floor
+%     rawPowBig=repmat(testPow(ii,:),1,3);
+%     rawPowMov=movmean(rawPowBig,avNum);
+%     rawPowMov=rawPowMov(sampleNum+1:2*sampleNum);
+% 
+%     [noiseFloorAll(ii),~,~]=findNoiseThresh(rawPowMov,avNum);
+% end
+
+% Noise floor averaging number
 avNum=3;
-noiseFloorAll=nan(size(specDB,1),1);
 
 for aa=1:size(loopInds,1)
     ii=loopInds(aa); % ii is the range index
     testPow(ii,:)=powerSpecLarge(ii,minIndTest(ii):minIndTest(ii)+sampleNum-1);
     testVel(ii,:)=velSpecLarge(minIndTest(ii):minIndTest(ii)+sampleNum-1);
-
-    % Find noise floor
-    rawPowBig=repmat(testPow(ii,:),1,3);
-    rawPowMov=movmean(rawPowBig,avNum);
-    rawPowMov=rawPowMov(sampleNum+1:2*sampleNum);
-
-    [noiseFloorAll(ii),~,~]=findNoiseThresh(rawPowMov,avNum);
 end
+
+% Find noise floor
+rawPowBig=repmat(testPow,1,3);
+rawPowMov=movmean(rawPowBig,avNum,2);
+rawPowMov=rawPowMov(:,sampleNum+1:2*sampleNum);
+
+noiseFloorAll=findNoiseThreshMat(rawPowMov,avNum);
 
 %% Average noise floor
 noiseFloorAllF=fillmissing(noiseFloorAll,'linear');
