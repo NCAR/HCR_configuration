@@ -62,30 +62,8 @@ function [noiseThresh,meanNoiseOut,R2]=findNoiseThresh(powIn,avNum)
 % noiseThresh=real(10*log10(noiseThreshMax));
 % meanNoiseOut=10*log10(meanNoiseMax);
 
-%% Third version
-% powLin2=10.^(powIn./10);
-% powLin2(isnan(powLin2))=[];
-% 
-% testThresh=sort(powLin2);
-% testThresh=repmat(testThresh',1,size(testThresh,2));
-% 
-% testPow=testThresh';
-% 
-% testPow(testPow>testThresh)=nan;
-% sampleNum2=sum(~isnan(testPow),2);
-% meanNoiseMat=sum(testPow,2,'omitmissing')./sampleNum2;
-% Qmat=sum(testPow.^2./sampleNum2,2,'omitmissing')-meanNoiseMat.^2;
-% R2mat=meanNoiseMat.^2./(Qmat*avNum);
-% 
-% R2ind=find(R2mat>=1,1,'last');
-% noiseThreshMax2=testThresh(R2ind,1);
-% meanNoiseMax2=meanNoiseMat(R2ind);
-% 
-% noiseThresh=real(10*log10(noiseThreshMax2));
-% meanNoiseOut=10*log10(meanNoiseMax2);
-% R2=R2mat(R2ind);
 
-%% Third version loop
+%% Second version
 
 powLin2=10.^(powIn./10);
 

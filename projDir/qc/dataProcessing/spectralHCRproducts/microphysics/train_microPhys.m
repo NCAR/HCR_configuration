@@ -10,7 +10,7 @@ qualityCF='qc1';
 freqData='10hz';
 qcVersion='v1.2';
 
-numFiles=30; % Maximum 25
+numFiles=30;
 
 dataDirCF=HCRdir(project,qualityCF,qcVersion,freqData);
 

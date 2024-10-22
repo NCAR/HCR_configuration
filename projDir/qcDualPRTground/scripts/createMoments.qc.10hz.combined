@@ -9,7 +9,6 @@ cd $PROJ_DIR/qcDualPRTground/params
 
 snuff Dsr2Radx HcrShortLongCombine
 
-
 # 20240503
 
 setenv COMBINED_MOMENTS_FMQ /tmp/fmq/moments/qc.10hz.combined.20240503

@@ -42,6 +42,7 @@ for aa=1:length(caseStart)
     disp(['Case ',num2str(aa),' of ',num2str(length(caseStart))]);
 
     startTime=caseStart(aa);
+    %startTime=datetime(2021,5,29,19,11,33);
     endTime=caseEnd(aa);
 
     %% CfRadial Moments
@@ -50,7 +51,6 @@ for aa=1:length(caseStart)
     fileListMoments=makeFileList(dataDirCF,startTime,endTime,'xxxxxx20YYMMDDxhhmmss',1);
 
     dataCF=[];
-    dataCF.DBZ=[];
     dataCF.VEL_RAW=[];
     dataCF.VEL_MASKED=[];
     dataCF.eastward_velocity=[];
@@ -99,7 +99,7 @@ for aa=1:length(caseStart)
             % Set up de-aliasing
             toVel=data.lambda/(mode(data.prt)*4);
 
-            % De-alias bias correction
+            % Bias correction
             checkFold=[2,4,6];
 
             deAliasMaskB=zeros(size(velBiasCorrection));
@@ -151,6 +151,7 @@ for aa=1:length(caseStart)
         momentsSpecOne.time=goodTimes(1:beamNum)';
 
         noiseFloor=nan(size(data.range,1),beamNum);
+        velForDeAliasOne=nan(size(data.range,1),beamNum);
 
         % Loop through beams
         for ii=1:beamNum
@@ -203,8 +204,8 @@ for aa=1:length(caseStart)
             % This step removes the noise, de-aliases, and corrects for
             % spectral broadening
             [powerOrig,powerOrigRMnoise,powerSmooth,powerSmoothCorr,specVelAdj,noiseFloor(:,ii),peaks1,peaks2]= ...
-                noisePeaks_smoothCorr(specPowerDB.V,dataCF.VEL_MASKED(:,cfInd), ...
-                dataThis,widthCorrDelta(:,cfInd),velTestWind(:,cfInd),sampleTime,figdir,plotTime);
+                noisePeaks_skewKurtSP(specPowerDB.V,dataThis,widthCorrDelta(:,cfInd),velTestWind(:,cfInd), ...
+                sampleTime,figdir,plotTime);
             specVelRMnoise=specVelAdj;
             specVelRMnoise(isnan(powerSmoothCorr))=nan;
 
@@ -216,23 +217,45 @@ for aa=1:length(caseStart)
             momentsSpecOne=calcMomentsSpec_higherMoments(powerSmoothCorr,specVelRMnoise,ii,momentsSpecOne);
             
              %% Spectral parameters
+
             momentsSpecOne=calcSpecParams(powerSmoothCorr,specVelRMnoise,peaks1,peaks2,noiseFloor(:,ii),ii,momentsSpecOne);
             
+            %% Set up de-aliasing
+            velForDeAliasOne(:,ii)=dataCF.VEL_MASKED(:,cfInd);
         end
 
         %% Add to output
         if bb==1
             momentsSpec=momentsSpecOne;
+            velForDeAlias=velForDeAliasOne;
         else
             dataFields1=fields(momentsSpecOne);
 
             for hh=1:length(dataFields1)
                 momentsSpec.(dataFields1{hh})=cat(2,momentsSpec.(dataFields1{hh}),momentsSpecOne.(dataFields1{hh}));
             end
+
+            velForDeAlias=cat(2,velForDeAlias,velForDeAliasOne);
         end
        
     end
-    
+
+     %% De-alias
+
+    velDeAliasCheck=velForDeAlias-momentsSpec.velRaw;
+
+    deAliasMaskE=zeros(size(velDeAliasCheck));
+    for jj=1:3
+        deAliasMaskE(velDeAliasCheck>checkFold(jj)*toVel-5)=checkFold(jj)*toVel;
+        deAliasMaskE(velDeAliasCheck<-(checkFold(jj)*toVel-5))=-checkFold(jj)*toVel;
+    end
+
+    momentsSpec.velRaw=momentsSpec.velRaw+deAliasMaskE;
+    momentsSpec.level=momentsSpec.level+deAliasMaskE;
+    momentsSpec.revel=momentsSpec.revel+deAliasMaskE;
+    momentsSpec.lpvel=momentsSpec.lpvel+deAliasMaskE;
+    momentsSpec.rpvel=momentsSpec.rpvel+deAliasMaskE;
+
     %% Take time
 
     eSecs=toc;

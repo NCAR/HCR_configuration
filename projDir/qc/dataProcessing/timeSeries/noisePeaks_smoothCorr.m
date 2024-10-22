@@ -44,7 +44,7 @@ loopInds=find(any(~isnan(specDB),2));
 testPow=nan(size(specDB,1),sampleNum);
 testVel=nan(size(specDB,1),sampleNum);
 
-% Noise floor averaging number
+% % Noise floor averaging number
 % avNum=3;
 % noiseFloorAll=nan(size(specDB,1),1);
 % 
