@@ -35,7 +35,7 @@ caseStart=datetime(caseList.Var1,caseList.Var2,caseList.Var3, ...
 caseEnd=datetime(caseList.Var7,caseList.Var8,caseList.Var9, ...
     caseList.Var10,caseList.Var11,caseList.Var12);
 
-for aa=3:length(caseStart)
+for aa=1:length(caseStart)
     tic
 
     plotTimeAll=[];
@@ -279,6 +279,9 @@ for aa=3:length(caseStart)
     momentsSC10.lpvel=nan(size(dataCF.VEL_MASKED));
     momentsSC10.rpvel=nan(size(dataCF.VEL_MASKED));
 
+    dataMask=double(~isnan(momentsSpec.skew));
+    numNan=3; % Remove averages with fewer pixels
+
     fieldsTs=fieldnames(momentsSC10);
     for kk=1:length(dataCF.time)
         [minTD,matchTime]=min(abs(etime(datevec(momentsSpec.time),datevec(dataCF.time(kk)))));
@@ -286,8 +289,10 @@ for aa=3:length(caseStart)
             continue
         end
         tenInds=max([1,matchTime-4]):min([length(momentsSpec.time),matchTime+5]);
+        dataMaskSum=sum(dataMask(:,tenInds),2);
         for ll=1:length(fieldsTs)
-            momentsSC10.(fieldsTs{ll})(:,kk)=mean(momentsSpec.(fieldsTs{ll})(:,tenInds),2,'omitnan');
+            momentsSC10.(fieldsTs{ll})(:,kk)=median(momentsSpec.(fieldsTs{ll})(:,tenInds),2,'omitnan');
+            momentsSC10.(fieldsTs{ll})(dataMaskSum<numNan,kk)=nan;
         end
     end
 
@@ -298,6 +303,17 @@ for aa=3:length(caseStart)
     momentsSC10.longitude=dataCF.longitude;
     momentsSC10.latitude=dataCF.latitude;
     momentsSC10.altitude=dataCF.altitude;
+
+    % Remove peak speckels
+    momentsSC10.lpvel(isnan(momentsSC10.rpvel))=nan;
+    momentsSC10.rpvel(isnan(momentsSC10.lpvel))=nan;
+
+    rmRegs=25; % Minimum number of contiguous pixels
+    pvelMask=~isnan(momentsSC10.lpvel);
+    pvelMask=bwareaopen(pvelMask,rmRegs);
+
+    momentsSC10.lpvel(pvelMask==0)=nan;
+    momentsSC10.rpvel(pvelMask==0)=nan;
 
     %% Plot
 

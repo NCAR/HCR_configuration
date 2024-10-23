@@ -15,9 +15,6 @@ rpvelOrig=momentsSpec.rpvel;
 momentsSpec.lpvel(:,momentsSpec.elevation>0)=-rpvelOrig(:,momentsSpec.elevation>0);
 momentsSpec.rpvel(:,momentsSpec.elevation>0)=-lpvelOrig(:,momentsSpec.elevation>0);
 
-momentsSpec.lpvel(isnan(momentsSpec.rpvel))=nan;
-momentsSpec.rpvel(isnan(momentsSpec.lpvel))=nan;
-
 aslGood=momentsSpec.asl(~isnan(momentsSpec.skew))./1000;
 ylims=[0,max(aslGood)+0.5];
 

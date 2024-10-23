@@ -112,7 +112,7 @@ for aa=1:size(loopInds,1)
 
     % Check for two data stretches
     sigWidthCorrRMnoise=powerSmoothCorr(ii,:);
-    rmNoiseInds=find(~isnan(sigWidthCorrRMnoise));
+    rmNoiseInds=find(~isnan(sigWidthCorrRMnoise));    
     testDiff=diff(rmNoiseInds);
     if max(abs(testDiff))>1
         spread=max(sigWidthCorrRMnoise)-noiseFloorAllMov(ii);
@@ -133,6 +133,10 @@ for aa=1:size(loopInds,1)
         end
         powerSmoothCorr(ii,:)=sigWidthCorrRMnoise;
     end
+    % % Remove data stretches that are less than one tenth of the sample num
+    % if sum(~isnan(powerSmoothCorr(ii,:)))<sampleNum/10
+    %     powerSmoothCorr(ii,:)=nan;
+    % end
 end
 
 if ~isempty(plotTime)
@@ -145,6 +149,7 @@ sigPeaks=islocalmax(powerSmoothCorr,2,'MaxNumExtrema',2);
 peakIndsAll1=nan(size(powerSmoothCorr,1),2);
 peakIndsAll2=nan(size(powerSmoothCorr,1),2);
 
+loopInds=find(any(~isnan(powerSmoothCorr),2));
 for aa=1:size(loopInds,1)
     ii=loopInds(aa); % ii is the range index
 
