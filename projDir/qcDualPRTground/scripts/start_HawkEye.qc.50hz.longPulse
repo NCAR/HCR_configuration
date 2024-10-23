@@ -4,7 +4,8 @@ source ~/git/HCR_configuration/projDir/system/params/project_info.meow
 
 cd $PROJ_DIR/qcDualPRTground/params
 
-HawkEye -params HawkEye.qc.50hz.longPulse
+HawkEye -params HawkEye.qc.50hz.longPulse >& /dev/null &
+
 
 
 
