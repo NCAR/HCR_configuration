@@ -61,8 +61,8 @@ powerSmoothCorr=sigWidthCorr;
 powerSmoothCorr(powerSmoothCorr<noiseFloorAllMov)=nan;
 
 %% Reorganize and clean
-% Reorganize so full spectra fit within bounds (no folding) and remove peaks
-% above noise that are two insignificant
+% Reorganize so full spectra fit within bounds (no folding) and remove data
+% above noise that are too insignificant
 sigDupl=repmat(powerSmoothCorr,1,2);
 velDupl=-pi:2*pi/(sampleNum):3*pi;
 velDupl=velDupl(1:end-1).*data.lambda./(4*pi.*repmat(data.prt,1,2));

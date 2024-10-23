@@ -31,7 +31,9 @@ rind=sub2ind(size(powerSS),indR',rindC);
 
 maxPeaksInd=sub2ind(size(powerSS),indR',maxPeakS(:,1));
 peaks1sInd=sub2ind(size(powerSS),indR',peaks1S(:,1));
-peaks2sInd=sub2ind(size(powerSS),indR(peak2IndsSS)',peaks2S(peak2IndsSS,1));
+if ~isempty(peak2IndsSS)
+    peaks2sInd=sub2ind(size(powerSS),indR(peak2IndsSS)',peaks2S(peak2IndsSS,1));
+end
 
 % Left to right edge width
 momentsSpecSmoothCorrOne.lrwidth(peak1Inds,ii)=specVelS(rind)-specVelS(lind);
@@ -43,5 +45,7 @@ momentsSpecSmoothCorrOne.level(peak1Inds,ii)=specVelS(lind);
 momentsSpecSmoothCorrOne.revel(peak1Inds,ii)=specVelS(rind);
 % Left and right peak velocity
 momentsSpecSmoothCorrOne.lpvel(peak1Inds,ii)=specVelS(peaks1sInd);
-momentsSpecSmoothCorrOne.rpvel(peak2Inds,ii)=specVelS(peaks2sInd);
+if ~isempty(peak2IndsSS)
+    momentsSpecSmoothCorrOne.rpvel(peak2Inds,ii)=specVelS(peaks2sInd);
+end
 end
