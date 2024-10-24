@@ -4,11 +4,11 @@ close all;
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-project='spicule'; %socrates, aristo, cset, otrec
+project='otrec'; %socrates, aristo, cset, otrec
 quality='ts'; %field, qc1, or qc2
-qualityCF='qc1';
+qualityCF='qc3';
 freqData='10hz';
-qcVersion='v1.2';
+qcVersion='v3.2';
 
 plotInds=0;
 %plotInds=(1:50:500);
@@ -19,7 +19,7 @@ sampleTime=0.01; % Length of sample in seconds.
 dataDirTS=HCRdir(project,quality,qcVersion,freqData);
 dataDirCF=HCRdir(project,qualityCF,qcVersion,freqData);
 
-figdir=[dataDirCF(1:end-5),'spectralMoments/100hz/'];
+figdir=[dataDirCF(1:end-5),'specMomentsParams/'];
 
 showPlot='on';
 
@@ -308,7 +308,7 @@ for aa=1:length(caseStart)
     momentsSC10.lpvel(isnan(momentsSC10.rpvel))=nan;
     momentsSC10.rpvel(isnan(momentsSC10.lpvel))=nan;
 
-    rmRegs=25; % Minimum number of contiguous pixels
+    rmRegs=50; % Minimum number of contiguous pixels
     pvelMask=~isnan(momentsSC10.lpvel);
     pvelMask=bwareaopen(pvelMask,rmRegs);
 
@@ -321,6 +321,5 @@ for aa=1:length(caseStart)
 
     disp('Plotting ...');
 
-    plotAllMoments(dataCF,momentsSC10,figdir,project,showPlot);
-    plotSpecParams(momentsSC10,figdir,project,showPlot);
+    plotMomentsSpecParams(momentsSC10,figdir,project,showPlot);
 end

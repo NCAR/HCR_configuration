@@ -31,12 +31,12 @@ Notes on running scripts for QC processes
 #
 # As an example, for socrates:
 
-cd ~/git/HCR_configuration/projDir/qc/scripts
+cd ~/git/HCR_configuration/projDir/qcDualPRTground/scripts
 ./run_TsStatusMonitor.qc.socrates
 
 # and the results are in:
 
-/scr/snow2/rsfdata/projects/socrates/hcr/spdb/monitor/qc
+/scr/virga1/rsfdata/projects/meow/hcr/qc1
 
 #################################################################
 # Translate temperature data into csv text files, from SPDB monitoring

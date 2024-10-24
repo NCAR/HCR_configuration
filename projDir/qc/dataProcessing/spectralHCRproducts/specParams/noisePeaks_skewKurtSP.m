@@ -133,10 +133,6 @@ for aa=1:size(loopInds,1)
         end
         powerSmoothCorr(ii,:)=sigWidthCorrRMnoise;
     end
-    % % Remove data stretches that are less than one tenth of the sample num
-    % if sum(~isnan(powerSmoothCorr(ii,:)))<sampleNum/10
-    %     powerSmoothCorr(ii,:)=nan;
-    % end
 end
 
 if ~isempty(plotTime)
