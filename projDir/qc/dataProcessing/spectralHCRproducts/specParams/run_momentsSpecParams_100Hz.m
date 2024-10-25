@@ -4,11 +4,11 @@ close all;
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-project='otrec'; %socrates, aristo, cset, otrec
+project='cset'; %socrates, aristo, cset, otrec
 quality='ts'; %field, qc1, or qc2
 qualityCF='qc3';
 freqData='10hz';
-qcVersion='v3.2';
+qcVersion='v3.1';
 
 plotInds=0;
 %plotInds=(1:50:500);
@@ -66,6 +66,7 @@ for aa=1:length(caseStart)
     widthCorrDelta=fillmissing(widthCorrDelta,'nearest',1);
     widthCorrDelta=repmat(widthCorrDelta,size(dataCF.range,1),1);  
     velTestWind=repmat(velTestWind,size(dataCF.range,1),1);
+    velTestWind=movmean(velTestWind,601,2);
     
     % Velocity bias term
     velBiasCorrection=dataCF.VEL_MASKED-dataCF.VEL_RAW;

@@ -32,11 +32,11 @@ Notes on running scripts for QC processes
 # As an example, for socrates:
 
 cd ~/git/HCR_configuration/projDir/qcDualPRTground/scripts
-./run_TsStatusMonitor.qc.socrates
+./run_TsStatusMonitor.qc.1hz.meow
 
 # and the results are in:
 
-/scr/virga1/rsfdata/projects/meow/hcr/qc1
+/scr/virga1/rsfdata/projects/meow/hcr/qc1/spdb/monitor_1hz
 
 #################################################################
 # Translate temperature data into csv text files, from SPDB monitoring
@@ -66,6 +66,7 @@ $DATA_DIR/txt/SOCRATES.temperatures.txt
 # Run Matlab to read moments, correlate with temps.
 # 
 # Make an input file with all the cal events and put it in $PROJ_DIR/qc/dataProcessing/nsCal/inFiles
+# Use findNScalEvents.m to find the cal events
 #
 # Run $PROJ_DIR/qc/dataProcessing/nsCal/determine_LNA_tempSlope.m
 # and then
