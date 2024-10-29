@@ -1,5 +1,5 @@
 /**********************************************************************
- * TDRP params for ./HcrShortLongCombine
+ * TDRP params for HcrShortLongCombine
  **********************************************************************/
 
 //======================================================================
@@ -86,6 +86,30 @@ instance = "qc.10hz";
 //     ARCHIVE
 
 mode = ARCHIVE;
+
+//======================================================================
+//
+// COMPUTE MEAN RADAR LOCATION?.
+//
+// This mode will compute the mean radar location for a ground-based 
+//   insytallation.
+//
+//======================================================================
+ 
+///////////// compute_mean_location ///////////////////
+//
+// Option to compute the mean location of the radar from the 
+//   georeference data in the rays.
+//
+// Applicable in archive mode only, and only applicable to ground-based 
+//   projects. It will compute the mean radar location, from the short- 
+//   and long-pulse input data, and print the mean to the terminal. The 
+//   mean values can then be used in the radar_location parameter (see 
+//   later) if override_radar_location is set to true.
+//
+// Type: boolean
+
+compute_mean_location = FALSE;
 
 ///////////// input_fmq_url_short /////////////////////
 //
@@ -282,6 +306,49 @@ set_max_range = FALSE;
 // Type: double
 
 max_range_km = 9999;
+
+//======================================================================
+//
+// OVERRIDE RADAR LOCATION?.
+//
+// This will override the latitude/longitude/altitude in the 
+//   georeference data blocks. It is only intended for use in a 
+//   ground-based insytallation.
+//
+//======================================================================
+ 
+///////////// override_radar_location /////////////////
+//
+// Option to override radar location.
+//
+// If TRUE, the program will override the metadata for 
+//   latitude/longitude/altitude.
+//
+// Type: boolean
+
+override_radar_location = TRUE;
+
+///////////// radar_location //////////////////////////
+//
+// Radar location if override is set true.
+//
+// The radar_location is only used if 'override_radar_location' is set 
+//   true. Otherwise the information in the input data stream is used. 
+//   Note that the altitude is in km MSL.
+//
+// Type: struct
+//   typedef struct {
+//      double latitudeDeg;
+//      double longitudeDeg;
+//      double altitudeKm;
+//   }
+//
+
+radar_location = {
+    latitudeDeg = 40.03811,
+    longitudeDeg = -105.23968,
+    altitudeKm = 1.6001
+};
 
 //======================================================================
 //
@@ -484,7 +551,6 @@ correct_velocity_for_platform_vertical_motion = FALSE;
 //
 // Type: string
 
-// output_fmq_url = "/tmp/fmq/moments/qc.10hz.combined";
 output_fmq_url = "$(COMBINED_MOMENTS_FMQ)";
 
 ///////////// output_fmq_compress /////////////////////

@@ -3,13 +3,13 @@ Notes on running scripts for QC processes
 #################################################################
 # Environment is set in:
 #
-  ~/git/HCR_configuration/projDir/system/params/project_info
+  ~/git/HCR_configuration/projDir/system/params/project_info.meow
 #
 # which sets up, for example:
 #
   PROJ_DIR = ~/git/HCR_configuration/projDir
-  DATA_DIR = /scr/snow2/rsfdata/projects/socrates/hcr
-  QC_VERSION = qc2 (or whatever)
+  DATA_DIR = /scr/virga1/rsfdata/projects/meow/hcr
+  QC_VERSION = qc1 (or whatever)
 #
 # This file will be edited and changed for each qc run.
  
@@ -36,7 +36,7 @@ cd ~/git/HCR_configuration/projDir/qcDualPRTground/scripts
 
 # and the results are in:
 
-/scr/virga1/rsfdata/projects/meow/hcr/qc1/spdb/monitor_1hz
+$DATA_DIR/$QC_VERSION/spdb/monitor_1hz
 
 #################################################################
 # Translate temperature data into csv text files, from SPDB monitoring
@@ -47,8 +47,8 @@ cd ~/git/HCR_configuration/projDir/qcDualPRTground/scripts
 #
 # For example, for socrates we would run:
 
-source $PROJ_DIR/system/params/project_info.socrates
-cd $PROJ_DIR/qc/params
+source $PROJ_DIR/system/params/project_info.meow
+cd $PROJ_DIR/qcDualPRTground/params
 SpdbXml2Table -params SpdbXml2Table.temps -debug  -start "2018 01 15 00 00 00" -end "2018 02 28 00 00 00" > $DATA_DIR/txt/SOCRATES.temperatures.txt 
 
 # This creates the file:
@@ -74,6 +74,7 @@ $DATA_DIR/txt/SOCRATES.temperatures.txt
 #
 #   Results file is: $PROJ_DIR/qc/dataProcessing/nsCal/inFiles/tempsTable_socrates.txt
 #
+# NOTE: summer 2024 no noise source cals, so this step not done
 
 ###################################################################
 # Run HcrTempRxGain to compute gain change with temp
@@ -85,14 +86,17 @@ $DATA_DIR/txt/SOCRATES.temperatures.txt
 # gain values are analyzed per project.
 #
 # Input temp data is from the TsStatusMonitor step:
-#   $DATA_DIR/spdb/monitor/qc
+#   $DATA_DIR/spdb/qc1/monitor_1hz
 #
-#     Input data is time series in:
-#       /scr/rain1/rsfdata/projects/socrates/hcr/time_series/wband/save
-#     Output is XML stored in SPDB in:
+#  Gain coefficients are in:
+#       $PROJ_DIR/qc/dataProcessing/nsCal/inFiles/tempsTable_socrates.txt
+#
+#  These coefficients must be copied into the HcrTempGain.qc param file.
+#
+#  Output is XML stored in SPDB in:
 #       $DATA_DIR/$QC_VERSION/spdb/tempVsGain
 #
-# For examples, for socrates qc2, output data is in:
+# For examples, for meow qc1, output data is in:
 
 /scr/snow2/rsfdata/projects/socrates/hcr/qc2/spdb/tempVsGain
 
@@ -102,9 +106,8 @@ $DATA_DIR/txt/SOCRATES.temperatures.txt
 # !!!! This step is only needed when major corrections are required.!!!!!
 #################################################################
   
-# Dsr2Radx and Iq2Dsr - 100 hz
-#
-# Iq2Dsr
+# Iq2Dsr and Dsr2Radx
+# time series into 50 hz moments for short and long pulse
 #
 # Iq2Dsr reads time series and computes moments
 # corrects gain for temperatures
@@ -112,45 +115,45 @@ $DATA_DIR/txt/SOCRATES.temperatures.txt
 # corrects altitude for deviation from ellipsoid
 # corrects velocities for aircraft motion (vertical and horizontal)
 #
-# writes 100hz moments data to FMQ (file message queue)
+# writes 50hz moments data to FMQ (file message queue)
 #
 # Dsr2Radx
 #
-# Save out 100Hz moments files in CfRadial
+# Save out 50Hz moments files in CfRadial
 #
-# NOTE: start this script first because it will wait for output from Iq2Dsr
-
-# There is a script set up to run start both processes in the right order:
+# NOTE: the scripts start Dsr2Radx first and then Iq2DSr
+# The short and long scripts can be run at the same time.
 
 cd ~/git/HCR_configuration/projDir/qc/scripts
-./run_qc.100hz.socrates
+run_createMoments.qc.50hz.shortPulse
+run_createMoments.qc.50hz.longPulse
 
-# It does the following:
-./run_Dsr2Radx.qc.100hz.socrates
-./run_Iq2Dsr.qc.100hz.socrates
+# the log files are in:
+#
+#  /tmp/createMoments.qc.50hz.shortPulse.log 
+#  /tmp/createMoments.qc.50hz.longPulse.log 
 
-# NOTE: to kill this step run:
-./kill_qc.100hz.socrates
-# or
-snuff run_Dsr2Radx.qc.100hz.socrates
-snuff "Dsr2Radx -params Dsr2Radx.qc.100hz"
-snuff run_Iq2Dsr.qc.100hz.socrates
-snuff "Iq2Dsr -params Iq2Dsr.qc.100hz.socrates"
+# When these are done, to clean up run:
+
+kill_createMoments.qc.50hz.shortPulse
+kill_createMoments.qc.50hz.longPulse
 
 #################################################################
 #################################################################
-# Run RadxCalUpdate.qc.100hz
+# Run RadxCalUpdate.qc.50hz
 #
 # This updates the calibration if necessary, adjusts the calibration gain
 # for temperature variations, and fixes the altitudes.
 #
 # Set up the params file
 cd ~/git/HCR_configuration/projDir/qc/params
-RadxCalUpdate.qc.100hz.spicule
+RadxCalUpdate.qc.50hz.shortPulse.meow
+RadxCalUpdate.qc.50hz.longPulse.meow
 
 # Modify and run the run script
 cd ~/git/HCR_configuration/projDir/qc/scripts
-./run_RadxCalUpdate.qc.100hz.spicule
+./run_RadxCalUpdate.qc.50hz.shortPulse.meow
+./run_RadxCalUpdate.qc.50hz.longPulse.meow
 
 # Output is the 100hz data in the QC_VERSION directory
 
@@ -164,13 +167,14 @@ $PROJ_DIR/qc/dataProcessing/nsCal/check_NSCAL.m
 # In the generated figure, there should be no more temperature dependency.
 
 #################################################################
-# RadxDwellCombine - combine 100hz data into 10hz dwells
+# HcrShortLongCombine - combine short- and long-pulse 50hz data
+# into 10hz dwells
 #
 # NOTE: the velocity in these moments are only corrected for the
 # motion of the aircraft.
 
 cd ~/git/HCR_configuration/projDir/qc/scripts
-./run_RadxDwellCombine.qc.10hz
+./run_HcrShortLongCombine.qc.10hz
 
 #################################################################
 # Check altitude correction

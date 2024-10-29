@@ -1,5 +1,5 @@
 /**********************************************************************
- * TDRP params for ./HcrShortLongCombine
+ * TDRP params for HcrShortLongCombine
  **********************************************************************/
 
 //======================================================================
@@ -87,6 +87,15 @@ instance = "qc.mean_loc";
 
 mode = ARCHIVE;
 
+//======================================================================
+//
+// COMPUTE MEAN RADAR LOCATION?.
+//
+// This mode will compute the mean radar location for a ground-based 
+//   insytallation.
+//
+//======================================================================
+ 
 ///////////// compute_mean_location ///////////////////
 //
 // Option to compute the mean location of the radar from the 
@@ -101,28 +110,6 @@ mode = ARCHIVE;
 // Type: boolean
 
 compute_mean_location = TRUE;
-
-//======================================================================
-//
-// COMPUTE MEAN RADAR LOCATION?.
-//
-// This mode will compute the mean radar location for a ground-based 
-//   insytallation.
-//
-//======================================================================
- 
-///////////// compute_mean_radar_location /////////////
-//
-// Option to compute mean radar location.
-//
-// This mode will compute the mean radar location, from the short- and 
-//   long-pulse input data, and print the mean to the terminal. The mean 
-//   values can then be used in the radar_location parameter (see above) 
-//   if override_radar_location is set to true.
-//
-// Type: boolean
-
-compute_mean_radar_location = FALSE;
 
 ///////////// input_fmq_url_short /////////////////////
 //
