@@ -1943,7 +1943,7 @@ output_fields = {
 
 output_data_set = {
   {
-    output_dir = "$(DATA_DIR)/$(QC_VERSION)/$(QC_SUB_VERSION)/cfradial/moments/10hz_combined",
+    output_dir = "$(DATA_DIR)/$(QC_VERSION)/cfradial/moments/10hz_combined",
     format = OUTPUT_FORMAT_CFRADIAL
   }
 };
