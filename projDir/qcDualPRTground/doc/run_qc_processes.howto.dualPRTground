@@ -25,11 +25,7 @@ Notes on running scripts for QC processes
 # This data does not change between qc versions - it is the field
 # data. So this procedure is only run once per project.
 #
-# The results are written to:
-#
-#   $DATA_DIR/spdb/monitor/qc
-#
-# As an example, for socrates:
+# As an example, for meow:
 
 cd ~/git/HCR_configuration/projDir/qcDualPRTground/scripts
 ./run_TsStatusMonitor.qc.1hz.meow
@@ -45,15 +41,13 @@ $DATA_DIR/$QC_VERSION/spdb/monitor_1hz
 # Run SpdbXml2Table, to produce space-delimited text file
 # containing temps.
 #
-# For example, for socrates we would run:
+# For example, for meow we would run:
 
-source $PROJ_DIR/system/params/project_info.meow
-cd $PROJ_DIR/qcDualPRTground/params
-SpdbXml2Table -params SpdbXml2Table.temps -debug  -start "2018 01 15 00 00 00" -end "2018 02 28 00 00 00" > $DATA_DIR/txt/SOCRATES.temperatures.txt 
+~/git/HCR_configuration/projDir/qcDualPRTground/scripts/run_SpdbXml2Table.mewoTemps
 
 # This creates the file:
 
-$DATA_DIR/txt/SOCRATES.temperatures.txt   
+$DATA_DIR/$QC_VERSION/txt/MEOW.temperatures.txt   
 
 #################################################################
 # LNA and pod temperature analysis
@@ -65,16 +59,16 @@ $DATA_DIR/txt/SOCRATES.temperatures.txt
 #
 # Run Matlab to read moments, correlate with temps.
 # 
-# Make an input file with all the cal events and put it in $PROJ_DIR/qc/dataProcessing/nsCal/inFiles
+# Make an input file with all the cal events and put it in $PROJ_DIR/qcDualPRTground/dataProcessing/nsCal/inFiles
 # Use findNScalEvents.m to find the cal events
 #
-# Run $PROJ_DIR/qc/dataProcessing/nsCal/determine_LNA_tempSlope.m
+# Run $PROJ_DIR/qcDualPRTground/dataProcessing/nsCal/determine_LNA_tempSlope.m
 # and then
-# $PROJ_DIR/qc/dataProcessing/nsCal/determine_Pod_tempSlope.m
+# $PROJ_DIR/qcDualPRTground/dataProcessing/nsCal/determine_Pod_tempSlope.m
 #
-#   Results file is: $PROJ_DIR/qc/dataProcessing/nsCal/inFiles/tempsTable_socrates.txt
+#   Results file is: $PROJ_DIR/qcDualPRTground/dataProcessing/nsCal/inFiles/tempsTable_socrates.txt
 #
-# NOTE: summer 2024 no noise source cals, so this step not done
+# NOTE: MEOW summer 2024 no noise source cals, so this step not done
 
 ###################################################################
 # Run HcrTempRxGain to compute gain change with temp
@@ -82,23 +76,16 @@ $DATA_DIR/txt/SOCRATES.temperatures.txt
 # You need to edit the parameter file and copy in the results from
 # the previous step.
 #
-# There is a separate parameter file for each project, because the
-# gain values are analyzed per project.
-#
 # Input temp data is from the TsStatusMonitor step:
-#   $DATA_DIR/spdb/qc1/monitor_1hz
+#   $DATA_DIR/qc1/spdb/monitor_1hz
 #
 #  Gain coefficients are in:
-#       $PROJ_DIR/qc/dataProcessing/nsCal/inFiles/tempsTable_socrates.txt
+#       $PROJ_DIR/qcDualPRTground/dataProcessing/nsCal/inFiles/tempsTable_socrates.txt
 #
 #  These coefficients must be copied into the HcrTempGain.qc param file.
 #
 #  Output is XML stored in SPDB in:
-#       $DATA_DIR/$QC_VERSION/spdb/tempVsGain
-#
-# For examples, for meow qc1, output data is in:
-
-/scr/snow2/rsfdata/projects/socrates/hcr/qc2/spdb/tempVsGain
+   $DATA_DIR/$QC_VERSION/spdb/tempVsGain
 
 #################################################################
 #################################################################
@@ -124,7 +111,7 @@ $DATA_DIR/txt/SOCRATES.temperatures.txt
 # NOTE: the scripts start Dsr2Radx first and then Iq2DSr
 # The short and long scripts can be run at the same time.
 
-cd ~/git/HCR_configuration/projDir/qc/scripts
+cd ~/git/HCR_configuration/projDir/qcDualPRTground/scripts
 run_createMoments.qc.50hz.shortPulse
 run_createMoments.qc.50hz.longPulse
 
@@ -146,25 +133,27 @@ kill_createMoments.qc.50hz.longPulse
 # for temperature variations, and fixes the altitudes.
 #
 # Set up the params file
-cd ~/git/HCR_configuration/projDir/qc/params
+cd ~/git/HCR_configuration/projDir/qcDualPRTground/params
 RadxCalUpdate.qc.50hz.shortPulse.meow
 RadxCalUpdate.qc.50hz.longPulse.meow
 
 # Modify and run the run script
-cd ~/git/HCR_configuration/projDir/qc/scripts
+cd ~/git/HCR_configuration/projDir/qcDualPRTground/scripts
 ./run_RadxCalUpdate.qc.50hz.shortPulse.meow
 ./run_RadxCalUpdate.qc.50hz.longPulse.meow
 
-# Output is the 100hz data in the QC_VERSION directory
+# Output is the 50hz data in the QC_VERSION directory
 
 #################################################################
 # Check tempereature correction
 # To check if the temperature correction from the previous step
 # worked as expected, run
 
-$PROJ_DIR/qc/dataProcessing/nsCal/check_NSCAL.m
+$PROJ_DIR/qcDualPRTground/dataProcessing/nsCal/check_NSCAL.m
 
 # In the generated figure, there should be no more temperature dependency.
+#
+# NOTE: MEOW summer 2024 no noise source cals, so this step not done
 
 #################################################################
 # HcrShortLongCombine - combine short- and long-pulse 50hz data
@@ -173,19 +162,13 @@ $PROJ_DIR/qc/dataProcessing/nsCal/check_NSCAL.m
 # NOTE: the velocity in these moments are only corrected for the
 # motion of the aircraft.
 
-cd ~/git/HCR_configuration/projDir/qc/scripts
+cd ~/git/HCR_configuration/projDir/qcDualPRTground/scripts
 ./run_HcrShortLongCombine.qc.10hz
 
 #################################################################
-# Check altitude correction
-# Run this procedure for the field and qc data and check the improvement
-#
-# Modify and run $PROJ_DIR/qc/dataProcessing/altitudeCorr/plotAltDiff.m
-  
-#################################################################
 # Trimm down times
 # Make data copy with selected times we want in the final dataset. Run
-$PROJ_DIR/qc/scripts/run_RadxConvert.qc.select_times.spicule
+$PROJ_DIR/qcDualPRTground/scripts/run_RadxConvert.qc.select_times.spicule
 
 # This will put the selected timess in
 # $DATA_DIR/QC_VERSION/cfradial/selected_times
@@ -202,44 +185,44 @@ $PROJ_DIR/qc/scripts/run_RadxConvert.qc.select_times.spicule
 
 #################################################################
 Interpolate topography data
-# Modify and run $PROJ_DIR/qc/dataProcessing/HCRproducts/topoData/topo2HCR.m
+# Modify and run $PROJ_DIR/qcDualPRTground/dataProcessing/HCRproducts/topoData/topo2HCR.m
 
 # It needs an input file with the start and end dates of each flight
-# $PROJ_DIR/qc/dataProcessing/scriptsFiles/flights_socrates_data.txt
+# $PROJ_DIR/qcDualPRTground/dataProcessing/scriptsFiles/flights_socrates_data.txt
 
 # To Write data to files run
-# $PROJ_DIR/qc/dataProcessing/HCRproducts/topoData/cfradialTopo.m
+# $PROJ_DIR/qcDualPRTground/dataProcessing/HCRproducts/topoData/cfradialTopo.m
 
 #################################################################
 # FLAG field and DBZ_masked
 # To create the flag field, run
-$PROJ_DIR/qc/dataProcessing/HCRproducts/flag/makeFlagField_wholeFlights.m
+$PROJ_DIR/qcDualPRTground/dataProcessing/HCRproducts/flag/makeFlagField_wholeFlights.m
 
 # To add it to the cfradial files, run
-$PROJ_DIR/qc/dataProcessing/HCRproducts/flag/cfradialFlagfield.m
+$PROJ_DIR/qcDualPRTground/dataProcessing/HCRproducts/flag/cfradialFlagfield.m
 
 # To add a DBZ field that has only cloud data, run
-$PROJ_DIR/qc/dataProcessing/HCRproducts/flag/cfradialDBZmasked.m
+$PROJ_DIR/qcDualPRTground/dataProcessing/HCRproducts/flag/cfradialDBZmasked.m
 
 #################################################################
 # VEL_CORR
 
 # Find out which poly order to use by running
-$PROJ_DIR/qc/dataProcessing/HCRproducts/velCorr/plotVelCorr_findPoly.m
+$PROJ_DIR/qcDualPRTground/dataProcessing/HCRproducts/velCorr/plotVelCorr_findPoly.m
 
 # To make the VEL_CORR field
 # If nadir and zenith pointing correction is desired run
-$PROJ_DIR/qc/dataProcessing/HCRproducts/velCorr/make_VEL_CORR_nadir_zenith_wholeFlights.m
+$PROJ_DIR/qcDualPRTground/dataProcessing/HCRproducts/velCorr/make_VEL_CORR_nadir_zenith_wholeFlights.m
 # If only nadir correction is desired run (not recommended!!!)
-$PROJ_DIR/qc/dataProcessing/HCRproducts/velCorr/notUsed2/make_VEL_CORR_nadir_wholeFlights.m
+$PROJ_DIR/qcDualPRTground/dataProcessing/HCRproducts/velCorr/notUsed2/make_VEL_CORR_nadir_wholeFlights.m
 
 # The filter lenght can be adjusted in this file. To test out 
 # different filter lenghts, run
-$PROJ_DIR/qc/dataProcessing/HCRproducts/velCorr/plotVelCorr_findPoly.m
+$PROJ_DIR/qcDualPRTground/dataProcessing/HCRproducts/velCorr/plotVelCorr_findPoly.m
 # on a few test cases.
 
 # To add it to the cfradial files, run
-$PROJ_DIR/qc/dataProcessing/HCRproducts/velCorr/cfradialVelCorr.m
+$PROJ_DIR/qcDualPRTground/dataProcessing/HCRproducts/velCorr/cfradialVelCorr.m
 
 #################################################################
 # De-alias velocity
@@ -247,10 +230,10 @@ $PROJ_DIR/qc/dataProcessing/HCRproducts/velCorr/cfradialVelCorr.m
 # To de-alias velocity and mask out and non-cloud
 # data run
 
-$PROJ_DIR/qc/dataProcessing/HCRproducts/rayDeAliasing/call_rayDeAlias_wholeFlights_withPlot.m
+$PROJ_DIR/qcDualPRTground/dataProcessing/HCRproducts/rayDeAliasing/call_rayDeAlias_wholeFlights_withPlot.m
 
 # To add it to the dataset run
-$PROJ_DIR/qc/dataProcessing/HCRproducts/rayDeAliasing/cfradialVELunfolded.m
+$PROJ_DIR/qcDualPRTground/dataProcessing/HCRproducts/rayDeAliasing/cfradialVELunfolded.m
 
 #################################################################
 # Mask out non vertical angles in VEL
@@ -258,7 +241,7 @@ $PROJ_DIR/qc/dataProcessing/HCRproducts/rayDeAliasing/cfradialVELunfolded.m
 # Velocity is not of much use when the pointing angle is not vertical.
 # To mask out non-vertical data run
 
-$PROJ_DIR/qc/dataProcessing/HCRproducts/flag/cfradialVELmasked.m
+$PROJ_DIR/qcDualPRTground/dataProcessing/HCRproducts/flag/cfradialVELmasked.m
 
 #################################################################
 # Interpolate forecast or reanalysis data
@@ -274,54 +257,54 @@ $PROJ_DIR/qc/dataProcessing/HCRproducts/flag/cfradialVELmasked.m
 # cd $DATA_DIR
 # cd ../model/era5
 
-# To get era5 data run $PROJ_DIR/qc/scripts/downloadERA5.pressLev.cset
+# To get era5 data run $PROJ_DIR/qcDualPRTground/scripts/downloadERA5.pressLev.cset
 # (There is also a script for surface variables but that needs more testing (downloadERA5.surf.cset)
 
-# Modify and run $PROJ_DIR/qc/dataProcessing/HCRproducts/modelData/model2HCR4d.m
+# Modify and run $PROJ_DIR/qcDualPRTground/dataProcessing/HCRproducts/modelData/model2HCR4d.m
 
 # It needs an input file with the start and end dates of each flight
-# $PROJ_DIR/qc/dataProcessing/scriptsFiles/flights_socrates_data.txt
+# $PROJ_DIR/qcDualPRTground/dataProcessing/scriptsFiles/flights_socrates_data.txt
 
 # Add model data to cfradial files
 
 # Run
-$PROJ_DIR/qc/dataProcessing/HCRproducts/modelData/cfradialModel.m
+$PROJ_DIR/qcDualPRTground/dataProcessing/HCRproducts/modelData/cfradialModel.m
 
 #################################################################
 # Correct corrupted LDR
 # In SPICULE we had a problem with the H channel which corrupted
 # LDR. To correct this problem, run
-$PROJ_DIR/qc/dataProcessing/other/filterHX/filterHX.m
+$PROJ_DIR/qcDualPRTground/dataProcessing/other/filterHX/filterHX.m
 
 # To created corrected and masked LDR field, run
-$PROJ_DIR/qc/dataProcessing/other/filterHX/cfradialLDRmasked.m
+$PROJ_DIR/qcDualPRTground/dataProcessing/other/filterHX/cfradialLDRmasked.m
 
 #################################################################
 # Add melting layer
 
 # Adjust and run
-$PROJ_DIR/qc/dataProcessing/HCRproducts/meltingLayer/call_meltLayer_advanced_wholeFlights.m
+$PROJ_DIR/qcDualPRTground/dataProcessing/HCRproducts/meltingLayer/call_meltLayer_advanced_wholeFlights.m
 
 # To add it to the dataset run
-$PROJ_DIR/qc/dataProcessing/HCRproducts/meltingLayer/cfradialMeltLayer.m
+$PROJ_DIR/qcDualPRTground/dataProcessing/HCRproducts/meltingLayer/cfradialMeltLayer.m
 
 #################################################################
 # Add convStrat
 
 # Adjust and run
-$PROJ_DIR/qc/dataProcessing/HCRproducts/stratConv/stratConv_2convectivity_wholeFlights.m
+$PROJ_DIR/qcDualPRTground/dataProcessing/HCRproducts/stratConv/stratConv_2convectivity_wholeFlights.m
 
 # To add id to the dataset run
-$PROJ_DIR/qc/dataProcessing/HCRproducts/stratConv/cfradial_convStrat.m
+$PROJ_DIR/qcDualPRTground/dataProcessing/HCRproducts/stratConv/cfradial_convStrat.m
 
 #################################################################
 # Add PID
 
 # Adjust and run
-$PROJ_DIR/qc/dataProcessing/HCRproducts/PID/HCRonly/call_pid_wholeFlights.m
+$PROJ_DIR/qcDualPRTground/dataProcessing/HCRproducts/PID/HCRonly/call_pid_wholeFlights.m
 
 # To add id to the dataset run
-$PROJ_DIR/qc/dataProcessing/HCRproducts/HCRonly/cfradial_pid.m
+$PROJ_DIR/qcDualPRTground/dataProcessing/HCRproducts/HCRonly/cfradial_pid.m
 
 #################################################################
 # Create final subset
@@ -329,7 +312,7 @@ $PROJ_DIR/qc/dataProcessing/HCRproducts/HCRonly/cfradial_pid.m
 # Once all fields have been added we create a dataset version that
 # has only fields that are useful to the users. Run
 
-$PROJ_DIR/qc/scripts/run_RadxConvert.qc.select_fields.spicule
+$PROJ_DIR/qcDualPRTground/scripts/run_RadxConvert.qc.select_fields.spicule
 
 # This will put the selected timess in
 # $DATA_DIR/QC_VERSION/cfradial/QC_SUB_VERSION
@@ -353,13 +336,13 @@ $PROJ_DIR/catalog/scripts/run_HawkEye.catalog.1hour_archive.cset
 # Sea Surface Cal
 
 # To check the sea surface calfor ssCal events, run
-$PROJ_DIR/qc/dataProcessing/determine_bias.m
+$PROJ_DIR/qcDualPRTground/dataProcessing/determine_bias.m
 
 # With the start and end dates of
-$PROJ_DIR/qc/dataProcessing/biasInFiles/cal_socrates_era5file.txt
+$PROJ_DIR/qcDualPRTground/dataProcessing/biasInFiles/cal_socrates_era5file.txt
 
 # To run nadir pointing ssCal for whole flights:
-$PROJ_DIR/qc/dataProcessing/determine_bias_nadir.m
+$PROJ_DIR/qcDualPRTground/dataProcessing/determine_bias_nadir.m
 
 #################################################################
 #################################################################
@@ -371,9 +354,9 @@ $PROJ_DIR/qc/dataProcessing/determine_bias_nadir.m
 # Create 2hz HCR data
 
 # Run RadxDwellCombine on 10hz data
-$PROJ_DIR/qc/scripts/run_RadxDwellCombine.qc.2hz.socrates
+$PROJ_DIR/qcDualPRTground/scripts/run_RadxDwellCombine.qc.2hz.socrates
 # which runs with the params file
-$PROJ_DIR/qc/params/RadxDwellCombine.qc.2hz
+$PROJ_DIR/qcDualPRTground/params/RadxDwellCombine.qc.2hz
 
 #################################################################
 # Copy HSRL moments data into HCR QC data area - 2Hz data
@@ -393,7 +376,7 @@ $PROJ_DIR/qc/params/RadxDwellCombine.qc.2hz
 #
 source ~/hcrProjDir/system/params/project_info.socrates
 mkdir -p $DATA_DIR/$QC_VERSION/hsrl/python_moments
-cd /scr/snow2/rsfdata/projects/socrates/hsrl/qc/mhayman_moments
+cd /scr/snow2/rsfdata/projects/socrates/hsrl/qcDualPRTground/mhayman_moments
 rsync -av * $DATA_DIR/$QC_VERSION/hsrl/python_moments
 
 #################################################################
@@ -406,7 +389,7 @@ rsync -av * $DATA_DIR/$QC_VERSION/hsrl/python_moments
 #
 # For example, for socrates:
 #
-cd ~/hcrProjDir/qc/scripts/
+cd ~/hcrProjDir/qcDualPRTground/scripts/
 run_Hsrl2Radx.qc.2hz.cset
 # or
 run_Hsrl2Radx.qc.2hz.socrates
@@ -424,7 +407,7 @@ run_Hsrl2Radx.qc.2hz.socrates
 #
 # For example, for socrates:
 #
-cd ~/hcrProjDir/qc/scripts/
+cd ~/hcrProjDir/qcDualPRTground/scripts/
 run_MergeHcrAndHsrl.qc.2hz.cset
 # or
 run_MergeHcrAndHsrl.qc.2hz.socrates
@@ -433,10 +416,10 @@ run_MergeHcrAndHsrl.qc.2hz.socrates
 # Add PID
 
 # Adjust and run
-$PROJ_DIR/qc/dataProcessing/HCRproducts/PID/HSRL_HCR/call_pid_comb_wholeFlights.m
+$PROJ_DIR/qcDualPRTground/dataProcessing/HCRproducts/PID/HSRL_HCR/call_pid_comb_wholeFlights.m
 
 # To add it to the dataset run
-$PROJ_DIR/qc/dataProcessing/HCRproducts/HSRL_HCR/cfradial_pid_comb.m
+$PROJ_DIR/qcDualPRTground/dataProcessing/HCRproducts/HSRL_HCR/cfradial_pid_comb.m
 
 #################################################################
 # Create final subset
@@ -444,7 +427,7 @@ $PROJ_DIR/qc/dataProcessing/HCRproducts/HSRL_HCR/cfradial_pid_comb.m
 # Once all fields have been added we create a dataset version that
 # has only fields that are useful to the users. Run
 
-$PROJ_DIR/qc/scripts/run_RadxConvert.qc.select_fields.HcrHsrl2hz.cset
+$PROJ_DIR/qcDualPRTground/scripts/run_RadxConvert.qc.select_fields.HcrHsrl2hz.cset
 
 ################################################################
 # Create and check images. Replace imges on field catalog.

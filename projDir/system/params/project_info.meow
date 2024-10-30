@@ -11,7 +11,7 @@ setenv  BSCAN_MIN_ALTITUDE_KM      1.5
 
 setenv PROJ_DIR ~/git/HCR_configuration/projDir
 setenv DATA_DIR  /scr/virga1/rsfdata/projects/meow/hcr
-setenv LOG_DIR $HOME/logs
+setenv LOG_DIR /scr/virga1/rsfdata/projects/meow/hcr/processingLogs
 setenv QC_VERSION qc1
 
 # make sure the output dirs exist

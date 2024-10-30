@@ -1,0 +1,26 @@
+#! /bin/csh -f
+
+# HCR QC processing
+#
+# Run RadxCalUpdate
+# Reads 100 hz data in CfRadial files, combines into 10 hz dwells
+# Writes 10hz CfRadial data
+
+source ~/git/HCR_configuration/projDir/system/params/project_info.meow
+
+cd $PROJ_DIR/qcDualPRTground/params
+
+# run for entire project
+
+# RadxCalUpdate -params RadxCalUpdate.qc.50hz.longPulse.meow -debug -start "2024 05 10 00 00 00" -end "2024 05 11 00 00 00" >& $LOG_DIR/RadxCalUpdate.qc.50hz.meow.log &
+
+#tail -f $LOG_DIR/RadxCalUpdate.qc.50hz.longPulse.meow.log
+
+# run 1 day at a time, as separate processes
+
+foreach day ( 20240510  20240520  20240521  20240522  20240529  20240530  20240607  20240610  20240614  20240620  20240624  20240627 )
+  RadxCalUpdate -params RadxCalUpdate.qc.50hz.longPulse.meow -debug -f ${DATA_DIR}/qc0/cfradial/moments/50hz_longPulse/${day}/cfrad*.nc >& $LOG_DIR/RadxCalUpdate.qc.50hz.longPulse.meow.${day}.log &
+end
+
+
+
