@@ -184,16 +184,6 @@ $PROJ_DIR/qcDualPRTground/scripts/run_RadxConvert.qc.select_times.meow
 # additional fields.
 
 #################################################################
-Interpolate topography data
-# Modify and run $PROJ_DIR/qcDualPRTground/dataProcessing/HCRproducts/topoData/topo2HCR.m
-
-# It needs an input file with the start and end dates of each flight
-# $PROJ_DIR/qcDualPRTground/dataProcessing/scriptsFiles/flights_socrates_data.txt
-
-# To Write data to files run
-# $PROJ_DIR/qcDualPRTground/dataProcessing/HCRproducts/topoData/cfradialTopo.m
-
-#################################################################
 # FLAG field and DBZ_masked
 # To create the flag field, run
 $PROJ_DIR/qcDualPRTground/dataProcessing/HCRproducts/flag/makeFlagField_wholeFlights.m

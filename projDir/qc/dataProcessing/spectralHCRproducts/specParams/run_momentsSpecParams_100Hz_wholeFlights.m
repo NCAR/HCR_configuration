@@ -11,6 +11,8 @@ freqData='10hz';
 qcVersion='v2.0';
 whichModel='era5';
 
+saveData=1;
+
 plotYes=1;
 plotInds=0;
 %plotInds=(1:50:500);
@@ -25,7 +27,7 @@ dataDirCF=HCRdir(project,qualityCF,qcVersion,freqData);
 
 figdir=[dataDirCF(1:end-5),'specMomentsParams/wholeFlights/'];
 
-showPlot='on';
+showPlot='off';
 
 infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_',project,'.txt'];
 
@@ -35,7 +37,7 @@ infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_
 
 caseList = table2array(readtable(infile));
 
-for aa=1:size(caseList,1)
+for aa=2:size(caseList,1)
     tic
     
     disp(['Flight ',num2str(aa)]);
@@ -363,6 +365,6 @@ for aa=1:size(caseList,1)
         momentsSpecParams=rmfield(momentsSpecParams,'velRaw');
 
         save([outdir,whichModel,'.momentsSpecParams.',datestr(momentsSpecParams.time(1),'YYYYmmDD_HHMMSS'),'_to_',...
-            datestr(momentsSpecParams.time(end),'YYYYmmDD_HHMMSS'),'.Flight',num2str(aa),'.mat'],'momentsSpecParams');
+            datestr(momentsSpecParams.time(end),'YYYYmmDD_HHMMSS'),'.Flight',num2str(aa),'.mat'],'momentsSpecParams','-v7.3');
     end
 end
