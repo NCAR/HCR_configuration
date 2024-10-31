@@ -168,7 +168,7 @@ cd ~/git/HCR_configuration/projDir/qcDualPRTground/scripts
 #################################################################
 # Trimm down times
 # Make data copy with selected times we want in the final dataset. Run
-$PROJ_DIR/qcDualPRTground/scripts/run_RadxConvert.qc.select_times.spicule
+$PROJ_DIR/qcDualPRTground/scripts/run_RadxConvert.qc.select_times.meow
 
 # This will put the selected timess in
 # $DATA_DIR/QC_VERSION/cfradial/selected_times
@@ -177,7 +177,7 @@ $PROJ_DIR/qcDualPRTground/scripts/run_RadxConvert.qc.select_times.spicule
 # Copy to version
 
 # We make another copy of selected_times to
-# $DATA_DIR/QC_VERSION/cfradial/v1.0_full
+ $DATA_DIR/QC_VERSION/cfradial/v1.0_full
 # Where the model data, flag field, etc. will be added
 # selected_times is a backup which can be copied to v1.0
 # again if something goes wrong during the addition of the

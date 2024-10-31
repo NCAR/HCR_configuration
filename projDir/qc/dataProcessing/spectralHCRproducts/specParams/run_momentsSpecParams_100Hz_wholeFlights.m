@@ -120,7 +120,12 @@ for aa=1:size(caseList,1)
             %% Load data TS
             disp(['Loading time series file ',num2str(bb),' of ' num2str(length(fileListTS)),' ...']);
 
-            data=read_TsArchive_iwrf_bulk(fileListTS{bb},data);
+            try
+                data=read_TsArchive_iwrf_bulk(fileListTS{bb},data);
+            catch
+                disp('Could not read file. Moving on.')
+                continue
+            end
 
             % Find available times
             timeTest=data.time';

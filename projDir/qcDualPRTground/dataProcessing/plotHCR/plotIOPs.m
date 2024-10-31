@@ -5,9 +5,9 @@ close all;
 addpath(genpath('~/git/HCR_configuration/projDir/qcDualPRTground/dataProcessing/'));
 
 project='meow';
-quality='qc0';
+quality='qc1';
 freqData='10hz_combined';
-qcVersion='';
+qcVersion='v1.0';
 
 infile=['~/git/HCR_configuration/projDir/qcDualPRTground/dataProcessing/scriptsFiles/iops_',project,'.txt'];
 
@@ -15,13 +15,13 @@ caseList = table2array(readtable(infile));
 
 indir=HCRdir(project,quality,qcVersion,freqData);
 
-figdir=[indir(1:end-14),'flightPlots/'];
+figdir=[indir(1:end-14),'iopPlots/'];
 
 
 %% Run processing
 
 % Go through flights
-for ii=11:size(caseList,1)
+for ii=1:size(caseList,1)
 
     disp(['IOP ',num2str(ii),' of ',num2str(size(caseList,1))]);
 
