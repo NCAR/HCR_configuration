@@ -87,30 +87,6 @@ instance = "qc.10hz";
 
 mode = ARCHIVE;
 
-//======================================================================
-//
-// COMPUTE MEAN RADAR LOCATION?.
-//
-// This mode will compute the mean radar location for a ground-based 
-//   insytallation.
-//
-//======================================================================
- 
-///////////// compute_mean_location ///////////////////
-//
-// Option to compute the mean location of the radar from the 
-//   georeference data in the rays.
-//
-// Applicable in archive mode only, and only applicable to ground-based 
-//   projects. It will compute the mean radar location, from the short- 
-//   and long-pulse input data, and print the mean to the terminal. The 
-//   mean values can then be used in the radar_location parameter (see 
-//   later) if override_radar_location is set to true.
-//
-// Type: boolean
-
-compute_mean_location = FALSE;
-
 ///////////// input_fmq_url_short /////////////////////
 //
 // FMQ from which to read the short pulse moments stream.
@@ -349,6 +325,30 @@ radar_location = {
     longitudeDeg = -105.23968,
     altitudeKm = 1.6001
 };
+
+//======================================================================
+//
+// COMPUTE MEAN RADAR LOCATION?.
+//
+// This mode will compute the mean radar location for a ground-based 
+//   insytallation.
+//
+//======================================================================
+ 
+///////////// compute_mean_location ///////////////////
+//
+// Option to compute the mean location of the radar from the 
+//   georeference data in the rays.
+//
+// Applicable in archive mode only, and only applicable to ground-based 
+//   projects. It will compute the mean radar location, from the short- 
+//   and long-pulse input data, and print the mean to the terminal. The 
+//   mean values can then be used in the radar_location parameter (see 
+//   above) if override_radar_location is set to TRUE.
+//
+// Type: boolean
+
+compute_mean_location = FALSE;
 
 //======================================================================
 //
