@@ -214,7 +214,7 @@ archive_time_span_secs = 900;
 // Type: string
 //
 
-archive_data_url = "$(DATA_DIR)/cfradial/moments/10hz_combined";
+archive_data_url = "$(DATA_DIR)/$(QC_VERSION)/cfradial/$(QC_SUB_VERSION)_full/10hz_combined";
 
 //======================================================================
 //
@@ -353,12 +353,21 @@ fields = {
   }
   ,
   {
-    label = "VEL_unfold",
-    raw_name = "VEL_unfold",
+    label = "DBZ_long",
+    raw_name = "DBZ_long",
     filtered_name = "",
-    units = "m/s",
-    color_map = "hcr_vel_blueYellow.colors",
-    shortcut = "2"
+    units = "dBZ",
+    color_map = "dbz_w.colors",
+    shortcut = "1"
+  }
+  ,
+  {
+    label = "DBZ",
+    raw_name = "DBZ",
+    filtered_name = "",
+    units = "dBZ",
+    color_map = "dbz_w.colors",
+    shortcut = "1"
   }
   ,
   {
@@ -371,6 +380,33 @@ fields = {
   }
   ,
   {
+    label = "VEL_long",
+    raw_name = "VEL_long",
+    filtered_name = "",
+    units = "m/s",
+    color_map = "hcr_vel_blueYellow.colors",
+    shortcut = "3"
+  }
+  ,
+  {
+    label = "VEL_unfold",
+    raw_name = "VEL_unfold",
+    filtered_name = "",
+    units = "m/s",
+    color_map = "hcr_vel_blueYellow.colors",
+    shortcut = "3"
+  }
+  ,
+  {
+    label = "VEL",
+    raw_name = "VEL",
+    filtered_name = "",
+    units = "m/s",
+    color_map = "hcr_vel_blueYellow.colors",
+    shortcut = "3"
+  }
+  ,  
+  {
     label = "WIDTH_short",
     raw_name = "WIDTH_short",
     filtered_name = "",
@@ -379,9 +415,81 @@ fields = {
     shortcut = "4"
   }
   ,
+   {
+    label = "WIDTH_long",
+    raw_name = "WIDTH_long",
+    filtered_name = "",
+    units = "m/s",
+    color_map = "width_w.colors",
+    shortcut = "4"
+  }
+  ,
+   {
+    label = "WIDTH",
+    raw_name = "WIDTH",
+    filtered_name = "",
+    units = "m/s",
+    color_map = "width_w.colors",
+    shortcut = "4"
+  }
+  ,
+  {
+    label = "LDRV_short",
+    raw_name = "LDRV_short",
+    filtered_name = "",
+    units = "dB",
+    color_map = "ldr.colors",
+    shortcut = "9"
+  }
+  ,
+  {
+    label = "LDRV_long",
+    raw_name = "LDRV_long",
+    filtered_name = "",
+    units = "dB",
+    color_map = "ldr.colors",
+    shortcut = "9"
+  }
+  ,
+  {
+    label = "LDR",
+    raw_name = "LDR",
+    filtered_name = "",
+    units = "dB",
+    color_map = "ldr.colors",
+    shortcut = "9"
+  }
+  ,
   {
     label = "SNRVC_short",
     raw_name = "SNRVC_short",
+    filtered_name = "",
+    units = "dB",
+    color_map = "snr.colors",
+    shortcut = "5"
+  }
+  ,
+  {
+    label = "SNRVC_long",
+    raw_name = "SNRVC_long",
+    filtered_name = "",
+    units = "dB",
+    color_map = "snr.colors",
+    shortcut = "5"
+  }
+  ,
+  {
+    label = "SNRHX_short",
+    raw_name = "SNRHX_short",
+    filtered_name = "",
+    units = "dB",
+    color_map = "snr.colors",
+    shortcut = "5"
+  }
+  ,
+  {
+    label = "SNRHX_long",
+    raw_name = "SNRHX_long",
     filtered_name = "",
     units = "dB",
     color_map = "snr.colors",
@@ -398,8 +506,26 @@ fields = {
   }
   ,
   {
+    label = "DBMVC_long",
+    raw_name = "DBMVC_long",
+    filtered_name = "",
+    units = "dBm",
+    color_map = "dbm.colors",
+    shortcut = "6"
+  }
+  ,
+  {
     label = "DBMHX_short",
     raw_name = "DBMHX_short",
+    filtered_name = "",
+    units = "dBm",
+    color_map = "dbm.colors",
+    shortcut = "7"
+  }
+  ,
+   {
+    label = "DBMHX_long",
+    raw_name = "DBMHX_long",
     filtered_name = "",
     units = "dBm",
     color_map = "dbm.colors",
@@ -416,84 +542,111 @@ fields = {
   }
   ,
   {
-    label = "LDRV_short",
-    raw_name = "LDRV_short",
-    filtered_name = "",
-    units = "dB",
-    color_map = "ldr.colors",
-    shortcut = "9"
-  }
-  ,
-  {
-    label = "DBZ_long",
-    raw_name = "DBZ_long",
-    filtered_name = "",
-    units = "dBZ",
-    color_map = "dbz_w.colors",
-    shortcut = "a"
-  }
-  ,
-  {
-    label = "VEL_long",
-    raw_name = "VEL_long",
-    filtered_name = "",
-    units = "m/s",
-    color_map = "hcr_vel_blueYellow.colors",
-    shortcut = "b"
-  }
-  ,
-  {
-    label = "WIDTH_long",
-    raw_name = "WIDTH_long",
-    filtered_name = "",
-    units = "m/s",
-    color_map = "width_w.colors",
-    shortcut = "c"
-  }
-  ,
-  {
-    label = "SNRVC_long",
-    raw_name = "SNRVC_long",
-    filtered_name = "",
-    units = "dB",
-    color_map = "snr.colors",
-    shortcut = "d"
-  }
-  ,
-  {
-    label = "DBMVC_long",
-    raw_name = "DBMVC_long",
-    filtered_name = "",
-    units = "dBm",
-    color_map = "dbm.colors",
-    shortcut = "e"
-  }
-  ,
-  {
-    label = "DBMHX_long",
-    raw_name = "DBMHX_long",
-    filtered_name = "",
-    units = "dBm",
-    color_map = "dbm.colors",
-    shortcut = "f"
-  }
-  ,
-  {
     label = "NCP_long",
     raw_name = "NCP_long",
     filtered_name = "",
     units = "",
     color_map = "ncp.colors",
-    shortcut = "g"
+    shortcut = "8"
+  }
+   ,
+  {
+    label = "FLAG_short",
+    raw_name = "FLAG_short",
+    filtered_name = "",
+    units = "",
+    color_map = "hcr_flag.colors",
+    shortcut = "d"
+  }
+  ,
+   {
+    label = "FLAG_long",
+    raw_name = "FLAG_long",
+    filtered_name = "",
+    units = "",
+    color_map = "hcr_flag.colors",
+    shortcut = "d"
   }
   ,
   {
-    label = "LDRV_long",
-    raw_name = "LDRV_long",
+    label = "TEMP",
+    raw_name = "TEMP",
     filtered_name = "",
-    units = "dB",
-    color_map = "ldr.colors",
-    shortcut = "h"
+    units = "C",
+    color_map = "hcr_tempC.colors",
+    shortcut = "c"
+  }
+  ,
+  {
+    label = "PRESS",
+    raw_name = "PRESS",
+    filtered_name = "",
+    units = "hPa",
+    color_map = "hcr_pressure.colors",
+    shortcut = "d"
+  }
+  ,
+  {
+    label = "RH",
+    raw_name = "RH",
+    filtered_name = "",
+    units = "%",
+    color_map = "hcr_rh.colors",
+    shortcut = "d"
+  }
+  ,
+  {
+    label = "U",
+    raw_name = "U",
+    filtered_name = "",
+    units = "m/s",
+    color_map = "hcr_uv.colors",
+    shortcut = "1"
+  }
+  ,
+  {
+    label = "V",
+    raw_name = "V",
+    filtered_name = "",
+    units = "m/s",
+    color_map = "hcr_uv.colors",
+    shortcut = "1"
+  }
+  ,
+  {
+    label = "MELTING_LAYER",
+    raw_name = "MELTING_LAYER",
+    filtered_name = "",
+    units = "",
+    color_map = "hcr_melting_layer_new.colors",
+    shortcut = "d"
+  }
+  ,
+  {
+    label = "CONVECTIVITY",
+    raw_name = "CONVECTIVITY",
+    filtered_name = "",
+    units = "",
+    color_map = "hcr_convectivity.colors",
+    shortcut = "d"
+  }
+  ,
+  {
+    label = "ECHO_TYPE",
+    raw_name = "ECHO_TYPE_2D",
+    filtered_name = "",
+    units = "",
+    color_map = "hcr_partition.colors",
+    shortcut = "d"
+  }
+  ,
+  {
+    label = "PID",
+    raw_name = "PID",
+    filtered_name = "",
+    units = "",
+    color_map = "hcr_pid.colors",
+    shortcut = "d"
   }
 };
 

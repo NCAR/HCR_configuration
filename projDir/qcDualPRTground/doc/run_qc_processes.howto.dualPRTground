@@ -185,14 +185,16 @@ $PROJ_DIR/qcDualPRTground/scripts/run_RadxConvert.qc.select_times.meow
 
 #################################################################
 # FLAG field and DBZ_masked
-# To create the flag field, run
-$PROJ_DIR/qcDualPRTground/dataProcessing/HCRproducts/flag/makeFlagField_wholeFlights.m
+# To create the flag field, run the script below twice, once with _long,
+# and once with _short
+
+$PROJ_DIR/qcDualPRTground/dataProcessing/HCRproducts/flag/makeFlagField_wholeIOPs.m
+
+# Run the following script for long and short data to plot the flag field
+PROJ_DIR/qcDualPRTground/dataProcessing/HCRproducts/flag/flag_plotMat.m
 
 # To add it to the cfradial files, run
 $PROJ_DIR/qcDualPRTground/dataProcessing/HCRproducts/flag/cfradialFlagfield.m
-
-# To add a DBZ field that has only cloud data, run
-$PROJ_DIR/qcDualPRTground/dataProcessing/HCRproducts/flag/cfradialDBZmasked.m
 
 #################################################################
 # VEL_CORR
