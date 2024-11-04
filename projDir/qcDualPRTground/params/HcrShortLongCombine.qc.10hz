@@ -285,26 +285,26 @@ max_range_km = 9999;
 
 //======================================================================
 //
-// OVERRIDE RADAR LOCATION?.
+// GROUND-BASED MODE.
 //
-// This will override the latitude/longitude/altitude in the 
-//   georeference data blocks. It is only intended for use in a 
-//   ground-based insytallation.
+// In ground-based the instrument is not moving. Therefore we override 
+//   the latitude/longitude/altitude in the georeference data blocks, and 
+//   set the platform velocities to 0.
 //
 //======================================================================
  
-///////////// override_radar_location /////////////////
+///////////// fixed_location_mode /////////////////////
 //
-// Option to override radar location.
+// Option to set fixed location in ground-based mode.
 //
 // If TRUE, the program will override the metadata for 
-//   latitude/longitude/altitude.
+//   latitude/longitude/altitude, and set platform velocities to 0.
 //
 // Type: boolean
 
-override_radar_location = TRUE;
+fixed_location_mode = FALSE;
 
-///////////// radar_location //////////////////////////
+///////////// fixed_radar_location ////////////////////
 //
 // Radar location if override is set true.
 //
@@ -320,10 +320,10 @@ override_radar_location = TRUE;
 //   }
 //
 
-radar_location = {
-    latitudeDeg = 40.03811,
-    longitudeDeg = -105.23968,
-    altitudeKm = 1.6001
+fixed_radar_location = {
+    latitudeDeg = 0,
+    longitudeDeg = 0,
+    altitudeKm = 0
 };
 
 //======================================================================

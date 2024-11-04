@@ -17,6 +17,11 @@ indir=HCRdir(project,quality,qcVersion,freqData);
 
 figdir=[indir(1:end-14),'mergeLongShort/analyse/'];
 
+snrThresh.DBZ=-6;
+snrThresh.VEL=-5;
+snrThresh.WIDTH=10;
+snrThresh.LDRV=25;
+
 %% Run processing
 
 % Go through iops
@@ -30,17 +35,20 @@ for ii=1:size(caseList,1)
     data=[];
 
     data.DBZ_short=[];
-    data.VEL_short=[];
+    data.VEL_unfold=[];
     data.WIDTH_short=[];
     data.SNRVC_short=[];
     data.LDRV_short=[];
+    data.FLAG_short=[];
+
     data.DBZ_long=[];
     data.VEL_long=[];
     data.WIDTH_long=[];
     data.LDRV_long=[];
+    data.FLAG_long=[];
        
     %% Load data
-    disp('Loading data ...');
+    disp('Loading data.FLAG_short=[];data ...');
 
     % Make list of files within the specified time frame
     fileList=makeFileList(indir,startTime,endTime,'xxxxxx20YYMMDDxhhmmss',1);
@@ -48,27 +56,34 @@ for ii=1:size(caseList,1)
     % Load data
     data=read_HCR(fileList,data,startTime,endTime);
 
-    %% Mask short
+    %% Loop through fields
     dataFields={'DBZ','VEL','WIDTH','LDRV'};
 
-    bySNR=[];
-    for jj=1:length(snrEdges.DBZ)-1
-        for kk=1:size(dataFields,2)
-            thisName=dataFields{kk};
-            thisMask=(data.SNRVC_short>snrEdges.(thisName)(jj) & data.SNRVC_short<=snrEdges.(thisName)(jj+1));
-            longField=data.([thisName,'_long']);
-            shortField=data.([thisName,'_short']);
-            shortLong=cat(2,shortField(thisMask==1),longField(thisMask==1));
-            shortLong(any(isnan(shortLong),2),:)=[];
-            bySNR.(['bin',num2str(jj)]).(thisName)=shortLong;
-            if ii>1
-                bySNRall.(['bin',num2str(jj)]).(thisName)=cat(1,bySNRall.(['bin',num2str(jj)]).(thisName),shortLong);
-            end
-        end
-    end
+    dataOut=[];
+    for kk=1:size(dataFields,2)
+        thisName=dataFields{kk};
 
-    if ii==1
-        bySNRall=bySNR;
+        % Mask fields with flag fields
+        longField=data.([thisName,'_long']);
+        longField(data.FLAG_long~=1)=nan;
+        if ~strcmp(thisName,'VEL')
+            shortField=data.([thisName,'_short']);
+        else
+            shortField=data.VEL_unfold;
+        end
+        shortField(data.FLAG_short~=1)=nan;
+
+        % Mask short field with snr
+        if ~strcmp(thisName,'VEL')
+            shortField(data.SNRVC<snrThresh.(thisName))=nan;
+        end
+
+        % Output field
+        dataOut.(thisName)=shortField;
+
+        % Fill in missing with long field
+        dataOut.(thisName)(isnan(shortField))=longField(isnan(shortField));
+        
     end
 
     %% Plot

@@ -1363,7 +1363,7 @@ nsecs_no_data_for_end_of_vol = 15;
 // Type: int
 //
 
-nsecs_per_volume = 60;
+nsecs_per_volume = 300;
 
 ///////////// min_rays_per_ppi_vol ////////////////////
 //
