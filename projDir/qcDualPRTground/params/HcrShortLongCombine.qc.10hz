@@ -302,7 +302,7 @@ max_range_km = 9999;
 //
 // Type: boolean
 
-fixed_location_mode = FALSE;
+fixed_location_mode = TRUE;
 
 ///////////// fixed_radar_location ////////////////////
 //
@@ -321,9 +321,9 @@ fixed_location_mode = FALSE;
 //
 
 fixed_radar_location = {
-    latitudeDeg = 0,
-    longitudeDeg = 0,
-    altitudeKm = 0
+    latitudeDeg = 40.03811,
+    longitudeDeg = -105.23968,
+    altitudeKm = 1.6001
 };
 
 //======================================================================
