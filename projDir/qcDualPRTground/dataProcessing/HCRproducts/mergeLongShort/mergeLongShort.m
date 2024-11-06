@@ -32,7 +32,7 @@ snrThresh.LDRV=25;
 %% Run processing
 
 % Go through iops
-for ii=3:size(caseList,1)
+for ii=1:size(caseList,1)
 
     disp(['IOP ',num2str(ii),' of ',num2str(size(caseList,1))]);
 

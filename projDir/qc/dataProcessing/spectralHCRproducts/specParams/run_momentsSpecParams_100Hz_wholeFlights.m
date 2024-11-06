@@ -37,7 +37,7 @@ infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_
 
 caseList = table2array(readtable(infile));
 
-for aa=2:size(caseList,1)
+for aa=6:size(caseList,1)
     tic
     
     disp(['Flight ',num2str(aa)]);
@@ -125,7 +125,7 @@ for aa=2:size(caseList,1)
             try
                 data=read_TsArchive_iwrf_bulk(fileListTS{bb},data);
             catch
-                disp('Could not read file. Moving on.')
+                warning('Could not read file. Moving on.')
                 continue
             end
 
@@ -266,6 +266,8 @@ for aa=2:size(caseList,1)
     momentsSpec.rpvel=momentsSpec.rpvel+deAliasMaskE;
 
     %% Combine to 10 hz
+
+    disp('Averaging to 10 Hz ...');
 
     momentsSpecParams=[];
     momentsSpecParams.velRaw=nan(size(dataCF.VEL_MASKED));

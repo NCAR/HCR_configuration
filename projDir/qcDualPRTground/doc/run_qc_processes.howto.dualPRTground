@@ -223,6 +223,8 @@ $PROJ_DIR/qcDualPRTground/dataProcessing/HCRproducts/analyseLongShort_advanced.m
 
 $PROJ_DIR/qcDualPRTground/dataProcessing/HCRproducts/mergeLongShort.m
 
+# Add to cfradial files
+$PROJ_DIR/qcDualPRTground/dataProcessing/HCRproducts/cfradialMerged.m
 
 #################################################################
 # Mask out non vertical angles in VEL (only relevant when scanning)

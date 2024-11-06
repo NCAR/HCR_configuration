@@ -10,6 +10,8 @@ elseif strcmp(project,'spicule')
     baseDir='/scr/sleet3/rsfdata/projects/spicule/';
 elseif strcmp(project,'noreaster')
     baseDir='/scr/snow2/rsfdata/projects/noreaster/';
+elseif strcmp(project,'meow')
+    baseDir='/scr/virga1/rsfdata/projects/meow/';
 end
 
 topoDirectory=[baseDir,'topo/'];
