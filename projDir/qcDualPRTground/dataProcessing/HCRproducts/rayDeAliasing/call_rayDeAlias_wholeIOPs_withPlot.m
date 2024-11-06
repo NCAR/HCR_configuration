@@ -33,7 +33,7 @@ caseList = table2array(readtable(infile));
 
 figdir=[indir(1:end-14),'rayDeAlias/wholeIOPs/'];
 
-for aa=5:size(caseList,1)
+for aa=1:size(caseList,1)
 
     disp(['IOP ',num2str(aa)]);
     disp('Loading HCR data.')
@@ -49,20 +49,61 @@ for aa=5:size(caseList,1)
     data=[];
     data.VEL_long=[];
     data.FLAG_long=[];
+    data.VEL_unfold=[];
+    data.FLAG_short=[];
                 
     dataVars=fieldnames(data);
     
     % Load data
     data=read_HCR(fileList,data,startTime,endTime);
        
-    velMasked=data.VEL_long;
-    velMasked(data.FLAG_long~=1)=nan;
+    velMaskedLong=data.VEL_long;
+    velMaskedLong(data.FLAG_long~=1)=nan;
 
+    velMaskedUnfold=data.VEL_unfold;
+    velMaskedUnfold(data.FLAG_short~=1)=nan;
+
+    %% De-alias with unfolded
+
+    checkFold=[2,4,6];
+
+    velDeAliasCheck=velMaskedUnfold-velMaskedLong;
+
+    deAliasMaskE=zeros(size(velDeAliasCheck));
+    for jj=1:3
+        deAliasMaskE(velDeAliasCheck>checkFold(jj)*nyq-3)=checkFold(jj)*nyq;
+        deAliasMaskE(velDeAliasCheck<-(checkFold(jj)*nyq-3))=-checkFold(jj)*nyq;
+    end
+
+    velLongTemp=velMaskedLong+deAliasMaskE;
+   
     %% Correct velocity folding
   
     disp('De-aliasing ...');
-    velDeAliased=dealiasByRay(velMasked,data.elevation,nyq,dataFreq,data.time,[]);
+    velDeAliased=dealiasByRay(velLongTemp,data.elevation,nyq,dataFreq,data.time,[]);
 
+    %% De-alias with unfolded again
+
+    velDeAliasCheck=velMaskedUnfold-velDeAliased;
+
+    deAliasMaskE=zeros(size(velDeAliasCheck));
+    for jj=1:3
+        deAliasMaskE(velDeAliasCheck>checkFold(jj)*nyq-3)=checkFold(jj)*nyq;
+        deAliasMaskE(velDeAliasCheck<-(checkFold(jj)*nyq-3))=-checkFold(jj)*nyq;
+    end
+
+    % Remove small regions
+    uMask=unique(deAliasMaskE);
+    for kk=1:length(uMask)
+        if uMask(kk)~=0
+            thisMask=deAliasMaskE==uMask(kk);
+            thisMaskShrink=bwareaopen(thisMask,1000);
+            deAliasMaskE(thisMaskShrink==0 & thisMask==1)=0;
+        end
+    end
+
+    velDeAliased=velDeAliased+deAliasMaskE;
+   
     %% Save
 
     if saveData
@@ -71,7 +112,7 @@ for aa=5:size(caseList,1)
         velUnfolded=velDeAliased;
 
         save([outdir,whichModel,'.velUnfolded_long.',datestr(data.time(1),'YYYYmmDD_HHMMSS'),'_to_',...
-            datestr(data.time(end),'YYYYmmDD_HHMMSS'),'.IOP',num2str(aa),'.mat'],'velUnfolded');
+            datestr(data.time(end),'YYYYmmDD_HHMMSS'),'.IOP',num2str(aa),'.mat'],'velUnfolded','-v7.3');
     end
 
     %% Plot in hourly increments
@@ -85,8 +126,9 @@ for aa=5:size(caseList,1)
 
             close all
 
-            endPlot=startPlot+minutes(15);
+            endPlot=startPlot+minutes(20);
             timeInds=find(data.time>=startPlot & data.time<=endPlot);
+            timeInds=timeInds(1:3:length(timeInds));
 
             timePlot=data.time(timeInds);
             velPlot=data.VEL_long(:,timeInds);

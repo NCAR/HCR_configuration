@@ -184,7 +184,7 @@ $PROJ_DIR/qcDualPRTground/scripts/run_RadxConvert.qc.select_times.meow
 # additional fields.
 
 #################################################################
-# FLAG field and DBZ_masked
+# FLAG field
 # To create the flag field, run the script below twice, once with _long,
 # and once with _short
 
@@ -208,7 +208,24 @@ $PROJ_DIR/qcDualPRTground/dataProcessing/HCRproducts/rayDeAliasing/call_rayDeAli
 $PROJ_DIR/qcDualPRTground/dataProcessing/HCRproducts/rayDeAliasing/cfradialVELunfolded.m
 
 #################################################################
-# Mask out non vertical angles in VEL
+# Merge long and short fields into one field
+
+# We merge the long and short fields based on SNR thresholds.
+# To figure out the correct thresholds for the different fields,
+# run
+
+$PROJ_DIR/qcDualPRTground/dataProcessing/HCRproducts/analyseLongShort_advanced.m
+
+# Look at the plots to find the right SNRV_short threshold where
+# the correlation between the long and short data is high and clean.
+
+# To creates and plots the merged fields, run
+
+$PROJ_DIR/qcDualPRTground/dataProcessing/HCRproducts/mergeLongShort.m
+
+
+#################################################################
+# Mask out non vertical angles in VEL (only relevant when scanning)
 
 # Velocity is not of much use when the pointing angle is not vertical.
 # To mask out non-vertical data run

@@ -8,14 +8,21 @@ project='meow';
 quality='qc1';
 freqData='10hz_combined';
 qcVersion='v1.0';
+whichModel='era5';
 
 infile=['~/git/HCR_configuration/projDir/qcDualPRTground/dataProcessing/scriptsFiles/iops_',project,'.txt'];
+
+saveData=1;
+plotData=1;
+ylimUpper=13;
+
+[~,outdir]=modelDir(project,whichModel,quality,qcVersion,freqData);
 
 caseList = table2array(readtable(infile));
 
 indir=HCRdir(project,quality,qcVersion,freqData);
 
-figdir=[indir(1:end-14),'mergeLongShort/analyse/'];
+figdir=[indir(1:end-14),'mergeLongShort/wholeIOPs/'];
 
 snrThresh.DBZ=-6;
 snrThresh.VEL=-5;
@@ -25,7 +32,7 @@ snrThresh.LDRV=25;
 %% Run processing
 
 % Go through iops
-for ii=1:size(caseList,1)
+for ii=3:size(caseList,1)
 
     disp(['IOP ',num2str(ii),' of ',num2str(size(caseList,1))]);
 
@@ -42,13 +49,13 @@ for ii=1:size(caseList,1)
     data.FLAG_short=[];
 
     data.DBZ_long=[];
-    data.VEL_long=[];
+    data.VEL_unfold_long=[];
     data.WIDTH_long=[];
     data.LDRV_long=[];
     data.FLAG_long=[];
        
     %% Load data
-    disp('Loading data.FLAG_short=[];data ...');
+    disp('Loading data ...');
 
     % Make list of files within the specified time frame
     fileList=makeFileList(indir,startTime,endTime,'xxxxxx20YYMMDDxhhmmss',1);
@@ -64,107 +71,153 @@ for ii=1:size(caseList,1)
         thisName=dataFields{kk};
 
         % Mask fields with flag fields
-        longField=data.([thisName,'_long']);
-        longField(data.FLAG_long~=1)=nan;
         if ~strcmp(thisName,'VEL')
+            longField=data.([thisName,'_long']);
             shortField=data.([thisName,'_short']);
         else
+            longField=data.VEL_unfold_long;
             shortField=data.VEL_unfold;
         end
+        longField(data.FLAG_long~=1)=nan;
         shortField(data.FLAG_short~=1)=nan;
 
         % Mask short field with snr
-        if ~strcmp(thisName,'VEL')
-            shortField(data.SNRVC<snrThresh.(thisName))=nan;
-        end
-
-        % Output field
-        dataOut.(thisName)=shortField;
+        shortField(data.SNRVC_short<snrThresh.(thisName))=nan;
 
         % Fill in missing with long field
-        dataOut.(thisName)(isnan(shortField))=longField(isnan(shortField));
-        
+        outField=shortField;
+        outField(isnan(shortField))=longField(isnan(shortField));
+
+        % Output field
+        if ~strcmp(thisName,'LDRV')
+            dataOut.(thisName)=outField;
+        else
+            dataOut.LDR=outField;
+        end
     end
 
-    %% Plot
+     %% Save
 
-    edges.DBZ=[-100,-40:1:20,50];
-    edges.VEL=[-30,-12:1:12,30];
-    edges.WIDTH=[0:0.1:4,10];
-    edges.LDRV=[-50,-30:1:10,30];
+    if saveData
+        disp('Saving output fields.')
 
-    for kk=1:size(dataFields,2)
-        close all
-        f1 = figure('Position',[200 500 1600 600],'DefaultAxesFontSize',12);
-        t = tiledlayout(2,5,'TileSpacing','tight','Padding','compact');
-        col=cat(1,[1,1,1],jet);
-        colormap(col);
+        dbz=dataOut.DBZ;
+        save([outdir,whichModel,'.dbz.',datestr(data.time(1),'YYYYmmDD_HHMMSS'),'_to_',...
+            datestr(data.time(end),'YYYYmmDD_HHMMSS'),'.IOP',num2str(ii),'.mat'],'dbz','-v7.3');
 
-        thisName=dataFields{kk};
-        title(t,[thisName],'fontweight','bold','fontsize',16);
-        for jj=1:length(snrEdges.DBZ)-1
-            [N,~,~]=histcounts2(bySNR.(['bin',num2str(jj)]).(thisName)(:,1), ...
-                bySNR.(['bin',num2str(jj)]).(thisName)(:,2),edges.(thisName),edges.(thisName));
+        vel=dataOut.VEL;
+        save([outdir,whichModel,'.vel.',datestr(data.time(1),'YYYYmmDD_HHMMSS'),'_to_',...
+            datestr(data.time(end),'YYYYmmDD_HHMMSS'),'.IOP',num2str(ii),'.mat'],'vel','-v7.3');
 
-            plotCoords=edges.(thisName)(1:end-1)+(edges.(thisName)(2:end)-edges.(thisName)(1:end-1))/2;
+        width=dataOut.WIDTH;
+        save([outdir,whichModel,'.width.',datestr(data.time(1),'YYYYmmDD_HHMMSS'),'_to_',...
+            datestr(data.time(end),'YYYYmmDD_HHMMSS'),'.IOP',num2str(ii),'.mat'],'width','-v7.3');
 
-            s1=nexttile(jj);
-            hold on
-            if sum(N,'all')>0
-                pcolor(plotCoords,plotCoords,N);
-                shading('flat');
-                floorAx=prctile(bySNR.(['bin',num2str(jj)]).(thisName)(:),1);
-                ceilAx=prctile(bySNR.(['bin',num2str(jj)]).(thisName)(:),99);
-                xlim([floorAx,ceilAx]);
-                ylim([floorAx,ceilAx]);
-                plot([floorAx,ceilAx],[floorAx,ceilAx],'-m','LineWidth',2);
+        ldr=dataOut.LDR;
+        save([outdir,whichModel,'.ldr.',datestr(data.time(1),'YYYYmmDD_HHMMSS'),'_to_',...
+            datestr(data.time(end),'YYYYmmDD_HHMMSS'),'.IOP',num2str(ii),'.mat'],'ldr','-v7.3');
+    end
+
+    %% Plot in hourly increments
+
+    if plotData
+        disp('Plotting ...');
+
+        startPlot=startTime;
+
+        climsDbz=[-40,30];
+        climsLdr=[-35,-5];
+        climsVel=[-15,15];
+        climsWidth=[0,3];
+
+        while startPlot<endTime
+
+            close all
+
+            endPlot=startPlot+minutes(20);
+            timeInds=find(data.time>=startPlot & data.time<=endPlot);
+            timeInds=timeInds(1:5:length(timeInds));
+
+            timePlot=data.time(timeInds);
+            dbzPlot=dataOut.DBZ(:,timeInds);
+            velPlot=dataOut.VEL(:,timeInds);
+            widthPlot=dataOut.WIDTH(:,timeInds);
+            ldrPlot=dataOut.LDR(:,timeInds);
+
+            if sum(sum(~isnan(dbzPlot)))~=0
+                aslPlot=data.asl(:,timeInds);
+
+                f1 = figure('Position',[200 500 1600 600],'DefaultAxesFontSize',12);
+                t = tiledlayout(2,2,'TileSpacing','tight','Padding','compact');
+
+                s1=nexttile(1);
+                surf(timePlot,aslPlot./1000,dbzPlot,'edgecolor','none');
+                view(2);
+                ylabel('Altitude (km)');
+                clim(climsDbz);
+                s1.Colormap=jet;
+                colorbar
+                grid on
                 box on
-                xlabel('Long pulse')
-                ylabel('Short pulse')
-                s1.SortMethod='childorder';
-                set(gca,'layer','top')
+                title('Reflectivity (dBZ)');
+
+                ylim([0 ylimUpper]);
+                xlim([timePlot(1),timePlot(end)]);
+                grid on
+                box on
+
+                s2=nexttile(2);
+                surf(timePlot,aslPlot./1000,velPlot,'edgecolor','none');
+                view(2);
+                ylabel('Altitude (km)');
+                clim(climsVel);
+                s2.Colormap=velCols;
+                colorbar
+                grid on
+                box on
+                title('Velocity (m s^{-1})');
+
+                ylim([0 ylimUpper]);
+                xlim([timePlot(1),timePlot(end)]);
+                grid on
+                box on
+
+                s3=nexttile(3);
+                surf(timePlot,aslPlot./1000,widthPlot,'edgecolor','none');
+                view(2);
+                ylabel('Altitude (km)');
+                clim(climsWidth);
+                s3.Colormap=jet;
+                colorbar
+                grid on
+                box on
+                title('Spectrum width (m s^{-1})');
+
+                ylim([0 ylimUpper]);
+                xlim([timePlot(1),timePlot(end)]);
+                grid on
+                box on
+
+                s4=nexttile(4);
+                surf(timePlot,aslPlot./1000,ldrPlot,'edgecolor','none');
+                view(2);
+                ylabel('Altitude (km)');
+                clim(climsLdr);
+                s4.Colormap=jet;
+                colorbar
+                grid on
+                box on
+                title('Linear depol. ratio (dB)');
+
+                ylim([0 ylimUpper]);
+                xlim([timePlot(1),timePlot(end)]);
+                grid on
+                box on
+
+                set(gcf,'PaperPositionMode','auto')
+                print(f1,[figdir,project,'_IOP',num2str(ii),'_merged_',datestr(timePlot(1),'yyyymmdd_HHMMSS'),'_to_',datestr(timePlot(end),'yyyymmdd_HHMMSS')],'-dpng','-r0')
             end
-            title([num2str(snrEdges.(thisName)(jj)),' to ',num2str(snrEdges.(thisName)(jj+1)),' dB SNR']);
+            startPlot=endPlot;
         end
-        set(gcf,'PaperPositionMode','auto')
-        print(f1,[figdir,project,'_IOP',num2str(ii),'_',thisName],'-dpng','-r0')
     end
-end
-
-%% Plot all iops together
-for kk=1:size(dataFields,2)
-    close all
-    f1 = figure('Position',[200 500 1600 600],'DefaultAxesFontSize',12);
-    t = tiledlayout(2,5,'TileSpacing','tight','Padding','compact');
-    col=cat(1,[1,1,1],jet);
-    colormap(col);
-
-    thisName=dataFields{kk};
-    title(t,[thisName],'fontweight','bold','fontsize',16);
-    for jj=1:length(snrEdges.DBZ)-1
-        [N,~,~]=histcounts2(bySNRall.(['bin',num2str(jj)]).(thisName)(:,1), ...
-            bySNRall.(['bin',num2str(jj)]).(thisName)(:,2),edges.(thisName),edges.(thisName));
-
-        plotCoords=edges.(thisName)(1:end-1)+(edges.(thisName)(2:end)-edges.(thisName)(1:end-1))/2;
-
-        s1=nexttile(jj);
-        hold on
-        if sum(N,'all')>0
-            pcolor(plotCoords,plotCoords,N);
-            shading('flat');
-            floorAx=prctile(bySNRall.(['bin',num2str(jj)]).(thisName)(:),1);
-            ceilAx=prctile(bySNRall.(['bin',num2str(jj)]).(thisName)(:),99);
-            xlim([floorAx,ceilAx]);
-            ylim([floorAx,ceilAx]);
-            plot([floorAx,ceilAx],[floorAx,ceilAx],'-m','LineWidth',2);
-            box on
-            xlabel('Long pulse')
-            ylabel('Short pulse')
-            s1.SortMethod='childorder';
-            set(gca,'layer','top')
-        end
-        title([num2str(snrEdges.(thisName)(jj)),' to ',num2str(snrEdges.(thisName)(jj+1)),' dB SNR']);
-    end
-    set(gcf,'PaperPositionMode','auto')
-    print(f1,[figdir,project,'_',thisName],'-dpng','-r0')
 end

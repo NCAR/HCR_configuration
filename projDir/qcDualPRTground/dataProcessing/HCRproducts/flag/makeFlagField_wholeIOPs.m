@@ -10,7 +10,7 @@ quality='qc1'; %field, qc1, or qc2
 freqData='10hz_combined'; % 10hz, 100hz, or 2hz
 qcVersion='v1.0';
 whichModel='era5';
-ls='_short'; % _short or _long
+ls='_long'; % _short or _long
 
 saveTime=1;
 

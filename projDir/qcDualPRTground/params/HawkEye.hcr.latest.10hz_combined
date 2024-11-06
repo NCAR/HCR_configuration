@@ -389,6 +389,15 @@ fields = {
   }
   ,
   {
+    label = "VEL_unfold_long",
+    raw_name = "VEL_unfold_long",
+    filtered_name = "",
+    units = "m/s",
+    color_map = "hcr_vel_blueYellow.colors",
+    shortcut = "3"
+  }
+  ,
+  {
     label = "VEL_unfold",
     raw_name = "VEL_unfold",
     filtered_name = "",

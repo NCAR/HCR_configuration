@@ -10,7 +10,7 @@ quality='qc1'; %field, qc0, qc1, or qc2
 qcVersion='v1.0';
 dataFreq='10hz_combined';
 whichModel='era5';
-ls='_short'; % _short or _long
+ls='_long'; % _short or _long
 
 ylimUpper=15;
 

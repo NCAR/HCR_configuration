@@ -2,17 +2,16 @@
 clear all;
 close all;
 
-addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
+addpath(genpath('~/git/HCR_configuration/projDir/qcDualPRTground/dataProcessing/'));
 
-project='cset'; % socrates, cset, aristo, otrec
-quality='qc3'; % field, qc1, qc2
-qcVersion='v3.1';
-freqData='10hz';
+project='meow'; %socrates, aristo, cset
+quality='qc1'; %field, qc1, or qc2
+freqData='10hz_combined'; % 10hz, 100hz, or 2hz
+qcVersion='v1.0';
 whichModel='era5';
-
 formatOut = 'yyyymmdd';
 
-infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_',project,'_data.txt'];
+infile=['~/git/HCR_configuration/projDir/qcDualPRTground/dataProcessing/scriptsFiles/iops_',project,'.txt'];
 
 caseList = table2array(readtable(infile));
 
@@ -25,7 +24,7 @@ indir=HCRdir(project,quality,qcVersion,freqData);
 % Go through flights
 for ii=1:size(caseList,1)
     
-    disp(['Flight ',num2str(ii)]);
+    disp(['IOP ',num2str(ii)]);
     
     startTime=datetime(caseList(ii,1:6));
     endTime=datetime(caseList(ii,7:12));
@@ -35,14 +34,14 @@ for ii=1:size(caseList,1)
     if ~isempty(fileList)
         
         % Get model data
-        model.velUnfolded=[];
+        model.velUnfolded_long=[];
         
-        model=read_model(model,modeldir,startTime,endTime);
+        model=read_model_longShort(model,modeldir,startTime,endTime);
         timeModelNum=datenum(model.time);
         
         % Check if times match
-        if size(model.time,2)~=size(model.velUnfolded,2)
-            error('Sie of model time and model variable do not match.');
+        if size(model.time,2)~=size(model.velUnfolded_long,2)
+            error('Size of model time and model variable do not match.');
         end
         
         %% Loop through HCR data files
@@ -53,11 +52,11 @@ for ii=1:size(caseList,1)
 
             % Check if variable exists
             try
-                meltIn=ncread(infile,'VEL_UNFOLDED');
+                velIn=ncread(infile,'VEL_unfold_long');
             end
-            if exist('meltIn')
+            if exist('velIn')
                 warning('Variable already exists. Skipping file.')
-                clear('meltIn');
+                clear('velIn');
                 continue
             end
             
@@ -100,22 +99,22 @@ for ii=1:size(caseList,1)
             
             % Define variables
             netcdf.reDef(ncid);
-            varidVEL = netcdf.defVar(ncid,'VEL_UNFOLDED','NC_FLOAT',[dimrange dimtime]);
+            varidVEL = netcdf.defVar(ncid,'VEL_unfold_long','NC_FLOAT',[dimrange dimtime]);
             netcdf.defVarFill(ncid,varidVEL,false,fillVal);
             netcdf.endDef(ncid);
             
             % Write variables
-            netcdf.putVar(ncid,varidVEL,modOut.velUnfolded);
+            netcdf.putVar(ncid,varidVEL,modOut.velUnfolded_long);
                        
             netcdf.close(ncid);
             
             % Write attributes
-            ncwriteatt(infile,'VEL_UNFOLDED','long_name','doppler_velocity_unfolded');
-            ncwriteatt(infile,'VEL_UNFOLDED','standard_name','radial_velocity_of_scatterers_away_from_instrument');
-            ncwriteatt(infile,'VEL_UNFOLDED','units','m/s');
-            ncwriteatt(infile,'VEL_UNFOLDED','comment','This field is created by de-aliasing velocity and masking non-cloud data.');
-            ncwriteatt(infile,'VEL_UNFOLDED','grid_mapping','grid_mapping');
-            ncwriteatt(infile,'VEL_UNFOLDED','coordinates','time range');
+            ncwriteatt(infile,'VEL_unfold_long','long_name','doppler_velocity_unfolded');
+            ncwriteatt(infile,'VEL_unfold_long','standard_name','radial_velocity_of_scatterers_away_from_instrument');
+            ncwriteatt(infile,'VEL_unfold_long','units','m/s');
+            ncwriteatt(infile,'VEL_unfold_long','comment','This field is created by de-aliasing velocity and masking non-cloud data.');
+            ncwriteatt(infile,'VEL_unfold_long','grid_mapping','grid_mapping');
+            ncwriteatt(infile,'VEL_unfold_long','coordinates','time range');
                         
         end
     end
