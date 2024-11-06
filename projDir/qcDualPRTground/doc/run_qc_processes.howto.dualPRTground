@@ -245,16 +245,15 @@ $PROJ_DIR/qcDualPRTground/dataProcessing/HCRproducts/flag/cfradialVELmasked.m
 # 2D: Sea surface temperature, 2 metre dewpoint temperature, 2 metre temperature,
 #     10 metre U wind component, 10 metre V wind component, Surface pressure
 
-# cd $DATA_DIR
-# cd ../model/era5
+# The model data directory is
+/scr/virga1/rsfdata/projects/meow/model/era5
 
 # To get era5 data run $PROJ_DIR/qcDualPRTground/scripts/downloadERA5.pressLev.cset
 # (There is also a script for surface variables but that needs more testing (downloadERA5.surf.cset)
 
-# Modify and run $PROJ_DIR/qcDualPRTground/dataProcessing/HCRproducts/modelData/model2HCR4d.m
+# If that doesn't work, download the data from https://rda.ucar.edu/datasets/d633000/dataaccess/#
 
-# It needs an input file with the start and end dates of each flight
-# $PROJ_DIR/qcDualPRTground/dataProcessing/scriptsFiles/flights_socrates_data.txt
+# Modify and run $PROJ_DIR/qcDualPRTground/dataProcessing/HCRproducts/modelData/model2HCR4d.m
 
 # Add model data to cfradial files
 
