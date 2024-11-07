@@ -159,6 +159,10 @@ meltMask=bwareaopen(meltMask,35); % Remove small
 meltMask=imclose(meltMask,strel('disk',25)); % Smooth and join
 meltMask=imfill(meltMask,'holes'); % Remove holes
 
+% Remove above 5 deg C and near surface
+agl=dataShort.asl-dataShort.altitude;
+meltMask(dataShort.TEMP>4 & agl<500)=0;
+
 %% Interpolate melting layer altitude
 % Get max probability within mask
 probMask=meltProb;

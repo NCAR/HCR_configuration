@@ -61,12 +61,12 @@ for aa=1:size(caseList,1)
     data.FLAG_long=[];
     
     % Check if LDR_MASKED is available
-    try
-        velTest=ncread(fileList{1},'LDR_MASKED');
-        data.LDR_MASKED=[];
-    catch
+    % try
+    %     velTest=ncread(fileList{1},'LDR_MASKED');
+    %     data.LDR_MASKED=[];
+    % catch
         data.LDR=[];
-    end
+    % end
 
     % Load data
     data=read_HCR(fileList,data,startTime,endTime);
@@ -74,10 +74,10 @@ for aa=1:size(caseList,1)
     data.FLAG=data.FLAG_long;
     data=rmfield(data,'FLAG_long');
 
-    if isfield(data,'LDR_MASKED')
-        data.LDR=data.LDR_MASKED;
-        data=rmfield(data,'LDR_MASKED');
-    end
+    % if isfield(data,'LDR_MASKED')
+    %     data.LDR=data.LDR_MASKED;
+    %     data=rmfield(data,'LDR_MASKED');
+    % end
 
     % % SPICULE has noisy LDR data that needs to be pre-processed
     % if strcmp(project,'spicule')

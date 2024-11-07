@@ -9,8 +9,8 @@ data.DBZ(isnan(data.DBZ))=-999;
 velDiff(isnan(velDiff))=-999;
 dbzDiff(isnan(dbzDiff))=-999;
 
-m(1,:,:)=trapmf(data.TEMP,[-1,0,1,7]);
-m(2,:,:)=smf(data.LDR,[-20,-18]);
+m(1,:,:)=trapmf(data.TEMP,[-1,0,1,5]);
+m(2,:,:)=trapmf(data.LDR,[-20,-18,-6,-5]);
 m(3,:,:)=smf(data.DBZ,[-20,10]);
 m(4,:,:)=smf(velDiff,[0.1,0.4]);
 m(5,:,:)=trapmf(dbzDiff,[0.3,0.5,3,4]);
