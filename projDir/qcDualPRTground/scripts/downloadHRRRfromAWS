@@ -1,0 +1,69 @@
+#! /bin/csh -f
+
+set DATA_DIR="/scr/virga1/rsfdata/projects/meow/model/hrrr"
+
+set YEAR="2024"
+set MONTH="05"
+
+#set DIRS=(${YEAR}${MONTH}01 ${YEAR}${MONTH}02 ${YEAR}${MONTH}03 ${YEAR}${MONTH}04 ${YEAR}${MONTH}05 ${YEAR}${MONTH}06 ${YEAR}${MONTH}07 ${YEAR}${MONTH}08 ${YEAR}${MONTH}09 ${YEAR}${MONTH}10 ${YEAR}${MONTH}11 ${YEAR}${MONTH}12 ${YEAR}${MONTH}13 ${YEAR}${MONTH}14 ${YEAR}${MONTH}15 ${YEAR}${MONTH}16 ${YEAR}${MONTH}17 ${YEAR}${MONTH}18 ${YEAR}${MONTH}19 ${YEAR}${MONTH}20 ${YEAR}${MONTH}21 ${YEAR}${MONTH}22 ${YEAR}${MONTH}23 ${YEAR}${MONTH}24 ${YEAR}${MONTH}25 ${YEAR}${MONTH}26 ${YEAR}${MONTH}27 ${YEAR}${MONTH}28 ${YEAR}${MONTH}29 ${YEAR}${MONTH}30)
+
+set DIRS=(${YEAR}${MONTH}01 ${YEAR}${MONTH}02 ${YEAR}${MONTH}03 ${YEAR}${MONTH}04 ${YEAR}${MONTH}05 ${YEAR}${MONTH}06 ${YEAR}${MONTH}07 ${YEAR}${MONTH}08 ${YEAR}${MONTH}09 ${YEAR}${MONTH}10 ${YEAR}${MONTH}11 ${YEAR}${MONTH}12 ${YEAR}${MONTH}13 ${YEAR}${MONTH}14 ${YEAR}${MONTH}15 ${YEAR}${MONTH}16 ${YEAR}${MONTH}17 ${YEAR}${MONTH}18 ${YEAR}${MONTH}19 ${YEAR}${MONTH}20 ${YEAR}${MONTH}21 ${YEAR}${MONTH}22 ${YEAR}${MONTH}23 ${YEAR}${MONTH}24 ${YEAR}${MONTH}25 ${YEAR}${MONTH}26 ${YEAR}${MONTH}27 ${YEAR}${MONTH}28 ${YEAR}${MONTH}29 ${YEAR}${MONTH}30 ${YEAR}${MONTH}31)
+
+#set DIRS=(${YEAR}${MONTH}19 ${YEAR}${MONTH}20 ${YEAR}${MONTH}21 ${YEAR}${MONTH}22 ${YEAR}${MONTH}23 ${YEAR}${MONTH}24 ${YEAR}${MONTH}25 ${YEAR}${MONTH}26)
+
+cd $DATA_DIR
+
+foreach i ( $DIRS )
+set DATE=$i
+echo $DATE
+
+/opt/local/bin/aws s3 cp --no-sign-request s3://noaa-hrrr-bdp-pds/hrrr.$DATE/conus/hrrr.t00z.wrfprsf00.grib2 $DATA_DIR --recursive
+/opt/local/bin/aws s3 cp --no-sign-request s3://noaa-hrrr-bdp-pds/hrrr.$DATE/conus/hrrr.t01z.wrfprsf00.grib2 $DATA_DIR --recursive
+/opt/local/bin/aws s3 cp --no-sign-request s3://noaa-hrrr-bdp-pds/hrrr.$DATE/conus/hrrr.t02z.wrfprsf00.grib2 $DATA_DIR --recursive
+/opt/local/bin/aws s3 cp --no-sign-request s3://noaa-hrrr-bdp-pds/hrrr.$DATE/conus/hrrr.t03z.wrfprsf00.grib2 $DATA_DIR --recursive
+/opt/local/bin/aws s3 cp --no-sign-request s3://noaa-hrrr-bdp-pds/hrrr.$DATE/conus/hrrr.t04z.wrfprsf00.grib2 $DATA_DIR --recursive
+/opt/local/bin/aws s3 cp --no-sign-request s3://noaa-hrrr-bdp-pds/hrrr.$DATE/conus/hrrr.t05z.wrfprsf00.grib2 $DATA_DIR --recursive
+/opt/local/bin/aws s3 cp --no-sign-request s3://noaa-hrrr-bdp-pds/hrrr.$DATE/conus/hrrr.t06z.wrfprsf00.grib2 $DATA_DIR --recursive
+/opt/local/bin/aws s3 cp --no-sign-request s3://noaa-hrrr-bdp-pds/hrrr.$DATE/conus/hrrr.t07z.wrfprsf00.grib2 $DATA_DIR --recursive
+/opt/local/bin/aws s3 cp --no-sign-request s3://noaa-hrrr-bdp-pds/hrrr.$DATE/conus/hrrr.t08z.wrfprsf00.grib2 $DATA_DIR --recursive
+/opt/local/bin/aws s3 cp --no-sign-request s3://noaa-hrrr-bdp-pds/hrrr.$DATE/conus/hrrr.t09z.wrfprsf00.grib2 $DATA_DIR --recursive
+/opt/local/bin/aws s3 cp --no-sign-request s3://noaa-hrrr-bdp-pds/hrrr.$DATE/conus/hrrr.t10z.wrfprsf00.grib2 $DATA_DIR --recursive
+/opt/local/bin/aws s3 cp --no-sign-request s3://noaa-hrrr-bdp-pds/hrrr.$DATE/conus/hrrr.t11z.wrfprsf00.grib2 $DATA_DIR --recursive
+/opt/local/bin/aws s3 cp --no-sign-request s3://noaa-hrrr-bdp-pds/hrrr.$DATE/conus/hrrr.t12z.wrfprsf00.grib2 $DATA_DIR --recursive
+/opt/local/bin/aws s3 cp --no-sign-request s3://noaa-hrrr-bdp-pds/hrrr.$DATE/conus/hrrr.t13z.wrfprsf00.grib2 $DATA_DIR --recursive
+/opt/local/bin/aws s3 cp --no-sign-request s3://noaa-hrrr-bdp-pds/hrrr.$DATE/conus/hrrr.t14z.wrfprsf00.grib2 $DATA_DIR --recursive
+/opt/local/bin/aws s3 cp --no-sign-request s3://noaa-hrrr-bdp-pds/hrrr.$DATE/conus/hrrr.t15z.wrfprsf00.grib2 $DATA_DIR --recursive
+/opt/local/bin/aws s3 cp --no-sign-request s3://noaa-hrrr-bdp-pds/hrrr.$DATE/conus/hrrr.t16z.wrfprsf00.grib2 $DATA_DIR --recursive
+/opt/local/bin/aws s3 cp --no-sign-request s3://noaa-hrrr-bdp-pds/hrrr.$DATE/conus/hrrr.t17z.wrfprsf00.grib2 $DATA_DIR --recursive
+/opt/local/bin/aws s3 cp --no-sign-request s3://noaa-hrrr-bdp-pds/hrrr.$DATE/conus/hrrr.t18z.wrfprsf00.grib2 $DATA_DIR --recursive
+/opt/local/bin/aws s3 cp --no-sign-request s3://noaa-hrrr-bdp-pds/hrrr.$DATE/conus/hrrr.t19z.wrfprsf00.grib2 $DATA_DIR --recursive
+/opt/local/bin/aws s3 cp --no-sign-request s3://noaa-hrrr-bdp-pds/hrrr.$DATE/conus/hrrr.t20z.wrfprsf00.grib2 $DATA_DIR --recursive
+/opt/local/bin/aws s3 cp --no-sign-request s3://noaa-hrrr-bdp-pds/hrrr.$DATE/conus/hrrr.t21z.wrfprsf00.grib2 $DATA_DIR --recursive
+/opt/local/bin/aws s3 cp --no-sign-request s3://noaa-hrrr-bdp-pds/hrrr.$DATE/conus/hrrr.t22z.wrfprsf00.grib2 $DATA_DIR --recursive
+/opt/local/bin/aws s3 cp --no-sign-request s3://noaa-hrrr-bdp-pds/hrrr.$DATE/conus/hrrr.t23z.wrfprsf00.grib2 $DATA_DIR --recursive
+
+/opt/local/bin/aws s3 cp --no-sign-request s3://noaa-hrrr-bdp-pds/hrrr.$DATE/conus/hrrr.t00z.wrfsfcf00.grib2 $DATA_DIR --recursive
+/opt/local/bin/aws s3 cp --no-sign-request s3://noaa-hrrr-bdp-pds/hrrr.$DATE/conus/hrrr.t01z.wrfsfcf00.grib2 $DATA_DIR --recursive
+/opt/local/bin/aws s3 cp --no-sign-request s3://noaa-hrrr-bdp-pds/hrrr.$DATE/conus/hrrr.t02z.wrfsfcf00.grib2 $DATA_DIR --recursive
+/opt/local/bin/aws s3 cp --no-sign-request s3://noaa-hrrr-bdp-pds/hrrr.$DATE/conus/hrrr.t03z.wrfsfcf00.grib2 $DATA_DIR --recursive
+/opt/local/bin/aws s3 cp --no-sign-request s3://noaa-hrrr-bdp-pds/hrrr.$DATE/conus/hrrr.t04z.wrfsfcf00.grib2 $DATA_DIR --recursive
+/opt/local/bin/aws s3 cp --no-sign-request s3://noaa-hrrr-bdp-pds/hrrr.$DATE/conus/hrrr.t05z.wrfsfcf00.grib2 $DATA_DIR --recursive
+/opt/local/bin/aws s3 cp --no-sign-request s3://noaa-hrrr-bdp-pds/hrrr.$DATE/conus/hrrr.t06z.wrfsfcf00.grib2 $DATA_DIR --recursive
+/opt/local/bin/aws s3 cp --no-sign-request s3://noaa-hrrr-bdp-pds/hrrr.$DATE/conus/hrrr.t07z.wrfsfcf00.grib2 $DATA_DIR --recursive
+/opt/local/bin/aws s3 cp --no-sign-request s3://noaa-hrrr-bdp-pds/hrrr.$DATE/conus/hrrr.t08z.wrfsfcf00.grib2 $DATA_DIR --recursive
+/opt/local/bin/aws s3 cp --no-sign-request s3://noaa-hrrr-bdp-pds/hrrr.$DATE/conus/hrrr.t09z.wrfsfcf00.grib2 $DATA_DIR --recursive
+/opt/local/bin/aws s3 cp --no-sign-request s3://noaa-hrrr-bdp-pds/hrrr.$DATE/conus/hrrr.t10z.wrfsfcf00.grib2 $DATA_DIR --recursive
+/opt/local/bin/aws s3 cp --no-sign-request s3://noaa-hrrr-bdp-pds/hrrr.$DATE/conus/hrrr.t11z.wrfsfcf00.grib2 $DATA_DIR --recursive
+/opt/local/bin/aws s3 cp --no-sign-request s3://noaa-hrrr-bdp-pds/hrrr.$DATE/conus/hrrr.t12z.wrfsfcf00.grib2 $DATA_DIR --recursive
+/opt/local/bin/aws s3 cp --no-sign-request s3://noaa-hrrr-bdp-pds/hrrr.$DATE/conus/hrrr.t13z.wrfsfcf00.grib2 $DATA_DIR --recursive
+/opt/local/bin/aws s3 cp --no-sign-request s3://noaa-hrrr-bdp-pds/hrrr.$DATE/conus/hrrr.t14z.wrfsfcf00.grib2 $DATA_DIR --recursive
+/opt/local/bin/aws s3 cp --no-sign-request s3://noaa-hrrr-bdp-pds/hrrr.$DATE/conus/hrrr.t15z.wrfsfcf00.grib2 $DATA_DIR --recursive
+/opt/local/bin/aws s3 cp --no-sign-request s3://noaa-hrrr-bdp-pds/hrrr.$DATE/conus/hrrr.t16z.wrfsfcf00.grib2 $DATA_DIR --recursive
+/opt/local/bin/aws s3 cp --no-sign-request s3://noaa-hrrr-bdp-pds/hrrr.$DATE/conus/hrrr.t17z.wrfsfcf00.grib2 $DATA_DIR --recursive
+/opt/local/bin/aws s3 cp --no-sign-request s3://noaa-hrrr-bdp-pds/hrrr.$DATE/conus/hrrr.t18z.wrfsfcf00.grib2 $DATA_DIR --recursive
+/opt/local/bin/aws s3 cp --no-sign-request s3://noaa-hrrr-bdp-pds/hrrr.$DATE/conus/hrrr.t19z.wrfsfcf00.grib2 $DATA_DIR --recursive
+/opt/local/bin/aws s3 cp --no-sign-request s3://noaa-hrrr-bdp-pds/hrrr.$DATE/conus/hrrr.t20z.wrfsfcf00.grib2 $DATA_DIR --recursive
+/opt/local/bin/aws s3 cp --no-sign-request s3://noaa-hrrr-bdp-pds/hrrr.$DATE/conus/hrrr.t21z.wrfsfcf00.grib2 $DATA_DIR --recursive
+/opt/local/bin/aws s3 cp --no-sign-request s3://noaa-hrrr-bdp-pds/hrrr.$DATE/conus/hrrr.t22z.wrfsfcf00.grib2 $DATA_DIR --recursive
+/opt/local/bin/aws s3 cp --no-sign-request s3://noaa-hrrr-bdp-pds/hrrr.$DATE/conus/hrrr.t23z.wrfsfcf00.grib2 $DATA_DIR --recursive
+end
