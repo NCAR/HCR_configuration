@@ -37,7 +37,7 @@ infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_
 
 caseList = table2array(readtable(infile));
 
-for aa=6:size(caseList,1)
+for aa=9:size(caseList,1)
     tic
     
     disp(['Flight ',num2str(aa)]);
@@ -77,6 +77,21 @@ for aa=6:size(caseList,1)
         
     %% Time series
     fileListTS=makeFileList(dataDirTS,startTime,endTime,'20YYMMDDxhhmmss',1);
+
+    % Check if first file is good
+    firstGood=0;
+    while firstGood==0
+        data=[];
+        data.IVc=[];
+        data.QVc=[];
+        try
+            dataTest=read_TsArchive_iwrf_bulk(fileListTS{1},data);
+            firstGood=1;
+        catch
+            fileListTS=fileListTS(2:end);
+            warning('Removing first file.')
+        end
+    end
 
     if isempty(fileListTS)
         warning('No data found.');

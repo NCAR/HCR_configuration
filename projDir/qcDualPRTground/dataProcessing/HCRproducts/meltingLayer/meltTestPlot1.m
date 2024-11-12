@@ -22,7 +22,7 @@ ax2=subplot(4,1,2);
 hold on;
 surf(newTime,newASL./1000,newLDR,'edgecolor','none');
 view(2);
-caxis([-25 -5]);
+clim([-25 -5]);
 ax2.Colormap=jet;
 colorbar
 ylim(ylimits);
