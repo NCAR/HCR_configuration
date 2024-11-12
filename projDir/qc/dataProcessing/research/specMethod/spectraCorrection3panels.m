@@ -58,16 +58,20 @@ s22.Layout.Tile=2;
 hold on
 l5=plot(xdata,dftps,'-b','LineWidth',2);
 xlim(xlim2);
-xlabel('Spectral bin number');
+xlabel('Time (10^{-4}s)');
 ylim([0,60]);
 yticks(0:15:75);
-annotation('textarrow',[0.65,0.56],[0.45,0.38],'String','Truncation point','FontSize',12)
+annotation('textarrow',[0.65,0.56],[0.45,0.38],'String','Truncation value','FontSize',12)
+
+plot([472,485],[17,0],'-k');
+plot([492,505],[17,0],'-k');
 
 grid on
 box on
 %title('(a) Example spectrum')
 legend([l5,l4],{'DFT_{ps}';'DFT_{bbs}'},'Location','northwest');
 text(555,55,'(b)','FontSize',12,'FontWeight','bold')
+
 
 s3=nexttile(3);
 
@@ -87,6 +91,31 @@ box on
 %title('(a) Example spectrum')
 legend([l1,l4,l3,l2],{'PS_{raw}';'PS_{cf}';'PS_{f}';'Sp. noise floor'},'Location','northwest');
 text(920,-25,'(c)','FontSize',12,'FontWeight','bold')
+
+% Inset
+ai=axes('Position',[.2 .45 .16 .07]);
+hold on
+l5=plot(xdata,dftps,'-b','LineWidth',1.5);
+ylim([0,1])
+yyaxis right
+l4=plot(xdata,dftbbs,'-r','LineWidth',1.5);
+% s2.YAxisLocation = 'right';
+% s2.XTick = [];
+ai.YAxis(2).Color = [0 0 0];
+xlim([485,505]);
+box on
+%ylim([0,1])
+% yticks(0:0.025:0.1);
+% 
+% s2x=axes(t,'Color','none');
+% %s2x.Layout.Tile=2;
+% hold on
+% l5=plot(xdata,dftps,'-b','LineWidth',2);
+% xlim(xlim2);
+% xlabel('Time (10^{-4}s)');
+% ylim([0,60]);
+% yticks(0:15:75);
+hold off
 
 set(gcf,'PaperPositionMode','auto')
 print(f1,[figdir,'specCorr.png'],'-dpng','-r0');

@@ -13,7 +13,7 @@ load([figdir,'splitSig.mat']);
 
 close all
 numZero=2:250;
-xlim1=[1,249];
+xlim1=[1,150];
 xlim2=[400,800];
 
 f1 = figure('Position',[200 500 600 1000],'DefaultAxesFontSize',12,'renderer','painters');
@@ -28,13 +28,13 @@ l0=plot(numZero,err21,'-b','LineWidth',2);
 scatter(6,err21(5),'filled','MarkerFaceColor','red','MarkerEdgeColor','k');
 xlabel('Truncation piont');
 ylabel('RMSE (dB)');
-ylim([5,11]);
+ylim([5,8]);
 xlim(xlim1);
 
 grid on
 box on
 title('(a) Root mean square error of example spectrum')
-annotation('textarrow',[0.27,0.13],[0.84,0.75],'String','Optimum truncation point','FontSize',12)
+annotation('textarrow',[0.27,0.14],[0.84,0.785],'String','Optimum truncation value','FontSize',12)
 
 s2=nexttile(2);
 
@@ -42,8 +42,9 @@ bar(numZero(1:end-1),H./sum(H).*100,1,'red')
 
 xlabel('Truncation piont');
 ylabel('Frequency (%)')
-title('(b) Distribution of optimum truncation points')
-annotation('textarrow',[0.27,0.135],[0.615,0.6],'String',' Most frequent optimum truncation point','FontSize',12)
+title('(b) Distribution of optimum truncation values')
+annotation('textarrow',[0.27,0.145],[0.615,0.6],'String',' Most frequent optimum truncation value','FontSize',12)
+xlim(xlim1);
 
 grid on
 box on
@@ -63,7 +64,7 @@ xlim(xlim2);
 
 grid on
 box on
-title('(c) Example with optimum truncation point of 40')
+title('(c) Example with optimum truncation value of 40')
 legend([l1,l2,l3,l4],{'Signal A';'Signal B';'Filtered TP=40';'Filtered TP=7'},'Location','northwest');
 
 h1=drawellipse('Center',[530,-53],'SemiAxes',[15,9.5],'Color','b', ...
