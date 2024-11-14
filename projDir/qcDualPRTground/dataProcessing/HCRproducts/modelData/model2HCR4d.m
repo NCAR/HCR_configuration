@@ -29,7 +29,7 @@ caseList = table2array(readtable(infile));
 indir=HCRdir(project,quality,qcVersion,freqData);
 
 %% Go through flights
-for ii=1:size(caseList,1)
+for ii=9:size(caseList,1)
     disp(['IOP ',num2str(ii)]);
     
     startTime=datetime(caseList(ii,1:6));
@@ -131,12 +131,14 @@ for ii=1:size(caseList,1)
         modelData.vSurf=modelOrig.vSurf(rInds(1):rInds(2),cInds(1):cInds(2),:);
         modelData.time=modelOrig.time;
     end
-   
+
     %% Set up grid
     if strcmp(whichModel,'narr') | strcmp(whichModel,'hrrr')
         lonMat=double(repmat(modelData.lon,1,1,size(modelData.z,4)));
         latMat=double(repmat(modelData.lat,1,1,size(modelData.z,4)));
-        lonMat=wrapTo360(lonMat);
+        if strcmp(whichModel,'narr')
+            lonMat=wrapTo360(lonMat);
+        end
     else
         lonMat=double(repmat(modelData.lon,1,size(modelData.z,2),size(modelData.z,4)));
         latMat=double(repmat(fliplr(modelData.lat'),size(modelData.z,1),1,size(modelData.z,4)));
@@ -428,23 +430,23 @@ for ii=1:size(caseList,1)
             if strcmp(intFields{ll},'tempHCR')
                 tempHCR=modelvar;
                 save([outdir,whichModel,'.',intFields{ll},'.',datestr(data.time(1),'YYYYmmDD_HHMMSS'),'_to_',...
-                    datestr(data.time(end),'YYYYmmDD_HHMMSS'),'.Flight',num2str(ii),'.mat'],'tempHCR','-v7.3');
+                    datestr(data.time(end),'YYYYmmDD_HHMMSS'),'.Iop',num2str(ii),'.mat'],'tempHCR','-v7.3');
             elseif strcmp(intFields{ll},'pHCR')
                 pHCR=modelvar;
                 save([outdir,whichModel,'.',intFields{ll},'.',datestr(data.time(1),'YYYYmmDD_HHMMSS'),'_to_',...
-                    datestr(data.time(end),'YYYYmmDD_HHMMSS'),'.Flight',num2str(ii),'.mat'],'pHCR','-v7.3');
+                    datestr(data.time(end),'YYYYmmDD_HHMMSS'),'.Iop',num2str(ii),'.mat'],'pHCR','-v7.3');
             elseif strcmp(intFields{ll},'rhHCR')
                 rhHCR=modelvar;
                 save([outdir,whichModel,'.',intFields{ll},'.',datestr(data.time(1),'YYYYmmDD_HHMMSS'),'_to_',...
-                    datestr(data.time(end),'YYYYmmDD_HHMMSS'),'.Flight',num2str(ii),'.mat'],'rhHCR','-v7.3');
+                    datestr(data.time(end),'YYYYmmDD_HHMMSS'),'.Iop',num2str(ii),'.mat'],'rhHCR','-v7.3');
             elseif strcmp(intFields{ll},'uHCR')
                 uHCR=modelvar;
                 save([outdir,whichModel,'.',intFields{ll},'.',datestr(data.time(1),'YYYYmmDD_HHMMSS'),'_to_',...
-                    datestr(data.time(end),'YYYYmmDD_HHMMSS'),'.Flight',num2str(ii),'.mat'],'uHCR','-v7.3');
+                    datestr(data.time(end),'YYYYmmDD_HHMMSS'),'.Iop',num2str(ii),'.mat'],'uHCR','-v7.3');
             elseif strcmp(intFields{ll},'vHCR')
                 vHCR=modelvar;
                 save([outdir,whichModel,'.',intFields{ll},'.',datestr(data.time(1),'YYYYmmDD_HHMMSS'),'_to_',...
-                    datestr(data.time(end),'YYYYmmDD_HHMMSS'),'.Flight',num2str(ii),'.mat'],'vHCR','-v7.3');
+                    datestr(data.time(end),'YYYYmmDD_HHMMSS'),'.Iop',num2str(ii),'.mat'],'vHCR','-v7.3');
             end
         end
     end
@@ -452,12 +454,12 @@ for ii=1:size(caseList,1)
     disp(['Saving surface data ...']);
     timeHCR=data.time;
     save([outdir,whichModel,'.time.',datestr(data.time(1),'YYYYmmDD_HHMMSS'),'_to_',...
-        datestr(data.time(end),'YYYYmmDD_HHMMSS'),'.Flight',num2str(ii),'.mat'],'timeHCR');
+        datestr(data.time(end),'YYYYmmDD_HHMMSS'),'.Iop',num2str(ii),'.mat'],'timeHCR');
 
     if isfield(modelData,'sstSurf')
         sstHCR=surfData.sstHCR;
         save([outdir,whichModel,'.sst.',datestr(data.time(1),'YYYYmmDD_HHMMSS'),'_to_',...
-            datestr(data.time(end),'YYYYmmDD_HHMMSS'),'.Flight',num2str(ii),'.mat'],'sstHCR');
+            datestr(data.time(end),'YYYYmmDD_HHMMSS'),'.Iop',num2str(ii),'.mat'],'sstHCR');
     end
 end
 

@@ -101,7 +101,7 @@ for kk=1:length(inhours) %Loop through all hours
     uIn=readgeoraster(hourFile,Bands=bandUpress);
     vIn=readgeoraster(hourFile,Bands=bandVpress);
         
-    zIn=zIn./9.806;
+    %zIn=zIn./9.806;
 
     tps=descr(bandTpress);
     rhps=descr(bandRHpress);

@@ -237,7 +237,7 @@ $PROJ_DIR/qcDualPRTground/dataProcessing/HCRproducts/flag/cfradialVELmasked.m
 #################################################################
 # Interpolate forecast or reanalysis data
 #
-# We need model input data from eather ecmwf forecasts or
+# We need model input data from eather hrrr forecasts or
 # era5 reanalysis
 
 # The variables needed are:
@@ -246,13 +246,19 @@ $PROJ_DIR/qcDualPRTground/dataProcessing/HCRproducts/flag/cfradialVELmasked.m
 #     10 metre U wind component, 10 metre V wind component, Surface pressure
 
 # The model data directory is
-/scr/virga1/rsfdata/projects/meow/model/era5
+/scr/virga1/rsfdata/projects/meow/model/era5 or
+/scr/virga1/rsfdata/projects/meow/model/hrrr
 
-# To get era5 data run $PROJ_DIR/qcDualPRTground/scripts/downloadERA5.pressLev.cset
+# To get era5 data run
+$PROJ_DIR/qcDualPRTground/scripts/downloadERA5.pressLev.cset
 # (There is also a script for surface variables but that needs more testing (downloadERA5.surf.cset)
 
 # If that doesn't work, download the data from https://rda.ucar.edu/datasets/d633000/dataaccess/#
 
+# To get HRRR data, run
+$PROJ_DIR/qcDualPRTground/scripts/downloadHRRRfromAWS
+
+# To interpolate the model data, run
 # Modify and run $PROJ_DIR/qcDualPRTground/dataProcessing/HCRproducts/modelData/model2HCR4d.m
 
 # Add model data to cfradial files
