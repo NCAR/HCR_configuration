@@ -8,7 +8,7 @@ project='meow';
 quality='qc1';
 freqData='10hz_combined';
 qcVersion='v1.0';
-whichModel='era5';
+whichModel='hrrr'; % era5 or hrrr
 
 infile=['~/git/HCR_configuration/projDir/qcDualPRTground/dataProcessing/scriptsFiles/iops_',project,'.txt'];
 
@@ -29,7 +29,7 @@ caseList = table2array(readtable(infile));
 indir=HCRdir(project,quality,qcVersion,freqData);
 
 %% Go through flights
-for ii=3:size(caseList,1)
+for ii=1:size(caseList,1)
     disp(['IOP ',num2str(ii)]);
     
     startTime=datetime(caseList(ii,1:6));
@@ -99,12 +99,44 @@ for ii=3:size(caseList,1)
         modelData=read_ecmwf(modeldir,data.time(1),data.time(end),getSST);
     elseif strcmp(whichModel,'narr')
         modelData=read_narr(modeldir,data.time(1),data.time(end),getSST);
+    elseif strcmp(whichModel,'hrrr')
+        modelData=read_hrrr(modeldir,data.time(1),data.time(end),getSST);
+    end
+
+    %% Trimm model data
+    hcrLat=unique(data.latitude);
+    hcrLon=unique(data.longitude);
+
+    [r,c]=find(modelData.lon>hcrLon-1 & modelData.lon<hcrLon+1 & ...
+        modelData.lat>hcrLat-1 & modelData.lat<hcrLat+1);
+
+    cInds=[min(c),max(c)];
+    rInds=[min(r),max(r)];
+
+    if strcmp(whichModel,'hrrr')
+        modelOrig=modelData;
+        modelData=[];
+        modelData.lon=modelOrig.lon(rInds(1):rInds(2),cInds(1):cInds(2));
+        modelData.lat=modelOrig.lat(rInds(1):rInds(2),cInds(1):cInds(2));
+        modelData.Temperature=modelOrig.Temperature(rInds(1):rInds(2),cInds(1):cInds(2),:,:);
+        modelData.rh=modelOrig.rh(rInds(1):rInds(2),cInds(1):cInds(2),:,:);
+        modelData.z=modelOrig.z(rInds(1):rInds(2),cInds(1):cInds(2),:,:);
+        modelData.u=modelOrig.u(rInds(1):rInds(2),cInds(1):cInds(2),:,:);
+        modelData.v=modelOrig.v(rInds(1):rInds(2),cInds(1):cInds(2),:,:);
+        modelData.p=modelOrig.p(rInds(1):rInds(2),cInds(1):cInds(2),:,:);
+        modelData.pSurf=modelOrig.pSurf(rInds(1):rInds(2),cInds(1):cInds(2),:);
+        modelData.tSurf=modelOrig.tSurf(rInds(1):rInds(2),cInds(1):cInds(2),:);
+        modelData.rhSurf=modelOrig.rhSurf(rInds(1):rInds(2),cInds(1):cInds(2),:);
+        modelData.uSurf=modelOrig.uSurf(rInds(1):rInds(2),cInds(1):cInds(2),:);
+        modelData.vSurf=modelOrig.vSurf(rInds(1):rInds(2),cInds(1):cInds(2),:);
+        modelData.time=modelOrig.time;
     end
    
     %% Set up grid
-    if strcmp(whichModel,'narr')
+    if strcmp(whichModel,'narr') | strcmp(whichModel,'hrrr')
         lonMat=double(repmat(modelData.lon,1,1,size(modelData.z,4)));
         latMat=double(repmat(modelData.lat,1,1,size(modelData.z,4)));
+        lonMat=wrapTo360(lonMat);
     else
         lonMat=double(repmat(modelData.lon,1,size(modelData.z,2),size(modelData.z,4)));
         latMat=double(repmat(fliplr(modelData.lat'),size(modelData.z,1),1,size(modelData.z,4)));
@@ -232,7 +264,45 @@ for ii=3:size(caseList,1)
             surfData.sstHCR=nan(length(data.time),1);
             surfData.sstHCR(goodIndXQ)=Vq;
         end
+    elseif strcmp(whichModel,'hrrr')
+        for jj=1:size(modelData.z,3)
+            thisVar=squeeze(modelData.Temperature(:,:,jj,:));
+            F=scatteredInterpolant(lonMat(:),latMat(:),timeMat(:),thisVar(:));
+            Vq =F(data.longitude(timeInd),data.latitude(timeInd),datenum(data.time(timeInd)));
+            int.tempHCR=cat(1,int.tempHCR,Vq);
+            thisVar=squeeze(modelData.z(:,:,jj,:));
+            F=scatteredInterpolant(lonMat(:),latMat(:),timeMat(:),thisVar(:));
+            Vq =F(data.longitude(timeInd),data.latitude(timeInd),datenum(data.time(timeInd)));            
+            int.zHCR=cat(1,int.zHCR,Vq);
+            thisVar=squeeze(modelData.p(:,:,jj,:));
+            F=scatteredInterpolant(lonMat(:),latMat(:),timeMat(:),thisVar(:));
+            Vq =F(data.longitude(timeInd),data.latitude(timeInd),datenum(data.time(timeInd)));            
+            int.pHCR=cat(1,int.pHCR,Vq);
+            thisVar=squeeze(modelData.rh(:,:,jj,:));
+            F=scatteredInterpolant(lonMat(:),latMat(:),timeMat(:),thisVar(:));
+            Vq =F(data.longitude(timeInd),data.latitude(timeInd),datenum(data.time(timeInd)));
+            int.rhHCR=cat(1,int.rhHCR,Vq);
+            thisVar=squeeze(modelData.u(:,:,jj,:));
+            F=scatteredInterpolant(lonMat(:),latMat(:),timeMat(:),thisVar(:));
+            Vq =F(data.longitude(timeInd),data.latitude(timeInd),datenum(data.time(timeInd)));
+            int.uHCR=cat(1,int.uHCR,Vq);
+            thisVar=squeeze(modelData.v(:,:,jj,:));
+            F=scatteredInterpolant(lonMat(:),latMat(:),timeMat(:),thisVar(:));
+            Vq =F(data.longitude(timeInd),data.latitude(timeInd),datenum(data.time(timeInd)));
+            int.vHCR=cat(1,int.vHCR,Vq);
+        end
         
+        % 2D variables
+        F=scatteredInterpolant(lonMat(:),latMat(:),timeMat(:),modelData.pSurf(:));
+        surfData.pHCR=F(data.longitude,data.latitude,datenum(data.time));
+        F=scatteredInterpolant(lonMat(:),latMat(:),timeMat(:),modelData.tSurf(:));
+        surfData.tempHCR=F(data.longitude,data.latitude,datenum(data.time));
+        F=scatteredInterpolant(lonMat(:),latMat(:),timeMat(:),modelData.rhSurf(:));
+        surfData.rhHCR=F(data.longitude,data.latitude,datenum(data.time));
+        F=scatteredInterpolant(lonMat(:),latMat(:),timeMat(:),modelData.uSurf(:));
+        surfData.uHCR=F(data.longitude,data.latitude,datenum(data.time));
+        F=scatteredInterpolant(lonMat(:),latMat(:),timeMat(:),modelData.vSurf(:));
+        surfData.vHCR=F(data.longitude,data.latitude,datenum(data.time));
     else
         for jj=1:size(modelData.z,3)
             Vq = interpn(lonMat,latMat,timeMat,squeeze(modelData.Temperature(:,:,jj,:)),...
@@ -273,7 +343,8 @@ for ii=3:size(caseList,1)
     end
     
     % Interpolate topo
-    surfData.zHCR=data.altitude;
+    surfData.zHCR=nan(size(surfData.tempHCR));
+    surfData.zHCR(:)=unique(data.altitude);
     
     if size(surfData.zHCR,1)==1
         surfData.zHCR=surfData.zHCR';
