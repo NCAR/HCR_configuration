@@ -2,10 +2,10 @@ function nonMissingInds = findNonMissingInds(data,gapSecs)
 % Fill in missing and NScal
 nonMissingInds=ones(size(data.time));
 
-flagTemp=data.FLAG;
+flagTemp=data.FLAG_short;
 
 surfMask=zeros(1,size(flagTemp,2));
-surfMask(find(any(data.FLAG==10 | data.FLAG==11,1)))=1;
+surfMask(find(any(data.FLAG_short==10 | data.FLAG_short==11,1)))=1;
 surfDiff=diff(surfMask);
 
 % Add surface echo back in

@@ -151,6 +151,7 @@ for kk=1:length(inhours) %Loop through all hours
     [~,iv]=sort(vp);
     v=vIn(:,:,iv);
 
+    pCol=pCol./100;
     p=repmat(pCol,1,size(t,1),size(t,2));
     p=permute(p,[2,3,1]);
     

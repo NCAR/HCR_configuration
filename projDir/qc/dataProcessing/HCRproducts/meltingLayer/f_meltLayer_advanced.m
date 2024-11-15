@@ -311,7 +311,7 @@ end
 
 % Sanity check
 meltLayerOut(data.TEMP<-1)=0;
-meltLayerOut(data.TEMP>7)=2;
+meltLayerOut(data.TEMP>tempMax)=2;
 
 % Clean up small areas
 coldMask=meltLayerOut==0;

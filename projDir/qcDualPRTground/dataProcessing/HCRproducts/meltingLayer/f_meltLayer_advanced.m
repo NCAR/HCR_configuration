@@ -8,12 +8,11 @@ disp('Preparing fields ...')
 
 %% Truncate to non missing and regions with sub 7 deg temps
 gapSecs=10;
-tempMax=7;
 nonMissingInds=findNonMissingInds(data,gapSecs);
 
 % Temperature too high
 minTemp=min(data.TEMP,[],1,'omitnan');
-nonMissingInds(minTemp>tempMax)=0;
+nonMissingInds(minTemp>thresholds.tempMax)=0;
 
 dataInVars=fields(data);
 
@@ -79,7 +78,7 @@ dbzDiff(:,upIndsS)=-dbzDiff(:,upIndsS);
 disp('Fuzzy logic ...')
 
 % Get melting layer probability
-meltProb=findMeltProb(dataShort,velDiff,dbzDiff);
+meltProb=findMeltProb(dataShort,velDiff,dbzDiff,thresholds.tempMax);
 meltProb(isnan(dataShort.DBZ))=nan;
 % Hard censor on temperature
 meltProb(dataShort.TEMP<-1 | dataShort.TEMP>7)=nan;
@@ -315,7 +314,7 @@ end
 
 % Sanity check
 meltLayerOut(data.TEMP<-1)=0;
-meltLayerOut(data.TEMP>7)=2;
+meltLayerOut(data.TEMP>thresholds.tempMax)=2;
 
 % Clean up small areas
 coldMask=meltLayerOut==0;

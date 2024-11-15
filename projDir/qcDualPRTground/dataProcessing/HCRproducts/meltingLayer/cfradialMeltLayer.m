@@ -2,17 +2,17 @@
 clear all;
 close all;
 
-addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
+addpath(genpath('~/git/HCR_configuration/projDir/qcDualPRTground/dataProcessing/'));
 
-project='cset'; % socrates, cset, aristo, otrec
-quality='qc3'; % field, qc1, qc2
-qcVersion='v3.1';
-freqData='10hz';
-whichModel='era5';
+project='meow'; % socrates, cset, aristo, otrec
+quality='qc1'; % field, qc1, qc2
+qcVersion='v1.0';
+freqData='10hz_combined';
+whichModel='hrrr';
 
 formatOut = 'yyyymmdd';
 
-infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_',project,'_data.txt'];
+infile=['~/git/HCR_configuration/projDir/qcDualPRTground/dataProcessing/scriptsFiles/iops_',project,'.txt'];
 
 caseList = table2array(readtable(infile));
 
@@ -23,9 +23,9 @@ indir=HCRdir(project,quality,qcVersion,freqData);
 %% Run processing
 
 % Go through flights
-for ii=1:size(caseList,1)
+for ii=3:size(caseList,1)
     
-    disp(['Flight ',num2str(ii)]);
+    disp(['IOP ',num2str(ii)]);
     
     startTime=datetime(caseList(ii,1:6));
     endTime=datetime(caseList(ii,7:12));

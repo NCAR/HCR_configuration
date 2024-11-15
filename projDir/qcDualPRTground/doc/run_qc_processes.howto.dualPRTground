@@ -290,6 +290,9 @@ $PROJ_DIR/qcDualPRTground/dataProcessing/HCRproducts/meltingLayer/cfradialMeltLa
 # Adjust and run
 $PROJ_DIR/qcDualPRTground/dataProcessing/HCRproducts/stratConv/stratConv_2convectivity_wholeFlights.m
 
+# To plot the output run
+$PROJ_DIR/qcDualPRTground/dataProcessing/HCRproducts/stratConv/stratConv_plotMat.m
+
 # To add id to the dataset run
 $PROJ_DIR/qcDualPRTground/dataProcessing/HCRproducts/stratConv/cfradial_convStrat.m
 

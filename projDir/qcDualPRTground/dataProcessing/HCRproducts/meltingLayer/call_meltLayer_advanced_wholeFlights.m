@@ -9,17 +9,18 @@ project='meow';
 quality='qc1';
 freqData='10hz_combined';
 qcVersion='v1.0';
-whichModel='era5';
+whichModel='hrrr';
 
 infile=['~/git/HCR_configuration/projDir/qcDualPRTground/dataProcessing/scriptsFiles/iops_',project,'.txt'];
 
-saveData=1;
+saveData=0;
 
 plotYes=1;
 showPlot='off';
 
 thresholds.meltProbLow=0.4;
 thresholds.meltProbHigh=0.55;
+thresholds.tempMax=7;
 
 caseList = table2array(readtable(infile));
 
@@ -35,7 +36,7 @@ end
 
 % Loop through cases
 
-for aa=1:size(caseList,1)
+for aa=4:size(caseList,1)
 
     disp(['IOP ',num2str(aa)]);
     disp('Loading HCR data.')
@@ -96,7 +97,7 @@ for aa=1:size(caseList,1)
 
         meltLayer=data.meltLayer;
         save([outdir,whichModel,'.meltLayer.',datestr(data.time(1),'YYYYmmDD_HHMMSS'),'_to_',...
-            datestr(data.time(end),'YYYYmmDD_HHMMSS'),'.IOP',num2str(aa),'.mat'],'meltLayer');
+            datestr(data.time(end),'YYYYmmDD_HHMMSS'),'.IOP',num2str(aa),'.mat'],'meltLayer','-v7.3');
     end
 
     %% Plot in hourly increments
