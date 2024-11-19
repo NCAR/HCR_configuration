@@ -17,6 +17,8 @@ saveTime=0;
 if strcmp(project,'meow')
     upperLimDBZ=12;
     upperLimVEL=5;
+    pixRadDBZ=600; % Radius over which texture is calculated in pixels. Default is 50.
+    pixRadVEL=600;
 else
     error('Set upperLimDBZ and upperLimVE')
 end
@@ -63,9 +65,6 @@ for aa=1:size(caseList,1)
         dataShort.(dataInVars{ii})=data.(dataInVars{ii})(:,nonMissingInds==1);
     end
 
-    %%        
-    ylimUpper=(max(data.asl(~isnan(dataShort.DBZ)))./1000)+0.5;
-
     % Take care of up pointing VEL
     dataShort.VEL(:,dataShort.elevation<0)=-dataShort.VEL(:,dataShort.elevation<0);
 
@@ -73,14 +72,12 @@ for aa=1:size(caseList,1)
 
     disp('Calculating reflectivity texture ...');
 
-    pixRadDBZ=50; % Radius over which texture is calculated in pixels. Default is 50.
     dbzBase=-10; % Reflectivity base value which is subtracted from DBZ.
 
     dbzText=f_reflTexture(dataShort.DBZ,pixRadDBZ,dbzBase);
 
     disp('Calculating velocity texture ...');
 
-    pixRadVEL=50;
     velBase=-20; % VEL base value which is subtracted from DBZ.
 
     velText=f_velTexture(dataShort.VEL,pixRadVEL,velBase);
@@ -122,17 +119,17 @@ for aa=1:size(caseList,1)
     convStrat1D=max(convStrat,[],1);
     
     save([outdir,whichModel,'.convectivity.',datestr(data.time(1),'YYYYmmDD_HHMMSS'),'_to_',...
-        datestr(data.time(end),'YYYYmmDD_HHMMSS'),'.IOP',num2str(aa),'.mat'],'convectivity');
+        datestr(data.time(end),'YYYYmmDD_HHMMSS'),'.IOP',num2str(aa),'.mat'],'convectivity','-v7.3');
     
     save([outdir,whichModel,'.convStrat.',datestr(data.time(1),'YYYYmmDD_HHMMSS'),'_to_',...
-        datestr(data.time(end),'YYYYmmDD_HHMMSS'),'.IOP',num2str(aa),'.mat'],'convStrat');
+        datestr(data.time(end),'YYYYmmDD_HHMMSS'),'.IOP',num2str(aa),'.mat'],'convStrat','-v7.3');
     
     save([outdir,whichModel,'.convStrat1D.',datestr(data.time(1),'YYYYmmDD_HHMMSS'),'_to_',...
-        datestr(data.time(end),'YYYYmmDD_HHMMSS'),'.IOP',num2str(aa),'.mat'],'convStrat1D');
+        datestr(data.time(end),'YYYYmmDD_HHMMSS'),'.IOP',num2str(aa),'.mat'],'convStrat1D','-v7.3');
     
     if saveTime
         timeHCR=data.time;
         save([outdir,whichModel,'.time.',datestr(data.time(1),'YYYYmmDD_HHMMSS'),'_to_',...
-            datestr(data.time(end),'YYYYmmDD_HHMMSS'),'.IOP',num2str(aa),'.mat'],'timeHCR');
+            datestr(data.time(end),'YYYYmmDD_HHMMSS'),'.IOP',num2str(aa),'.mat'],'timeHCR','-v7.3');
     end
 end

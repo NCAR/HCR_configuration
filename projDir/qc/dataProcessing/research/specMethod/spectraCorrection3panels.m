@@ -22,7 +22,6 @@ s1=nexttile(1);
 hold on
 
 l1=plot(spectra.rawDB,'-b','LineWidth',1);
-l2=plot(xlim1,[spectra.noiseFloor,spectra.noiseFloor],'-c','LineWidth',1.5);
 ylabel('Power (dB)');
 ylim([-80,-20]);
 xlim(xlim1);
@@ -30,13 +29,14 @@ xlim(xlim1);
 yyaxis right
 l3=plot(spectra.BBS,'-r','LineWidth',2);
 xlabel('Spectral bin number');
-set(gca,'YColor','r');
+set(gca,'YColor','k');
+set(gca,'YTick',[]);
 ylim([0,1.2]);
 
 grid on
 box on
 %title('(a) Example spectrum')
-legend([l1,l3,l2],{'PS_{raw}';'GAUSS_{bbs}';'Spec. noise floor'},'Location','northwest');
+legend([l1,l3],{'PS_{raw}';'PS_{bbs} (scaled)'},'Location','northwest');
 text(920,1.1,'(a)','FontSize',12,'FontWeight','bold')
 
 s2=nexttile(2);
@@ -48,8 +48,9 @@ xdata=19:1006;
 hold on
 l4=plot(xdata,dftbbs,'-r','LineWidth',2);
 s2.YAxisLocation = 'right';
-s2.XTick = [];
-s2.YAxis.Color = 'r';
+s2.XTickLabels = [];
+s2.YTickLabels = [];
+s2.YAxis.Color = 'k';
 xlim(xlim2);
 yticks(0:0.025:0.1);
 
@@ -61,15 +62,16 @@ xlim(xlim2);
 xlabel('Time (10^{-4}s)');
 ylim([0,60]);
 yticks(0:15:75);
-annotation('textarrow',[0.65,0.56],[0.45,0.38],'String','Truncation value','FontSize',12)
+ylabel('Power (arbitrary units)');
+annotation('textarrow',[0.67,0.58],[0.45,0.38],'String','Truncation value','FontSize',12)
 
-plot([472,485],[17,0],'-k');
-plot([492,505],[17,0],'-k');
+plot([471.5,485],[16.9,0],'-k');
+plot([495.5,505],[17,0],'-k');
 
 grid on
 box on
 %title('(a) Example spectrum')
-legend([l5,l4],{'DFT_{ps}';'DFT_{bbs}'},'Location','northwest');
+legend([l5,l4],{'FT_{ps}';'FT_{bbs}'},'Location','northwest');
 text(555,55,'(b)','FontSize',12,'FontWeight','bold')
 
 
@@ -89,11 +91,11 @@ xlim(xlim1);
 grid on
 box on
 %title('(a) Example spectrum')
-legend([l1,l4,l3,l2],{'PS_{raw}';'PS_{cf}';'PS_{f}';'Sp. noise floor'},'Location','northwest');
+legend([l1,l4,l3,l2],{'PS_{raw}';'PS_{cf}';'PS_{f}';'Spec. noise floor'},'Location','northwest');
 text(920,-25,'(c)','FontSize',12,'FontWeight','bold')
 
 % Inset
-ai=axes('Position',[.2 .45 .16 .07]);
+ai=axes('Position',[.2 .45 .2 .07]);
 hold on
 l5=plot(xdata,dftps,'-b','LineWidth',1.5);
 ylim([0,1])
@@ -102,6 +104,7 @@ l4=plot(xdata,dftbbs,'-r','LineWidth',1.5);
 % s2.YAxisLocation = 'right';
 % s2.XTick = [];
 ai.YAxis(2).Color = [0 0 0];
+ai.YAxis(2).TickLabels = [];
 xlim([485,505]);
 box on
 %ylim([0,1])
