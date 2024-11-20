@@ -26,7 +26,7 @@ hold on
 
 l0=plot(numZero,err21,'-b','LineWidth',2);
 scatter(6,err21(5),'filled','MarkerFaceColor','red','MarkerEdgeColor','k');
-xlabel('Truncation piont');
+xlabel('Truncation value');
 ylabel('RMSE (dB)');
 ylim([5,8]);
 xlim(xlim1);
@@ -40,7 +40,7 @@ s2=nexttile(2);
 
 bar(numZero(1:end-1),H./sum(H).*100,1,'red')
 
-xlabel('Truncation piont');
+xlabel('Truncation value');
 ylabel('Frequency (%)')
 title('(b) Distribution of optimum truncation values')
 annotation('textarrow',[0.27,0.145],[0.615,0.6],'String',' Most frequent optimum truncation value','FontSize',12)
@@ -65,7 +65,7 @@ xlim(xlim2);
 grid on
 box on
 title('(c) Example with optimum truncation value of 40')
-legend([l1,l2,l3,l4],{'Signal A';'Signal B';'Filtered TP=40';'Filtered TP=7'},'Location','northwest');
+legend([l1,l2,l3,l4],{'Signal A';'Signal B';'Filtered, TRV=40';'Filtered, TRV=7'},'Location','northwest');
 
 h1=drawellipse('Center',[530,-53],'SemiAxes',[15,9.5],'Color','b', ...
     'FaceAlpha',0,'HandleVisibility','off','MarkerSize',0.01);

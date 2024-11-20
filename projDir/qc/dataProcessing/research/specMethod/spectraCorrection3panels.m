@@ -63,7 +63,11 @@ xlabel('Time (10^{-4}s)');
 ylim([0,60]);
 yticks(0:15:75);
 ylabel('Power (arbitrary units)');
-annotation('textarrow',[0.67,0.58],[0.45,0.38],'String','Truncation value','FontSize',12)
+e=errorbar(515,3,2,'horizontal');
+%e.Color=[0.4660 0.6740 0.1880];
+e.Color=[0 0 0];
+e.LineWidth=1.6;
+annotation('textarrow',[0.67,0.58],[0.45,0.4],'String','Truncation value','FontSize',12)
 
 plot([471.5,485],[16.9,0],'-k');
 plot([495.5,505],[17,0],'-k');
@@ -91,7 +95,7 @@ xlim(xlim1);
 grid on
 box on
 %title('(a) Example spectrum')
-legend([l1,l4,l3,l2],{'PS_{raw}';'PS_{cf}';'PS_{f}';'Spec. noise floor'},'Location','northwest');
+legend([l1,l4,l3,l2],{'PS_{raw}';'PS_{corrFilt}';'PS_{filt}';'Spec. noise floor'},'Location','northwest');
 text(920,-25,'(c)','FontSize',12,'FontWeight','bold')
 
 % Inset
