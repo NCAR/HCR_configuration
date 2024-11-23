@@ -1,4 +1,5 @@
-% add model data to cfradial files
+% add convstrat data to cfradial files
+
 clear all;
 close all;
 
@@ -35,8 +36,10 @@ for ii=1:size(caseList,1)
     if ~isempty(fileList)
         
         % Get model data
-        model.meltLayer=[];
-               
+        model.convStrat=[];
+        model.convStrat1D=[];
+        model.convectivity=[];
+        
         model=read_model(model,modeldir,startTime,endTime);
         timeModelNum=datenum(model.time);
         
@@ -46,16 +49,16 @@ for ii=1:size(caseList,1)
             
             disp(infile);
 
-            % Check if variable exists
+             % Check if variable exists
             try
-                meltIn=ncread(infile,'MELTING_LAYER');
+                convIn=ncread(infile,'CONVECTIVITY');
             end
-            if exist('meltIn')
+            if exist('convIn')
                 warning('Variable already exists. Skipping file.')
-                clear('meltIn');
+                clear('convIn');
                 continue
             end
-
+            
             % Find times that are equal
             startTimeIn=ncread(infile,'time_coverage_start')';
             startTimeFile=datetime(str2num(startTimeIn(1:4)),str2num(startTimeIn(6:7)),str2num(startTimeIn(9:10)),...
@@ -73,7 +76,7 @@ for ii=1:size(caseList,1)
             end
             
             % Write output
-            fillVal=-9999;
+            fillVal=-99;
             
             modVars=fields(model);
             
@@ -95,25 +98,47 @@ for ii=1:size(caseList,1)
             
             % Define variables
             netcdf.reDef(ncid);
-            varidML = netcdf.defVar(ncid,'MELTING_LAYER','NC_SHORT',[dimrange dimtime]);
-            netcdf.defVarFill(ncid,varidML,false,fillVal);
+            varidConv = netcdf.defVar(ncid,'CONVECTIVITY','NC_FLOAT',[dimrange dimtime]);
+            netcdf.defVarFill(ncid,varidConv,false,fillVal);
+            varidSC2D = netcdf.defVar(ncid,'ECHO_TYPE_2D','NC_SHORT',[dimrange dimtime]);
+            netcdf.defVarFill(ncid,varidSC2D,false,fillVal);
+            varidSC1D = netcdf.defVar(ncid,'ECHO_TYPE_1D','NC_SHORT',[dimtime]);
+            netcdf.defVarFill(ncid,varidSC1D,false,fillVal);
             netcdf.endDef(ncid);
             
             % Write variables
-            netcdf.putVar(ncid,varidML,modOut.meltLayer);
-                                  
+            netcdf.putVar(ncid,varidConv,modOut.convectivity);
+            netcdf.putVar(ncid,varidSC2D,modOut.convStrat);
+            netcdf.putVar(ncid,varidSC1D,modOut.convStrat1D);
+                       
             netcdf.close(ncid);
             
             % Write attributes
-            ncwriteatt(infile,'MELTING_LAYER','long_name','melting_layer');
-            ncwriteatt(infile,'MELTING_LAYER','standard_name','melting_layer');
-            ncwriteatt(infile,'MELTING_LAYER','units','');
-            ncwriteatt(infile,'MELTING_LAYER','flag_values',[9,11,19,21]);
-            ncwriteatt(infile,'MELTING_LAYER','flag_meanings',...
-                'warm melting_warm melting_cold cold');
-            ncwriteatt(infile,'MELTING_LAYER','is_discrete','true');
-            ncwriteatt(infile,'MELTING_LAYER','grid_mapping','grid_mapping');
-            ncwriteatt(infile,'MELTING_LAYER','coordinates','time range');
+            ncwriteatt(infile,'CONVECTIVITY','long_name','convective_probability');
+            ncwriteatt(infile,'CONVECTIVITY','standard_name','convectivity');
+            ncwriteatt(infile,'CONVECTIVITY','units','');
+            ncwriteatt(infile,'CONVECTIVITY','grid_mapping','grid_mapping');
+            ncwriteatt(infile,'CONVECTIVITY','coordinates','time range');
+            
+            ncwriteatt(infile,'ECHO_TYPE_2D','long_name','echo_type_2D');
+            ncwriteatt(infile,'ECHO_TYPE_2D','standard_name','echo_type');
+            ncwriteatt(infile,'ECHO_TYPE_2D','units','');
+            ncwriteatt(infile,'ECHO_TYPE_2D','flag_values',[14, 16, 18, 25, 30, 32, 34, 36, 38]);
+            ncwriteatt(infile,'ECHO_TYPE_2D','flag_meanings',...
+                'strat_low strat_mid strat_high mixed conv conv_elevated conv_shallow conv_mid conv_deep');
+            ncwriteatt(infile,'ECHO_TYPE_2D','is_discrete','true');
+            ncwriteatt(infile,'ECHO_TYPE_2D','grid_mapping','grid_mapping');
+            ncwriteatt(infile,'ECHO_TYPE_2D','coordinates','time range');
+                        
+            ncwriteatt(infile,'ECHO_TYPE_1D','long_name','echo_type_1D');
+            ncwriteatt(infile,'ECHO_TYPE_1D','standard_name','echo_type');
+            ncwriteatt(infile,'ECHO_TYPE_1D','units','');
+            ncwriteatt(infile,'ECHO_TYPE_1D','flag_values',[14, 16, 18, 25, 30, 32, 34, 36, 38]);
+            ncwriteatt(infile,'ECHO_TYPE_1D','flag_meanings',...
+                'strat_low strat_mid strat_high mixed conv conv_elevated conv_shallow conv_mid conv_deep');
+            ncwriteatt(infile,'ECHO_TYPE_1D','is_discrete','true');
+            ncwriteatt(infile,'ECHO_TYPE_1D','grid_mapping','grid_mapping');
+            ncwriteatt(infile,'ECHO_TYPE_1D','coordinates','time');
         end
     end
 end

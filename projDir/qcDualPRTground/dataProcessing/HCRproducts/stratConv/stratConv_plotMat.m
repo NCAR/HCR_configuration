@@ -103,9 +103,9 @@ for aa=1:size(caseList,1)
         
         close all
         
-        endPlot=startPlot+minutes(60);
+        endPlot=startPlot+minutes(90);
         timeInds=find(data.time>=startPlot & data.time<=endPlot);
-        timeInds=timeInds(1:2:length(timeInds));
+        timeInds=timeInds(1:3:length(timeInds));
         
         timePlot=data.time(timeInds);
         dbzPlot=data.DBZ(:,timeInds);
@@ -119,7 +119,7 @@ for aa=1:size(caseList,1)
         velPlot=data.VEL(:,timeInds);
         
         timeIndsSC=find(timeSC>=startPlot & timeSC<=endPlot);
-        timeIndsSC=timeIndsSC(1:2:length(timeIndsSC));
+        timeIndsSC=timeIndsSC(1:3:length(timeIndsSC));
         sc1D=stratConv1D(timeIndsSC);
         sc1D(sc1D==14)=1;
         sc1D(sc1D==16)=2;

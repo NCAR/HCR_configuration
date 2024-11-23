@@ -15,10 +15,10 @@ infile=['~/git/HCR_configuration/projDir/qcDualPRTground/dataProcessing/scriptsF
 saveTime=0;
 
 if strcmp(project,'meow')
-    upperLimDBZ=12;
+    upperLimDBZ=14; %12
     upperLimVEL=5;
-    pixRadDBZ=600; % Radius over which texture is calculated in pixels. Default is 50.
-    pixRadVEL=600;
+    pixRadDBZ=300; % Radius over which texture is calculated in pixels. Default is 50.
+    pixRadVEL=300;
 else
     error('Set upperLimDBZ and upperLimVE')
 end

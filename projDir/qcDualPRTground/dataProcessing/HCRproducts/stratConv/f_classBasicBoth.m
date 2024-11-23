@@ -13,7 +13,7 @@ if max(max(maskMixedOrig))==0;
 end
 
 % Remove areas that are small
-maskMixed=bwareaopen(maskMixedOrig,500);
+maskMixed=bwareaopen(maskMixedOrig,3000); %500
 
 % Remove data from within too small areas so the convective mask won't pick
 % them up
@@ -86,8 +86,8 @@ end
 horLarge=imdilate(maskMixed, strel('line', 100,0));
 
 % Enlarge mixedConv
-mixedLarge1=imdilate(maskMixed, strel('disk', 15)); %25
-mixedLarge=imclose(mixedLarge1,strel('disk', 50));
+mixedLarge1=imdilate(maskMixed, strel('disk', 10)); %15
+mixedLarge=imclose(mixedLarge1,strel('disk', 20)); %50
 mixedLarge(isnan(conv))=0;
 mixedLarge=imfill(mixedLarge,'holes');
 mixedLarge=imerode(mixedLarge,strel('disk', 3));
@@ -121,8 +121,8 @@ maskConv=conv>=mixedConv;
 horLarge2=imdilate(maskConv, strel('line', 100,0));
 
 % Enlarge conv
-convLarge1=imdilate(maskConv, strel('disk', 8)); %15
-convLarge=imclose(convLarge1,strel('disk', 50));
+convLarge1=imdilate(maskConv, strel('disk', 5)); %8
+convLarge=imclose(convLarge1,strel('disk', 20)); %50
 convLarge(isnan(conv))=0;
 convLarge=imfill(convLarge,'holes');
 convLarge=imerode(convLarge,strel('disk', 3));

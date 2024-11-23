@@ -60,6 +60,11 @@ for ii=1:convAreas.NumObjects
             else
                 classSub(convAreas.PixelIdxList{ii})=34;
             end
+            % Near surf check
+             maxAlt=max(distAslTopo(convAreas.PixelIdxList{ii}));
+             if maxAlt<1000
+                 classSub(convAreas.PixelIdxList{ii})=25;
+             end
         else
             minTemp=min(temp(convAreas.PixelIdxList{ii}));
             if minTemp>=-25 % Below divergence level: mid
