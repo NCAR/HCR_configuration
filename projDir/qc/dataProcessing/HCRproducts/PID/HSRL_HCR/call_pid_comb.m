@@ -117,7 +117,7 @@ for aa=1:length(caseStart)
         pid_hcr_hsrl(smallInds)=11;
 
         largeInds=find((data.HCR_MELTING_LAYER>15 | (isnan(data.HCR_MELTING_LAYER) & data.TEMP<0)) & isnan(data.HCR_LDR) & isnan(data.HSRL_Particle_Linear_Depolarization_Ratio) & ...
-            (data.HCR_DBZ>5 & data.HCR_VEL>1));
+            (data.HCR_DBZ>5));
         pid_hcr_hsrl(largeInds)=10;
 
         %% Set low DBZ to cloud liquid

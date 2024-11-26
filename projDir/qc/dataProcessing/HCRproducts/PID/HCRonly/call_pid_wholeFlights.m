@@ -103,7 +103,7 @@ for aa=1:size(caseList,1)
     pid_hcr(smallInds)=11;
 
     largeInds=find((data.MELTING_LAYER>15 | (isnan(data.MELTING_LAYER) & data.TEMP<0)) & isnan(data.LDR) & ...
-        (data.DBZ_MASKED>5 & data.VEL_MASKED>1));
+        (data.DBZ_MASKED>5));
     pid_hcr(largeInds)=10;
 
     %% Set low DBZ to cloud liquid

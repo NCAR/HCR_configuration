@@ -1,41 +1,31 @@
 % Add pid data to cfradial files
-
 clear all;
 close all;
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Input variables %%%%%%%%%%%%%%%%%%%%%%%%%%
+addpath(genpath('~/git/HCR_configuration/projDir/qcDualPRTground/dataProcessing/'));
 
-project='cset'; %socrates, aristo, cset, otrec
-quality='qc3'; %field, qc1, or qc2
-freqData='10hz';
-qcVersion='v3.1';
-whichModel='era5';
+project='meow'; % socrates, cset, aristo, otrec
+quality='qc1'; % field, qc1, qc2
+qcVersion='v1.0';
+freqData='10hz_combined';
+whichModel='hrrr';
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+formatOut = 'yyyymmdd';
 
-addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
+infile=['~/git/HCR_configuration/projDir/qcDualPRTground/dataProcessing/scriptsFiles/iops_',project,'.txt'];
+
+caseList = table2array(readtable(infile));
 
 indir=HCRdir(project,quality,qcVersion,freqData);
 
 [~,modeldir]=modelDir(project,whichModel,quality,qcVersion,freqData);
 
-% if strcmp(project,'otrec')
-%     indir='/scr/sleet2/rsfdata/projects/otrec/hcr/qc2/cfradial/development/pid/10hz/';
-% elseif strcmp(project,'socrates')
-%     indir='/scr/snow2/rsfdata/projects/socrates/hcr/qc2/cfradial/development/pid/10hz/';
-% end
-% 
-% modeldir=[indir(1:end-30),'mat/pid/10hz/'];
-
-infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_',project,'_data.txt'];
-
-caseList = table2array(readtable(infile));
 %% Run processing
 
 % Go through flights
 for ii=1:size(caseList,1)
     
-    disp(['Flight ',num2str(ii)]);
+    disp(['IOP ',num2str(ii)]);
     
     startTime=datetime(caseList(ii,1:6));
     endTime=datetime(caseList(ii,7:12));
@@ -115,8 +105,7 @@ for ii=1:size(caseList,1)
                 'rain supercooled_rain drizzle supercooled_drizzle cloud_liquid supercooled_cloud_liquid melting large_frozen small_frozen precipitation cloud');
             ncwriteatt(infile,'PID','is_discrete','true');
             ncwriteatt(infile,'PID','grid_mapping','grid_mapping');
-            ncwriteatt(infile,'PID','coordinates','time range');
-                                    
+            ncwriteatt(infile,'PID','coordinates','time range');                                    
         end
     end
 end
