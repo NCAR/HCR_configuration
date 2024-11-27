@@ -285,6 +285,73 @@ max_range_km = 9999;
 
 //======================================================================
 //
+// GROUND-BASED MODE.
+//
+// In ground-based the instrument is not moving. Therefore we override 
+//   the latitude/longitude/altitude in the georeference data blocks, and 
+//   set the platform velocities to 0.
+//
+//======================================================================
+ 
+///////////// fixed_location_mode /////////////////////
+//
+// Option to set fixed location in ground-based mode.
+//
+// If TRUE, the program will override the metadata for 
+//   latitude/longitude/altitude, and set platform velocities to 0.
+//
+// Type: boolean
+
+fixed_location_mode = TRUE;
+
+///////////// fixed_radar_location ////////////////////
+//
+// Radar location if override is set true.
+//
+// The radar_location is only used if 'override_radar_location' is set 
+//   true. Otherwise the information in the input data stream is used. 
+//   Note that the altitude is in km MSL.
+//
+// Type: struct
+//   typedef struct {
+//      double latitudeDeg;
+//      double longitudeDeg;
+//      double altitudeKm;
+//   }
+//
+
+fixed_radar_location = {
+    latitudeDeg = 40.03811,
+    longitudeDeg = -105.23968,
+    altitudeKm = 1.6001
+};
+
+//======================================================================
+//
+// COMPUTE MEAN RADAR LOCATION?.
+//
+// This mode will compute the mean radar location for a ground-based 
+//   insytallation.
+//
+//======================================================================
+ 
+///////////// compute_mean_location ///////////////////
+//
+// Option to compute the mean location of the radar from the 
+//   georeference data in the rays.
+//
+// Applicable in archive mode only, and only applicable to ground-based 
+//   projects. It will compute the mean radar location, from the short- 
+//   and long-pulse input data, and print the mean to the terminal. The 
+//   mean values can then be used in the radar_location parameter (see 
+//   above) if override_radar_location is set to TRUE.
+//
+// Type: boolean
+
+compute_mean_location = FALSE;
+
+//======================================================================
+//
 // SET THE COMBINED DWELL DETAILS.
 //
 // Normally we combine the high-rate moments data (say at 100 hz) into 

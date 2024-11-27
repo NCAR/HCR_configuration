@@ -265,9 +265,9 @@ siggen_specify_power_sequence = TRUE;
 // Type: double
 //
 
-//siggen_sequence_start_power = -32.03;  // 2024-04-12  **This may have been a typo and value should've been -23.03
-siggen_sequence_start_power = -23.03;   // 2024-04-15   ** Verified on 2024-04-15
 
+//siggen_sequence_start_power = -23.03;   // Verified on 2024-04-15
+siggen_sequence_start_power = -23.06;     // Verified on 2024-11-19
 
 ///////////// siggen_delta_power_sequence /////////////
 //
