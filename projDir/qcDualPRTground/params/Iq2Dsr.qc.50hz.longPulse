@@ -534,7 +534,7 @@ radar_name = "HCR";
 //
 // Type: boolean
 
-override_radar_location = FALSE;
+override_radar_location = $(FIXED_LOCATION_MODE);
 
 ///////////// radar_latitude_deg //////////////////////
 //
@@ -544,7 +544,7 @@ override_radar_location = FALSE;
 //
 // Type: double
 
-radar_latitude_deg = 0;
+radar_latitude_deg = $(LATITUDE_DEG);
 
 ///////////// radar_longitude_deg /////////////////////
 //
@@ -554,7 +554,7 @@ radar_latitude_deg = 0;
 //
 // Type: double
 
-radar_longitude_deg = 0;
+radar_longitude_deg = $(LONGITUDE_DEG);
 
 ///////////// radar_altitude_meters ///////////////////
 //
@@ -564,7 +564,7 @@ radar_longitude_deg = 0;
 //
 // Type: double
 
-radar_altitude_meters = 0;
+radar_altitude_meters = $(ALTITUDE_M);
 
 ///////////// override_gate_geometry //////////////////
 //
@@ -1550,7 +1550,8 @@ rx_temp_gain_corrections = {
 //
 // FOR HCR, CORRECT RECEIVER GAIN FOR TEMPERATURE USING VALUES FROM SPDB.
 //
-// Also, optionally correct georeference height.
+// Also, optionally (a) correct georeference height, and (b) set 
+//   georeference velocities to 0 for ground-based operations.
 //
 //======================================================================
  
@@ -1621,6 +1622,19 @@ correct_altitude_for_egm = FALSE;
 // Type: string
 
 egm_2008_geoid_file = "./EGM_2008_WGS84_2.5minx2.5min.nc";
+
+///////////// georef_fixed_location_mode //////////////
+//
+// Option to set fixed location for ground-based HCR observations.
+//
+// If TRUE, we will override the metadata for 
+//   latitude/longitude/altitude, and set platform velocities to 0. Make 
+//   sure to set the parameters radar_latitude_deg, radar_longitude_deg 
+//   and radar_altitude_meters.
+//
+// Type: boolean
+
+georef_fixed_location_mode = $(FIXED_LOCATION_MODE);
 
 //======================================================================
 //

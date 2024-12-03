@@ -279,7 +279,7 @@ $PROJ_DIR/qcDualPRTground/dataProcessing/other/filterHX/cfradialLDRmasked.m
 # Add melting layer
 
 # Adjust and run
-$PROJ_DIR/qcDualPRTground/dataProcessing/HCRproducts/meltingLayer/call_meltLayer_advanced_wholeFlights.m
+$PROJ_DIR/qcDualPRTground/dataProcessing/HCRproducts/meltingLayer/call_meltLayer_advanced_wholeIOPs.m
 
 # To add it to the dataset run
 $PROJ_DIR/qcDualPRTground/dataProcessing/HCRproducts/meltingLayer/cfradialMeltLayer.m
@@ -288,7 +288,7 @@ $PROJ_DIR/qcDualPRTground/dataProcessing/HCRproducts/meltingLayer/cfradialMeltLa
 # Add convStrat
 
 # Adjust and run
-$PROJ_DIR/qcDualPRTground/dataProcessing/HCRproducts/stratConv/stratConv_2convectivity_wholeFlights.m
+$PROJ_DIR/qcDualPRTground/dataProcessing/HCRproducts/stratConv/stratConv_2convectivity_wholeIOPs.m
 
 # To plot the output run
 $PROJ_DIR/qcDualPRTground/dataProcessing/HCRproducts/stratConv/stratConv_plotMat.m
@@ -300,7 +300,7 @@ $PROJ_DIR/qcDualPRTground/dataProcessing/HCRproducts/stratConv/cfradial_convStra
 # Add PID
 
 # Adjust and run
-$PROJ_DIR/qcDualPRTground/dataProcessing/HCRproducts/PID/HCRonly/call_pid_wholeFlights.m
+$PROJ_DIR/qcDualPRTground/dataProcessing/HCRproducts/PID/HCRonly/call_pid_wholeIOPs.m
 
 # To add id to the dataset run
 $PROJ_DIR/qcDualPRTground/dataProcessing/HCRproducts/HCRonly/cfradial_pid.m
@@ -311,7 +311,7 @@ $PROJ_DIR/qcDualPRTground/dataProcessing/HCRproducts/HCRonly/cfradial_pid.m
 # Once all fields have been added we create a dataset version that
 # has only fields that are useful to the users. Run
 
-$PROJ_DIR/qcDualPRTground/scripts/run_RadxConvert.qc.select_fields.spicule
+$PROJ_DIR/qcDualPRTground/scripts/run_RadxConvert.qc.select_fields.meow
 
 # This will put the selected timess in
 # $DATA_DIR/QC_VERSION/cfradial/QC_SUB_VERSION
@@ -320,14 +320,10 @@ $PROJ_DIR/qcDualPRTground/scripts/run_RadxConvert.qc.select_fields.spicule
 # Create and check images. Replace imges on field catalog.
 
 # Run
-$PROJ_DIR/catalog/scripts/run_HawkEye.catalog.15min_archive.cset
+$PROJ_DIR/catalog/scripts/run_HawkEye.catalog.1hour_archive.meow
 
 # Check images by running gwenview. (It runs best if run on current
-# desktop, not on servers rain, snow, etc.)
-
-# If the 15 minute images look good, run
-$PROJ_DIR/catalog/scripts/run_HawkEye.catalog.5min_archive.cset
-$PROJ_DIR/catalog/scripts/run_HawkEye.catalog.1hour_archive.cset
+# machine, not on servers rain, snow, etc.)
 
 # Work with Carol Costanza to replace the images on the field catalog.
 

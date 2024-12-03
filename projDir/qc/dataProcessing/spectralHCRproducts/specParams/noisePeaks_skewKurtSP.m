@@ -1,5 +1,5 @@
 function [powerOrig,powerOrigRMnoise,powerSmooth,powerSmoothCorr,velOut,noiseFloorAllMov,peakIndsAll1,peakIndsAll2]= ...
-    noisePeaks_skewKurtSP(specDB,data,widthC,aircVel,sampleTime,figdir,plotTime)
+    noisePeaks_skewKurtSP(specDB,data,widthC,filterAt,sampleTime,figdir,plotTime)
 
 % Initialize output
 powerOrig=nan(size(specDB));
@@ -46,14 +46,6 @@ sigInLin=10.^(specDB./10);
 meanVel=sum(sigInLin.*velSpec,2,'omitmissing')./sum(sigInLin,2,'omitmissing');
 
 % Filter and correct for aircraft width
-if sampleTime==0.1
-    filterAt=round(0.00022396.*aircVel.^2-0.10542.*aircVel+18.132);
-elseif sampleTime==0.01
-    filterAt=round(0.000126.*aircVel.^2-0.0548.*aircVel+10.7);
-else
-    error('Sample time must be 0.1 or 0.01.')
-end
-filterAt=fillmissing(filterAt,'nearest');
 [sigWidthCorr,sigFiltered]=smoothAircraftWidthCorr(filterAt,specDB,meanVel,widthC,velSpec,sampleNum);
 
 %% Remove spectral noise
@@ -144,6 +136,14 @@ end
 sigPeaks=islocalmax(powerSmoothCorr,2,'MaxNumExtrema',2);
 peakIndsAll1=nan(size(powerSmoothCorr,1),2);
 peakIndsAll2=nan(size(powerSmoothCorr,1),2);
+
+noPeaks=sum(sigPeaks,2);
+powerOrig(noPeaks==0,:)=nan;
+powerOrigRMnoise(noPeaks==0,:)=nan;
+powerSmooth(noPeaks==0,:)=nan;
+powerSmoothCorr(noPeaks==0,:)=nan;
+velOut(noPeaks==0,:)=nan;
+noiseFloorAllMov(noPeaks==0,:)=nan;
 
 loopInds=find(any(~isnan(powerSmoothCorr),2));
 for aa=1:size(loopInds,1)

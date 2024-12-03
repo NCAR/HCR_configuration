@@ -29,4 +29,6 @@ sigWidthCorr=sigWidthCorr./sqrt(sampleNum).*corrFactor.*sqrt(2.*pi./((xVel(:,end
 
 sigFiltered=real(fft(ifftY,[],2));
 
+sigWidthCorr(corrFactor<0.1,:)=sigFiltered(corrFactor<0.1,:);
+
 end

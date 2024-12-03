@@ -4,14 +4,14 @@ close all;
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-project='cset'; %socrates, aristo, cset, otrec
+project='spicule'; %socrates, aristo, cset, otrec
 quality='ts'; %field, qc1, or qc2
-qualityCF='qc3';
+qualityCF='qc1';
 freqData='10hz';
-qcVersion='v3.1';
+qcVersion='v1.2';
 
 plotInds=0;
-%plotInds=(1:50:500);
+%plotInds=(1:500:5000);
 
 outTime=0.01; % Desired output time resolution in seconds. Must be less than or equal to one second.
 sampleTime=0.01; % Length of sample in seconds.
@@ -35,7 +35,7 @@ caseStart=datetime(caseList.Var1,caseList.Var2,caseList.Var3, ...
 caseEnd=datetime(caseList.Var7,caseList.Var8,caseList.Var9, ...
     caseList.Var10,caseList.Var11,caseList.Var12);
 
-for aa=1:length(caseStart)
+for aa=11:length(caseStart)
     tic
 
     plotTimeAll=[];
@@ -59,14 +59,28 @@ for aa=1:length(caseStart)
     dataCF=read_HCR(fileListMoments,dataCF,startTime,endTime);
     dataCF.beamWidth=ncread(fileListMoments{1},'radar_beam_width_v');
 
-    % Find width correction factor
+    % Find width correction factor and filter value
     % Aircraft speed
     velTestWind=sqrt(dataCF.eastward_velocity.^2+dataCF.northward_velocity.^2);
+    % Correction factor
     widthCorrDelta=abs(0.3.*velTestWind.*sin(deg2rad(dataCF.elevation)).*deg2rad(dataCF.beamWidth));
     widthCorrDelta=fillmissing(widthCorrDelta,'nearest',1);
-    widthCorrDelta=repmat(widthCorrDelta,size(dataCF.range,1),1);  
-    velTestWind=repmat(velTestWind,size(dataCF.range,1),1);
-    velTestWind=movmean(velTestWind,601,2);
+    widthCorrDelta=repmat(widthCorrDelta,size(dataCF.range,1),1);
+        
+    % Filter value
+    if sampleTime==0.1
+        filterAt=round(0.00022396.*velTestWind.^2-0.10542.*velTestWind+18.132);
+    elseif sampleTime==0.01
+        filterAt=round(0.000126.*velTestWind.^2-0.0548.*velTestWind+10.7);
+    else
+        error('Sample time must be 0.1 or 0.01.')
+    end
+    
+    filterAt=fillmissing(filterAt,'nearest');
+    filterAt=round(movmean(filterAt,501));
+    filterAt=modefilt(filterAt,[1,101]);
+
+    filterAt=repmat(filterAt,size(dataCF.range,1),1);
     
     % Velocity bias term
     velBiasCorrection=dataCF.VEL_MASKED-dataCF.VEL_RAW;
@@ -205,7 +219,7 @@ for aa=1:length(caseStart)
             % This step removes the noise, de-aliases, and corrects for
             % spectral broadening
             [powerOrig,powerOrigRMnoise,powerSmooth,powerSmoothCorr,specVelAdj,noiseFloor(:,ii),peaks1,peaks2]= ...
-                noisePeaks_skewKurtSP(specPowerDB.V,dataThis,widthCorrDelta(:,cfInd),velTestWind(:,cfInd), ...
+                noisePeaks_skewKurtSP(specPowerDB.V,dataThis,widthCorrDelta(:,cfInd),filterAt(:,cfInd), ...
                 sampleTime,figdir,plotTime);
             specVelRMnoise=specVelAdj;
             specVelRMnoise(isnan(powerSmoothCorr))=nan;

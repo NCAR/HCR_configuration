@@ -29,3 +29,12 @@ mkdir -p $LOG_DIR
 
 setenv COMBINED_MOMENTS_FMQ /tmp/fmq/moments/qc.10hz.combined
 
+# georef corrections
+
+setenv FIXED_LOCATION_MODE TRUE
+
+setenv LATITUDE_DEG 40.03811
+setenv LONGITUDE_DEG -105.23968
+setenv ALTITUDE_M 1600.1
+setenv ALTITUDE_KM 1.6001
+

@@ -63,15 +63,29 @@ for aa=9:size(caseList,1)
     dataCF=read_HCR(fileListMoments,dataCF,startTime,endTime);
     dataCF.beamWidth=ncread(fileListMoments{1},'radar_beam_width_v');
 
-    % Find width correction factor
+    % Find width correction factor and filter value
     % Aircraft speed
     velTestWind=sqrt(dataCF.eastward_velocity.^2+dataCF.northward_velocity.^2);
+    % Correction factor
     widthCorrDelta=abs(0.3.*velTestWind.*sin(deg2rad(dataCF.elevation)).*deg2rad(dataCF.beamWidth));
     widthCorrDelta=fillmissing(widthCorrDelta,'nearest',1);
-    widthCorrDelta=repmat(widthCorrDelta,size(dataCF.range,1),1);  
-    velTestWind=repmat(velTestWind,size(dataCF.range,1),1);
-    velTestWind=movmean(velTestWind,601,2);
+    widthCorrDelta=repmat(widthCorrDelta,size(dataCF.range,1),1);
+        
+    % Filter value
+    if sampleTime==0.1
+        filterAt=round(0.00022396.*velTestWind.^2-0.10542.*velTestWind+18.132);
+    elseif sampleTime==0.01
+        filterAt=round(0.000126.*velTestWind.^2-0.0548.*velTestWind+10.7);
+    else
+        error('Sample time must be 0.1 or 0.01.')
+    end
     
+    filterAt=fillmissing(filterAt,'nearest');
+    filterAt=round(movmean(filterAt,501));
+    filterAt=modefilt(filterAt,[1,101]);
+
+    filterAt=repmat(filterAt,size(dataCF.range,1),1);
+        
     % Velocity bias term
     velBiasCorrection=dataCF.VEL_MASKED-dataCF.VEL_RAW;
         
@@ -229,7 +243,7 @@ for aa=9:size(caseList,1)
             % This step removes the noise, de-aliases, and corrects for
             % spectral broadening
             [powerOrig,powerOrigRMnoise,powerSmooth,powerSmoothCorr,specVelAdj,noiseFloor(:,ii),peaks1,peaks2]= ...
-                noisePeaks_skewKurtSP(specPowerDB.V,dataThis,widthCorrDelta(:,cfInd),velTestWind(:,cfInd), ...
+                noisePeaks_skewKurtSP(specPowerDB.V,dataThis,widthCorrDelta(:,cfInd),filterAt(:,cfInd), ...
                 sampleTime,figdir,plotTime);
             specVelRMnoise=specVelAdj;
             specVelRMnoise(isnan(powerSmoothCorr))=nan;

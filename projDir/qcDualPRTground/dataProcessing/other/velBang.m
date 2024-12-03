@@ -1,5 +1,5 @@
-% find minimum reflectivity values
-clear all;
+% Analyze vel in bang
+clearvars;
 close all;
 
 addpath(genpath('~/git/HCR_configuration/projDir/qcDualPRTground/dataProcessing/'));
@@ -8,7 +8,8 @@ project='meow';
 quality='qc0';
 freqData='10hz_combined';
 freqData2='100hz_long';
-qcVersion='';
+qcVersion='v1.0';
+load50hz=1;
 
 infile=['~/git/HCR_configuration/projDir/qcDualPRTground/dataProcessing/scriptsFiles/iops_',project,'_data.txt'];
 
@@ -23,14 +24,15 @@ figdir='/scr/virga1/rsfdata/projects/meow/hcr/cfradial/moments/velBang/';
 %% Run processing
 
 % Go through flights
-for ii=12:size(caseList,1)
+for ii=14:size(caseList,1)
 
     disp(['Case ',num2str(ii),' of ',num2str(size(caseList,1))]);
 
     startTime=datetime(caseList(ii,1:6));
     endTime=datetime(caseList(ii,7:12));
-       
+
     %% Load cfradial data 10 Hz
+    disp('Loading 10 hz data ...')
     data=[];
     data.VEL_long=[];
     data.VEL_RAW_long=[];
@@ -46,15 +48,18 @@ for ii=12:size(caseList,1)
     data=read_HCR(fileList,data,startTime,endTime);
 
     %% Load cfradial data 50 Hz
-    data2=[];
-    data2.VEL=[];
-    data2.VEL_RAW=[];
-    % Make list of files within the specified time frame
-    fileList2=makeFileList(indir2,startTime,endTime,'xxxxxx20YYMMDDxhhmmss',1);
+    if load50hz
+        disp('Loading 50 hz data ...')
+        data2=[];
+        data2.VEL=[];
+        data2.VEL_RAW=[];
+        % Make list of files within the specified time frame
+        fileList2=makeFileList(indir2,startTime,endTime,'xxxxxx20YYMMDDxhhmmss',1);
 
-    % Load data
-    data2=read_HCR(fileList2,data2,startTime,endTime);
-  
+        % Load data
+        data2=read_HCR(fileList2,data2,startTime,endTime);
+    end
+
     %% Calc corrections
     xcorr=sind(data.azimuth).*cosd(data.elevation).*data.eastward_velocity;
     ycorr=cosd(data.azimuth).*cosd(data.elevation).*data.northward_velocity;
@@ -72,14 +77,16 @@ for ii=12:size(caseList,1)
 
     hold on
     scatter(data.time,data.VEL_RAW_long(15,:));
-    scatter(data2.time,data2.VEL_RAW(15,:));
+    if load50hz
+        scatter(data2.time,data2.VEL_RAW(15,:));
+    end
     view(2);
     ylabel('Velocity (m/s)');
     grid on
     box on
     title('VEL RAW in radar bang')
     ylim([-2,2]);
-    xlim([data.time(1),data.time(end)]);    
+    xlim([data.time(1),data.time(end)]);
 
     legend('10 Hz long','50 Hz long')
 
@@ -87,14 +94,16 @@ for ii=12:size(caseList,1)
 
     hold on
     scatter(data.time,data.VEL_long(15,:));
-    scatter(data2.time,data2.VEL(15,:));
+    if load50hz
+        scatter(data2.time,data2.VEL(15,:));
+    end
     view(2);
     ylabel('Velocity (m/s)');
     grid on
     box on
     title('VEL in radar bang')
     ylim([-2,2]);
-    xlim([data.time(1),data.time(end)]);    
+    xlim([data.time(1),data.time(end)]);
 
     legend('10 Hz long','50 Hz long')
 
@@ -113,7 +122,7 @@ for ii=12:size(caseList,1)
     box on
     title('Angles')
     ylim([-5,365]);
-    xlim([data.time(1),data.time(end)]);    
+    xlim([data.time(1),data.time(end)]);
 
     legend('Elevation','Azimuth')
 
@@ -129,7 +138,7 @@ for ii=12:size(caseList,1)
     box on
     title('Ground speed')
     ylim([-1,1]);
-    xlim([data.time(1),data.time(end)]);    
+    xlim([data.time(1),data.time(end)]);
 
     legend('East vel','North vel','Vert vel')
 
@@ -145,7 +154,7 @@ for ii=12:size(caseList,1)
     box on
     title('Velocity corrections')
     ylim([-1,1]);
-    xlim([data.time(1),data.time(end)]);    
+    xlim([data.time(1),data.time(end)]);
 
     legend('Xcorr','Ycorr','Zcorr')
 
