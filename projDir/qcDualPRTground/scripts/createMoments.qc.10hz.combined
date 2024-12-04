@@ -9,46 +9,6 @@ cd $PROJ_DIR/qcDualPRTground/params
 
 snuff Dsr2Radx HcrShortLongCombine
 
-# 20240503
-
-setenv COMBINED_MOMENTS_FMQ /tmp/fmq/moments/qc.10hz.combined.20240503
-
-Dsr2Radx -params Dsr2Radx.qc.10hz.combined -instance 20240503 -debug >& /tmp/Dsr2Radx.qc.10hz.combined.20240503.log &
-
-HcrShortLongCombine -params HcrShortLongCombine.qc.10hz -instance 20240503 -debug -start "2024 05 03 00 00 00" -end "2024 05 04 00 00 00" >& /tmp/HcrShortLongCombine.10hz.combined.20240503.log &
-
-# 20240506
-
-setenv COMBINED_MOMENTS_FMQ /tmp/fmq/moments/qc.10hz.combined.20240506
-
-Dsr2Radx -params Dsr2Radx.qc.10hz.combined -instance 20240506 -debug >& /tmp/Dsr2Radx.qc.10hz.combined.20240506.log &
-
-HcrShortLongCombine -params HcrShortLongCombine.qc.10hz -instance 20240506 -debug -start "2024 05 06 00 00 00" -end "2024 05 07 00 00 00" >& /tmp/HcrShortLongCombine.10hz.combined.20240506.log &
-
-# 20240507
-
-setenv COMBINED_MOMENTS_FMQ /tmp/fmq/moments/qc.10hz.combined.20240507
-
-Dsr2Radx -params Dsr2Radx.qc.10hz.combined -instance 20240507 -debug >& /tmp/Dsr2Radx.qc.10hz.combined.20240507.log &
-
-HcrShortLongCombine -params HcrShortLongCombine.qc.10hz -instance 20240507 -debug -start "2024 05 07 00 00 00" -end "2024 05 08 00 00 00" >& /tmp/HcrShortLongCombine.10hz.combined.20240507.log &
-
-# 20240508
-
-setenv COMBINED_MOMENTS_FMQ /tmp/fmq/moments/qc.10hz.combined.20240508
-
-Dsr2Radx -params Dsr2Radx.qc.10hz.combined -instance 20240508 -debug >& /tmp/Dsr2Radx.qc.10hz.combined.20240508.log &
-
-HcrShortLongCombine -params HcrShortLongCombine.qc.10hz -instance 20240508 -debug -start "2024 05 08 00 00 00" -end "2024 05 09 00 00 00" >& /tmp/HcrShortLongCombine.10hz.combined.20240508.log &
-
-# 20240509
-
-setenv COMBINED_MOMENTS_FMQ /tmp/fmq/moments/qc.10hz.combined.20240509
-
-Dsr2Radx -params Dsr2Radx.qc.10hz.combined -instance 20240509 -debug >& /tmp/Dsr2Radx.qc.10hz.combined.20240509.log &
-
-HcrShortLongCombine -params HcrShortLongCombine.qc.10hz -instance 20240509 -debug -start "2024 05 09 00 00 00" -end "2024 05 10 00 00 00" >& /tmp/HcrShortLongCombine.10hz.combined.20240509.log &
-
 # 20240510
 
 setenv COMBINED_MOMENTS_FMQ /tmp/fmq/moments/qc.10hz.combined.20240510

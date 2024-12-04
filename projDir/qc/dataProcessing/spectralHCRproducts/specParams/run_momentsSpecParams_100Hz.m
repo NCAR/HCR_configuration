@@ -35,7 +35,7 @@ caseStart=datetime(caseList.Var1,caseList.Var2,caseList.Var3, ...
 caseEnd=datetime(caseList.Var7,caseList.Var8,caseList.Var9, ...
     caseList.Var10,caseList.Var11,caseList.Var12);
 
-for aa=11:length(caseStart)
+for aa=1:length(caseStart)
     tic
 
     plotTimeAll=[];
@@ -75,7 +75,7 @@ for aa=11:length(caseStart)
     else
         error('Sample time must be 0.1 or 0.01.')
     end
-    
+
     filterAt=fillmissing(filterAt,'nearest');
     filterAt=round(movmean(filterAt,501));
     filterAt=modefilt(filterAt,[1,101]);

@@ -11,7 +11,7 @@ Dsr2Radx -params Dsr2Radx.qc.50hz.shortPulse -debug >& /tmp/Dsr2Radx.qc.50hz.sho
 
 # for each day, run Iq2Dsr to compute the moments and write them to the FMQ
 
-foreach dir (20240501 20240502 20240503 20240506 20240507 20240508 20240509 20240510 20240520 20240521 20240522 20240529 20240530 20240607 20240610 20240614 20240620 20240624 20240627)
+foreach dir (20240510 20240520 20240521 20240522 20240529 20240530 20240607 20240610 20240614 20240620 20240624 20240627)
 
   Iq2Dsr -params Iq2Dsr.qc.50hz.shortPulse -debug -f $DATA_DIR/time_series/wband/save/${dir}/${dir}*ts >& /tmp/Iq2Dsr.qc.50hz.shortPulse.${dir}.log
 
