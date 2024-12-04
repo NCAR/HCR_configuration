@@ -331,7 +331,7 @@ fixed_radar_location = {
 // COMPUTE MEAN RADAR LOCATION?.
 //
 // This mode will compute the mean radar location for a ground-based 
-//   insytallation.
+//   installation.
 //
 //======================================================================
  
@@ -480,15 +480,28 @@ stats_method_fields = {
 
 perform_velocity_unfolding = TRUE;
 
-///////////// input_vel_field_name ////////////////////
+///////////// input_vel_raw_field_name ////////////////
 //
-// This is the name for the velocity field in the input data.
+// This is the name for the raw velocity field in the input data. The 
+//   raw velocity has not been corrected for platform motion.
 //
 // The field name must be the same for the short- and long-prt rays.
 //
 // Type: string
 
-input_vel_field_name = "VEL";
+input_vel_raw_field_name = "VEL_RAW";
+
+///////////// input_vel_corr_field_name ///////////////
+//
+// This is the name for the velocity field in the input data, corrected 
+//   for platform motion.
+//
+// If this field exists in the input data, it is deleted and replaced 
+//   with the values computed by this application.
+//
+// Type: string
+
+input_vel_corr_field_name = "VEL";
 
 ///////////// suffix_to_add_for_short_pulse_fields ////
 //
@@ -512,7 +525,18 @@ suffix_to_add_for_short_pulse_fields = "_short";
 
 suffix_to_add_for_long_pulse_fields = "_long";
 
-///////////// vel_unfolded_field_name /////////////////
+///////////// output_vel_corr_field_name //////////////
+//
+// Name for the corrected velocity on output.
+//
+// The name of the output fields for velocity corrected for platform 
+//   motion.
+//
+// Type: string
+
+output_vel_corr_field_name = "VEL";
+
+///////////// output_vel_unfolded_field_name //////////
 //
 // Name for the unfolded velocity.
 //
@@ -521,21 +545,7 @@ suffix_to_add_for_long_pulse_fields = "_long";
 //
 // Type: string
 
-vel_unfolded_field_name = "VEL_unfold";
-
-///////////// correct_velocity_for_platform_vertical_motion 
-//
-// Option to correct the estimated velocity corrected for vertical 
-//   platform motion.
-//
-// For an airborne platform, we measure the vertical velocity of the 
-//   platform using an INS system. We can optionally correct the measured 
-//   velocity for the plaform vertical motion. This correction is applied 
-//   AFTER the unfolding computation.
-//
-// Type: boolean
-
-correct_velocity_for_platform_vertical_motion = FALSE;
+output_vel_unfolded_field_name = "VEL_unfold_short";
 
 //======================================================================
 //

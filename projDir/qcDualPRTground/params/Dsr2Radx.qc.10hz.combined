@@ -329,7 +329,7 @@ override_platform_type = TRUE;
 //     PLATFORM_SATELLITE_GEOSTAT
 //
 
-platform_type = PLATFORM_AIRCRAFT_FORE;
+platform_type = PLATFORM_FIXED;
 
 ///////////// override_primary_axis ///////////////////
 //
