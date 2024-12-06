@@ -13,7 +13,6 @@ whichModel='hrrr'; % era5 or hrrr
 infile=['~/git/HCR_configuration/projDir/qcDualPRTground/dataProcessing/scriptsFiles/iops_',project,'.txt'];
 
 saveData=1;
-plotData=1;
 ylimUpper=13;
 
 era5levelFiles=1;

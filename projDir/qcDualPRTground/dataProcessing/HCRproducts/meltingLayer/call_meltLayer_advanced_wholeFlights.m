@@ -13,7 +13,7 @@ whichModel='hrrr';
 
 infile=['~/git/HCR_configuration/projDir/qcDualPRTground/dataProcessing/scriptsFiles/iops_',project,'.txt'];
 
-saveData=0;
+saveData=1;
 
 plotYes=1;
 showPlot='off';
@@ -36,7 +36,7 @@ end
 
 % Loop through cases
 
-for aa=4:size(caseList,1)
+for aa=1:size(caseList,1)
 
     disp(['IOP ',num2str(aa)]);
     disp('Loading HCR data.')

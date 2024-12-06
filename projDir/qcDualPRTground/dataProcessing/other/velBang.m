@@ -5,11 +5,11 @@ close all;
 addpath(genpath('~/git/HCR_configuration/projDir/qcDualPRTground/dataProcessing/'));
 
 project='meow';
-quality='qc2';
+quality='qc1';
 freqData='10hz_combined';
 freqData2='50hz_longPulse';
 qcVersion='v1.0';
-load10hz=0;
+load10hz=1;
 load50hz=1;
 
 infile=['~/git/HCR_configuration/projDir/qcDualPRTground/dataProcessing/scriptsFiles/iops_',project,'_data.txt'];
@@ -25,7 +25,7 @@ figdir='/scr/virga1/rsfdata/projects/meow/hcr/cfradial/moments/velBang/';
 %% Run processing
 
 % Go through flights
-for ii=1:size(caseList,1)
+for ii=2:size(caseList,1)
 
     disp(['Case ',num2str(ii),' of ',num2str(size(caseList,1))]);
 
@@ -37,7 +37,7 @@ for ii=1:size(caseList,1)
         disp('Loading 10 hz data ...')
         data=[];
         data.VEL_long=[];
-        data.VEL_RAW_long=[];
+        % data.VEL_RAW_long=[];
         data.eastward_velocity=[];
         data.northward_velocity=[];
         data.vertical_velocity=[];
@@ -89,9 +89,9 @@ for ii=1:size(caseList,1)
     s1=nexttile(1);
 
     hold on
-    if load10hz
-        scatter(data.time,data.VEL_RAW_long(15,:));
-    end
+    % if load10hz
+    %     scatter(data.time,data.VEL_RAW_long(15,:));
+    % end
     if load50hz
         scatter(data2.time,data2.VEL_RAW(15,:));
     end
@@ -108,7 +108,7 @@ for ii=1:size(caseList,1)
     end
 
     if load10hz & load50hz
-        legend('10 Hz long','50 Hz long')
+        legend('50 Hz long')
     end
 
     s2=nexttile(2);

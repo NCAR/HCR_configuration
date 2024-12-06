@@ -7,8 +7,6 @@ if strcmp(project,'meow')
         indir='/scr/virga1/rsfdata/projects/meow/hcr/time_series/wband/save/';
     elseif strcmp(qc,'qc0')
         indir=['/scr/virga1/rsfdata/projects/meow/hcr/cfradial/moments/',freq,'/'];
-    elseif strcmp(qc,'qc1')
-        indir=['/scr/virga1/rsfdata/projects/meow/hcr/',qc,'/cfradial/moments/',freq,'/'];
     else
         indir=['/scr/virga1/rsfdata/projects/meow/hcr/',qc,'/cfradial/',qcVersion,'_full/',freq,'/'];
     end

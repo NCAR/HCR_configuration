@@ -8,7 +8,7 @@ project='meow'; %socrates, aristo, cset
 quality='qc1'; %field, qc1, or qc2
 freqData='10hz_combined'; % 10hz, 100hz, or 2hz
 qcVersion='v1.0';
-whichModel='era5';
+whichModel='hrrr';
 formatOut = 'yyyymmdd';
 
 infile=['~/git/HCR_configuration/projDir/qcDualPRTground/dataProcessing/scriptsFiles/iops_',project,'.txt'];
@@ -22,7 +22,7 @@ indir=HCRdir(project,quality,qcVersion,freqData);
 %% Run processing
 
 % Go through flights
-for ii=1:size(caseList,1)
+for ii=5:size(caseList,1)
     
     disp(['IOP ',num2str(ii)]);
     
@@ -34,6 +34,7 @@ for ii=1:size(caseList,1)
     if ~isempty(fileList)
         
         % Get model data
+        model=[];
         model.velUnfolded_long=[];
         
         model=read_model_longShort(model,modeldir,startTime,endTime);

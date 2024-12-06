@@ -1646,8 +1646,8 @@ output_fields = {
   }
   ,
   {
-    dsr_name = "VEL_unfold",
-    output_name = "VEL_unfold",
+    dsr_name = "VEL_unfold_short",
+    output_name = "VEL_unfold_short",
     long_name = "doppler_velocity_unfolded",
     standard_name = "radial_velocity_of_scatterers_away_from_instrument",
     output_units = "m/s",

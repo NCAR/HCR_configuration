@@ -8,7 +8,7 @@ project='meow'; %socrates, aristo, cset
 quality='qc1'; %field, qc1, or qc2
 freqData='10hz_combined'; % 10hz, 100hz, or 2hz
 qcVersion='v1.0';
-whichModel='era5';
+whichModel='hrrr';
 
 indir=HCRdir(project,quality,qcVersion,freqData);
 [~,modeldir]=modelDir(project,whichModel,quality,qcVersion,freqData);
@@ -31,6 +31,7 @@ for ii=1:size(caseList,1)
     if ~isempty(fileList)
         
         % Get model data
+        model=[];
         model.antstat_short=[];
         model.antstat_long=[];
         model.flagfield_short=[];
@@ -51,7 +52,7 @@ for ii=1:size(caseList,1)
 
             % Check if variable exists
             try
-                flagIn=ncread(infile,'FLAG');
+                flagIn=ncread(infile,'FLAG_long');
             end
             if exist('flagIn')
                 warning('Variable already exists. Skipping file.')

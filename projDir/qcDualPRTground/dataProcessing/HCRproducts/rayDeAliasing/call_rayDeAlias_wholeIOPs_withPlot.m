@@ -11,7 +11,7 @@ project='meow'; %socrates, aristo, cset
 quality='qc1'; %field, qc1, or qc2
 freqData='10hz_combined'; % 10hz, 100hz, or 2hz
 qcVersion='v1.0';
-whichModel='era5';
+whichModel='hrrr';
 dataFreq=10;
 
 saveData=1;
@@ -21,7 +21,7 @@ plotData=1;
 
 ylimUpper=13;
 
-nyquistFile='/scr/virga1/rsfdata/projects/meow/hcr/qc1/cfradial/moments/50hz_longPulse/20240510/cfrad.20240510_181400.049_to_20240510_181500.005_HCR_VER.nc';
+nyquistFile='/scr/virga1/rsfdata/projects/meow/hcr/qc1/cfradial/moments/50hz_longPulse/20240510/cfrad.20240510_180000.031_to_20240510_180100.028_HCR.nc';
 readNV=ncread(nyquistFile,'nyquist_velocity');
 nyq=mode(readNV);
 
@@ -49,7 +49,7 @@ for aa=1:size(caseList,1)
     data=[];
     data.VEL_long=[];
     data.FLAG_long=[];
-    data.VEL_unfold=[];
+    data.VEL_unfold_short=[];
     data.FLAG_short=[];
                 
     dataVars=fieldnames(data);
@@ -60,7 +60,7 @@ for aa=1:size(caseList,1)
     velMaskedLong=data.VEL_long;
     velMaskedLong(data.FLAG_long~=1)=nan;
 
-    velMaskedUnfold=data.VEL_unfold;
+    velMaskedUnfold=data.VEL_unfold_short;
     velMaskedUnfold(data.FLAG_short~=1)=nan;
 
     %% De-alias with unfolded

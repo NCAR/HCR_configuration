@@ -8,7 +8,7 @@ project='meow';
 quality='qc1';
 freqData='10hz_combined';
 qcVersion='v1.0';
-whichModel='era5';
+whichModel='hrrr';
 
 infile=['~/git/HCR_configuration/projDir/qcDualPRTground/dataProcessing/scriptsFiles/iops_',project,'.txt'];
 
@@ -32,7 +32,7 @@ snrThresh.LDRV=25;
 %% Run processing
 
 % Go through iops
-for ii=1:size(caseList,1)
+for ii=2:size(caseList,1)
 
     disp(['IOP ',num2str(ii),' of ',num2str(size(caseList,1))]);
 
@@ -42,7 +42,7 @@ for ii=1:size(caseList,1)
     data=[];
 
     data.DBZ_short=[];
-    data.VEL_unfold=[];
+    data.VEL_unfold_short=[];
     data.WIDTH_short=[];
     data.SNRVC_short=[];
     data.LDRV_short=[];
@@ -76,7 +76,7 @@ for ii=1:size(caseList,1)
             shortField=data.([thisName,'_short']);
         else
             longField=data.VEL_unfold_long;
-            shortField=data.VEL_unfold;
+            shortField=data.VEL_unfold_short;
         end
         longField(data.FLAG_long~=1)=nan;
         shortField(data.FLAG_short~=1)=nan;
@@ -147,7 +147,7 @@ for ii=1:size(caseList,1)
             if sum(sum(~isnan(dbzPlot)))~=0
                 aslPlot=data.asl(:,timeInds);
 
-                f1 = figure('Position',[200 500 1600 600],'DefaultAxesFontSize',12);
+                f1 = figure('Position',[200 500 1600 600],'DefaultAxesFontSize',12,'visible','off');
                 t = tiledlayout(2,2,'TileSpacing','tight','Padding','compact');
 
                 s1=nexttile(1);
