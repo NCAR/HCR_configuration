@@ -27,7 +27,7 @@ fireflyd      ops        start_fireflyd.ops        snuff_inst
 # daemon to monitor the Spectracom SecureSync GPS-disciplined clock /
 # 10 MHz oscillator / 1 PPS source
 #
-SpectracomDaemon      ops        start_SpectracomDaemon.ops        snuff_inst        
+#SpectracomDaemon      ops        start_SpectracomDaemon.ops        snuff_inst        
 #
 ###############################################################################
 # TIME SERIES FROM WBAND
@@ -73,8 +73,10 @@ TsSmartSave   wband      start_TsSmartSave.wband   snuff_inst
 # Moments
 #
 #Iq2Dsr             100hz                  start_inst(moments)                  snuff_inst    
-Iq2Dsr              100hz.longPulse        start_inst(moments)                  snuff_inst    
-Iq2Dsr              100hz.shortPulse       start_inst(moments)                  snuff_inst    
+#Iq2Dsr              100hz.longPulse        start_inst(moments)                  snuff_inst    
+#Iq2Dsr              100hz.shortPulse       start_inst(moments)                  snuff_inst    
+Ts2Moments          50hz.longPulse         start_inst(moments)                  snuff_inst    
+Ts2Moments          50hz.shortPulse        start_inst(moments)                  snuff_inst    
 HcrShortLongCombine ops                    start_inst(moments)                  snuff_inst    
 #RadxDwellCombine realtime.10hz           start_inst(moments)                  snuff_inst    
 #RadxDwellCombine realtime.10hz.combined  start_inst(moments)                  snuff_inst    
