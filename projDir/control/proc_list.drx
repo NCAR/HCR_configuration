@@ -13,7 +13,7 @@ MotionControlDaemon    ops   start_MotionControlDaemon.ops  stop_MotionControlDa
 HcrPmc730Daemon        ops   start_HcrPmc730Daemon.ops      stop_HcrPmc730Daemon
 HcrExecutive           ops   start_HcrExecutive.ops         stop_HcrExecutive
 #HcrMonitor            ops   start_HcrMonitor.ops           stop_HcrMonitor
-#hcrdrx                ops   start_hcrdrx.ops               stop_hcrdrx
+hcrdrx                 ops   start_hcrdrx.ops               stop_hcrdrx
 #
 ###############################################################################
 # COPY TIME SERIES TO ARCHIVER
