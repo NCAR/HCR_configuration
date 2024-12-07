@@ -1,0 +1,6 @@
+#! /bin/csh
+
+snuff createMoments.qc.50hz.shortPulse
+snuff "Iq2Dsr -params Iq2Dsr.qc.50hz.shortPulse"
+snuff "Dsr2Radx -params Dsr2Radx.qc.50hz.shortPulse"
+

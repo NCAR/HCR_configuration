@@ -1,0 +1,9 @@
+#! /bin/csh
+
+source ~/git/HCR_configuration/projDir/system/params/project_info.meow
+
+cd $PROJ_DIR/qcDualPRTground/params
+
+# compute mean location from input 50hz data
+
+HcrShortLongCombine -params HcrShortLongCombine.qc.mean_loc -start "2024 05 03 00 00 00" -end "2024 07 00 00 00 00" -debug

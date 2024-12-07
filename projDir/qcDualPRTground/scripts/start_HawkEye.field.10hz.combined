@@ -1,0 +1,10 @@
+#! /bin/csh
+
+source ~/git/HCR_configuration/projDir/system/params/project_info.meow
+
+cd $PROJ_DIR/qcDualPRTground/params
+
+HawkEye -params HawkEye.field.10hz.combined >& /dev/null &
+
+
+

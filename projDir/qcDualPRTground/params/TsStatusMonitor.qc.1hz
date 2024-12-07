@@ -44,7 +44,7 @@ debug = DEBUG_OFF;
 // Type: string
 //
 
-instance = "qc";
+instance = "qc.1hz";
 
 //======================================================================
 //
@@ -2818,7 +2818,7 @@ spdb_url = "$(DATA_DIR)/$(QC_VERSION)/spdb/monitor_1hz";
 // Type: int
 //
 
-spdb_interval_secs = 0;
+spdb_interval_secs = 1;
 
 ///////////// compress_spdb ///////////////////////////
 //
@@ -2851,7 +2851,8 @@ compress_spdb = FALSE;
 //     PUT_ONCE
 //
 
-spdb_put_mode = PUT_ADD_UNIQUE;
+// spdb_put_mode = PUT_ADD_UNIQUE;
+spdb_put_mode = PUT_ADD;
 
 //======================================================================
 //

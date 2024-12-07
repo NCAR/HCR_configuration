@@ -15,30 +15,56 @@ import time
 import datetime
 from datetime import timedelta
 import string
-import ftplib
+import logging
+import paramiko
 import subprocess
 from optparse import OptionParser
+
+# Set up our basic logging configuration, writing to stdout with a simple format
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(levelname)s - %(message)s',
+    stream=sys.stdout
+)
+
+# Create our global logger
+logger = logging.getLogger()
 
 def main():
 
     global options
-    global ftpUser
-    global ftpPassword
-
-    ftpUser = "anonymous"
-    # ftpPassword = "front@ucar.edu"
-    ftpPassword = "dixon@ucar.edu"
 
     # parse the command line
 
     parseArgs()
 
+    # Set log level to DEBUG if requested
+    if (options.debug):
+        print("ENABLING DEBUG")
+        logger.setLevel(logging.DEBUG)
+
+    # Log the parsed options
+    logger.debug("Options:")
+    logger.debug("  debug/verbose? " + str(options.debug))
+    logger.debug("  validTime: " + str(options.validTime))
+    logger.debug("  imageDir: " + options.imageDir)
+    logger.debug("  relDataPath: " + options.relDataPath)
+    logger.debug("  fileName: " + options.fileName)
+    logger.debug("  ftpServer: " + options.ftpServer)
+    logger.debug("  targetDir: " + options.targetDir)
+    logger.debug("  category: " + options.category)
+    logger.debug("  platform: " + options.platform)
+    logger.debug("  removeAfterCopy: " + str(options.removeAfterCopy))
+
+    # load our SFTP user name and password into global variables sftpUser and
+    # sftpPassword
+    loadSFTPUserSecrets()
+
     # initialize
-    
-    if (options.debug == True):
-        print("==================================================================", file=sys.stderr)
-        print("BEGIN: put_images_to_catalog.py at " + str(datetime.datetime.now()), file=sys.stderr)
-        print("==================================================================", file=sys.stderr)
+
+    logger.debug("==================================================================")
+    logger.debug("BEGIN: put_images_to_catalog.py at " + str(datetime.datetime.now()))
+    logger.debug("==================================================================")
 
     #   compute valid time string
 
@@ -54,22 +80,21 @@ def main():
     dateTimeStr = "%.4d%.2d%.2d-%.2d%.2d%.2d" % (year, month, day, hour, minute, sec)
 
     # compute full path of image
-    
+
     fullFilePath = options.imageDir
     fullFilePath = os.path.join(fullFilePath, options.relDataPath);
-    
+
     # extract the platform and product from the file name.
     # The image files are named like:
     #   <category>.<platform>.<time>.<field>.png.
-    
+
     file_tokens = options.fileName.split(".")
-    if (options.debug == True):
-        print("filename toks: ", file=sys.stderr)
-        print(file_tokens, file=sys.stderr)
+    logger.debug("filename toks: ")
+    logger.debug(file_tokens)
 
     if len(file_tokens) != 5:
-        print("Invalid file name: ", options.fileName, file=sys.stdout)
-        sys.exit(0)
+        logger.error("Invalid fileName: %s" % ( options.fileName))
+        sys.exit(1)
 
     # category
 
@@ -88,7 +113,7 @@ def main():
     timeStr = file_tokens[2]
 
     # field
-        
+
     field_name = file_tokens[3]
 
     # time - use from latest data file
@@ -101,8 +126,7 @@ def main():
                    validTimeStr + "." +
                    field_name + "." + "png")
 
-    if (options.debug == True):
-        print("catalogName: ", catalogName, file=sys.stderr)
+    logger.debug("catalogName: %s" % catalogName)
 
     # put the image file
 
@@ -111,34 +135,66 @@ def main():
     # optionally remove the file
 
     if (options.removeAfterCopy == True):
-        if (options.debug):
-            print("Removing file: ", fullFilePath, file=sys.stderr)
+        logger.debug("Removing file: ", fullFilePath)
         os.remove(fullFilePath)
 
     # let the user know we are done
 
-    if (options.debug == True):
-        print("==================================================================", file=sys.stderr)
-        print("END: put_images_to_catalog.py at " + str(datetime.datetime.now()), file=sys.stderr)
-        print("==================================================================", file=sys.stderr)
+    logger.debug("==================================================================")
+    logger.debug("END: put_images_to_catalog.py at " + str(datetime.datetime.now()))
+    logger.debug("==================================================================")
 
     sys.exit(0)
+
+########################################################################
+# Load SFTP username and password from our SFTP user secrets file into
+# global variables sftpUser and sftpPassword.
+#
+# The SFTP username and password are now kept in read-protected file
+# /home/hcr/.ssh/sftp_user_secrets.py. Its contents are simple:
+#
+#       sftpUser = "<username>"
+#       sftpPassword = "<password>"
+#
+# Just replace <username> and <password> with the desired values.
+#
+# Note that the file is treated as a Python source file, so it can
+# contain comments.
+#
+# We use this simple secrets file so that the SFTP username and password do
+# not get committed into the repository as part of this script.
+
+def loadSFTPUserSecrets():
+
+    sftp_secrets_file = "/home/hcr/.ssh/sftp_user_secrets.py"
+
+    # Open our sftp user secrets file and execute its contents. On success,
+    # global variables sftpUser and sftpPassword will hold the SFTP username
+    # and password given in the file.
+    global sftpUser; sftpUser = None
+    global sftpPassword; sftpPassword=None
+
+    try:
+        with open(sftp_secrets_file) as secrets:
+            exec(secrets.read(), globals())
+    except Exception as e:
+        logger.error("Failed to open or execute %s: %s" % (sftp_secrets_file, repr(e)))
+        sys.exit(1)
+
 
 ########################################################################
 # Put the specified file
 
 def putFile(filePath, catalogName):
 
-    if (options.debug == True):
-        print("Handling file: ", filePath, file=sys.stderr)
-        print("  catalogName: ", catalogName, file=sys.stderr)
+    logger.debug("Handling file: " + filePath)
+    logger.debug("  catalogName: " + catalogName)
 
     # create tmp dir if necessary
 
     dataDir = os.environ['DATA_DIR']
     tmpDir = os.path.join(dataDir, "images/tmp")
-    if (options.debug == True):
-        print("  tmpDir: ", tmpDir, file=sys.stderr)
+    logger.debug("  tmpDir: " + tmpDir)
     if not os.path.exists(tmpDir):
         os.makedirs(tmpDir, 0o775)
 
@@ -149,7 +205,7 @@ def putFile(filePath, catalogName):
     runCommand(cmd)
 
     # send the file to the catalog
-    
+
     ftpFile(catalogName, tmpPath)
 
     # remove the tmp file
@@ -157,51 +213,52 @@ def putFile(filePath, catalogName):
     os.remove(tmpPath)
 
     return 0
-    
+
 ########################################################################
 # Ftp the file
 
 def ftpFile(fileName, filePath):
 
-    # set ftp debug level
-
-    if (options.debug == True):
-        ftpDebugLevel = 2
-    else:
-        ftpDebugLevel = 0
-    
     targetDir = options.targetDir
     ftpServer = options.ftpServer
-    
-    # open ftp connection
-    
-    ftp = ftplib.FTP(ftpServer, ftpUser, ftpPassword)
-    ftp.set_debuglevel(ftpDebugLevel)
-    
-    # make dir in case needed
-    
+
+    # Handle SSH authentication with SFTP server
+
+    sshClient = paramiko.SSHClient()
+    sshClient.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    sshClient.connect(hostname=ftpServer, username=sftpUser, password=sftpPassword)
+
+    # Now create a paramiko.SFTPClient instance using the open SSH connection
+
+    sftpClient = sshClient.open_sftp()
+
+    # if targetDir doesn't exist (i.e., if we can't list its contents), try to create it
+
     try:
-        ftp.mkd(targetDir)
-    except ftplib.all_errors as e:
-        print("WARNING - mkd failed, dir perhaps already exists?", e, file=sys.stderr)
+        sftpClient.listdir(targetDir)
+    except Exception:
+        try:
+            sftpClient.mkdir(targetDir)
+            logger.info("Created remote target directory %s" % (targetDir))
+        except Exception as e:
+            logger.error("failed to create remote target directory %s: %s"
+                         % (targetDir, e))
+            sys.exit(1)
 
     # go to target dir
 
-    if (options.debug == True):
-        print("ftp cwd to: " + targetDir, file=sys.stderr)
-    ftp.cwd(targetDir)
+    logger.debug("sftp chdir to: " + targetDir)
+    sftpClient.chdir(targetDir)
 
     # put the file
 
-    if (options.debug == True):
-        print("putting file: ", filePath, file=sys.stderr)
+    logger.debug("putting file: " + filePath)
 
-    fp = open(filePath, 'rb')
-    ftp.storbinary('STOR ' + fileName, fp)
-    
+    sftpClient.put(filePath, fileName)
+
     # close ftp connection
-                
-    ftp.quit()
+
+    sftpClient.close()
 
     return
 
@@ -209,7 +266,7 @@ def ftpFile(fileName, filePath):
 # Parse the command line
 
 def parseArgs():
-    
+
     global options
 
     # parse the command line
@@ -220,13 +277,13 @@ def parseArgs():
     # these options come from the ldata info file
 
     parser.add_option('--debug',
-                      dest='debug', default='False',
+                      dest='debug', default=False,
                       action="store_true",
                       help='Set debugging on')
     parser.add_option('--verbose',
-                      dest='verbose', default='False',
+                      dest='debug', default=False,
                       action="store_true",
-                      help='Set debugging on')
+                      help='Synonym for --debug')
     parser.add_option('--unix_time',
                       dest='validTime',
                       default=0,
@@ -263,46 +320,29 @@ def parseArgs():
                       default='NONE',
                       help='Platform portion of the catalog file name.  Overrides platform in image file name if specified.')
     parser.add_option('--remove_after_copy',
-                      dest='removeAfterCopy', default='False',
+                      dest='removeAfterCopy', default=False,
                       action="store_true",
                       help='Remove files after copy to ftp server')
 
     (options, args) = parser.parse_args()
-
-    if (options.verbose == True):
-        options.debug = True
-
-    if (options.debug == True):
-        print("Options:", file=sys.stderr)
-        print("  debug? ", options.debug, file=sys.stderr)
-        print("  verbose? ", options.verbose, file=sys.stderr)
-        print("  validTime: ", options.validTime, file=sys.stderr)
-        print("  imageDir: ", options.imageDir, file=sys.stderr)
-        print("  relDataPath: ", options.relDataPath, file=sys.stderr)
-        print("  fileName: ", options.fileName, file=sys.stderr)
-        print("  ftpServer: ", options.ftpServer, file=sys.stderr)
-        print("  targetDir: ", options.targetDir, file=sys.stderr)
-        print("  category: ", options.category, file=sys.stderr)
-        print("  platform: ", options.platform, file=sys.stderr)
-        print("  removeAfterCopy: ", options.removeAfterCopy, file=sys.stderr)
 
 ########################################################################
 # Run a command in a shell, wait for it to complete
 
 def runCommand(cmd):
 
-    if (options.debug == True):
-        print("running cmd:",cmd, file=sys.stderr)
-    
+    logger.debug("running local cmd:" + cmd)
+
     try:
         retcode = subprocess.call(cmd, shell=True)
         if retcode < 0:
-            print("Child was terminated by signal: ", -retcode, file=sys.stderr)
+            logger.error("Local shell command '%s' was terminated by signal %d"
+                         % (cmd, -retcode))
         else:
-            if (options.debug == True):
-                print("Child returned code: ", retcode, file=sys.stderr)
+            logger.debug("Local shell command '%s' returned code %d"
+                         % (cmd, retcode))
     except OSError as e:
-        print("Execution failed:", e, file=sys.stderr)
+        logger.error("Executing local command '%s' failed: %s" % (cmd, e) )
 
 ########################################################################
 # kick off main method

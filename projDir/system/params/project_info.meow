@@ -11,9 +11,9 @@ setenv  BSCAN_MIN_ALTITUDE_KM      1.5
 
 setenv PROJ_DIR ~/git/HCR_configuration/projDir
 setenv DATA_DIR  /scr/virga1/rsfdata/projects/meow/hcr
-setenv LOG_DIR $HOME/logs
-setenv QC_VERSION qc0
-setenv QC_SUB_VERSION v0.0
+setenv LOG_DIR /scr/virga1/rsfdata/projects/meow/hcr/processingLogs
+setenv QC_VERSION qc1
+setenv QC_SUB_VERSION v1.0
 
 # make sure the output dirs exist
 
@@ -25,4 +25,16 @@ mkdir -p $LOG_DIR
 # This is commented because velcorr is run from matlab
 # setenv WAVE_FILTER_LENGTH_SECS 20
 
+# FMQ for combined 10hz moments
+
+setenv COMBINED_MOMENTS_FMQ /tmp/fmq/moments/qc.10hz.combined
+
+# georef corrections
+
+setenv FIXED_LOCATION_MODE TRUE
+
+setenv LATITUDE_DEG 40.03811
+setenv LONGITUDE_DEG -105.23968
+setenv ALTITUDE_M 1600.1
+setenv ALTITUDE_KM 1.6001
 

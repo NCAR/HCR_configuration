@@ -12,7 +12,7 @@ disp(['Reading file ',infile]);
 dataAll=fread(fileID, [1,inf], '*uint8');
 fclose(fileID);
 
-numGates=770;
+numGates=758;
 guessSize=ceil(length(dataAll)/numGates/8);
 baseTime=datetime(1970,1,1);
 

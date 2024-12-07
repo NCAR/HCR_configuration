@@ -6,10 +6,10 @@ if strcmp(project,'meow')
     if strcmp(qc,'ts')
         indir='/scr/virga1/rsfdata/projects/meow/hcr/time_series/wband/save/';
     elseif strcmp(qc,'qc0')
-            indir=['/scr/virga1/rsfdata/projects/meow/hcr/cfradial/moments/',freq,'/'];
-    else                    
-            indir=['/scr/virga1/rsfdata/projects/meow/hcr/',qc,'/cfradial/',qcVersion,'_full/',freq,'/'];        
-    end    
+        indir=['/scr/virga1/rsfdata/projects/meow/hcr/cfradial/moments/',freq,'/'];
+    else
+        indir=['/scr/virga1/rsfdata/projects/meow/hcr/',qc,'/cfradial/',qcVersion,'_full/',freq,'/'];
+    end
 end
 
 end

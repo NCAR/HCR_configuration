@@ -28,7 +28,7 @@ end
 allVars=fieldnames(indata);
 timeDim=size(indata.time);
 if max(timeDim)==1
-    disp('Time dimension is one. Use more data.');
+    disp(['Time dimension is one in file ',infile]);
 end
 
 if timeDim(1)>timeDim(2)
@@ -96,7 +96,7 @@ for jj=2:length(fileList)
             end
         end
     end
-    if size(indata.time,2)~=size(indata.(allVars{1}),2)
+    if size(indata.time,2)~=size(indata.(allVars{4}),2)
         disp(['Time and data length do not match up at ',datestr(indata.time(end),'yyyy-mm-dd HH:MM:SS')]);
         disp(['File ',infile]);
         error('Stopping.')
@@ -105,13 +105,17 @@ end
 
 timeInds=find(indata.time>=startTime & indata.time<=endTime);
 for ii=1:size(allVars,1)
-    if min(size(indata.(allVars{ii})))~=1
-        data.(allVars{ii})=single(indata.(allVars{ii})(:,timeInds));
-    else
-        data.(allVars{ii})=indata.(allVars{ii})(:,timeInds);
+    if isfield(indata,allVars{ii})
+        if min(size(indata.(allVars{ii})))~=1
+            data.(allVars{ii})=single(indata.(allVars{ii})(:,timeInds));
+        else
+            data.(allVars{ii})=indata.(allVars{ii})(:,timeInds);
+        end
     end
 end
-data.asl=HCRrange2asl(data.range,data.elevation,data.altitude);
-data.asl=single(data.asl);
+try
+    data.asl=HCRrange2asl(data.range,data.elevation,data.altitude);
+    data.asl=single(data.asl);
+end
 end
 
