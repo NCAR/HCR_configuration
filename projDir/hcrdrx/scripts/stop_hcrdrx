@@ -2,5 +2,5 @@
 
 running "hcrdrx"
 if ($status == 0) then
-    snuff hcrdrx
+    snuff_slow hcrdrx
 endif
