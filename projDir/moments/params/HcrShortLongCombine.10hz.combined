@@ -127,7 +127,7 @@ seek_to_end_of_input_fmq = TRUE;
 //
 // Type: string
 
-input_dir_short = "$(DATA_DIR)/cfradial/moments/50hz.shortPulse",
+input_dir_short = "$(DATA_DIR)/cfradial/moments/50hz.shortPulse";
 
 ///////////// input_dir_long //////////////////////////
 //
@@ -321,9 +321,9 @@ fixed_location_mode = $(FIXED_LOCATION_MODE);
 //
 
 fixed_radar_location = {
-  latitudeDeg = $(LATITUDE_DEG),
-  longitudeDeg = $(LONGITUDE_DEG),
-  altitudeKm = $(ALTITUDE_KM)
+    latitudeDeg = $(LATITUDE_DEG),
+    longitudeDeg = $(LONGITUDE_DEG),
+    altitudeKm = $(ALTITUDE_KM)
 };
 
 //======================================================================
@@ -331,7 +331,7 @@ fixed_radar_location = {
 // COMPUTE MEAN RADAR LOCATION?.
 //
 // This mode will compute the mean radar location for a ground-based 
-//   insytallation.
+//   installation.
 //
 //======================================================================
  
@@ -480,39 +480,75 @@ stats_method_fields = {
 
 perform_velocity_unfolding = TRUE;
 
-///////////// input_vel_field_name ////////////////////
+///////////// input_vel_raw_field_name_short //////////
 //
-// This is the name for the velocity field in the input data.
+// This is the name for the raw velocity field in the input data. The 
+//   raw velocity has not been corrected for platform motion.
 //
 // The field name must be the same for the short- and long-prt rays.
 //
 // Type: string
 
-input_vel_field_name = "VEL";
+input_vel_raw_field_name_short = "VEL_RAW_short";
 
-///////////// suffix_to_add_for_short_pulse_fields ////
+///////////// input_vel_raw_field_name_long ///////////
 //
-// This suffix is added to the input fields for short-prt moments.
+// This is the name for the raw velocity field in the input data. The 
+//   raw velocity has not been corrected for platform motion.
 //
-// For each incoming short-pulse field, we add this suffix to the 
-//   incoming field name.
+// The field name must be the same for the short- and long-prt rays.
 //
 // Type: string
 
-suffix_to_add_for_short_pulse_fields = "_short";
+input_vel_raw_field_name_long = "VEL_RAW_long";
 
-///////////// suffix_to_add_for_long_pulse_fields /////
+///////////// input_vel_corr_field_name_short /////////
 //
-// This suffix is added to the input fields for long-prt moments.
+// This is the name for the velocity field in the input data, corrected 
+//   for platform motion.
 //
-// For each incoming long-pulse field, we add this suffix to the 
-//   incoming field name.
+// If this field exists in the input data, it is deleted and replaced 
+//   with the values computed by this application.
 //
 // Type: string
 
-suffix_to_add_for_long_pulse_fields = "_long";
+input_vel_corr_field_name_short = "VEL_short";
 
-///////////// vel_unfolded_field_name /////////////////
+///////////// input_vel_corr_field_name_long //////////
+//
+// This is the name for the velocity field in the input data, corrected 
+//   for platform motion.
+//
+// If this field exists in the input data, it is deleted and replaced 
+//   with the values computed by this application.
+//
+// Type: string
+
+input_vel_corr_field_name_long = "VEL_long";
+
+///////////// output_vel_corr_field_name_short ////////
+//
+// Name for the corrected velocity on output.
+//
+// The name of the output fields for velocity corrected for platform 
+//   motion.
+//
+// Type: string
+
+output_vel_corr_field_name_short = "VEL_short";
+
+///////////// output_vel_corr_field_name_long /////////
+//
+// Name for the corrected velocity on output.
+//
+// The name of the output fields for velocity corrected for platform 
+//   motion.
+//
+// Type: string
+
+output_vel_corr_field_name_long = "VEL_long";
+
+///////////// output_vel_unfolded_field_name //////////
 //
 // Name for the unfolded velocity.
 //
@@ -521,21 +557,7 @@ suffix_to_add_for_long_pulse_fields = "_long";
 //
 // Type: string
 
-vel_unfolded_field_name = "VEL_unfold";
-
-///////////// correct_velocity_for_platform_vertical_motion 
-//
-// Option to correct the estimated velocity corrected for vertical 
-//   platform motion.
-//
-// For an airborne platform, we measure the vertical velocity of the 
-//   platform using an INS system. We can optionally correct the measured 
-//   velocity for the plaform vertical motion. This correction is applied 
-//   AFTER the unfolding computation.
-//
-// Type: boolean
-
-correct_velocity_for_platform_vertical_motion = FALSE;
+output_vel_unfolded_field_name = "VEL_unfold_short";
 
 //======================================================================
 //
@@ -551,7 +573,7 @@ correct_velocity_for_platform_vertical_motion = FALSE;
 //
 // Type: string
 
-output_fmq_url = "fmqp:://localhost::/tmp/fmq/moments/10hz.combined/shmem_20200";
+output_fmq_url = "fmqp:://localhost::/tmp/fmq/moments/10hz.combined/shmem_31000";
 
 ///////////// output_fmq_compress /////////////////////
 //
