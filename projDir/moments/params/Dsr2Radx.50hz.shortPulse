@@ -1609,7 +1609,7 @@ output_fields = {
 
 output_data_set = {
   {
-    output_dir = "$(DATA_DIR)/cfradial/moments/50hz_short",
+    output_dir = "$(DATA_DIR)/cfradial/moments/50hz_shortPulse",
     format = OUTPUT_FORMAT_CFRADIAL
   }
 };

@@ -176,7 +176,7 @@ archive_start_time = "2024 06 14 19 30 00";
 //
 // Type: double
 
-archive_time_span_secs = 3600;
+archive_time_span_secs = 120;
 
 ///////////// archive_data_url ////////////////////////
 //
