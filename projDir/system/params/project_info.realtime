@@ -6,6 +6,7 @@
 
 setenv PROJECT_NAME               operations
 
+setenv  BSCAN_TIME_SPAN_SECS       60
 setenv  BSCAN_MAX_ALTITUDE_KM      10.0     # FL1 ground
 setenv  BSCAN_MIN_ALTITUDE_KM      1.5      # FL1 ground 
 
