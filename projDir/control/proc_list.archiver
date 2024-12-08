@@ -3,7 +3,7 @@
 #
 DsServerMgr   primary    start_DsServerMgr         snuff_inst        
 DsFmqServer   manager    start_DsFmqServer         snuff_inst        
-Janitor       logs       start_Janitor.logs        kill_Janitor      
+#Janitor       logs       start_Janitor.logs        kill_Janitor      
 Scout         primary    start_Scout               kill_Scout        
 DataMapper    primary    start_DataMapper          kill_DataMapper   
 #
@@ -28,6 +28,39 @@ fireflyd      ops        start_fireflyd.ops        snuff_inst
 # 10 MHz oscillator / 1 PPS source
 #
 #SpectracomDaemon      ops        start_SpectracomDaemon.ops        snuff_inst        
+#
+###############################################################################
+# Time series data for tcpscope
+# Only needed for testing, not needed for ops
+#
+TsFmq2Tcp     wband      start_TsFmq2Tcp.wband     snuff_inst    
+#
+###############################################################################
+# Saving time series data
+#
+TsSmartSave   wband      start_TsSmartSave.wband   snuff_inst    
+#
+###############################################################################
+# Moments
+#
+# Dual pulse length
+#
+Ts2Moments          50hz.longPulse        start_inst(moments)                  snuff_inst    
+Ts2Moments          50hz.shortPulse       start_inst(moments)                  snuff_inst    
+HcrShortLongCombine 10hz.combined         start_inst(moments)                  snuff_inst    
+Dsr2Radx            50hz.shortPulse       start_inst(moments)                  snuff_inst    
+Dsr2Radx            50hz.longPulse        start_inst(moments)                  snuff_inst    
+Dsr2Radx            10hz.combined         start_inst(moments)                  snuff_inst
+RadxMon             log.50hz.shortPulse   start_inst(moments)                  snuff_inst    
+RadxMon             log.50hz.longPulse    start_inst(moments)                  snuff_inst    
+RadxMon             log.10hz.combined     start_inst(moments)                  snuff_inst    
+#
+#RadxDwellCombine realtime.10hz           start_inst(moments)                  snuff_inst    
+#RadxDwellCombine realtime.10hz.combined  start_inst(moments)                  snuff_inst    
+#Dsr2Radx         moments.100hz.short     start_inst(moments)                  snuff_inst    
+#Dsr2Radx         moments.100hz.long      start_inst(moments)                  snuff_inst    
+#Dsr2Radx         moments.100hz           start_inst(moments)                  snuff_inst    
+#Dsr2Radx         moments.10hz            start_inst(moments)                  snuff_inst    
 #
 ###############################################################################
 # TIME SERIES FROM WBAND
@@ -57,35 +90,6 @@ TsPrint  max_power       start_TsPrint.max_power      snuff_inst
 # from the drx
 #
 #TsFile2Fmq     sim        start_TsFile2Fmq.sim   snuff_inst    
-#
-###############################################################################
-# Time series data for tcpscope
-# Only needed for testing, not needed for ops
-#
-TsFmq2Tcp     wband      start_TsFmq2Tcp.wband     snuff_inst    
-#
-###############################################################################
-# Saving time series data
-#
-TsSmartSave   wband      start_TsSmartSave.wband   snuff_inst    
-#
-###############################################################################
-# Moments
-#
-#Iq2Dsr             100hz                  start_inst(moments)                  snuff_inst    
-#Iq2Dsr              100hz.longPulse        start_inst(moments)                  snuff_inst    
-#Iq2Dsr              100hz.shortPulse       start_inst(moments)                  snuff_inst    
-Ts2Moments          50hz.longPulse         start_inst(moments)                  snuff_inst    
-Ts2Moments          50hz.shortPulse        start_inst(moments)                  snuff_inst    
-HcrShortLongCombine ops                    start_inst(moments)                  snuff_inst    
-#RadxDwellCombine realtime.10hz           start_inst(moments)                  snuff_inst    
-#RadxDwellCombine realtime.10hz.combined  start_inst(moments)                  snuff_inst    
-Dsr2Radx         moments.100hz.short     start_inst(moments)                  snuff_inst    
-Dsr2Radx         moments.100hz.long      start_inst(moments)                  snuff_inst    
-#Dsr2Radx         moments.100hz           start_inst(moments)                  snuff_inst    
-#Dsr2Radx         moments.10hz            start_inst(moments)                  snuff_inst    
-Dsr2Radx         moments.10hz.combined   start_inst(moments)                  snuff_inst    
-#RadMon          log.100hz               start_RadMon.log.100hz      snuff_inst    
 #
 ###############################################################################
 # Aircraft georef data
