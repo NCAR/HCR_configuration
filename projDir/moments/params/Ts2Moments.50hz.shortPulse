@@ -1137,7 +1137,7 @@ use_secondary_georeference = FALSE;
 //
 // Type: string
 
-startup_cal_file = "$(PROJ_DIR)/calibration/data/wband_512ns/combined/TsCalAuto_Wband-HCR-512ns_20240415_232321.xml";
+startup_cal_file = "$(PROJ_DIR)/calibration/data/wband_256ns/combined/TsCalAuto_Wband-HCR-256ns_20240415_234224.xml";
 
 ///////////// set_cal_by_pulse_width //////////////////
 //
