@@ -36,7 +36,7 @@ cscale_hcr=[1,0,0; 1,0.6,0.47; 0,1,0; 0,0.7,0; 0,0,1; 1,0,1; 0.5,0,0; 1,1,0; 0,1
 units_str_hcr={'Rain','Supercooled Rain','Drizzle','Supercooled Drizzle','Cloud Liquid','Supercooled Cloud Liquid',...
     'Mixed Phase','Large Frozen','Small Frozen','Precip','Cloud'};
 
-for aa=2:size(caseList,1)
+for aa=1:size(caseList,1)
     disp(['IOP ',num2str(aa)]);
     disp('Loading HCR data.')
     disp(['Starting at ',datestr(datetime('now'),'yyyy-mm-dd HH:MM')]);

@@ -20,7 +20,7 @@ if strcmp(project,'meow')
     pixRadDBZ=300; % Radius over which texture is calculated in pixels. Default is 50.
     pixRadVEL=300;
 else
-    error('Set upperLimDBZ and upperLimVE')
+    error('Set upperLimDBZ and upperLimVEL')
 end
 
 indir=HCRdir(project,quality,qcVersion,freqData);
@@ -53,6 +53,8 @@ for aa=1:size(caseList,1)
     data=read_HCR(fileList,data,startTime,endTime);
 
     data.TOPO=data.altitude;
+    data.FLAG=data.FLAG_short;
+    data=rmfield(data,'FLAG_short');
 
     %% Truncate to non missing
     gapSecs=10;

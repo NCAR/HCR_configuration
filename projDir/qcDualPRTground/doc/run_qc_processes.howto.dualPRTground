@@ -297,7 +297,7 @@ $PROJ_DIR/qcDualPRTground/dataProcessing/HCRproducts/stratConv/stratConv_plotMat
 $PROJ_DIR/qcDualPRTground/dataProcessing/HCRproducts/stratConv/cfradial_convStrat.m
 
 #################################################################
-# Add PID
+# Add PID (if desired)
 
 # Adjust and run
 $PROJ_DIR/qcDualPRTground/dataProcessing/HCRproducts/PID/HCRonly/call_pid_wholeIOPs.m
