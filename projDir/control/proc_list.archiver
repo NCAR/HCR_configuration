@@ -53,14 +53,18 @@ Dsr2Radx            50hz.longPulse        start_inst(moments)                  s
 Dsr2Radx            10hz.combined         start_inst(moments)                  snuff_inst
 RadxMon             log.50hz.shortPulse   start_inst(moments)                  snuff_inst    
 RadxMon             log.50hz.longPulse    start_inst(moments)                  snuff_inst    
-RadxMon             log.10hz.combined     start_inst(moments)                  snuff_inst    
+RadxMon             log.10hz.combined     start_inst(moments)                  snuff_inst
 #
-#RadxDwellCombine realtime.10hz           start_inst(moments)                  snuff_inst    
-#RadxDwellCombine realtime.10hz.combined  start_inst(moments)                  snuff_inst    
-#Dsr2Radx         moments.100hz.short     start_inst(moments)                  snuff_inst    
-#Dsr2Radx         moments.100hz.long      start_inst(moments)                  snuff_inst    
-#Dsr2Radx         moments.100hz           start_inst(moments)                  snuff_inst    
-#Dsr2Radx         moments.10hz            start_inst(moments)                  snuff_inst    
+# Single pulse length
+#
+Ts2Moments          100hz.longPulse       start_inst(moments)                  snuff_inst    
+Ts2Moments          100hz.shortPulse      start_inst(moments)                  snuff_inst    
+RadxDwellCombine    10hz.longPulse        start_inst(moments)                  snuff_inst    
+RadxDwellCombine    10hz.shortPulse       start_inst(moments)                  snuff_inst    
+Dsr2Radx            100hz.shortPulse      start_inst(moments)                  snuff_inst    
+Dsr2Radx            100hz.longPulse       start_inst(moments)                  snuff_inst    
+Dsr2Radx            10hz.shortPulse       start_inst(moments)                  snuff_inst    
+Dsr2Radx            10hz.longPulse        start_inst(moments)                  snuff_inst    
 #
 ###############################################################################
 # TIME SERIES FROM WBAND
