@@ -370,7 +370,7 @@ fields = {
   ,
   {
     label = "1Hr_VEL_unfold_short",
-    raw_name = "VEL_unfold",
+    raw_name = "VEL_unfold_short",
     filtered_name = "",
     units = "m/s",
     color_map = "hcr_vel_blueYellow.colors",
@@ -601,15 +601,15 @@ fields = {
     color_map = "hcr_partition.colors",
     shortcut = "d"
   }
-  ,
-  {
-    label = "1Hr_PID",
-    raw_name = "PID",
-    filtered_name = "",
-    units = "",
-    color_map = "hcr_pid.colors",
-    shortcut = "d"
-  }
+//  ,
+//  {
+//    label = "1Hr_PID",
+//    raw_name = "PID",
+//    filtered_name = "",
+//    units = "",
+//    color_map = "hcr_pid.colors",
+//    shortcut = "d"
+//  }
 };
 
 ///////////// background_render_mins //////////////////
