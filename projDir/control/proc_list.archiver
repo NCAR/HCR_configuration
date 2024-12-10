@@ -59,8 +59,8 @@ RadxMon             log.10hz.combined     start_inst(moments)                  s
 #
 Ts2Moments          100hz.longPulse       start_inst(moments)                  snuff_inst    
 Ts2Moments          100hz.shortPulse      start_inst(moments)                  snuff_inst    
-RadxDwellCombine    10hz.longPulse        start_inst(moments)                  snuff_inst    
-RadxDwellCombine    10hz.shortPulse       start_inst(moments)                  snuff_inst    
+#RadxDwellCombine    10hz.longPulse        start_inst(moments)                  snuff_inst    
+#RadxDwellCombine    10hz.shortPulse       start_inst(moments)                  snuff_inst    
 Dsr2Radx            100hz.shortPulse      start_inst(moments)                  snuff_inst    
 Dsr2Radx            100hz.longPulse       start_inst(moments)                  snuff_inst    
 Dsr2Radx            10hz.shortPulse       start_inst(moments)                  snuff_inst    

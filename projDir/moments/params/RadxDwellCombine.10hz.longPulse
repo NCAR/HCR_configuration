@@ -325,14 +325,14 @@ set_field_folds_attribute = TRUE;
 
 field_folds = {
   {
-    field_name = "VEL",
+    field_name = "VEL_long",
     use_nyquist = TRUE,
     fold_limit_lower = 0,
     fold_limit_upper = 0
   }
   ,
   {
-    field_name = "VEL_RAW",
+    field_name = "VEL_RAW_long",
     use_nyquist = TRUE,
     fold_limit_lower = 0,
     fold_limit_upper = 0
@@ -408,7 +408,7 @@ dwell_stats_method = DWELL_STATS_MEAN;
 // Type: double
 //
 
-dwell_stats_max_fraction_missing = 0.25;
+dwell_stats_max_fraction_missing = 0.5;
 
 //======================================================================
 //
@@ -652,14 +652,14 @@ apply_censoring = FALSE;
 
 censoring_fields = {
   {
-    name = "SNR",
-    min_valid_value = 0,
+    name = "SNR_long",
+    min_valid_value = -9,
     max_valid_value = 1000,
     combination_method = LOGICAL_OR
   }
   ,
   {
-    name = "NCP",
+    name = "NCP_long",
     min_valid_value = 0.15,
     max_valid_value = 1000,
     combination_method = LOGICAL_OR
