@@ -110,7 +110,8 @@ input_mode = IWRF_FMQ_INPUT;
 // Type: string
 //
 
-input_fmq_url = "/tmp/fmq/moments/10hz.shortPulse/shmem_50256";
+// input_fmq_url = "/tmp/fmq/moments/10hz.shortPulse/shmem_50256";
+input_fmq_url = "/tmp/fmq/moments/10hz.combined/shmem_31000";
 
 ///////////// seek_to_start_of_fmq ////////////////////
 //

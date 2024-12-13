@@ -43,7 +43,7 @@ TsSmartSave   wband      start_TsSmartSave.wband   snuff_inst
 ###############################################################################
 # Moments
 #
-# Dual pulse length
+# Dual pulse widths
 #
 Ts2Moments          50hz.longPulse        start_inst(moments)                  snuff_inst    
 Ts2Moments          50hz.shortPulse       start_inst(moments)                  snuff_inst    
@@ -55,16 +55,15 @@ RadxMon             log.50hz.shortPulse   start_inst(moments)                  s
 RadxMon             log.50hz.longPulse    start_inst(moments)                  snuff_inst    
 RadxMon             log.10hz.combined     start_inst(moments)                  snuff_inst
 #
-# Single pulse length
+# Single pulse widths
+# RadxDwellCombine writes to same FMQ as HcrShortLongCombine
 #
 Ts2Moments          100hz.longPulse       start_inst(moments)                  snuff_inst    
 Ts2Moments          100hz.shortPulse      start_inst(moments)                  snuff_inst    
-#RadxDwellCombine    10hz.longPulse        start_inst(moments)                  snuff_inst    
-#RadxDwellCombine    10hz.shortPulse       start_inst(moments)                  snuff_inst    
+RadxDwellCombine    10hz.longPulse        start_inst(moments)                  snuff_inst    
+RadxDwellCombine    10hz.shortPulse       start_inst(moments)                  snuff_inst    
 Dsr2Radx            100hz.shortPulse      start_inst(moments)                  snuff_inst    
 Dsr2Radx            100hz.longPulse       start_inst(moments)                  snuff_inst    
-Dsr2Radx            10hz.shortPulse       start_inst(moments)                  snuff_inst    
-Dsr2Radx            10hz.longPulse        start_inst(moments)                  snuff_inst    
 #
 ###############################################################################
 # TIME SERIES FROM WBAND

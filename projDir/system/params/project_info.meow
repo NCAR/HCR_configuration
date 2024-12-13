@@ -6,8 +6,9 @@
 
 setenv PROJECT_NAME meow
 
-setenv  BSCAN_MAX_ALTITUDE_KM      14.0
+setenv  BSCAN_MAX_ALTITUDE_KM      20.0
 setenv  BSCAN_MIN_ALTITUDE_KM      1.5
+setenv  BSCAN_ALTITUDE_IN_FEET     FALSE
 
 setenv PROJ_DIR ~/git/HCR_configuration/projDir
 setenv DATA_DIR  /scr/virga1/rsfdata/projects/meow/hcr

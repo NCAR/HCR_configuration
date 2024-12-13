@@ -23,14 +23,12 @@
 //
 // If set, debug messages will be printed appropriately.
 //
-//
 // Type: enum
 // Options:
 //     DEBUG_OFF
 //     DEBUG_NORM
 //     DEBUG_VERBOSE
 //     DEBUG_EXTRA
-//
 
 debug = DEBUG_NORM;
 
@@ -42,9 +40,7 @@ debug = DEBUG_NORM;
 //   procmap. If the process hangs, it will be restared by the 
 //   auto_restarter.
 //
-//
 // Type: boolean
-//
 
 register_with_procmap = TRUE;
 
@@ -55,9 +51,7 @@ register_with_procmap = TRUE;
 // This application registers with procmap. This is the instance used 
 //   for registration.
 //
-//
 // Type: string
-//
 
 instance = "10hz.longPulse";
 
@@ -86,14 +80,12 @@ instance = "10hz.longPulse";
 // FMQ: read data from one moments FMQ, combine the dwells and write to 
 //   an output queue.
 //
-//
 // Type: enum
 // Options:
 //     REALTIME
 //     ARCHIVE
 //     FILELIST
 //     FMQ
-//
 
 mode = FMQ;
 
@@ -104,9 +96,7 @@ mode = FMQ;
 // Files will be searched for in this directory. REALTIME, ARCHIVE and 
 //   FILELIST modes .
 //
-//
 // Type: string
-//
 
 input_dir = ".";
 
@@ -116,9 +106,7 @@ input_dir = ".";
 //
 // Only data less old than this will be used.
 //
-//
 // Type: int
-//
 
 max_realtime_data_age_secs = 300;
 
@@ -129,9 +117,7 @@ max_realtime_data_age_secs = 300;
 // If TRUE, will watch the latest_data_info file. If FALSE, will scan 
 //   the input directory for new files.
 //
-//
 // Type: boolean
-//
 
 latest_data_info_avail = TRUE;
 
@@ -143,9 +129,7 @@ latest_data_info_avail = TRUE;
 //   searched. This may take considerable CPU, so be careful in its use. 
 //   Only applies if latest_data_info_avail is FALSE.
 //
-//
 // Type: boolean
-//
 
 search_recursively = TRUE;
 
@@ -158,9 +142,7 @@ search_recursively = TRUE;
 //   out. A depth of 0 will search the top-level directory only. A depth 
 //   of 1 will search the level below the top directory, etc.
 //
-//
 // Type: int
-//
 
 max_recursion_depth = 5;
 
@@ -175,7 +157,6 @@ max_recursion_depth = 5;
 // Minimum val: 1
 //
 // Type: int
-//
 
 wait_between_checks = 2;
 
@@ -187,9 +168,7 @@ wait_between_checks = 2;
 //   is complete before reading it. Only applies if latest_data_info_avail 
 //   is FALSE.
 //
-//
 // Type: int
-//
 
 file_quiescence = 5;
 
@@ -199,9 +178,7 @@ file_quiescence = 5;
 //
 // If set, only files with this extension will be processed.
 //
-//
 // Type: string
-//
 
 search_ext = "";
 
@@ -216,9 +193,7 @@ search_ext = "";
 //   set gematronik_realtime_wait_secs to a value in excess of the time it 
 //   takes for all of the files to be written.
 //
-//
 // Type: boolean
-//
 
 gematronik_realtime_mode = FALSE;
 
@@ -229,9 +204,7 @@ gematronik_realtime_mode = FALSE;
 //
 // See 'gematronik_realtime_mode'.
 //
-//
 // Type: int
-//
 
 gematronik_realtime_wait_secs = 5;
 
@@ -241,9 +214,7 @@ gematronik_realtime_wait_secs = 5;
 //
 // FMQ mode only.
 //
-//
 // Type: string
-//
 
 input_fmq_url = "/tmp/fmq/moments/100hz.longPulse/shmem_40512";
 
@@ -255,9 +226,7 @@ input_fmq_url = "/tmp/fmq/moments/100hz.longPulse/shmem_40512";
 //   new data. If FALSE, it will start reading from the beginning of the 
 //   FMQ.
 //
-//
 // Type: boolean
-//
 
 seek_to_end_of_input_fmq = TRUE;
 
@@ -271,9 +240,7 @@ seek_to_end_of_input_fmq = TRUE;
 //
 // Option to set the max range for any ray.
 //
-//
 // Type: boolean
-//
 
 set_max_range = FALSE;
 
@@ -283,9 +250,7 @@ set_max_range = FALSE;
 //
 // Gates beyond this range are removed.
 //
-//
 // Type: double
-//
 
 max_range_km = 9999;
 
@@ -297,9 +262,7 @@ max_range_km = 9999;
 //   is performed to combine the dwell, we need to take the folding into 
 //   account.
 //
-//
 // Type: boolean
-//
 
 set_field_folds_attribute = TRUE;
 
@@ -311,7 +274,6 @@ set_field_folds_attribute = TRUE;
 //   If use_nyquist is false, specify the lower and upper limit at which 
 //   the field folds.
 //
-//
 // Type: struct
 //   typedef struct {
 //      string field_name;
@@ -321,7 +283,6 @@ set_field_folds_attribute = TRUE;
 //   }
 //
 // 1D array - variable length.
-//
 
 field_folds = {
   {
@@ -352,9 +313,7 @@ field_folds = {
 // Dwells from the input data will be combined to form dwells covering 
 //   the specified time.
 //
-//
 // Type: double
-//
 
 dwell_time_secs = 0.1;
 
@@ -367,9 +326,7 @@ dwell_time_secs = 0.1;
 //   dwell_time_secs is set to 0.5, the dwell centers would be at 0.25, 
 //   0.75, 1.25 secs etc.
 //
-//
 // Type: boolean
-//
 
 center_dwell_on_time = FALSE;
 
@@ -381,7 +338,6 @@ center_dwell_on_time = FALSE;
 //   DISCRETE_MODE computes applies only to discrete (integer) fields, and 
 //   returns the most common entry in a discrete data set.
 //
-//
 // Type: enum
 // Options:
 //     DWELL_STATS_MEAN
@@ -390,7 +346,6 @@ center_dwell_on_time = FALSE;
 //     DWELL_STATS_MINIMUM
 //     DWELL_STATS_MIDDLE
 //     DWELL_STATS_DISCRETE_MODE
-//
 
 dwell_stats_method = DWELL_STATS_MEAN;
 
@@ -406,7 +361,6 @@ dwell_stats_method = DWELL_STATS_MEAN;
 // Maximum val: 1
 //
 // Type: double
-//
 
 dwell_stats_max_fraction_missing = 0.5;
 
@@ -425,9 +379,7 @@ dwell_stats_max_fraction_missing = 0.5;
 //   stats method on particular fields. Fields not specified here will use 
 //   the global parameter.
 //
-//
 // Type: boolean
-//
 
 set_stats_method_for_individual_fields = FALSE;
 
@@ -438,7 +390,6 @@ set_stats_method_for_individual_fields = FALSE;
 // Applies if 'set_stats_method_for_individual_fields' is true. The 
 //   global stats method is set by the 'dwell_stats_method' parameter. 
 //   Fields not specified here will use the global parameter.
-//
 //
 // Type: struct
 //   typedef struct {
@@ -454,7 +405,6 @@ set_stats_method_for_individual_fields = FALSE;
 //   }
 //
 // 1D array - variable length.
-//
 
 stats_method_fields = {
   {
@@ -481,9 +431,7 @@ stats_method_fields = {
 // If empty, no effect. If not empty, this string is used to override 
 //   the radar name.
 //
-//
 // Type: string
-//
 
 radar_name_override = "";
 
@@ -494,9 +442,7 @@ radar_name_override = "";
 // If empty, no effect. If not empty, this string is used to override 
 //   the site name.
 //
-//
 // Type: string
-//
 
 site_name_override = "";
 
@@ -507,9 +453,7 @@ site_name_override = "";
 // If empty, no effect. If not empty, this string is used to override 
 //   the title attribute.
 //
-//
 // Type: string
-//
 
 title_override = "";
 
@@ -520,9 +464,7 @@ title_override = "";
 // If empty, no effect. If not empty, this string is used to override 
 //   the institution attribute.
 //
-//
 // Type: string
-//
 
 institution_override = "";
 
@@ -533,9 +475,7 @@ institution_override = "";
 // If empty, no effect. If not empty, this string is used to override 
 //   the references attribute.
 //
-//
 // Type: string
-//
 
 references_override = "";
 
@@ -546,9 +486,7 @@ references_override = "";
 // If empty, no effect. If not empty, this string is used to override 
 //   the source attribute.
 //
-//
 // Type: string
-//
 
 source_override = "";
 
@@ -559,9 +497,7 @@ source_override = "";
 // If empty, no effect. If not empty, this string is used to override 
 //   the history attribute.
 //
-//
 // Type: string
-//
 
 history_override = "";
 
@@ -572,9 +508,7 @@ history_override = "";
 // If empty, no effect. If not empty, this string is used to override 
 //   the comment attribute.
 //
-//
 // Type: string
-//
 
 comment_override = "";
 
@@ -585,11 +519,142 @@ comment_override = "";
 // If empty, no effect. If not empty, this string is used to override 
 //   the author attribute.
 //
-//
 // Type: string
-//
 
 author_override = "";
+
+//======================================================================
+//
+// GROUND-BASED MODE for MOVING PLATFORM GEOREFERENCE.
+//
+// In ground-based the instrument is not moving. Therefore we override 
+//   the latitude/longitude/altitude in the georeference data blocks, and 
+//   set the platform velocities to 0.
+//
+//======================================================================
+ 
+///////////// fixed_location_mode /////////////////////
+//
+// Option to set fixed location in ground-based mode.
+//
+// If TRUE, the program will override the metadata for 
+//   latitude/longitude/altitude, and set platform velocities to 0.
+//
+// Type: boolean
+
+fixed_location_mode = FALSE;
+
+///////////// fixed_radar_location ////////////////////
+//
+// Radar location if override is set true.
+//
+// The radar_location is only used if 'override_radar_location' is set 
+//   true. Otherwise the information in the input data stream is used. 
+//   Note that the altitude is in km MSL.
+//
+// Type: struct
+//   typedef struct {
+//      double latitudeDeg;
+//      double longitudeDeg;
+//      double altitudeKm;
+//   }
+//
+
+fixed_radar_location = {
+    latitudeDeg = 0,
+    longitudeDeg = 0,
+    altitudeKm = 0
+};
+
+//======================================================================
+//
+// OVERRIDE PLATFORM TYPE?.
+//
+//======================================================================
+ 
+///////////// override_platform_type //////////////////
+//
+// Option to override platform type on read. If true, the file will be 
+//   read in, the platform type will be changed, and then any post-read 
+//   processing will be performed.
+//
+// 	PLATFORM_FIXED  - radar is in a fixed location
+// 	PLATFORM_VEHICLE -  radar is mounted on a land vehicle
+// 	PLATFORM_SHIP - radar is mounted on a ship
+// 	PLATFORM_AIRCRAFT_FORE - forward-looking on aircraft
+// 	PLATFORM_AIRCRAFT_AFT - backward-looking on aircraft
+// 	PLATFORM_AIRCRAFT_TAIL - tail - e.g. ELDORA
+// 	PLATFORM_AIRCRAFT_BELLY -  belly radar on aircraft
+// 	PLATFORM_AIRCRAFT_ROOF - roof radar on aircraft
+// 	PLATFORM_AIRCRAFT_NOSE - radar in nose radome on aircraft
+// 	PLATFORM_SATELLITE_ORBIT - orbiting satellite
+// 	PLATFORM_SATELLITE_GEOSTAT - geostationary satellite.
+//
+// Type: boolean
+
+override_platform_type = FALSE;
+
+///////////// platform_type ///////////////////////////
+//
+// Platform type.
+//
+// See override_platform_type.
+//
+// Type: enum
+// Options:
+//     PLATFORM_FIXED
+//     PLATFORM_VEHICLE
+//     PLATFORM_SHIP
+//     PLATFORM_AIRCRAFT_FORE
+//     PLATFORM_AIRCRAFT_AFT
+//     PLATFORM_AIRCRAFT_TAIL
+//     PLATFORM_AIRCRAFT_BELLY
+//     PLATFORM_AIRCRAFT_ROOF
+//     PLATFORM_AIRCRAFT_NOSE
+//     PLATFORM_SATELLITE_ORBIT
+//     PLATFORM_SATELLITE_GEOSTAT
+
+platform_type = PLATFORM_AIRCRAFT_FORE;
+
+//======================================================================
+//
+// OVERRIDE PRIMARY AXIS?.
+//
+//======================================================================
+ 
+///////////// override_primary_axis ///////////////////
+//
+// Option to override primary axis on read. If true, the file will be 
+//   read in, the primary axis will be changed, and then any post-read 
+//   processing will be performed.
+//
+// 	PRIMARY_AXIS_Z - vertical
+// 	PRIMARY_AXIS_Y - longitudinal axis of platform
+// 	PRIMARY_AXIS_X - lateral axis of platform
+// 	PRIMARY_AXIS_Z_PRIME - inverted vertical
+// 	PRIMARY_AXIS_Y_PRIME - ELDORA, HRD tail
+// 	PRIMARY_AXIS_X_PRIME - translated lateral.
+//
+// Type: boolean
+
+override_primary_axis = FALSE;
+
+///////////// primary_axis ////////////////////////////
+//
+// Platform type.
+//
+// See override_primary_axis.
+//
+// Type: enum
+// Options:
+//     PRIMARY_AXIS_Z
+//     PRIMARY_AXIS_Y
+//     PRIMARY_AXIS_X
+//     PRIMARY_AXIS_Z_PRIME
+//     PRIMARY_AXIS_Y_PRIME
+//     PRIMARY_AXIS_X_PRIME
+
+primary_axis = PRIMARY_AXIS_Y_PRIME;
 
 //======================================================================
 //
@@ -607,11 +672,10 @@ author_override = "";
 // Apply censoring based on field values and thresholds.
 //
 // If TRUE, censoring will be performed. See 'censoring_fields' for 
-//   details on how the censoring is applied.
-//
+//   details on how the censoring is applied. NOTE: does not apply to FMQ 
+//   mode.
 //
 // Type: boolean
-//
 
 apply_censoring = FALSE;
 
@@ -635,7 +699,6 @@ apply_censoring = FALSE;
 //   flag is false, the data at the gate is censored, and all of the 
 //   fields at the gate are set to missing.
 //
-//
 // Type: struct
 //   typedef struct {
 //      string name;
@@ -648,7 +711,6 @@ apply_censoring = FALSE;
 //   }
 //
 // 1D array - variable length.
-//
 
 censoring_fields = {
   {
@@ -677,9 +739,7 @@ censoring_fields = {
 //   censoring_min_valid_run. If the number of gates in a run is less than 
 //   this, then all gates in the run are censored.
 //
-//
 // Type: int
-//
 
 censoring_min_valid_run = 1;
 
@@ -691,9 +751,7 @@ censoring_min_valid_run = 1;
 //   specified fields. Set this parameter to TRUE, and specify the fields 
 //   to be excluded in the non_censored_fields list.
 //
-//
 // Type: boolean
-//
 
 specify_non_censored_fields = FALSE;
 
@@ -703,10 +761,8 @@ specify_non_censored_fields = FALSE;
 //
 // See 'specify_non_censored_fields'.
 //
-//
 // Type: string
 // 1D array - variable length.
-//
 
 non_censored_fields = {
  "DBMHC",
@@ -725,9 +781,7 @@ non_censored_fields = {
 //
 // If false, all fields will be used.
 //
-//
 // Type: boolean
-//
 
 set_output_fields = FALSE;
 
@@ -740,7 +794,6 @@ set_output_fields = FALSE;
 //   Set the standard name to the CF standard name for this field. If the 
 //   long name or standard name are empty, the existing names are used. If 
 //   SCALING_SPECIFIED, then the scale and offset is used.
-//
 //
 // Type: struct
 //   typedef struct {
@@ -765,7 +818,6 @@ set_output_fields = FALSE;
 //   }
 //
 // 1D array - variable length.
-//
 
 output_fields = {
   {
@@ -801,9 +853,7 @@ output_fields = {
 //   than specifiying all of the fields to be included, if that list is 
 //   very long.
 //
-//
 // Type: boolean
-//
 
 exclude_specified_fields = FALSE;
 
@@ -813,10 +863,8 @@ exclude_specified_fields = FALSE;
 //
 // List the names to be excluded.
 //
-//
 // Type: string
 // 1D array - variable length.
-//
 
 excluded_fields = {
  "DBZ",
@@ -833,16 +881,13 @@ excluded_fields = {
 //
 // Option to set output encoding for all fields.
 //
-//
 // Type: boolean
-//
 
 set_output_encoding_for_all_fields = FALSE;
 
 ///////////// output_encoding /////////////////////////
 //
 // Output encoding for all fields, if requested.
-//
 //
 // Type: enum
 // Options:
@@ -851,7 +896,6 @@ set_output_encoding_for_all_fields = FALSE;
 //     OUTPUT_ENCODING_INT32
 //     OUTPUT_ENCODING_INT16
 //     OUTPUT_ENCODING_INT08
-//
 
 output_encoding = OUTPUT_ENCODING_ASIS;
 
@@ -870,9 +914,7 @@ output_encoding = OUTPUT_ENCODING_ASIS;
 //
 // If true, we will apply a linear transform to selected fields.
 //
-//
 // Type: boolean
-//
 
 apply_linear_transforms = FALSE;
 
@@ -883,7 +925,6 @@ apply_linear_transforms = FALSE;
 // Set the field name, scale and offset to be applied to the selected 
 //   fields. NOTE: the field name is the INPUT field name.
 //
-//
 // Type: struct
 //   typedef struct {
 //      string input_field_name;
@@ -892,7 +933,6 @@ apply_linear_transforms = FALSE;
 //   }
 //
 // 1D array - variable length.
-//
 
 transform_fields = {
   {
@@ -918,12 +958,10 @@ transform_fields = {
 //
 // Format for the output files.
 //
-//
 // Type: enum
 // Options:
 //     OUTPUT_FORMAT_CFRADIAL
 //     OUTPUT_FORMAT_CFRADIAL2
-//
 
 output_format = OUTPUT_FORMAT_CFRADIAL;
 
@@ -933,9 +971,7 @@ output_format = OUTPUT_FORMAT_CFRADIAL;
 //
 // Files will be written to this directory.
 //
-//
 // Type: string
-//
 
 output_dir = "./output";
 
@@ -948,14 +984,12 @@ output_dir = "./output";
 //   include only end time in file name. SPECIFY_FILE_NAME: file of this 
 //   name will be written to output_dir.
 //
-//
 // Type: enum
 // Options:
 //     START_AND_END_TIMES
 //     START_TIME_ONLY
 //     END_TIME_ONLY
 //     SPECIFY_FILE_NAME
-//
 
 output_filename_mode = START_AND_END_TIMES;
 
@@ -965,9 +999,7 @@ output_filename_mode = START_AND_END_TIMES;
 //
 // If empty, the standard prefix will be used.
 //
-//
 // Type: string
-//
 
 output_filename_prefix = "";
 
@@ -977,9 +1009,7 @@ output_filename_prefix = "";
 //
 // See 'output_file_time_interval_secs'.
 //
-//
 // Type: boolean
-//
 
 write_output_files_on_time_boundaries = FALSE;
 
@@ -990,9 +1020,7 @@ write_output_files_on_time_boundaries = FALSE;
 // See 'split_output_files_on_time'. To make sense, this interval should 
 //   divide evenly into an hour - i.e. 3600.
 //
-//
 // Type: int
-//
 
 output_file_time_interval_secs = 600;
 
@@ -1003,9 +1031,7 @@ output_file_time_interval_secs = 600;
 // Only applies to CfRadial files. If true, the instrument name will be 
 //   included just before the volume number in the output file name.
 //
-//
 // Type: boolean
-//
 
 include_instrument_name_in_file_name = TRUE;
 
@@ -1016,9 +1042,7 @@ include_instrument_name_in_file_name = TRUE;
 // Only applies to CfRadial files. If true, the site name will be 
 //   included just before the volume number in the output file name.
 //
-//
 // Type: boolean
-//
 
 include_site_name_in_file_name = FALSE;
 
@@ -1030,9 +1054,7 @@ include_site_name_in_file_name = FALSE;
 //   millisecs of the start and end time will be included in the file 
 //   name.
 //
-//
 // Type: boolean
-//
 
 include_subsecs_in_file_name = TRUE;
 
@@ -1043,9 +1065,7 @@ include_subsecs_in_file_name = TRUE;
 // Default is true. Only applies to CfRadial files. If true, the scan 
 //   type (SUR, SEC, RHI, VER etc) will be included in the file name.
 //
-//
 // Type: boolean
-//
 
 include_scan_type_in_file_name = TRUE;
 
@@ -1056,9 +1076,7 @@ include_scan_type_in_file_name = TRUE;
 // Default is false. Only applies to CfRadial files. If true, the volume 
 //   number is included in the file name, preceded by '_v'.
 //
-//
 // Type: boolean
-//
 
 include_vol_num_in_file_name = FALSE;
 
@@ -1069,9 +1087,7 @@ include_vol_num_in_file_name = FALSE;
 // Default is false. Only applies to CfRadial files. Normally an 
 //   underscore is used.
 //
-//
 // Type: boolean
-//
 
 use_hyphen_in_file_name_datetime_part = FALSE;
 
@@ -1082,9 +1098,7 @@ use_hyphen_in_file_name_datetime_part = FALSE;
 // Applies only if output_filename_mode is SPECIFY_FILE_NAME. File of 
 //   this name will be written to output_dir.
 //
-//
 // Type: string
-//
 
 output_filename = "cfradial.test.nc";
 
@@ -1094,9 +1108,7 @@ output_filename = "cfradial.test.nc";
 //
 // Path will be output_dir/yyyymmdd/filename.
 //
-//
 // Type: boolean
-//
 
 append_day_dir_to_output_dir = TRUE;
 
@@ -1106,9 +1118,7 @@ append_day_dir_to_output_dir = TRUE;
 //
 // Path will be output_dir/yyyy/yyyymmdd/filename.
 //
-//
 // Type: boolean
-//
 
 append_year_dir_to_output_dir = FALSE;
 
@@ -1120,9 +1130,7 @@ append_year_dir_to_output_dir = FALSE;
 //   Applies to CfRadial format. This is always true for DORADE format 
 //   files.
 //
-//
 // Type: boolean
-//
 
 write_individual_sweeps = FALSE;
 
@@ -1133,9 +1141,7 @@ write_individual_sweeps = FALSE;
 // If true, the _latest_data_info files will be written after the 
 //   converted file is written.
 //
-//
 // Type: boolean
-//
 
 write_latest_data_info = FALSE;
 
@@ -1151,11 +1157,10 @@ write_latest_data_info = FALSE;
 //
 // FMQ mode only.
 //
-//
 // Type: string
-//
 
-output_fmq_url = "/tmp/fmq/moments/10hz.longPulse/shmem_50512";
+output_fmq_url = "/tmp/fmq/moments/10hz.combined/shmem_31000";
+// output_fmq_url = "/tmp/fmq/moments/10hz.longPulse/shmem_50512";
 
 ///////////// output_fmq_compress /////////////////////
 //
@@ -1163,9 +1168,7 @@ output_fmq_url = "/tmp/fmq/moments/10hz.longPulse/shmem_50512";
 //
 // The default is for no compression.
 //
-//
 // Type: boolean
-//
 
 output_fmq_compress = FALSE;
 
@@ -1173,9 +1176,7 @@ output_fmq_compress = FALSE;
 //
 // Number of slots in output FMQ.
 //
-//
 // Type: int
-//
 
 output_fmq_n_slots = 5000;
 
@@ -1183,9 +1184,7 @@ output_fmq_n_slots = 5000;
 //
 // Size of buffer in output FMQ.
 //
-//
 // Type: int
-//
 
 output_fmq_buf_size = 100000000;
 
@@ -1202,9 +1201,7 @@ output_fmq_buf_size = 100000000;
 //   service more than one reader, use Fmq2Fmq in write blocking mode with 
 //   multiple output urls to multiplex the queue.
 //
-//
 // Type: boolean
-//
 
 output_fmq_write_blocking = FALSE;
 
@@ -1215,9 +1212,7 @@ output_fmq_write_blocking = FALSE;
 // If > 0, the program will register with the DataMapper when the output 
 //   FMQs are written to. If <= 0, registration will not be performed.
 //
-//
 // Type: int
-//
 
 output_fmq_data_mapper_report_interval = 5;
 
