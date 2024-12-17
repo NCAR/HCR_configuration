@@ -69,7 +69,7 @@ Then, within parted, run the following to make the partition for ext4:
 
 To make the file system, and label the drive, run the following command:
 
-  sudo mkfs.ext4 -m 0 -L RFS#### /dev/sd#1
+  sudo mkfs.ext4 -m 0 -L RSF#### /dev/sd#1
 
 #### is disk number.
 
