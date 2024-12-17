@@ -1,0 +1,104 @@
+How to label and format external USB disks for the HCR
+======================================================
+
+1. Physical labels
+------------------
+
+Print 3 RSFXXXX labels using 12 mm tape.
+Label disks twice on the box and once on the disk.
+Print notes label:
+  https://docs.google.com/document/d/1Bz5hvroyqJd4Eh6yAA8XnErbPKnQsYsl8MjIB9JmgPI/edit
+and attach to disk.
+
+2. Formatting the drive
+-----------------------
+
+Plug in the disk and mount it via the desktop GUI.
+
+Run "df" to see the mount point and device name. For example:
+
+df
+
+  Filesystem                    Size  Used Avail Use% Mounted on
+  devtmpfs                      4.0M     0  4.0M   0% /dev
+  tmpfs                          32G  151M   32G   1% /dev/shm
+  tmpfs                          13G  2.1M   13G   1% /run
+  efivarfs                      128K   50K   74K  41% /sys/firmware/efi/efivars
+  /dev/nvme0n1p3                 47G   14G   34G  29% /
+  /dev/nvme0n1p6                 56G  2.6G   54G   5% /var
+  /dev/nvme1n1p1                1.9T  331G  1.6T  18% /data
+  /dev/nvme0n1p7                1.7T  150G  1.6T   9% /home
+  /dev/nvme0n1p2                947M  486M  462M  52% /boot
+  /dev/nvme0n1p1                952M  7.1M  945M   1% /boot/efi
+  tmpfs                         6.3G  152K  6.3G   1% /run/user/1001
+  /dev/sda1                     3.7T   23M  3.7T   1% /run/media/mdtest/Extreme SSD
+
+The last line shows the mounted USB drive:
+
+  /dev/sda1                     3.7T   23M  3.7T   1% /run/media/mdtest/Extreme SSD
+
+Then unmount the drive, via the desktop GUI.
+
+In a shell do:
+
+  sudo parted /dev/sd#
+
+where # is the device letter, "a" in this example, i.e. dropping the 1.
+
+In this case it would be:
+
+  sudo parted /dev/sda
+
+You will be prompted as follows:
+
+  GNU Parted
+  Using /dev/sdb
+  Welcome to GNU Parted! Type 'help' to view a list of commands.
+  (parted)
+
+Then, within parted, run the following to make the partition for ext4:
+
+  (parted) p
+  (parted) rm 1                                                             
+  (parted) mkpart ext4 0% 100%                                              
+  (parted) quit                                                             
+
+To make the file system, and label the drive, run the following command:
+
+  sudo mkfs.ext4 -m 0 -L RFS#### /dev/sd#1
+
+#### is disk number.
+
+Then:
+
+  unplug
+  replug
+
+Mount the disk, and check that it is writable:
+
+  cd /run/media/romatsch/RSF####
+  sudo mkdir rsf
+  sudo chmod 777 rsf
+  sync
+
+Then unmount the drive using the desktop GUI.
+
+  cd
+  umount /dev/sd#1
+
+3. To rename a disk
+-------------------
+
+When mounted:
+
+  sudo tune2fs -L "<new_label>" /dev/sdb1
+  unmount
+  remount: should have new name
+
+4. To remove data from disk
+---------------------------
+
+  chmod 777 -R archive
+  rm -rf archive
+
+
