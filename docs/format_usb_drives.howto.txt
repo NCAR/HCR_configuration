@@ -37,7 +37,11 @@ The last line shows the mounted USB drive:
 
   /dev/sda1                     3.7T   23M  3.7T   1% /run/media/mdtest/Extreme SSD
 
-Then unmount the drive, via the desktop GUI.
+Then unmount the drive, via the desktop GUI or the following command line:
+
+  unmount /dev/sd#1
+
+where '#' is the 'a' in the example above.
 
 In a shell do:
 
@@ -81,7 +85,7 @@ Mount the disk, and check that it is writable:
   sudo chmod 777 rsf
   sync
 
-Then unmount the drive using the desktop GUI.
+Then unmount the drive using the desktop GUI, or:
 
   cd
   umount /dev/sd#1
