@@ -62,14 +62,14 @@ def main():
         options.debug = True
 
     if (options.debug == True):
-        print >>sys.stderr, "Running: ", os.path.basename(__file__)
-        print >>sys.stderr, "  Options:"
-        print >>sys.stderr, "    Debug: ", options.debug
-        print >>sys.stderr, "    Verbose: ", options.verbose
-        print >>sys.stderr, "    Remote host: ", options.host
-        print >>sys.stderr, "    Source dir: ", options.dir
-        print >>sys.stderr, "    Project name: ", options.projectName
-        print >>sys.stderr, "    Drive index: ", driveIndex
+        print("Running: ", os.path.basename(__file__), file=sys.stderr)
+        print("  Options:", file=sys.stderr)
+        print("    Debug: ", options.debug, file=sys.stderr)
+        print("    Verbose: ", options.verbose, file=sys.stderr)
+        print("    Remote host: ", options.host, file=sys.stderr)
+        print("    Source dir: ", options.dir, file=sys.stderr)
+        print("    Project name: ", options.projectName, file=sys.stderr)
+        print("    Drive index: ", driveIndex, file=sys.stderr)
         
     # compile the list of target drives
 
@@ -86,16 +86,15 @@ def main():
         index = index + 1
 
     if (options.debug == True):
-        print >>sys.stderr, "======================="
-        print >>sys.stderr, "Target disk drive list:"
+        print("=======================", file=sys.stderr)
+        print("Target disk drive list:", file=sys.stderr)
         for drive in driveList:
-            print >>sys.stderr, \
-                  "  drive, device: ", \
-                  drive, deviceTable[drive]
-        print >>sys.stderr, "Drive to use: ", driveToUse
+            print("  drive, device: ", \
+                  drive, deviceTable[drive], file=sys.stderr)
+        print("Drive to use: ", driveToUse, file=sys.stderr)
 
     if (driveToUse == "none"):
-        print >>sys.stderr, "ERROR - no drive at index: ", driveIndex
+        print("ERROR - no drive at index: ", driveIndex, file=sys.stderr)
         exit(1)
 
     # compute day string for today
@@ -109,10 +108,10 @@ def main():
     # compute the earliest valid time
 
     if (options.debug == True):
-        print >>sys.stderr, "======================="
-        print >>sys.stderr, "Time details: "
-        print >>sys.stderr, "  now time: ", nowTime
-        print >>sys.stderr, "      secs: ", nowSecs
+        print("=======================", file=sys.stderr)
+        print("Time details: ", file=sys.stderr)
+        print("  now time: ", nowTime, file=sys.stderr)
+        print("      secs: ", nowSecs, file=sys.stderr)
 
     # perform the archival, to selected drive
         
@@ -140,7 +139,7 @@ def compileDriveList():
     
     driveList = []
     for line in lines:
-        tokens = line.split()
+        tokens = line.decode("utf-8").split()
         if (tokens[0].find('/dev') >= 0):
             partition = tokens[5]
             if (partition.find('RSF') >= 0):
@@ -158,10 +157,10 @@ def compileDriveList():
 def doArchiveToDrive(drive):
 
     if (options.debug == True):
-        print >>sys.stderr, "====================================="
-        print >>sys.stderr, "Syncing host: ", options.host
-        print >>sys.stderr, "         dir: ", options.dir
-        print >>sys.stderr, "    to drive: ", drive
+        print("=====================================", file=sys.stderr)
+        print("Syncing host: ", options.host, file=sys.stderr)
+        print("         dir: ", options.dir, file=sys.stderr)
+        print("    to drive: ", drive, file=sys.stderr)
 
     # compute target dir
     
@@ -199,17 +198,17 @@ def doArchiveToDrive(drive):
 def runCommand(cmd):
 
     if (options.debug == True):
-        print >>sys.stderr, "running cmd:",cmd
+        print("running cmd:",cmd, file=sys.stderr)
     
     try:
         retcode = subprocess.call(cmd, shell=True)
         if retcode < 0:
-            print >>sys.stderr, "Child was terminated by signal: ", -retcode
+            print("Child was terminated by signal: ", -retcode, file=sys.stderr)
         else:
             if (options.debug == True):
-                print >>sys.stderr, "Child returned code: ", retcode
-    except OSError, e:
-        print >>sys.stderr, "Execution failed:", e
+                print("Child returned code: ", retcode, file=sys.stderr)
+    except OSError as e:
+        print("Execution failed:", e, file=sys.stderr)
 
 ########################################################################
 # Run - entry point

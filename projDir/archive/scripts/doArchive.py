@@ -76,17 +76,17 @@ def main():
         options.debug = True
 
     if (options.debug == True):
-        print >>sys.stderr, "Running: ", os.path.basename(__file__)
-        print >>sys.stderr, "  Options:"
-        print >>sys.stderr, "    Debug: ", options.debug
-        print >>sys.stderr, "    Verbose: ", options.verbose
-        print >>sys.stderr, "    Test mode: ", options.testMode
-        print >>sys.stderr, "    Source dir: ", options.sourceDir
-        print >>sys.stderr, "    Project name: ", options.projectName
-        print >>sys.stderr, "    Drive index: ", driveIndex
-        print >>sys.stderr, "    Dir list path: ", options.dirListPath
-        print >>sys.stderr, "    Max age (hours): ", options.maxAgeHours
-        print >>sys.stderr, "             (secs): ", maxAgeSecs
+        print("Running: ", os.path.basename(__file__), file=sys.stderr)
+        print("  Options:", file=sys.stderr)
+        print("    Debug: ", options.debug, file=sys.stderr)
+        print("    Verbose: ", options.verbose, file=sys.stderr)
+        print("    Test mode: ", options.testMode, file=sys.stderr)
+        print("    Source dir: ", options.sourceDir, file=sys.stderr)
+        print("    Project name: ", options.projectName, file=sys.stderr)
+        print("    Drive index: ", driveIndex, file=sys.stderr)
+        print("    Dir list path: ", options.dirListPath, file=sys.stderr)
+        print("    Max age (hours): ", options.maxAgeHours, file=sys.stderr)
+        print("             (secs): ", maxAgeSecs, file=sys.stderr)
         
     # compile the list of target drives
 
@@ -103,16 +103,15 @@ def main():
         index = index + 1
 
     if (options.debug == True):
-        print >>sys.stderr, "======================="
-        print >>sys.stderr, "Target disk drive list:"
+        print("=======================", file=sys.stderr)
+        print("Target disk drive list:", file=sys.stderr)
         for drive in driveList:
-            print >>sys.stderr, \
-                  "  drive, device: ", \
-                  drive, deviceTable[drive]
-        print >>sys.stderr, "Drive to use: ", driveToUse
+            print("  drive, device: ", \
+                  drive, deviceTable[drive], file=sys.stderr)
+        print("Drive to use: ", driveToUse, file=sys.stderr)
 
     if (driveToUse == "none"):
-        print >>sys.stderr, "ERROR - no drive at index: ", driveIndex
+        print("ERROR - no drive at index: ", driveIndex, file=sys.stderr)
         exit(1)
 
     # read in the directory list
@@ -120,10 +119,10 @@ def main():
     readDirList()
 
     if (options.debug == True):
-        print >>sys.stderr, "======================="
-        print >>sys.stderr, "Dir list:"
+        print("=======================", file=sys.stderr)
+        print("Dir list:", file=sys.stderr)
         for dir in dirList:
-            print >>sys.stderr, "  -->> ", dir
+            print("  -->> ", dir, file=sys.stderr)
 
     # compute day string for today
     # in test mode we set the daystr directly
@@ -145,12 +144,12 @@ def main():
     validStartSecs = nowSecs - maxAgeSecs
 
     if (options.debug == True):
-        print >>sys.stderr, "======================="
-        print >>sys.stderr, "Time details: "
-        print >>sys.stderr, "  now time: ", nowTime
-        print >>sys.stderr, "      secs: ", nowSecs
-        print >>sys.stderr, "  files valid from: ", validStartTime
-        print >>sys.stderr, "              secs: ", validStartSecs
+        print("=======================", file=sys.stderr)
+        print("Time details: ", file=sys.stderr)
+        print("  now time: ", nowTime, file=sys.stderr)
+        print("      secs: ", nowSecs, file=sys.stderr)
+        print("  files valid from: ", validStartTime, file=sys.stderr)
+        print("              secs: ", validStartSecs, file=sys.stderr)
 
     # perform the archival, to selected drive
         
@@ -179,7 +178,7 @@ def compileDriveList():
     
     driveList = []
     for line in lines:
-        tokens = line.split()
+        tokens = line.decode("utf-8").split()
         if (tokens[0].find('/dev') >= 0):
             partition = tokens[5]
             if (partition.find('RSF') >= 0):
@@ -217,16 +216,16 @@ def doArchiveToDrive(drive, dir):
     sourceDir = os.path.join(sourceDir, dir)
 
     if (os.path.isdir(sourceDir) == False):
-        print >>sys.stderr, "====================================="
-        print >>sys.stderr, "Dir does not exist: ", sourceDir
-        print >>sys.stderr, "  skipping ..."
+        print("=====================================", file=sys.stderr)
+        print("Dir does not exist: ", sourceDir, file=sys.stderr)
+        print("  skipping ...", file=sys.stderr)
         return
 
     if (options.debug == True):
-        print >>sys.stderr, "====================================="
-        print >>sys.stderr, "Syncing, dir: ", dir
-        print >>sys.stderr, "    to drive: ", drive
-        print >>sys.stderr, "   sourceDir: ", sourceDir
+        print("=====================================", file=sys.stderr)
+        print("Syncing, dir: ", dir, file=sys.stderr)
+        print("    to drive: ", drive, file=sys.stderr)
+        print("   sourceDir: ", sourceDir, file=sys.stderr)
 
     # compute target dir
     
@@ -246,13 +245,12 @@ def doArchiveToDrive(drive, dir):
 def processDir(sourceDir, targetDir, level):
 
     if (options.verbose == True):
-        print >>sys.stderr, \
-        "processDir: sourceDir, targetDir, level: ", \
-            sourceDir, ", ", targetDir, ", ", level
+        print("processDir: sourceDir, targetDir, level: ", \
+            sourceDir, ", ", targetDir, ", ", level, file=sys.stderr)
     
     if (level > 5):
         # too deep
-        print >>sys.stderr, "ERROR - recursion too deep"
+        print("ERROR - recursion too deep", file=sys.stderr)
         return
 
     # read through directory looking for files to archive
@@ -276,7 +274,7 @@ def processDir(sourceDir, targetDir, level):
             newTargetDir = os.path.join(targetDir, entry)
 
             if (options.verbose == True):
-                print >>sys.stderr, "  ===>> recursing to dir: ", newSourceDir
+                print("  ===>> recursing to dir: ", newSourceDir, file=sys.stderr)
 
             processDir(newSourceDir, newTargetDir, level + 1)
 
@@ -289,15 +287,14 @@ def processDir(sourceDir, targetDir, level):
             timeDiffSecs = nowSecs - fileModSecs
 
             if (options.verbose == True):
-                print >>sys.stderr, \
-                    "  ===>> found path, modSecs, timeDiffSecs: ", \
-                    entryPath, ", ", fileModSecs, ", ", timeDiffSecs
+                print("  ===>> found path, modSecs, timeDiffSecs: ", \
+                    entryPath, ", ", fileModSecs, ", ", timeDiffSecs, file=sys.stderr)
 
             # append to fileList
 
             if (fileModSecs > validStartSecs):
                 if (options.verbose == True):
-                    print >>sys.stderr, "  ===>> appending file: ", entry
+                    print("  ===>> appending file: ", entry, file=sys.stderr)
                 fileList.append(entry)
 
     if (len(fileList) < 1):
@@ -305,13 +302,14 @@ def processDir(sourceDir, targetDir, level):
 
     # sort the list alphabetically
     
-    fileList.sort(lambda x, y: cmp(x.lower(),y.lower()))
+    #fileList.sort(lambda x, y: cmp(x.lower(),y.lower()))
+    fileList.sort()
     
     if (options.debug == True):
-        print >>sys.stderr, "Full file list:"
+        print("Full file list:", file=sys.stderr)
         for fileName in fileList:
-            print >>sys.stderr, "  ", fileName
-        print >>sys.stderr, "Only the most recent items will be rsync'd"
+            print("  ", fileName, file=sys.stderr)
+        print("Only the most recent items will be rsync'd", file=sys.stderr)
 
     # create file list as string
 
@@ -344,7 +342,7 @@ def processDir(sourceDir, targetDir, level):
     
     runCommand(cmd)
 
-    print >>sys.stderr, "============ DONE ============"
+    print("============ DONE ============", file=sys.stderr)
     
 
 ########################################################################
@@ -357,13 +355,12 @@ def compileFileList(topdir, subdir, level):
         fileList = []
 
     if (options.verbose == True):
-        print >>sys.stderr, \
-        "compileFileList: topdir, subdir, level: ", \
-            topdir, ", ", subdir, ", ", level
+        print("compileFileList: topdir, subdir, level: ", \
+            topdir, ", ", subdir, ", ", level, file=sys.stderr)
     
     if (level > 5):
         # too deep
-        print >>sys.stderr, "ERROR - recursion too deep"
+        print("ERROR - recursion too deep", file=sys.stderr)
         return
 
     if (len(subdir) > 0):
@@ -387,7 +384,7 @@ def compileFileList(topdir, subdir, level):
             
             # recurse
             if (options.verbose == True):
-                print >>sys.stderr, "  ===>> recursing to dir: ", entryPath
+                print("  ===>> recursing to dir: ", entryPath, file=sys.stderr)
 
             compileFileList(topdir, entryRelPath, level + 1)
 
@@ -398,14 +395,14 @@ def compileFileList(topdir, subdir, level):
             timeDiffSecs = nowSecs - fileModSecs
 
             if (options.verbose == True):
-                print >>sys.stderr, "  ===>> path, modSecs, timeDiffSecs: ", \
-                    entryPath, ", ", fileModSecs, ", ", timeDiffSecs
+                print("  ===>> path, modSecs, timeDiffSecs: ", \
+                    entryPath, ", ", fileModSecs, ", ", timeDiffSecs, file=sys.stderr)
 
             # append to fileList
 
             if (fileModSecs > validStartSecs):
                 if (options.verbose == True):
-                    print >>sys.stderr, "  ===>> appending file: ", entryRelPath
+                    print("  ===>> appending file: ", entryRelPath, file=sys.stderr)
                 fileList.append(entryRelPath)
 
     return
@@ -416,17 +413,17 @@ def compileFileList(topdir, subdir, level):
 def runCommand(cmd):
 
     if (options.verbose == True):
-        print >>sys.stderr, "running cmd:",cmd
+        print("running cmd:",cmd, file=sys.stderr)
     
     try:
         retcode = subprocess.call(cmd, shell=True)
         if retcode < 0:
-            print >>sys.stderr, "Child was terminated by signal: ", -retcode
+            print("Child was terminated by signal: ", -retcode, file=sys.stderr)
         else:
             if (options.debug == True):
-                print >>sys.stderr, "Child returned code: ", retcode
-    except OSError, e:
-        print >>sys.stderr, "Execution failed:", e
+                print("Child returned code: ", retcode, file=sys.stderr)
+    except OSError as e:
+        print("Execution failed:", e, file=sys.stderr)
 
 ########################################################################
 # Run - entry point
