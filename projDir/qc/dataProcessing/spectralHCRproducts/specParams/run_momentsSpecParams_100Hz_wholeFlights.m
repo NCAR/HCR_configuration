@@ -4,11 +4,11 @@ close all;
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-project='spicule'; %socrates, aristo, cset, otrec
+project='noreaster'; %socrates, aristo, cset, otrec
 quality='ts'; %field, qc1, or qc2
-qualityCF='qc2';
+qualityCF='qc3';
 freqData='10hz';
-qcVersion='v2.0';
+qcVersion='v3.0';
 whichModel='era5';
 
 saveData=1;
@@ -37,7 +37,7 @@ infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_
 
 caseList = table2array(readtable(infile));
 
-for aa=6:size(caseList,1)
+for aa=1:size(caseList,1)
     tic
     
     disp(['Flight ',num2str(aa)]);
