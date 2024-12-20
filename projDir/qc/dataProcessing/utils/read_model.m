@@ -5,8 +5,11 @@ function [model] = read_model(model,modelDir,startTime,endTime)
 % Possible variables are time, p, t, rh, u, v, sst, asl
 % modelDir: directory where the model data is located
 % startTime, endTime: requested time frame (in datetime format) 
-model.time=[];
+
 varNamesIn=fields(model);
+if ~strcmp(varNamesIn{1},'momentsSpecParams')
+    model.time=[];
+end
 
 varNames={};
 for ii=1:length(varNamesIn)
@@ -60,15 +63,30 @@ for ii=1:length(varNames)
 end
 
 % Get right times
-timeInds=find(modelTemp.time.timeHCR>=startTime & modelTemp.time.timeHCR<=endTime);
+if ~strcmp(varNamesIn{1},'momentsSpecParams')
+    timeInds=find(modelTemp.time.timeHCR>=startTime & modelTemp.time.timeHCR<=endTime);
 
-for ii=1:length(varNames)
-    nameIn=fields(modelTemp.(varNames{ii}));
-    dataIn=modelTemp.(varNames{ii}).(nameIn{:});
-    if size(dataIn,2)==1
-        dataIn=dataIn';
+    for ii=1:length(varNames)
+        nameIn=fields(modelTemp.(varNames{ii}));
+        dataIn=modelTemp.(varNames{ii}).(nameIn{:});
+        if size(dataIn,2)==1
+            dataIn=dataIn';
+        end
+        model.(varNamesIn{ii})=dataIn(:,timeInds);
     end
-    model.(varNamesIn{ii})=dataIn(:,timeInds);
+else
+    timeInds=find(modelTemp.momentsSpecParams.momentsSpecParams.time>=startTime & ...
+        modelTemp.momentsSpecParams.momentsSpecParams.time<=endTime);
+
+    varNames=fields(modelTemp.momentsSpecParams.momentsSpecParams);
+
+    for ii=1:length(varNames)
+        dataIn=modelTemp.momentsSpecParams.momentsSpecParams.(varNames{ii});
+        % if size(dataIn,2)==1
+        %     dataIn=dataIn';
+        % end
+        model.(varNames{ii})=dataIn(:,timeInds);
+    end
 end
 end
 
