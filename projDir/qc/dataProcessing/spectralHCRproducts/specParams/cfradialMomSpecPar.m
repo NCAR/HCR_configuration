@@ -4,9 +4,9 @@ close all;
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-project='noreaster'; % socrates, cset, aristo, otrec
-quality='qc3'; % field, qc1, qc2
-qcVersion='v3.0';
+project='spicule'; % socrates, cset, aristo, otrec
+quality='qc2'; % field, qc1, qc2
+qcVersion='v2.0';
 freqData='10hz';
 whichModel='era5';
 
@@ -21,7 +21,7 @@ indir=HCRdir(project,quality,qcVersion,freqData);
 %% Run processing
 
 % Go through flights
-for ii=1:size(caseList,1)
+for ii=2:size(caseList,1)
     
     disp(['Flight ',num2str(ii)]);
     
@@ -33,6 +33,7 @@ for ii=1:size(caseList,1)
     if ~isempty(fileList)
         
         % Get model data
+        model=[];
         model.momentsSpecParams=[];
                 
         model=read_model(model,modeldir,startTime,endTime);

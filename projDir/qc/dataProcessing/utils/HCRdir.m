@@ -25,7 +25,7 @@ if strcmp(project,'socrates')
             disp('The requested data does not exist.');
             return
         end
-    elseif strcmp(qc,'qc3')
+    elseif strcmp(qc,'qc3') | strcmp(qc,'qc4')
         if strcmp(freq,'10hz') | strcmp(freq,'2hz')
             indir=['/scr/virga2/rsfdata/projects/socrates/hcr/',qc,'/cfradial/',qcVersion,'_full/',freq,'/'];
         elseif strcmp(freq,'combined')

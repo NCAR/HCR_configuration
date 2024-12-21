@@ -31,6 +31,7 @@ for ii=1:size(caseList,1)
     data=[];
 
     data.DBZ_long=[];
+    % data.DBZ_short=[];
        
     %% Load data
     % Make list of files within the specified time frame
