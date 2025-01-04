@@ -30,12 +30,13 @@ for ii=1:size(caseList,1)
     data=[];
 
     data.DBZ_short=[];
-    data.VEL_short=[];
+    data.VEL_unfold_short=[];
     data.WIDTH_short=[];
     data.SNRVC_short=[];
     data.LDRV_short=[];
+    data.FLAG_short=[];
     data.DBZ_long=[];
-    data.VEL_long=[];
+    data.VEL_unfold_long=[];
     data.WIDTH_long=[];
     data.LDRV_long=[];
        
@@ -48,12 +49,16 @@ for ii=1:size(caseList,1)
     % Load data
     data=read_HCR(fileList,data,startTime,endTime);
 
-    data.WIDTH_long(data.WIDTH_long<=0.1)=nan;
-    data.WIDTH_short(data.WIDTH_short<=0.1)=nan;
-    data.DBZ_long(data.DBZ_long<=-40)=nan;
-    data.DBZ_short(data.DBZ_short<=-40)=nan;
-    data.LDRV_long(data.LDRV_long>-1)=nan;
-    data.LDRV_short(data.LDRV_short>-1)=nan;
+    data.WIDTH_long(data.WIDTH_long<=0.1 | data.FLAG_short~=1)=nan;
+    data.WIDTH_short(data.WIDTH_short<=0.1 | data.FLAG_short~=1)=nan;
+    data.DBZ_long(data.DBZ_long<=-40 | data.FLAG_short~=1)=nan;
+    data.DBZ_short(data.DBZ_short<=-40 | data.FLAG_short~=1)=nan;
+    data.LDRV_long(data.LDRV_long>-1 | data.FLAG_short~=1)=nan;
+    data.LDRV_short(data.LDRV_short>-1 | data.FLAG_short~=1)=nan;
+    data.VEL_long=data.VEL_unfold_long;
+    data.VEL_short=data.VEL_unfold_short;
+    data.VEL_long(data.FLAG_short~=1)=nan;
+    data.VEL_short(data.FLAG_short~=1)=nan;
 
     %% Sort by SNR
     disp('Sorting by SNR ...');
@@ -86,4 +91,4 @@ for ii=1:size(caseList,1)
 
 end
 
-save([figdir,'mergeScatter.mat'],'bySNRall');
+save([figdir,'mergeScatterCensor.mat'],'bySNRall');

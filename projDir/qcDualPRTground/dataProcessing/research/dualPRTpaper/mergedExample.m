@@ -22,14 +22,15 @@ endTime=datetime(2024,6,14,21,32,0);
 data=[];
 
 data.DBZ_short=[];
-data.VEL_short=[];
+data.VEL_unfold_short=[];
 data.WIDTH_short=[];
-data.SNRVC_short=[];
 data.LDRV_short=[];
+data.FLAG_short=[];
 data.DBZ_long=[];
-data.VEL_long=[];
+data.VEL_unfold_long=[];
 data.WIDTH_long=[];
 data.LDRV_long=[];
+data.FLAG_long=[];
 data.DBZ=[];
 data.VEL=[];
 data.WIDTH=[];
@@ -44,87 +45,34 @@ fileList=makeFileList(indir,startTime,endTime,'xxxxxx20YYMMDDxhhmmss',1);
 % Load data
 data=read_HCR(fileList,data,startTime,endTime);
 
-%% Plot
+data.DBZ_short(data.FLAG_short~=1)=nan;
+data.VEL_unfold_short(data.FLAG_short~=1)=nan;
+data.WIDTH_short(data.FLAG_short~=1)=nan;
+data.LDRV_short(data.FLAG_short~=1)=nan;
+
+data.DBZ_long(data.FLAG_long~=1)=nan;
+data.VEL_unfold_long(data.FLAG_long~=1)=nan;
+data.WIDTH_long(data.FLAG_long~=1)=nan;
+data.LDRV_long(data.FLAG_long~=1)=nan;
+
+%% Plot DBZ and LDR
 pix=50;
 ylimDU=[0.2,10.5];
 
 close all
 
-f1 = figure('Position',[200 500 1000 1100],'DefaultAxesFontSize',12);
-t = tiledlayout(5,3,'TileSpacing','compact','Padding','tight');
-
-
-%%% SNR
-s2=nexttile(2);
-
-hold on
-surf(1:pix:length(data.time),data.range(:,1)./1000,data.SNRVC_short(:,1:pix:length(data.time)),'EdgeColor','none');
-view(2)
-clim([1000,1100]);
-colM=colormap('cool');
-colormap(colM);
-
-SNRcont=data.SNRVC_short;
-SNRcont(isnan(data.DBZ))=nan;
-
-%xlim([data.time(1),data.time(end)]);
-ylim([ylimDU]);
-
-xticklabels('');
-
-yyaxis right
-contourf(1:length(data.time),data.range(:,1)./1000,SNRcont,[-5.5,10,25],'LineColor','none')
-s2.SortMethod='childorder';
-xlim([1,length(data.time)]);
-%ylabel('Range (km)')
-yticks('')
-grid off
-box on
-colCont=cool(3);
-colCont=[[0,0,0];colCont];
-s2.Colormap=colCont;
-set(gca,'YColor','k');
-ylim([ylimDU]);
-
-l1=plot(nan,'-','Color',[0,1,1],'LineWidth',2);
-l2=plot(nan,'-','Color',[0.5,0.5,1],'LineWidth',2);
-l3=plot(nan,'-','Color',[1,0,1],'LineWidth',2);
-
-legend([l1,l2,l3],{'DBZ/VEL','WIDTH','LDR'});
-
-title('(a) SNR thresholds','Interpreter','none');
-
-s3=nexttile(3);
-
-surf(data.time(1:pix:length(data.time)),data.range(:,1:pix:length(data.time))./1000,data.SNRVC_short(:,1:pix:length(data.time)),'EdgeColor','none');
-view(2)
-clim([-10,55]);
-colM=jet;
-s3.Colormap=colM;
-%hcb=colorbar;
-%hcb.Title.String="dB";
-
-xlim([data.time(1),data.time(end)]);
-ylim([ylimDU]);
-
-xticklabels('');
-
-%ylabel('Range (km)')
-grid off
-box on
-
-title('(b) SNR_short','Interpreter','none');
-hcb=colorbar;
-hcb.Title.String="dB";
+f1 = figure('Position',[200 500 900 1000],'DefaultAxesFontSize',12);
+t = tiledlayout(3,2,'TileSpacing','tight','Padding','tight','TileIndexing', 'columnmajor');
 
 %%% DBZ
-s4=nexttile(4);
+s1=nexttile(1);
 climVar=[-25,25];
 
 surf(data.time(1:pix:length(data.time)),data.range(:,1:pix:length(data.time))./1000,data.DBZ_short(:,1:pix:length(data.time)),'EdgeColor','none');
 view(2)
 clim(climVar);
-s4.Colormap=colM;
+colM=jet;
+s1.Colormap=colM;
 
 xlim([data.time(1),data.time(end)]);
 ylim([ylimDU]);
@@ -135,210 +83,91 @@ ylabel('Range (km)')
 grid off
 box on
 
-title('(c) DBZ_short','Interpreter','none');
+title('(a) DBZ_short','Interpreter','none');
 
-s5=nexttile(5);
+s2=nexttile(2);
 
 surf(data.time(1:pix:length(data.time)),data.range(:,1:pix:length(data.time))./1000,data.DBZ_long(:,1:pix:length(data.time)),'EdgeColor','none');
 view(2)
 clim(climVar);
-s5.Colormap=colM;
+s2.Colormap=colM;
 
 xlim([data.time(1),data.time(end)]);
 ylim([ylimDU]);
 
 xticklabels('');
-yticklabels('');
 
+ylabel('Range (km)')
 grid off
 box on
 
-title('(d) DBZ_long','Interpreter','none');
+title('(c) DBZ_long','Interpreter','none');
 
-s6=nexttile(6);
+s3=nexttile(3);
 
 surf(data.time(1:pix:length(data.time)),data.range(:,1:pix:length(data.time))./1000,data.DBZ(:,1:pix:length(data.time)),'EdgeColor','none');
 view(2)
 clim(climVar);
-s6.Colormap=colM;
-hcb=colorbar;
+s3.Colormap=colM;
+hcb=colorbar('Location','southoutside');
 hcb.Title.String="dBZ";
 
 xlim([data.time(1),data.time(end)]);
 ylim([ylimDU]);
 
-xticklabels('');
-yticklabels('');
-
+ylabel('Range (km)')
 grid off
 box on
 
 title('(e) DBZ','Interpreter','none');
 
-
-%%% VEL
-s7=nexttile(7);
-climVar=[-10,10];
-
-surf(data.time(1:pix:length(data.time)),data.range(:,1:pix:length(data.time))./1000,data.VEL_short(:,1:pix:length(data.time)),'EdgeColor','none');
-view(2)
-clim(climVar);
-s7.Colormap=velCols;
-
-xlim([data.time(1),data.time(end)]);
-ylim([ylimDU]);
-
-xticklabels('');
-
-ylabel('Range (km)')
-grid off
-box on
-
-title('(f) VEL_short','Interpreter','none');
-
-s8=nexttile(8);
-
-surf(data.time(1:pix:length(data.time)),data.range(:,1:pix:length(data.time))./1000,data.VEL_long(:,1:pix:length(data.time)),'EdgeColor','none');
-view(2)
-clim(climVar);
-s8.Colormap=velCols;
-
-xlim([data.time(1),data.time(end)]);
-ylim([ylimDU]);
-
-xticklabels('');
-yticklabels('');
-
-grid off
-box on
-
-title('(g) VEL_long','Interpreter','none');
-
-s9=nexttile(9);
-
-surf(data.time(1:pix:length(data.time)),data.range(:,1:pix:length(data.time))./1000,data.VEL(:,1:pix:length(data.time)),'EdgeColor','none');
-view(2)
-clim(climVar);
-s9.Colormap=velCols;
-hcb=colorbar;
-hcb.Title.String="m s^{-1}";
-
-xlim([data.time(1),data.time(end)]);
-ylim([ylimDU]);
-
-xticklabels('');
-yticklabels('');
-
-grid off
-box on
-
-title('(h) VEL','Interpreter','none');
-
-%%% WIDTH
-s10=nexttile(10);
-climVar=[0,2];
-colW=pink;
-
-surf(data.time(1:pix:length(data.time)),data.range(:,1:pix:length(data.time))./1000,data.WIDTH_short(:,1:pix:length(data.time)),'EdgeColor','none');
-view(2)
-clim(climVar);
-s10.Colormap=colW;
-
-xlim([data.time(1),data.time(end)]);
-ylim([ylimDU]);
-
-xticklabels('');
-
-ylabel('Range (km)')
-grid off
-box on
-
-title('(i) WIDTH_short','Interpreter','none');
-
-s11=nexttile(11);
-
-surf(data.time(1:pix:length(data.time)),data.range(:,1:pix:length(data.time))./1000,data.WIDTH_long(:,1:pix:length(data.time)),'EdgeColor','none');
-view(2)
-clim(climVar);
-s11.Colormap=colW;
-
-xlim([data.time(1),data.time(end)]);
-ylim([ylimDU]);
-
-xticklabels('');
-yticklabels('');
-
-grid off
-box on
-
-title('(j) WIDTH_long','Interpreter','none');
-
-s12=nexttile(12);
-
-surf(data.time(1:pix:length(data.time)),data.range(:,1:pix:length(data.time))./1000,data.WIDTH(:,1:pix:length(data.time)),'EdgeColor','none');
-view(2)
-clim(climVar);
-s12.Colormap=colW;
-hcb=colorbar;
-hcb.Title.String="m s^{-1}";
-
-xlim([data.time(1),data.time(end)]);
-ylim([ylimDU]);
-
-xticklabels('');
-yticklabels('');
-
-grid off
-box on
-
-title('(k) WIDTH','Interpreter','none');
-
 %%% LDR
-s13=nexttile(13);
+s4=nexttile(4);
 climVar=[-30,-15];
 colL=jet;
 
 surf(data.time(1:pix:length(data.time)),data.range(:,1:pix:length(data.time))./1000,data.LDRV_short(:,1:pix:length(data.time)),'EdgeColor','none');
 view(2)
 clim(climVar);
-s13.Colormap=colL;
+s4.Colormap=colL;
 
 xlim([data.time(1),data.time(end)]);
 ylim([ylimDU]);
 
-%xticklabels('');
+xticklabels('');
+yticklabels('');
 
-ylabel('Range (km)')
+%ylabel('Range (km)')
 grid off
 box on
 
-title('(l) LDR_short','Interpreter','none');
+title('(b) LDR_short','Interpreter','none');
 
-s14=nexttile(14);
+s5=nexttile(5);
 
 surf(data.time(1:pix:length(data.time)),data.range(:,1:pix:length(data.time))./1000,data.LDRV_long(:,1:pix:length(data.time)),'EdgeColor','none');
 view(2)
 clim(climVar);
-s14.Colormap=colL;
+s5.Colormap=colL;
 
 xlim([data.time(1),data.time(end)]);
 ylim([ylimDU]);
 
-%xticklabels('');
+xticklabels('');
 yticklabels('');
 
 grid off
 box on
 
-title('(m) LDR_long','Interpreter','none');
+title('(d) LDR_long','Interpreter','none');
 
-s15=nexttile(15);
+s6=nexttile(6);
 
 surf(data.time(1:pix:length(data.time)),data.range(:,1:pix:length(data.time))./1000,data.LDR(:,1:pix:length(data.time)),'EdgeColor','none');
 view(2)
 clim(climVar);
-s15.Colormap=colL;
-hcb=colorbar;
+s6.Colormap=colL;
+hcb=colorbar('Location','southoutside');
 hcb.Title.String="dB";
 
 xlim([data.time(1),data.time(end)]);
@@ -350,7 +179,133 @@ yticklabels('');
 grid off
 box on
 
-title('(n) LDR','Interpreter','none');
+title('(f) LDR','Interpreter','none');
 
 set(gcf,'PaperPositionMode','auto')
-print(f1,[figdir,'mergedExample.png'],'-dpng','-r0')
+print(f1,[figdir,'mergedExample1.png'],'-dpng','-r0')
+
+%% Plot VEL and WIDTH
+pix=50;
+ylimDU=[0.2,10.5];
+
+close all
+
+f1 = figure('Position',[200 500 900 1000],'DefaultAxesFontSize',12);
+t = tiledlayout(3,2,'TileSpacing','tight','Padding','tight','TileIndexing', 'columnmajor');
+
+%%% VEL
+s1=nexttile(1);
+climVar=[-10,10];
+
+surf(data.time(1:pix:length(data.time)),data.range(:,1:pix:length(data.time))./1000,data.VEL_unfold_short(:,1:pix:length(data.time)),'EdgeColor','none');
+view(2)
+clim(climVar);
+s1.Colormap=velCols;
+
+xlim([data.time(1),data.time(end)]);
+ylim([ylimDU]);
+
+xticklabels('');
+
+ylabel('Range (km)')
+grid off
+box on
+
+title('(a) VEL_short','Interpreter','none');
+
+s2=nexttile(2);
+
+surf(data.time(1:pix:length(data.time)),data.range(:,1:pix:length(data.time))./1000,data.VEL_unfold_long(:,1:pix:length(data.time)),'EdgeColor','none');
+view(2)
+clim(climVar);
+s2.Colormap=velCols;
+
+xlim([data.time(1),data.time(end)]);
+ylim([ylimDU]);
+ylabel('Range (km)')
+
+xticklabels('');
+
+grid off
+box on
+
+title('(c) VEL_long','Interpreter','none');
+
+s3=nexttile(3);
+
+surf(data.time(1:pix:length(data.time)),data.range(:,1:pix:length(data.time))./1000,data.VEL(:,1:pix:length(data.time)),'EdgeColor','none');
+view(2)
+clim(climVar);
+s3.Colormap=velCols;
+hcb=colorbar('Location','southoutside');
+hcb.Title.String="m s^{-1}";
+
+xlim([data.time(1),data.time(end)]);
+ylim([ylimDU]);
+ylabel('Range (km)')
+
+grid off
+box on
+
+title('(e) VEL','Interpreter','none');
+
+%%% WIDTH
+s4=nexttile(4);
+climVar=[0,2];
+colW=pink;
+
+surf(data.time(1:pix:length(data.time)),data.range(:,1:pix:length(data.time))./1000,data.WIDTH_short(:,1:pix:length(data.time)),'EdgeColor','none');
+view(2)
+clim(climVar);
+s4.Colormap=colW;
+
+xlim([data.time(1),data.time(end)]);
+ylim([ylimDU]);
+
+xticklabels('');
+yticklabels('');
+
+grid off
+box on
+
+title('(b) WIDTH_short','Interpreter','none');
+
+s5=nexttile(5);
+
+surf(data.time(1:pix:length(data.time)),data.range(:,1:pix:length(data.time))./1000,data.WIDTH_long(:,1:pix:length(data.time)),'EdgeColor','none');
+view(2)
+clim(climVar);
+s5.Colormap=colW;
+
+xlim([data.time(1),data.time(end)]);
+ylim([ylimDU]);
+
+xticklabels('');
+yticklabels('');
+
+grid off
+box on
+
+title('(d) WIDTH_long','Interpreter','none');
+
+s6=nexttile(6);
+
+surf(data.time(1:pix:length(data.time)),data.range(:,1:pix:length(data.time))./1000,data.WIDTH(:,1:pix:length(data.time)),'EdgeColor','none');
+view(2)
+clim(climVar);
+s6.Colormap=colW;
+hcb=colorbar('Location','southoutside');
+hcb.Title.String="m s^{-1}";
+
+xlim([data.time(1),data.time(end)]);
+ylim([ylimDU]);
+
+yticklabels('');
+
+grid off
+box on
+
+title('(f) WIDTH','Interpreter','none');
+
+set(gcf,'PaperPositionMode','auto')
+print(f1,[figdir,'mergedExample2.png'],'-dpng','-r0')
