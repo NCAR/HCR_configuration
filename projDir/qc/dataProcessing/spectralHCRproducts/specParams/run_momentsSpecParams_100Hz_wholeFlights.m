@@ -4,7 +4,7 @@ close all;
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-project='socrates'; %socrates, aristo, cset, otrec
+project='otrec'; %socrates, aristo, cset, otrec
 quality='ts'; %field, qc1, or qc2
 qualityCF='qc4';
 freqData='10hz';
@@ -37,7 +37,7 @@ infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_
 
 caseList = table2array(readtable(infile));
 
-for aa=1:size(caseList,1)
+for aa=3:size(caseList,1)
     tic
     
     disp(['Flight ',num2str(aa)]);
@@ -112,6 +112,8 @@ for aa=1:size(caseList,1)
         continue
     end
 
+    allGood=1;
+
     for bb=1:length(fileListTS)
 
         if bb==1
@@ -144,17 +146,21 @@ for aa=1:size(caseList,1)
             velBiasCorrection=velBiasCorrection-deAliasMaskB;
         else
             %% Trimm first file
-            data=trimFirstFile(data,endInd);
+            if allGood
+                data=trimFirstFile(data,endInd);
 
-            goodTimes(1:end-1)=[];
+                goodTimes(1:end-1)=[];
+            end
 
             %% Load data TS
             disp(['Loading time series file ',num2str(bb),' of ' num2str(length(fileListTS)),' ...']);
 
             try
                 data=read_TsArchive_iwrf_bulk(fileListTS{bb},data);
+                allGood=1;
             catch
                 warning('Could not read file. Moving on.')
+                allGood=0;
                 continue
             end
 
