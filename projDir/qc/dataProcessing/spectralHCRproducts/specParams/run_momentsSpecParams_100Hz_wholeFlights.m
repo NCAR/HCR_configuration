@@ -2,7 +2,12 @@
 clear all;
 close all;
 
-addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
+if exist('~/git','dir')
+    gitDir='~/git';
+elseif exist('/scr/tmp/romatsch/git','dir')
+    gitDir='/scr/tmp/romatsch/git';
+end
+addpath(genpath([gitDir,'/HCR_configuration/projDir/qc/dataProcessing/']));
 
 project='otrec'; %socrates, aristo, cset, otrec
 quality='ts'; %field, qc1, or qc2
@@ -29,7 +34,7 @@ figdir=[dataDirCF(1:end-5),'specMomentsParams/wholeFlights/'];
 
 showPlot='off';
 
-infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_',project,'.txt'];
+infile=[gitDir,'/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_',project,'.txt'];
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
