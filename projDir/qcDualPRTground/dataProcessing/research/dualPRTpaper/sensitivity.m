@@ -20,8 +20,9 @@ disp(['Long pulse has ',num2str((areaFracDiff-1)*100),'% more data.']);
 % Total
 diffMat=longSNR-shortSNR;
 totalValDiff=median(diffMat(:),'omitmissing');
+totalStdDiff=std(diffMat(:),'omitmissing');
 
-disp(['Median SNR difference: ',num2str(totalValDiff),' dB.']);
+disp(['Median SNR difference: ',num2str(totalValDiff),' +/- ',num2str(totalStdDiff),' dB.']);
 
 % By range
 rangeValDiff=mean(diffMat,2,'omitmissing');
