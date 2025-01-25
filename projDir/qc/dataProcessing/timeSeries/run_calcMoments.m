@@ -4,14 +4,14 @@ close all;
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-project='spicule'; %socrates, aristo, cset, otrec
+project='noreaster'; %socrates, aristo, cset, otrec
 quality='ts'; %field, qc1, or qc2
-qualityCF='qc1';
+qualityCF='qc2';
 freqData='10hz';
-qcVersion='v1.2';
+qcVersion='v2.0';
 
-%plotInds=0;
-plotInds=(1:50:500);
+plotInds=0;
+%plotInds=(1:50:500);
 
 outTime=0.1; % Desired output time resolution in seconds. Must be less than or equal to one second.
 sampleTime=0.1; % Length of sample in seconds.
@@ -255,7 +255,7 @@ for aa=1:length(caseStart)
 
             %% Correct time domain width
             widthSquares=momentsTimeOne.width(:,ii).^2-widthCorrDelta(:,cfInd).^2;
-            widthSquares(widthSquares<0.1)=0.01;
+            widthSquares(widthSquares<0.01)=0.01;
             momentsTimeOne.widthCorr(:,ii)=sqrt(widthSquares);
 
             %% Spectra
