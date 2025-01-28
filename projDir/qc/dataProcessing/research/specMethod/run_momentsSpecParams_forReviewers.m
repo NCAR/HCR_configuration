@@ -9,18 +9,17 @@ elseif exist('/scr/tmp/romatsch/git','dir')
 end
 addpath(genpath([gitDir,'/HCR_configuration/projDir/qc/dataProcessing/']));
 
-project='spicule'; %socrates, aristo, cset, otrec
+project='noreaster'; %socrates, aristo, cset, otrec
 quality='ts'; %field, qc1, or qc2
-qualityCF='qc2';
+qualityCF='qc3';
 freqData='10hz';
-qcVersion='v2.0';
+qcVersion='v3.0';
 whichModel='era5';
 
-saveData=1;
+%plotInds=0;
+plotInds=(1:50:500);
 
-plotYes=1;
-plotInds=0;
-%plotInds=(1:50:500);
+calcTS=1;
 
 outTime=0.1; % Desired output time resolution in seconds. Must be less than or equal to one second.
 sampleTime=0.1; % Length of sample in seconds.
@@ -28,29 +27,32 @@ sampleTime=0.1; % Length of sample in seconds.
 dataDirTS=HCRdir(project,quality,qcVersion,freqData);
 dataDirCF=HCRdir(project,qualityCF,qcVersion,freqData);
 
-[~,outdir]=modelDir(project,whichModel,qualityCF,qcVersion,freqData);
+%figdir=[dataDirCF(1:end-5),'specMomentsParams/wholeFlights/'];
+figdir='/scr/virga1/rsfdata/projects/spicule/hcr/qc1/cfradial/v1.2_full/specParams/specPaperFigs/forReviewers/';
 
-figdir=[dataDirCF(1:end-5),'specMomentsParams/wholeFlights/'];
+showPlot='on';
 
-showPlot='off';
-
-infile=[gitDir,'/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_',project,'.txt'];
+casefile=['~/git/HCR_configuration/projDir/qc/dataProcessing/HCRproducts/caseFiles/airMotion_',project,'.txt'];
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Loop through cases
 
-caseList = table2array(readtable(infile));
+caseList=readtable(casefile);
+caseStart=datetime(caseList.Var1,caseList.Var2,caseList.Var3, ...
+    caseList.Var4,caseList.Var5,caseList.Var6);
+caseEnd=datetime(caseList.Var7,caseList.Var8,caseList.Var9, ...
+    caseList.Var10,caseList.Var11,caseList.Var12);
 
-for aa=2:size(caseList,1)
+for aa=1:length(caseStart)
     tic
     
     disp(['Flight ',num2str(aa)]);
     disp('Loading HCR data.')
     disp(['Starting at ',datestr(datetime('now'),'yyyy-mm-dd HH:MM')]);
 
-    startTime=datetime(caseList(aa,1:6));
-    endTime=datetime(caseList(aa,7:12));
+    startTime=datetime(caseList{aa,1:6});
+    endTime=datetime(caseList{aa,7:12});
 
     plotTimeAll=[];
 
@@ -200,6 +202,20 @@ for aa=2:size(caseList,1)
         momentsSpecOne.rpvel=nan(size(data.range,1),beamNum);
         momentsSpecOne.time=goodTimes(1:beamNum)';
 
+        if calcTS
+            momentsTimeOne.powerV=nan(size(data.range,1),beamNum);
+            momentsTimeOne.velRaw=nan(size(data.range,1),beamNum);
+            momentsTimeOne.width=nan(size(data.range,1),beamNum);
+            momentsTimeOne.widthCorr=nan(size(data.range,1),beamNum);
+            momentsTimeOne.dbz=nan(size(data.range,1),beamNum);
+            momentsTimeOne.snr=nan(size(data.range,1),beamNum);
+            momentsTimeOne.skew=nan(size(data.range,1),beamNum);
+            momentsTimeOne.kurt=nan(size(data.range,1),beamNum);
+            momentsTimeOne.ncp=nan(size(data.range,1),beamNum);
+
+            momentsTimeSmoothOne=momentsTimeOne;
+        end
+
         noiseFloor=nan(size(data.range,1),beamNum);
         velForDeAliasOne=nan(size(data.range,1),beamNum);
 
@@ -254,8 +270,8 @@ for aa=2:size(caseList,1)
             % This step removes the noise, de-aliases, and corrects for
             % spectral broadening
             [powerOrig,powerOrigRMnoise,powerSmooth,powerSmoothCorr,specVelAdj,noiseFloor(:,ii),peaks1,peaks2]= ...
-                noisePeaks_skewKurtSP(specPowerDB.V,dataThis,widthCorrDelta(:,cfInd),filterAt(:,cfInd), ...
-                sampleTime,figdir,plotTime);
+                noisePeaks_skewKurtSP_forReviewers(specPowerDB.V,dataThis,widthCorrDelta(:,cfInd),filterAt(:,cfInd), ...
+                sampleTime,figdir,plotTime,project);
             specVelRMnoise=specVelAdj;
             specVelRMnoise(isnan(powerSmoothCorr))=nan;
 
@@ -266,7 +282,24 @@ for aa=2:size(caseList,1)
 
             momentsSpecOne=calcMomentsSpec_higherMoments(powerSmoothCorr,specVelRMnoise,ii,momentsSpecOne);
             
-             %% Spectral parameters
+            %% Time moments
+            if calcTS
+                momentsTimeOne=calcMomentsTime(cIQ,ii,momentsTimeOne,dataThis);
+
+                % Smoothed
+
+                powerSmoothShift=fftshift(powerSmooth,2);
+                powerSmoothLin=10.^(powerSmoothShift./10);
+
+                % powerRatio=powerSmoothLin./(10.^(powerOrig./10));
+                % magRatio=sqrt(powerRatio);
+
+                cIQs.v=ifft(powerSmoothLin,[],2).*sqrt(size(powerSmoothLin,2));
+
+                momentsTimeSmoothOne=calcMomentsTime(cIQs,ii,momentsTimeSmoothOne,dataThis);
+            end
+            
+            %% Spectral parameters
 
             momentsSpecOne=calcSpecParams(powerSmoothCorr,specVelRMnoise,peaks1,peaks2,noiseFloor(:,ii),ii,momentsSpecOne);
             
@@ -277,12 +310,26 @@ for aa=2:size(caseList,1)
         %% Add to output
         if bb==1
             momentsSpec=momentsSpecOne;
+            if calcTS
+                momentsTime=momentsTimeOne;
+                momentsTimeSmooth=momentsTimeSmoothOne;
+            end
+
             velForDeAlias=velForDeAliasOne;
         else
             dataFields1=fields(momentsSpecOne);
 
             for hh=1:length(dataFields1)
                 momentsSpec.(dataFields1{hh})=cat(2,momentsSpec.(dataFields1{hh}),momentsSpecOne.(dataFields1{hh}));
+            end
+
+            if calcTS
+                dataFields11=fields(momentsTimeOne);
+
+                for hh=1:length(dataFields11)
+                    momentsTime.(dataFields11{hh})=cat(2,momentsTime.(dataFields11{hh}),momentsTimeOne.(dataFields11{hh}));
+                    momentsTimeSmooth.(dataFields11{hh})=cat(2,momentsTimeSmooth.(dataFields11{hh}),momentsTimeSmoothOne.(dataFields11{hh}));
+                end
             end
 
             velForDeAlias=cat(2,velForDeAlias,velForDeAliasOne);
@@ -347,6 +394,20 @@ for aa=2:size(caseList,1)
     momentsSpecParams.lpvel(pvelMask==0)=nan;
     momentsSpecParams.rpvel(pvelMask==0)=nan;
 
+    if calcTS
+        momentsTimeW=nan(size(dataCF.VEL_MASKED));
+        momentsTimeW(:,ia~=0)=momentsTime.width(:,ib(ib~=0));
+        momentsTimeSmoothW=nan(size(dataCF.VEL_MASKED));
+        momentsTimeSmoothW(:,ia~=0)=momentsTimeSmooth.width(:,ib(ib~=0));
+
+        widthSquares=momentsTimeW.^2-widthCorrDelta.^2;
+        widthSquares(widthSquares<0.01)=0.01;
+        momentsTimeWC=sqrt(widthSquares);
+        widthSquaresS=momentsTimeSmoothW.^2-widthCorrDelta.^2;
+        widthSquaresS(widthSquaresS<0.01)=0.01;
+        momentsTimeSmoothWC=sqrt(widthSquaresS);
+    end
+
      %% Take time
 
     eSecs=toc;
@@ -355,47 +416,10 @@ for aa=2:size(caseList,1)
     timePerMin=eSecs/60/minutes(eData);
     disp(['Total: ',num2str(eSecs/60),' minutes. Per data minute: ',num2str(timePerMin),' minutes.']);
 
+    %% Plot
 
-    %% Plot in 20 minute increments
+    close all
 
-    if plotYes
-        disp('Plotting ...');
-        startPlot=startTime;
+    plotWidthsReview(momentsSpecParams,momentsTimeW,momentsTimeSmoothW,momentsTimeWC,momentsTimeSmoothWC,figdir,project,showPlot);
 
-        fieldsPlot=fieldnames(momentsSpecParams);
-
-        while startPlot<endTime
-
-            endPlot=startPlot+minutes(20);
-            indsTest=find(momentsSpecParams.time>=startPlot & momentsSpecParams.time<=endPlot);
-            if length(indsTest)==0
-                startPlot=endPlot;
-                continue
-            end
-            
-            newInds=indsTest(1):round(length(indsTest)/2000):indsTest(end);
-
-            % Resample for plotting
-            for ll=1:length(fieldsPlot)
-                momentsSpecParamsPlot.(fieldsPlot{ll})=momentsSpecParams.(fieldsPlot{ll})(:,newInds);
-            end
-
-            if sum(sum(~isnan(momentsSpecParamsPlot.velRaw)))>300
-
-                close all
-                plotMomentsSpecParams(momentsSpecParamsPlot,figdir,project,showPlot);
-            end
-            startPlot=endPlot;
-        end
-    end
-    
-    %% Save
-    if saveData
-        disp('Saving moments and spectral parameters ...')
-        momentsSpecParams.vel=momentsSpecParams.velRaw;
-        momentsSpecParams=rmfield(momentsSpecParams,'velRaw');
-
-        save([outdir,whichModel,'.momentsSpecParams.',datestr(momentsSpecParams.time(1),'YYYYmmDD_HHMMSS'),'_to_',...
-            datestr(momentsSpecParams.time(end),'YYYYmmDD_HHMMSS'),'.Flight',num2str(aa),'.mat'],'momentsSpecParams','-v7.3');
-    end
 end
