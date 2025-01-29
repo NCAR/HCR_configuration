@@ -9,11 +9,11 @@ elseif exist('/scr/tmp/romatsch/git','dir')
 end
 addpath(genpath([gitDir,'/HCR_configuration/projDir/qc/dataProcessing/']));
 
-project='noreaster'; %socrates, aristo, cset, otrec
+project='spicule'; %socrates, aristo, cset, otrec
 quality='ts'; %field, qc1, or qc2
-qualityCF='qc3';
+qualityCF='qc2';
 freqData='10hz';
-qcVersion='v3.0';
+qcVersion='v2.0';
 whichModel='era5';
 
 %plotInds=0;
@@ -422,4 +422,5 @@ for aa=1:length(caseStart)
 
     plotWidthsReview(momentsSpecParams,momentsTimeW,momentsTimeSmoothW,momentsTimeWC,momentsTimeSmoothWC,figdir,project,showPlot);
 
+    plotMomentsSpecParams(momentsSpecParamsPlot,figdir,project,showPlot);
 end
