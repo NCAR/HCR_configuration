@@ -9,17 +9,21 @@ elseif exist('/scr/tmp/romatsch/git','dir')
 end
 addpath(genpath([gitDir,'/HCR_configuration/projDir/qc/dataProcessing/']));
 
-project='spicule'; %socrates, aristo, cset, otrec
+project='noreaster'; %socrates, aristo, cset, otrec
 quality='ts'; %field, qc1, or qc2
-qualityCF='qc2';
+qualityCF='qc3';
 freqData='10hz';
-qcVersion='v2.0';
+qcVersion='v3.0';
 whichModel='era5';
 
-%plotInds=0;
-plotInds=(1:50:500);
+plotInds=0;
+%plotInds=(1:50:500);
 
-calcTS=1;
+calcTS=0;
+
+fullBBS=1;
+
+saveSpec=1;
 
 outTime=0.1; % Desired output time resolution in seconds. Must be less than or equal to one second.
 sampleTime=0.1; % Length of sample in seconds.
@@ -66,6 +70,8 @@ for aa=1:length(caseStart)
     dataCF.VEL_MASKED=[];
     dataCF.eastward_velocity=[];
     dataCF.northward_velocity=[];
+    dataCF.vertical_velocity=[];
+    dataCF.azimuth=[];
          
     dataCF=read_HCR(fileListMoments,dataCF,startTime,endTime);
     dataCF.beamWidth=ncread(fileListMoments{1},'radar_beam_width_v');
@@ -74,7 +80,25 @@ for aa=1:length(caseStart)
     % Aircraft speed
     velTestWind=sqrt(dataCF.eastward_velocity.^2+dataCF.northward_velocity.^2);
     % Correction factor
-    widthCorrDelta=abs(0.3.*velTestWind.*sin(deg2rad(dataCF.elevation)).*deg2rad(dataCF.beamWidth));
+    if fullBBS
+        % Calculate beta
+        % uBeam=sind(dataCF.azimuth);
+        % vBeam=cosd(dataCF.azimuth);
+
+        % Calculate xi
+        aircDir=wrapTo360(180+180/pi*atan2(dataCF.northward_velocity,dataCF.eastward_velocity));
+        normDeg=mod(aircDir-dataCF.azimuth,360);
+        %xi=deg2rad(min([360-normDeg;normDeg]));
+        xi=(min([360-normDeg;normDeg]));
+        % Calculate beta
+        % theta=90-abs(dataCF.elevation);
+        % beta=atan(tan(xi)./cos(deg2rad(dataCF.elevation)));
+        beta=atand(tand(xi)./cosd(dataCF.elevation));
+        widthCorrDelta=abs(0.3.*velTestWind.*sin(deg2rad(dataCF.elevation)).*cos(deg2rad(xi)).*cos(deg2rad(beta)).*deg2rad(dataCF.beamWidth)+ ...
+            velTestWind.*sin(deg2rad(beta)).*sin(deg2rad(xi))-dataCF.vertical_velocity.*cos(deg2rad(dataCF.elevation)).*cos(deg2rad(beta)));
+    else
+        widthCorrDelta=abs(0.3.*velTestWind.*sin(deg2rad(dataCF.elevation)).*deg2rad(dataCF.beamWidth));
+    end
     widthCorrDelta=fillmissing(widthCorrDelta,'nearest',1);
     widthCorrDelta=repmat(widthCorrDelta,size(dataCF.range,1),1);
         
@@ -271,7 +295,7 @@ for aa=1:length(caseStart)
             % spectral broadening
             [powerOrig,powerOrigRMnoise,powerSmooth,powerSmoothCorr,specVelAdj,noiseFloor(:,ii),peaks1,peaks2]= ...
                 noisePeaks_skewKurtSP_forReviewers(specPowerDB.V,dataThis,widthCorrDelta(:,cfInd),filterAt(:,cfInd), ...
-                sampleTime,figdir,plotTime,project);
+                sampleTime,figdir,plotTime,project,calcTS);
             specVelRMnoise=specVelAdj;
             specVelRMnoise(isnan(powerSmoothCorr))=nan;
 
@@ -420,7 +444,15 @@ for aa=1:length(caseStart)
 
     close all
 
-    plotWidthsReview(momentsSpecParams,momentsTimeW,momentsTimeSmoothW,momentsTimeWC,momentsTimeSmoothWC,figdir,project,showPlot);
+    if calcTS
+        plotWidthsReview(momentsSpecParams,momentsTimeW,momentsTimeSmoothW,momentsTimeWC,momentsTimeSmoothWC,figdir,project,showPlot);
+    end
 
-    plotMomentsSpecParams(momentsSpecParamsPlot,figdir,project,showPlot);
+    plotMomentsSpecParams(momentsSpecParams,figdir,project,showPlot);
+
+    %% Save
+    if saveSpec
+        save([figdir,'specData/',project,'/',project,'_spec_',datestr(momentsSpecParams.time(1),'yyyymmdd_HHMMSS'), ...
+            '_to_',datestr(momentsSpecParams.time(end),'yyyymmdd_HHMMSS')],'momentsSpecParams','-v7.3');
+    end
 end

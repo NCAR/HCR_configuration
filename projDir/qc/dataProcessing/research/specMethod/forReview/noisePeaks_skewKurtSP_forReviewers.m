@@ -1,10 +1,10 @@
 function [powerOrig,powerOrigRMnoise,powerSmoothAll,powerSmoothCorr,velOut,noiseFloorAllMov,peakIndsAll1,peakIndsAll2]= ...
-    noisePeaks_skewKurtSP_forReviewers(specDB,data,widthC,filterAt,sampleTime,figdir,plotTime,project)
+    noisePeaks_skewKurtSP_forReviewers(specDB,data,widthC,filterAt,sampleTime,figdir,plotTime,project,calcTS)
 
 % Initialize output
 powerOrig=nan(size(specDB));
 powerOrigRMnoise=nan(size(specDB));
-powerSmooth=nan(size(specDB));
+powerSmoothAll=nan(size(specDB));
 
 % Decide if and what to plot
 plotAll=0; % Set to 1 if everything should be plotted. Plots won't be saved.
@@ -61,7 +61,7 @@ velDupl=velDupl(1:end-1).*data.lambda./(4*pi.*repmat(data.prt,1,2));
 velOut=repmat(velSpec,size(sigDupl,1),1);
 
 % If we are in debug mode, fill out other ouput and plot variables
-%if ~isempty(plotTime)
+if ~isempty(plotTime) | calcTS
     % Fill output variables
     powerOrig=specDB;
     pOdupl=repmat(powerOrig,1,2);
@@ -77,7 +77,7 @@ velOut=repmat(velSpec,size(sigDupl,1),1);
 
     powerSmoothCorrAll=sigWidthCorr;
     pSCduplAll=repmat(powerSmoothCorrAll,1,2);
-%end
+end
 
 % Remove two stretches that are not valid
 loopInds=find(any(~isnan(sigDupl),2));
@@ -93,13 +93,13 @@ for aa=1:size(loopInds,1)
     if firstEmpty~=1
         powerSmoothCorr(ii,:)=sigThis(firstEmpty:firstEmpty+sampleNum-1);
         velOut(ii,:)=velDupl(firstEmpty:firstEmpty+sampleNum-1);
-        %if ~isempty(plotTime)
+        if ~isempty(plotTime) | calcTS
             powerOrig(ii,:)=pOdupl(ii,firstEmpty:firstEmpty+sampleNum-1);
             powerOrigRMnoise(ii,:)=pORMnoiseDupl(ii,firstEmpty:firstEmpty+sampleNum-1);
             powerSmooth(ii,:)=pSdupl(ii,firstEmpty:firstEmpty+sampleNum-1);
             powerSmoothAll(ii,:)=pSduplAll(ii,firstEmpty:firstEmpty+sampleNum-1);
             powerSmoothCorrAll(ii,:)=pSCduplAll(ii,firstEmpty:firstEmpty+sampleNum-1);
-        %end
+        end
     end
 
     % Check for two data stretches
@@ -127,10 +127,10 @@ for aa=1:size(loopInds,1)
     end
 end
 
-%if ~isempty(plotTime)
+if ~isempty(plotTime) | calcTS
     powerOrigRMnoise(isnan(powerSmoothCorr))=nan;
     powerSmooth(isnan(powerSmoothCorr))=nan;
-%end
+end
 
 %% Peaks
 sigPeaks=islocalmax(powerSmoothCorr,2,'MaxNumExtrema',2);
