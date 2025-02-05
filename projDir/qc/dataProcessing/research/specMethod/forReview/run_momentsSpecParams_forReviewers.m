@@ -16,12 +16,14 @@ freqData='10hz';
 qcVersion='v3.0';
 whichModel='era5';
 
-plotInds=0;
-%plotInds=(1:50:500);
+%plotInds=0;
+plotInds=(1:50:500);
 
-calcTS=0;
+calcTS=1;
 
-fullBBS=1;
+fullBBS=0;
+
+filterAdd=0;
 
 saveSpec=1;
 
@@ -116,6 +118,8 @@ for aa=1:length(caseStart)
     filterAt=modefilt(filterAt,[1,101]);
 
     filterAt=repmat(filterAt,size(dataCF.range,1),1);
+
+    filterAt=filterAt+filterAdd;
         
     % Velocity bias term
     velBiasCorrection=dataCF.VEL_MASKED-dataCF.VEL_RAW;
