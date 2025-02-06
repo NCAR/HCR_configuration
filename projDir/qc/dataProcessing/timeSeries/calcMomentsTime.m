@@ -5,15 +5,15 @@ cIQ.v=cIQ.v.*sqrt(size(cIQ.v,2));
 R0v=mean(real(cIQ.v).^2+imag(cIQ.v).^2,2);
 R1v=mean(cIQ.v(:,1:end-1).*conj(cIQ.v(:,2:end)),2);
 R2v=mean(cIQ.v(:,1:end-2).*conj(cIQ.v(:,3:end)),2);
-R3v=mean(cIQ.v(:,1:end-3).*conj(cIQ.v(:,4:end)),2);
-R4v=mean(cIQ.v(:,1:end-4).*conj(cIQ.v(:,5:end)),2);
+% R3v=mean(cIQ.v(:,1:end-3).*conj(cIQ.v(:,4:end)),2);
+% R4v=mean(cIQ.v(:,1:end-4).*conj(cIQ.v(:,5:end)),2);
 
 momentsTime.powerV(:,ii)=single(10*log10(R0v)-data.rx_gain_v);
 momentsTime.velRaw(:,ii)=single(data.lambda/(4*pi*mode(data.prt))*angle(R1v));
 %widthRaw=data.lambda/(2*pi.*mode(data.prt)*6^.5)*abs(log(abs(R1v./R2v))).^0.5;
 momentsTime.width(:,ii)=data.lambda/(2*pi.*mode(data.prt)*6^.5)*abs(log(abs(R1v./R2v))).^0.5;
-momentsTime.skew(:,ii)=single(abs(log(abs(R3v./(R2v.^3)))));
-momentsTime.kurt(:,ii)=single(abs(log(abs(R4v./(R2v.^2)))));
+% momentsTime.skew(:,ii)=single(abs(log(abs(R3v./(R2v.^3)))));
+% momentsTime.kurt(:,ii)=single(abs(log(abs(R4v./(R2v.^2)))));
 momentsTime.ncp(:,ii)=single(abs(R1v)./R0v);
 
 % Correct width for aircraft motion
