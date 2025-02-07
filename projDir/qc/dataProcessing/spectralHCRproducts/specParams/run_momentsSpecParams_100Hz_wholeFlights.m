@@ -42,7 +42,7 @@ infile=[gitDir,'/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flight
 
 caseList = table2array(readtable(infile));
 
-for aa=3:size(caseList,1)
+for aa=1:size(caseList,1)
     tic
     
     disp(['Flight ',num2str(aa)]);
@@ -224,6 +224,10 @@ for aa=3:size(caseList,1)
 
             % Trim data down to current beam
             dataThis=trimData(data,startInd,endInd);
+
+            if sampleNum~=size(dataThis.IVc,2)
+                continue
+            end
 
             % IQ
             cIQ.v=winNorm'.*(dataThis.IVc+i*dataThis.QVc)./sqrt(sampleNum);

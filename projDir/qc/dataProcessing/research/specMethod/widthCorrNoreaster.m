@@ -7,6 +7,8 @@ figdir='/scr/virga1/rsfdata/projects/spicule/hcr/qc1/cfradial/v1.2_full/specPara
 
 load([figdir,'widthNoreaster.mat']);
 
+mT2=load([figdir,'widthNoreasterTime.mat']);
+
 %% Figure
 
 close all
@@ -26,6 +28,7 @@ t = tiledlayout(4,1,'TileSpacing','tight','Padding','tight');
 s1=nexttile(1);
 
 momentsTime.width(isnan(dataCF.VEL_MASKED))=nan;
+mT2.momentsTime.widthCorr(isnan(dataCF.VEL_MASKED))=nan;
 
 hold on
 surf(momentsTime.time,momentsTime.asl./1000,momentsTime.width,'edgecolor','none');
@@ -47,7 +50,7 @@ s2=nexttile(2);
 momentsTime.widthCorr(isnan(dataCF.VEL_MASKED))=nan;
 
 hold on
-surf(momentsTime.time,momentsTime.asl./1000,momentsTime.widthCorr,'edgecolor','none');
+surf(momentsTime.time,momentsTime.asl./1000,mT2.momentsTime.widthCorr,'edgecolor','none');
 view(2);
 l=plot(dataCF.time,dataCF.altitude./1000,'-b','LineWidth',2);
 ylabel('Altitude (km)');

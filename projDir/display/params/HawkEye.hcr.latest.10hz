@@ -407,6 +407,15 @@ fields = {
   }
   ,
   {
+    label = "WIDTH_RAW",
+    raw_name = "WIDTH_RAW",
+    filtered_name = "",
+    units = "m/s",
+    color_map = "width_w.colors",
+    shortcut = "9"
+  }
+  ,
+  {
     label = "WIDTH",
     raw_name = "WIDTH",
     filtered_name = "",
