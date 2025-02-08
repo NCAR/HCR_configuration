@@ -17,5 +17,7 @@ if strcmp(freq,'10hz') | strcmp(freq,'2hz')
     interp=[baseDir,'hcr/',qc,'/',model,'interp/',qcVersion,'/',freq,'/'];
 elseif strcmp(freq,'combined')
     interp=[baseDir,'hcr/',qc,'/',model,'interp/',qcVersion,'/hcr_hsrl_merge/2hz/'];
+elseif strcmp(freq,'10hz_spec')
+    interp=[baseDir,'hcr/',qc,'/',model,'interp/',qcVersion,'/',freq(1:4),'/'];
 end
 end

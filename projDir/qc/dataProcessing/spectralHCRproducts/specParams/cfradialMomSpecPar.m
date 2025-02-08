@@ -5,9 +5,9 @@ close all;
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
 project='spicule'; % socrates, cset, aristo, otrec
-quality='qc2'; % field, qc1, qc2
-qcVersion='v2.0';
-freqData='10hz';
+quality='qc1'; % field, qc1, qc2
+qcVersion='v1.2';
+freqData='10hz_spec';
 whichModel='era5';
 
 infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_',project,'.txt'];
@@ -76,6 +76,7 @@ for ii=2:size(caseList,1)
             
             % Write output
             fillVal=-9999;
+            fillValMask=-99;
             
             modVars=fields(model);
             
@@ -85,6 +86,9 @@ for ii=2:size(caseList,1)
                     modOut.(modVars{kk})(isnan(modOut.(modVars{kk})))=fillVal;
                 end
             end
+
+            modOut.mp=double(modOut.rpvel~=fillVal);
+            modOut.mp(modOut.mp==0)=fillValMask;
             
             % Open file
             ncid = netcdf.open(infile,'WRITE');
@@ -112,11 +116,9 @@ for ii=2:size(caseList,1)
             netcdf.defVarFill(ncid,varidLEv,false,fillVal);
             varidREv = netcdf.defVar(ncid,'RIGHT_EDGE_VEL','NC_FLOAT',[dimrange dimtime]);
             netcdf.defVarFill(ncid,varidREv,false,fillVal);
-            varidLPv = netcdf.defVar(ncid,'LEFT_PEAK_VEL','NC_FLOAT',[dimrange dimtime]);
-            netcdf.defVarFill(ncid,varidLPv,false,fillVal);
-            varidRPv = netcdf.defVar(ncid,'RIGHT_PEAK_VEL','NC_FLOAT',[dimrange dimtime]);
-            netcdf.defVarFill(ncid,varidRPv,false,fillVal);
-           
+            varidMPv = netcdf.defVar(ncid,'MULTI_PEAK_MASK','NC_SHORT',[dimrange dimtime]);
+            netcdf.defVarFill(ncid,varidMPv,false,fillValMask);
+                      
             netcdf.endDef(ncid);
             
             % Write variables
@@ -128,9 +130,8 @@ for ii=2:size(caseList,1)
             netcdf.putVar(ncid,varidEEw,modOut.lrwidth);
             netcdf.putVar(ncid,varidLEv,modOut.level);
             netcdf.putVar(ncid,varidREv,modOut.revel);
-            netcdf.putVar(ncid,varidLPv,modOut.lpvel);
-            netcdf.putVar(ncid,varidRPv,modOut.rpvel);
-                        
+            netcdf.putVar(ncid,varidMPv,modOut.mp);
+                                    
             netcdf.close(ncid);
             
             % Write attributes
@@ -182,17 +183,11 @@ for ii=2:size(caseList,1)
             ncwriteatt(infile,'RIGHT_EDGE_VEL','grid_mapping','grid_mapping');
             ncwriteatt(infile,'RIGHT_EDGE_VEL','coordinates','time range');
 
-            ncwriteatt(infile,'LEFT_PEAK_VEL','long_name','left_peak_velocity_of_spectrum');
-            ncwriteatt(infile,'LEFT_PEAK_VEL','standard_name','doppler_spectrum_left_peak_velocity');
-            ncwriteatt(infile,'LEFT_PEAK_VEL','units','m/s');
-            ncwriteatt(infile,'LEFT_PEAK_VEL','grid_mapping','grid_mapping');
-            ncwriteatt(infile,'LEFT_PEAK_VEL','coordinates','time range');
-
-            ncwriteatt(infile,'RIGHT_PEAK_VEL','long_name','right_peak_velocity_of_spectrum');
-            ncwriteatt(infile,'RIGHT_PEAK_VEL','standard_name','doppler_spectrum_right_peak_velocity');
-            ncwriteatt(infile,'RIGHT_PEAK_VEL','units','m/s');
-            ncwriteatt(infile,'RIGHT_PEAK_VEL','grid_mapping','grid_mapping');
-            ncwriteatt(infile,'RIGHT_PEAK_VEL','coordinates','time range');
+            ncwriteatt(infile,'MULTI_PEAK_MASK','long_name','multi_peak_mask');
+            ncwriteatt(infile,'MULTI_PEAK_MASK','standard_name','multi_peak_mask');
+            ncwriteatt(infile,'MULTI_PEAK_MASK','units','');
+            ncwriteatt(infile,'MULTI_PEAK_MASK','grid_mapping','grid_mapping');
+            ncwriteatt(infile,'MULTI_PEAK_MASK','coordinates','time range');
             
         end
     end
