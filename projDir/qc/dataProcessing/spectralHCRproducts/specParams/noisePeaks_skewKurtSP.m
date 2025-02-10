@@ -92,16 +92,17 @@ for aa=1:size(loopInds,1)
     else
         firstEmpty=find(isnan(sigThis),1,'first');
     end
-    
-    if firstEmpty~=1
+
+    if firstEmpty~=1 & sum(sigMask)~=0
         sigThisDiff=diff(sigMask);
         startNan=find(sigThisDiff==1);
         endNan=find(sigThisDiff==-1);
         startNan=startNan(1:length(endNan));
         nanDiffMax=max(endNan-startNan);
-        sigMaskFilled=bwareaopen(sigMask,nanDiffMax-1);    
+        sigMaskFilled=bwareaopen(sigMask,nanDiffMax-1);
         firstEmpty=find(sigMaskFilled==1,1,'first');
-
+    end
+    if firstEmpty~=1
         powerSmoothCorr(ii,:)=sigThis(firstEmpty:firstEmpty+sampleNum-1);
         velOut(ii,:)=velDupl(firstEmpty:firstEmpty+sampleNum-1);
         if ~isempty(plotTime)
