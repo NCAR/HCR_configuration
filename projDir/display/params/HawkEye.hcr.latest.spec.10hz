@@ -1,4 +1,4 @@
-/**********************************************************************
+//**********************************************************************
  * TDRP params for HawkEye
  **********************************************************************/
 
@@ -214,7 +214,7 @@ archive_time_span_secs = 600;
 // Type: string
 //
 
-archive_data_url = "$(DATA_DIR)/$(QC_VERSION)/cfradial/$(QC_SUB_VERSION)_full/10hz";
+archive_data_url = "$(DATA_DIR)/$(QC_VERSION)/cfradial/$(QC_SUB_VERSION)_full_spec/10hz";
 
 //======================================================================
 //
@@ -407,6 +407,15 @@ fields = {
   }
   ,
   {
+    label = "WIDTH_RAW",
+    raw_name = "WIDTH_RAW",
+    filtered_name = "",
+    units = "m/s",
+    color_map = "width_w.colors",
+    shortcut = "9"
+  }
+  ,
+  {
     label = "WIDTH",
     raw_name = "WIDTH",
     filtered_name = "",
@@ -565,6 +574,87 @@ fields = {
     filtered_name = "",
     units = "",
     color_map = "hcr_pid.colors",
+    shortcut = "d"
+  }
+    ,
+  {
+    label = "WIDTH_SPEC",
+    raw_name = "WIDTH_SPEC",
+    filtered_name = "",
+    units = "m/s",
+    color_map = "width_w.colors",
+    shortcut = "d"
+  }
+    ,
+  {
+    label = "SKEWNESS",
+    raw_name = "SKEWNESS",
+    filtered_name = "",
+    units = "m/s",
+    color_map = "hcr_skewness.colors",
+    shortcut = "d"
+  }
+    ,
+  {
+    label = "KURTOSIS",
+    raw_name = "KURTOSIS",
+    filtered_name = "",
+    units = "m/s",
+    color_map = "hcr_kurtosis.colors",
+    shortcut = "d"
+  }
+    ,
+  {
+    label = "LEFT_SLOPE",
+    raw_name = "LEFT_SLOPE",
+    filtered_name = "",
+    units = "(dB s)/m",
+    color_map = "hcr_leftSlope.colors",
+    shortcut = "d"
+  }
+    ,
+  {
+    label = "RIGHT_SLOPE",
+    raw_name = "RIGHT_SLOPE",
+    filtered_name = "",
+    units = "(dB s)/m",
+    color_map = "hcr_rightSlope.colors",
+    shortcut = "d"
+  }
+    ,
+  {
+    label = "EDGE_EDGE_WIDTH",
+    raw_name = "EDGE_EDGE_WIDTH",
+    filtered_name = "",
+    units = "m/s",
+    color_map = "hcr_edgeEdge.colors",
+    shortcut = "d"
+  }
+    ,
+  {
+    label = "LEFT_EDGE_VEL",
+    raw_name = "LEFT_EDGE_VEL",
+    filtered_name = "",
+    units = "m/s",
+    color_map = "hcr_vel_blueYellow.colors",
+    shortcut = "d"
+  }
+    ,
+  {
+    label = "RIGHT_EDGE_VEL",
+    raw_name = "RIGHT_EDGE_VEL",
+    filtered_name = "",
+    units = "m/s",
+    color_map = "hcr_vel_blueYellow.colors",
+    shortcut = "d"
+  }
+    ,
+  {
+    label = "MULTI_PEAK_MASK",
+    raw_name = "MULTI_PEAK_MASK",
+    filtered_name = "",
+    units = "",
+    color_map = "hcr_multi_peak_mask.colors",
     shortcut = "d"
   }
 };

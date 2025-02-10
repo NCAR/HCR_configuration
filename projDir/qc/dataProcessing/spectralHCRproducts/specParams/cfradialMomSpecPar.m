@@ -21,7 +21,7 @@ indir=HCRdir(project,quality,qcVersion,freqData);
 %% Run processing
 
 % Go through flights
-for ii=2:size(caseList,1)
+for ii=6:size(caseList,1)
     
     disp(['Flight ',num2str(ii)]);
     
@@ -88,7 +88,7 @@ for ii=2:size(caseList,1)
             end
 
             modOut.mp=double(modOut.rpvel~=fillVal);
-            modOut.mp(modOut.mp==0)=fillValMask;
+            modOut.mp(modOut.skew==fillVal)=fillValMask;
             
             % Open file
             ncid = netcdf.open(infile,'WRITE');
