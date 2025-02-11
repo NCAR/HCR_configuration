@@ -31,8 +31,17 @@ rawPowBig=repmat(specDB,1,3);
 rawPowMov=movmean(rawPowBig,avNum,2);
 rawPowMov=rawPowMov(:,sampleNum+1:2*sampleNum);
 
-noiseFloorAll=findNoiseThreshMat(rawPowMov,avNum);
+rpInds=find(any(~isnan(rawPowMov),2));
+noiseFloorAll=nan(size(filterAt));
 
+if sampleTime==0.01
+    noiseFloorAll(rpInds)=findNoiseThreshMat(rawPowMov(rpInds,:),avNum);
+elseif sampleTime==0.1
+    for aa=1:length(rpInds)
+        ii=rpInds(aa);
+        noiseFloorAll(ii)=findNoiseThresh(rawPowMov(ii,:),avNum);
+    end
+end
 % Average noise floor
 noiseFloorAllF=fillmissing(noiseFloorAll,'linear');
 noiseFloorAllMov=movmedian(noiseFloorAllF,5);
@@ -90,17 +99,18 @@ for aa=1:size(loopInds,1)
     if sum(sigMask)==0
         [~,firstEmpty]=min(sigThis);
     else
-        firstEmpty=find(isnan(sigThis),1,'first');
-    end
-
-    if firstEmpty~=1 & sum(sigMask)~=0
         sigThisDiff=diff(sigMask);
         startNan=find(sigThisDiff==1);
         endNan=find(sigThisDiff==-1);
-        startNan=startNan(1:length(endNan));
-        nanDiffMax=max(endNan-startNan);
-        sigMaskFilled=bwareaopen(sigMask,nanDiffMax-1);
-        firstEmpty=find(sigMaskFilled==1,1,'first');
+        if length(startNan)>2
+            if startNan(1)>endNan(1)
+                startNan=[1,startNan];
+            end
+            startNan=startNan(1:length(endNan));
+            nanDiffMax=max(endNan-startNan);
+            sigMask=bwareaopen(sigMask,nanDiffMax-1);
+        end
+        firstEmpty=find(sigMask==1,1,'first');
     end
     if firstEmpty~=1
         powerSmoothCorr(ii,:)=sigThis(firstEmpty:firstEmpty+sampleNum-1);
