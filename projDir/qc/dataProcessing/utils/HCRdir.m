@@ -25,11 +25,13 @@ if strcmp(project,'socrates')
             disp('The requested data does not exist.');
             return
         end
-    elseif strcmp(qc,'qc3') | strcmp(qc,'qc4')
+    elseif strcmp(qc,'qc3')
         if strcmp(freq,'10hz') | strcmp(freq,'2hz')
             indir=['/scr/virga2/rsfdata/projects/socrates/hcr/',qc,'/cfradial/',qcVersion,'_full/',freq,'/'];
         elseif strcmp(freq,'combined')
             indir=['/scr/virga2/rsfdata/projects/socrates/hcr/',qc,'/cfradial/hcr_hsrl_merge/',qcVersion,'_full/2hz/'];
+        elseif strcmp(freq,'10hz_spec')
+            indir=['/scr/virga2/rsfdata/projects/socrates/hcr/',qc,'/cfradial/',qcVersion,'_full_spec/',freq(1:4),'/'];
         else
             disp('The requested data does not exist.');
             return
@@ -65,11 +67,13 @@ elseif strcmp(project,'cset')
             disp('The requested data does not exist.');
             return
         end
-    elseif strcmp(qc,'qc3') | strcmp(qc,'qc4')
+    elseif strcmp(qc,'qc3')
         if strcmp(freq,'10hz') | strcmp(freq,'2hz')
             indir=['/scr/snow2/rsfdata/projects/cset/hcr/',qc,'/cfradial/',qcVersion,'_full/',freq,'/'];
         elseif strcmp(freq,'combined')
             indir=['/scr/snow2/rsfdata/projects/cset/hcr/',qc,'/cfradial/hcr_hsrl_merge/',qcVersion,'_full/2hz/'];
+        elseif strcmp(freq,'10hz_spec')
+            indir=['/scr/snow2/rsfdata/projects/cset/hcr/',qc,'/cfradial/',qcVersion,'_full_spec/',freq(1:4),'/'];
         else
             disp('The requested data does not exist.');
             return
@@ -114,9 +118,11 @@ elseif strcmp(project,'otrec')
             disp('The requested data does not exist.');
             return
         end
-    elseif strcmp(qc,'qc3') | strcmp(qc,'qc4')
+    elseif strcmp(qc,'qc3')
         if strcmp(freq,'10hz')
             indir=['/scr/sleet2/rsfdata/projects/otrec/hcr/',qc,'/cfradial/',qcVersion,'_full/',freq,'/'];
+        elseif strcmp(freq,'10hz_spec')
+            indir=['/scr/sleet2/rsfdata/projects/otrec/hcr/',qc,'/cfradial/',qcVersion,'_full_spec/',freq(1:4),'/'];
         else
             disp('The requested data does not exist.');
             return
@@ -156,9 +162,11 @@ elseif strcmp(project,'noreaster')
         %         if strcmp(freq,'10hz')
         %             indir=['/scr/sleet2/rsfdata/projects/spicule/hcr/',qc,'/cfradial/',qcVersion,'/',freq,'/'];
         %         end
-    elseif strcmp(qc,'qc1') | strcmp(qc,'qc2') | strcmp(qc,'qc3')
+    elseif strcmp(qc,'qc1') | strcmp(qc,'qc2')
         if strcmp(freq,'100hz') | strcmp(freq,'10hz')
             indir=['/scr/snow2/rsfdata/projects/noreaster/hcr/',qc,'/cfradial/',qcVersion,'_full/',freq,'/'];
+        elseif strcmp(freq,'10hz_spec')
+            indir=['/scr/snow2/rsfdata/projects/noreaster/hcr/',qc,'/cfradial/',qcVersion,'_full_spec/',freq(1:4),'/'];
         end
     elseif strcmp(qc,'ts')
         indir='/scr/snow2/rsfdata/projects/noreaster/hcr/time_series/wband/save/';
