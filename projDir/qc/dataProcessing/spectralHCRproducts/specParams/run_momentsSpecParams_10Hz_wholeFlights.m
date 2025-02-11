@@ -9,11 +9,11 @@ elseif exist('/scr/tmp/romatsch/git','dir')
 end
 addpath(genpath([gitDir,'/HCR_configuration/projDir/qc/dataProcessing/']));
 
-project='socrates'; %socrates, aristo, cset, otrec
+project='spicule'; %socrates, aristo, cset, otrec
 quality='ts'; %field, qc1, or qc2
-qualityCF='qc4';
-freqData='10hz';
-qcVersion='v4.0';
+qualityCF='qc1';
+freqData='10hz_spec';
+qcVersion='v1.2';
 whichModel='era5';
 
 saveData=1;
