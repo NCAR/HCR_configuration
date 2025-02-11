@@ -12,7 +12,7 @@ addpath(genpath([gitDir,'/HCR_configuration/projDir/qc/dataProcessing/']));
 project='spicule'; %socrates, aristo, cset, otrec
 quality='ts'; %field, qc1, or qc2
 qualityCF='qc1';
-freqData='10hz';
+freqData='10hz_spec';
 qcVersion='v1.2';
 whichModel='era5';
 
@@ -28,7 +28,7 @@ sampleTime=0.1; % Length of sample in seconds.
 dataDirTS=HCRdir(project,quality,qcVersion,freqData);
 dataDirCF=HCRdir(project,qualityCF,qcVersion,freqData);
 
-figdir=[dataDirCF(1:end-6),'_spec/specMomentsParams/cases/'];
+figdir=[dataDirCF(1:end-6),'/specMomentsParams/cases/'];
 
 showPlot='on';
 
