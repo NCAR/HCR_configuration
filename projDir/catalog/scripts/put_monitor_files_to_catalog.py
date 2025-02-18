@@ -314,7 +314,7 @@ def parseArgs():
 
     parser.add_option('--ftp_server',
                       dest='ftpServer',
-                      default='catalog.eol.ucar.edu',
+                      default='catalog-ingest.eol.ucar.edu',
                       help='Target FTP server')
     parser.add_option('--target_dir',
                       dest='targetDir',
