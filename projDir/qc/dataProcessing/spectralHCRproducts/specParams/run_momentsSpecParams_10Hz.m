@@ -227,6 +227,10 @@ for aa=1:length(caseStart)
             % Trim data down to current beam
             dataThis=trimData(data,startInd,endInd);
 
+            if sampleNum~=size(dataThis.IVc,2)
+                continue
+            end
+
             % IQ
             cIQ.v=winNorm'.*(dataThis.IVc+i*dataThis.QVc)./sqrt(sampleNum);
                         

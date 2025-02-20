@@ -9,11 +9,11 @@ elseif exist('/scr/tmp/romatsch/git','dir')
 end
 addpath(genpath([gitDir,'/HCR_configuration/projDir/qc/dataProcessing/']));
 
-project='spicule'; %socrates, aristo, cset, otrec
+project='socrates'; %socrates, aristo, cset, otrec
 quality='ts'; %field, qc1, or qc2
-qualityCF='qc1';
+qualityCF='qc3';
 freqData='10hz_spec';
-qcVersion='v1.2';
+qcVersion='v3.2';
 whichModel='era5';
 
 saveData=1;
@@ -42,7 +42,7 @@ infile=[gitDir,'/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flight
 
 caseList = table2array(readtable(infile));
 
-for aa=1:size(caseList,1)
+for aa=13:size(caseList,1)
     tic
     
     disp(['Flight ',num2str(aa)]);
@@ -224,6 +224,10 @@ for aa=1:size(caseList,1)
 
             % Trim data down to current beam
             dataThis=trimData(data,startInd,endInd);
+
+            if sampleNum~=size(dataThis.IVc,2)
+                continue
+            end
 
             % IQ
             cIQ.v=winNorm'.*(dataThis.IVc+i*dataThis.QVc)./sqrt(sampleNum);
