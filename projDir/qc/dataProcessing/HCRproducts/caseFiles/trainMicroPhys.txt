@@ -1,4 +1,4 @@
-proj start end liqC froC liqP froP mixP deeP
+proj start end type
 sp 20210601194610 20210601194715 mixP
 sp 20210601200330 20210601200450 mixP
 sp 20210605174955 20210605175500 froC
