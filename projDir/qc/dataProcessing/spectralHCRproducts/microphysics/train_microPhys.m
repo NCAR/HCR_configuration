@@ -4,76 +4,112 @@ close all;
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-project='spicule'; %socrates, aristo, cset, otrec
-quality='ts'; %field, qc1, or qc2
-qualityCF='qc1';
-freqData='10hz';
-qcVersion='v1.2';
+numLabel=20;
+figdirver='spec7vars';
 
-numFiles=30;
+% Variables
+vars={'VEL_MASKED','WIDTH_SPEC','SKEWNESS','KURTOSIS','EDGE_EDGE_WIDTH','LEFT_SLOPE','RIGHT_SLOPE'}; %spec7vars
 
-dataDirCF=HCRdir(project,qualityCF,qcVersion,freqData);
+showPlot='off';
 
-%indir=[dataDirCF(1:end-5),'microPhys/matFiles/'];
-figdir=[dataDirCF(1:end-5),'microPhys/training/'];
+freqData='10hz_spec';
 
-showPlot='on';
+figdir=['/scr/virga1/rsfdata/projects/spicule/hcr/qc1/cfradial/v1.2_full_spec/microphysics/train/', ...
+    figdirver,'_',num2str(numLabel),'labels/'];
 
-fileList=readtable('~/git/HCR_configuration/projDir/qc/dataProcessing/HCRproducts/caseFiles/trainMicroPhys.txt','Delimiter',' ');
-%fileList=dir([indir,'*.mat']);
+if ~exist(figdir,'dir')
+    mkdir(figdir);
+end
 
-gapL=round(size(fileList,1)/numFiles);
-fileInds=1:gapL:size(fileList,1);
+caseList=readtable('~/git/HCR_configuration/projDir/qc/dataProcessing/HCRproducts/caseFiles/trainMicroPhys.txt','Delimiter',' ');
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+startTimeAll=datetime(caseList{:,2:7});
+endTimeAll=datetime(caseList{:,8:13});
+
+%% Read data
 
 disp('Aggregating data ...')
 
 % Loop through files and aggregate data
 caseStartInd=1;
-for bb=1:length(fileInds)
+for aa=1:size(caseList,1)
 
-    aa=fileInds(bb);
+    startTime=startTimeAll(aa);
+    endTime=endTimeAll(aa);
 
-    %load([fileList(aa).folder,'/',fileList(aa).name]);
-    load(fileList.File{aa});
-    
+    if strcmp(caseList.Var1(aa),'sp')
+        project='spicule'; %socrates, aristo, cset, otrec
+        quality='qc1';
+        qcVersion='v1.2';
+    elseif strcmp(caseList.Var1(aa),'ot')
+        project='otrec'; %socrates, aristo, cset, otrec
+        quality='qc3';
+        qcVersion='v3.2';
+    elseif strcmp(caseList.Var1(aa),'so')
+        project='socrates'; %socrates, aristo, cset, otrec
+        quality='qc3';
+        qcVersion='v3.2';
+    elseif strcmp(caseList.Var1(aa),'cs')
+        project='cset'; %socrates, aristo, cset, otrec
+        quality='qc3';
+        qcVersion='v3.1';
+    end
+
+    dataDir=HCRdir(project,quality,qcVersion,freqData);
+    fileList=makeFileList(dataDir,startTime,endTime,'xxxxxx20YYMMDDxhhmmss',1);
+
+    data=[];
+
+    for ii=1:length(vars)
+        data.(vars{ii})=[];
+    end
+            
+    % Load data
+    data=read_HCR(fileList,data,startTime,endTime);
+   
     if aa==1
-        allVars=fields(specData);
-        specDataAll=specData;
+        allVars=fields(data);
+        specDataAll=data;
     else
         caseStartInd=cat(1,caseStartInd,length(specDataAll.time)+1);
         for ii=1:length(allVars)
-            specDataAll.(allVars{ii})=cat(2,specDataAll.(allVars{ii}),specData.(allVars{ii}));
+            specDataAll.(allVars{ii})=cat(2,specDataAll.(allVars{ii}),data.(allVars{ii}));
         end
     end
 end
 
 %% Scale and prepare input
-%vars={'DBZ','VEL','WIDTH','SKEW','KURT'}; % Version 1 (10), Version 4 (15), Version 5 (20)
-%vars={'DBZ','VEL','WIDTH','SKEW','KURT','EE_WIDTH','L_SLOPE','R_SLOPE','MELTING_LAYER'}; % Version 2 (20)
-%vars={'DBZ','VEL','WIDTH','SKEW','KURT','EE_WIDTH','L_SLOPE','R_SLOPE'}; % Version 3 (15)
-%vars={'VEL','WIDTH','SKEW','KURT'}; % Version 6 (20),
-vars={'VEL','WIDTH','SKEW','KURT','EE_WIDTH','L_SLOPE','R_SLOPE'}; % Version 7 (20)
 
 dataForML=prepForML(specDataAll,vars);
 
 %% K-means clustering
 
 disp('Clustering ...');
-numLabel=20;
 [nRow,nCol]=size(specDataAll.(vars{1}));
 [labelsKmeans,centersKmeans]=mlLabels(dataForML,numLabel,nRow,nCol);
 
 save([figdir,'centers.mat'],'centersKmeans','vars');
+
+%% Set up analysis
+
+uTypes=unique(caseList.Var14(:));
+
+for ii=1:length(uTypes)
+    hists.(uTypes{ii})=[];
+end
+
+histAll=[];
 
 %% Plot
 caseEndInd=caseStartInd-1;
 caseEndInd(1)=[];
 caseEndInd=cat(1,caseEndInd,length(specDataAll.time));
 
+edges=0.5:1:numLabel+0.5;
+cmap=cat(1,[0,0,0],tab20(numLabel));
+
 disp('Plotting ...');
-for aa=1:length(fileInds)
+for aa=1:size(caseList,1)
 
     close all
 
@@ -83,13 +119,21 @@ for aa=1:length(fileInds)
     specDataPlot.time=specDataAll.time(caseStartInd(aa):caseEndInd(aa));
     specDataPlot.asl=specDataAll.asl(:,caseStartInd(aa):caseEndInd(aa));
     specDataPlot.labelsKmeans=labelsKmeans(:,caseStartInd(aa):caseEndInd(aa));
-        
+
+    % Histogram
+    histC=histcounts(specDataPlot.labelsKmeans(~isnan(specDataPlot.labelsKmeans)),edges);
+    histAll=cat(1,histAll,histC);
+    histC=histC./sum(histC).*100;
+    hists.(caseList.Var14{aa})=cat(1,hists.(caseList.Var14{aa}),histC);
+            
     aslGood=specDataPlot.asl(~isnan(specDataPlot.labelsKmeans))./1000;
     ylims=[0,max(aslGood)+0.5];
 
-    f1 = figure('Position',[200 500 700 300],'DefaultAxesFontSize',12,'visible',showPlot);
+    specDataPlot.labelsKmeans(isnan(specDataPlot.labelsKmeans))=-99;
 
-    t = tiledlayout(1,1,'TileSpacing','tight','Padding','tight');
+    f1 = figure('Position',[200 500 700 600],'DefaultAxesFontSize',12,'visible',showPlot);
+
+    t = tiledlayout(2,1,'TileSpacing','tight','Padding','tight');
 
     s1=nexttile(1);
 
@@ -97,8 +141,8 @@ for aa=1:length(fileInds)
     surf(specDataPlot.time,specDataPlot.asl./1000,specDataPlot.labelsKmeans,'edgecolor','none');
     view(2);
     ylabel('Altitude (km)');
-    clim([0.5,numLabel+0.5]);
-    s1.Colormap=tab20(numLabel);
+    clim([-0.5,numLabel+0.5]);
+    s1.Colormap=cmap;
     colorbar
     grid on
     box on
@@ -106,10 +150,66 @@ for aa=1:length(fileInds)
     ylim(ylims);
     xlim([specDataPlot.time(1),specDataPlot.time(end)]);
 
+    s2=nexttile(2);
+    b=bar(1:numLabel,histC,'FaceColor','flat');
+    for kk = 1:numLabel
+        b.CData(kk,:)=cmap(kk+1,:);
+    end
+
+    xlabel('Label');
+    ylabel('Percent (%)');
+
+    xlim([0.5,numLabel+0.5]);
+
     set(gcf,'PaperPositionMode','auto')
-    print(f1,[figdir,'labels_',datestr(specDataPlot.time(1),'yyyymmdd_HHMMSS'),'_to_',datestr(specDataPlot.time(end),'yyyymmdd_HHMMSS')],'-dpng','-r0');
+    print(f1,[figdir,'labels_',caseList.Var14{aa},'_',caseList.Var1{aa},'_', ...
+        datestr(specDataPlot.time(1),'yyyymmdd_HHMMSS'),'_to_',datestr(specDataPlot.time(end),'yyyymmdd_HHMMSS')],'-dpng','-r0');
     
     % Plot input fields
-    plotFields(specDataPlot,vars,figdir,ylims,showPlot);
+    plotFields(specDataPlot,vars,caseList.Var14{aa},caseList.Var1{aa},figdir,ylims,showPlot);
     
 end
+
+%% Histograms
+
+f1 = figure('Position',[200 500 1200 600],'DefaultAxesFontSize',12,'visible',showPlot);
+
+t = tiledlayout(2,1,'TileSpacing','tight','Padding','compact');
+
+colT=[1,0,0;0,0,0.5;0,0,1;0,0.5,0;0,1,0;0.2,0.2,0.2];
+addX=-0.25:0.1:0.25;
+x=1:numLabel;
+x=x+addX';
+
+s1=nexttile(1);
+hold on
+
+for ii=1:length(uTypes)
+    thisType=hists.(uTypes{ii});
+    for jj=1:size(thisType,1)
+        scatter(x(ii,:),thisType(jj,:),'filled','MarkerFaceColor',colT(ii,:));
+    end
+end
+
+xlim([0,numLabel+1]);
+ylabel('Percent (%)');
+box on
+
+
+s2=nexttile(2);
+histCA=sum(histAll,1);
+b=bar(1:numLabel,histCA./sum(histCA).*100,'FaceColor','flat');
+for kk = 1:numLabel
+    b.CData(kk,:)=cmap(kk+1,:);
+end
+
+xlabel('Label');
+ylabel('Percent (%)');
+
+xlim([0,numLabel+1]);
+
+box on
+
+set(gcf,'PaperPositionMode','auto')
+print(f1,[figdir,'histogram.png'],'-dpng','-r0');
+    

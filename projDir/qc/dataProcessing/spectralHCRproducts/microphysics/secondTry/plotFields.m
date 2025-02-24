@@ -1,29 +1,28 @@
-function plotFields(dataIn,fieldsIn,type,campaign,figdir,ylims,showPlot)
+function plotFields(dataIn,fieldsIn,figdir,ylims,showPlot)
 
 clims.DBZ=[-40,30];
 clims.LDR=[-35,-5];
-clims.VEL_MASKED=[-15,15];
-clims.WIDTH_SPEC=[0,3];
-clims.SKEWNESS=[-3,3];
-clims.KURTOSIS=[-6,6];
-clims.EDGE_EDGE_WIDTH=[0,13];
-clims.LEFT_SLOPE=[0,20];
-clims.RIGHT_SLOPE=[-20,0];
+clims.VEL=[-15,15];
+clims.WIDTH=[0,3];
+clims.SKEW=[-3,3];
+clims.KURT=[-6,6];
+clims.EE_WIDTH=[0,13];
+clims.L_SLOPE=[0,20];
+clims.R_SLOPE=[-20,0];
 clims.MELTING_LAYER=[6,24];
 
 col1=cat(1,[0,0,0],jet);
 col2=cat(1,[0,0,0],velCols);
-col3=flipud(cat(1,jet,[0,0,0]));
 
 col.DBZ=col1;
 col.LDR=col1;
-col.VEL_MASKED=col2;
-col.WIDTH_SPEC=col1;
-col.SKEWNESS=col2;
-col.KURTOSIS=col2;
-col.EDGE_EDGE_WIDTH=col1;
-col.LEFT_SLOPE=col1;
-col.RIGHT_SLOPE=col3;
+col.VEL=col2;
+col.WIDTH=col1;
+col.SKEW=col2;
+col.KURT=col2;
+col.EE_WIDTH=col1;
+col.L_SLOPE=col1;
+col.R_SLOPE=flipud(col1);
 col.MELTING_LAYER=flipud(col1);
 
 rows=min([4,ceil(sqrt(length(fieldsIn)))]);
@@ -56,6 +55,5 @@ for ii=1:length(fieldsIn)
 end
 
 set(gcf,'PaperPositionMode','auto')
-print(f1,[figdir,'inFields_',type,'_',campaign,'_', ...
-    datestr(dataIn.time(1),'yyyymmdd_HHMMSS'),'_to_',datestr(dataIn.time(end),'yyyymmdd_HHMMSS')],'-dpng','-r0');
+print(f1,[figdir,'inFields_',datestr(dataIn.time(1),'yyyymmdd_HHMMSS'),'_to_',datestr(dataIn.time(end),'yyyymmdd_HHMMSS')],'-dpng','-r0');
 end
