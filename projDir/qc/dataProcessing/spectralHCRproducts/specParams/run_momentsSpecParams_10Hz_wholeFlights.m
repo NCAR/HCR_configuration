@@ -9,11 +9,11 @@ elseif exist('/scr/tmp/romatsch/git','dir')
 end
 addpath(genpath([gitDir,'/HCR_configuration/projDir/qc/dataProcessing/']));
 
-project='otrec'; %socrates, aristo, cset, otrec
+project='noreaster'; %socrates, aristo, cset, otrec
 quality='ts'; %field, qc1, or qc2
-qualityCF='qc3';
+qualityCF='qc2';
 freqData='10hz_spec';
-qcVersion='v3.2';
+qcVersion='v2.1';
 whichModel='era5';
 
 saveData=1;
@@ -42,7 +42,7 @@ infile=[gitDir,'/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flight
 
 caseList = table2array(readtable(infile));
 
-for aa=12:size(caseList,1)
+for aa=1:size(caseList,1)
     tic
     
     disp(['Flight ',num2str(aa)]);
