@@ -4,11 +4,13 @@ close all;
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-numLabel=20;
-figdirver='spec7vars';
+numLabel=15;
+figdirver='basicMomsT';
 
 % Variables
-vars={'VEL_MASKED','WIDTH_SPEC','SKEWNESS','KURTOSIS','EDGE_EDGE_WIDTH','LEFT_SLOPE','RIGHT_SLOPE'}; %spec7vars
+%vars={'VEL_MASKED','WIDTH_SPEC','SKEWNESS','KURTOSIS','EDGE_EDGE_WIDTH','LEFT_SLOPE','RIGHT_SLOPE'}; %spec7vars
+%vars={'DBZ_MASKED','VEL_MASKED','WIDTH_SPEC','SKEWNESS','KURTOSIS'}; %basicMoms
+vars={'DBZ_MASKED','VEL_MASKED','WIDTH_SPEC','SKEWNESS','KURTOSIS','TEMP'}; %basicMomsT
 
 showPlot='off';
 

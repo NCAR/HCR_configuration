@@ -1,6 +1,6 @@
 function plotFields(dataIn,fieldsIn,type,campaign,figdir,ylims,showPlot)
 
-clims.DBZ=[-40,30];
+clims.DBZ_MASKED=[-40,30];
 clims.LDR=[-35,-5];
 clims.VEL_MASKED=[-15,15];
 clims.WIDTH_SPEC=[0,3];
@@ -10,12 +10,13 @@ clims.EDGE_EDGE_WIDTH=[0,13];
 clims.LEFT_SLOPE=[0,20];
 clims.RIGHT_SLOPE=[-20,0];
 clims.MELTING_LAYER=[6,24];
+clims.TEMP=[-50,30];
 
 col1=cat(1,[0,0,0],jet);
 col2=cat(1,[0,0,0],velCols);
 col3=flipud(cat(1,jet,[0,0,0]));
 
-col.DBZ=col1;
+col.DBZ_MASKED=col1;
 col.LDR=col1;
 col.VEL_MASKED=col2;
 col.WIDTH_SPEC=col1;
@@ -24,7 +25,8 @@ col.KURTOSIS=col2;
 col.EDGE_EDGE_WIDTH=col1;
 col.LEFT_SLOPE=col1;
 col.RIGHT_SLOPE=col3;
-col.MELTING_LAYER=flipud(col1);
+col.MELTING_LAYER=col3;
+col.TEMP=col1;
 
 rows=min([4,ceil(sqrt(length(fieldsIn)))]);
 cols=ceil(length(fieldsIn)/rows);
