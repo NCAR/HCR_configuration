@@ -42,7 +42,8 @@ infile=[gitDir,'/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flight
 
 caseList = table2array(readtable(infile));
 
-for aa=1:size(caseList,1)
+for aa=19:size(caseList,1)
+
     tic
     
     disp(['Flight ',num2str(aa)]);
