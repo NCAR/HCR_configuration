@@ -1,16 +1,16 @@
-function dataForML=prepForML(dataIn,vars)
+function [dataForML,lims]=prepForML(dataIn,vars)
 
 % Set limits for scaling
 lims.DBZ_MASKED=[-50,20];
-lims.VEL_MASKED=[-18,18];
-lims.WIDTH_SPEC=[0,3];
-lims.SKEWNESS=[-3,3];
-lims.KURTOSIS=[-8,8];
+lims.VEL_MASKED=[-10,10];
+lims.WIDTH_SPEC=[0,2.5];
+lims.SKEWNESS=[-2,2];
+lims.KURTOSIS=[-6,6];
 lims.EDGE_EDGE_WIDTH=[0,15];
-lims.LEFT_SLOPE=[0,25];
-lims.RIGHT_SLOPE=[-25,0];
+lims.LEFT_SLOPE=[0,20];
+lims.RIGHT_SLOPE=[-20,0];
 lims.MELTING_LAYER=[9,21];
-lims.TEMP=[-80,50];
+lims.TEMP=[-60,40];
 
 stackVars=[];
 

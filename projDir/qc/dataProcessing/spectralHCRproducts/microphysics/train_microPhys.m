@@ -4,13 +4,14 @@ close all;
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-numLabel=15;
-figdirver='basicMomsT';
+numLabel=20;
+figdirver='momsSpecT';
 
 % Variables
 %vars={'VEL_MASKED','WIDTH_SPEC','SKEWNESS','KURTOSIS','EDGE_EDGE_WIDTH','LEFT_SLOPE','RIGHT_SLOPE'}; %spec7vars
 %vars={'DBZ_MASKED','VEL_MASKED','WIDTH_SPEC','SKEWNESS','KURTOSIS'}; %basicMoms
-vars={'DBZ_MASKED','VEL_MASKED','WIDTH_SPEC','SKEWNESS','KURTOSIS','TEMP'}; %basicMomsT
+%vars={'DBZ_MASKED','VEL_MASKED','WIDTH_SPEC','SKEWNESS','KURTOSIS','TEMP'}; %basicMomsT
+vars={'DBZ_MASKED','VEL_MASKED','WIDTH_SPEC','SKEWNESS','KURTOSIS','LEFT_SLOPE','RIGHT_SLOPE','TEMP'}; %momsSpecT
 
 showPlot='off';
 
@@ -82,13 +83,13 @@ end
 
 %% Scale and prepare input
 
-dataForML=prepForML(specDataAll,vars);
+[dataForML,lims]=prepForML(specDataAll,vars);
 
 %% K-means clustering
 
 disp('Clustering ...');
 [nRow,nCol]=size(specDataAll.(vars{1}));
-[labelsKmeans,centersKmeans]=mlLabels(dataForML,numLabel,nRow,nCol);
+[labelsKmeans,centersKmeans,centKmReScaled]=mlLabels(dataForML,numLabel,nRow,nCol,lims,vars);
 
 save([figdir,'centers.mat'],'centersKmeans','vars');
 
@@ -108,7 +109,8 @@ caseEndInd(1)=[];
 caseEndInd=cat(1,caseEndInd,length(specDataAll.time));
 
 edges=0.5:1:numLabel+0.5;
-cmap=cat(1,[0,0,0],tab20(numLabel));
+%cmap=cat(1,[0,0,0],tab20(numLabel));
+cmap=cat(1,[0,0,0],distinguishable_colors(numLabel,'k'));
 
 disp('Plotting ...');
 for aa=1:size(caseList,1)
@@ -162,6 +164,7 @@ for aa=1:size(caseList,1)
     ylabel('Percent (%)');
 
     xlim([0.5,numLabel+0.5]);
+    xticks(1:numLabel);
 
     set(gcf,'PaperPositionMode','auto')
     print(f1,[figdir,'labels_',caseList.Var14{aa},'_',caseList.Var1{aa},'_', ...
@@ -174,9 +177,9 @@ end
 
 %% Histograms
 
-f1 = figure('Position',[200 500 1200 600],'DefaultAxesFontSize',12,'visible',showPlot);
+f1 = figure('Position',[200 500 1200 1200],'DefaultAxesFontSize',12,'visible',showPlot);
 
-t = tiledlayout(2,1,'TileSpacing','tight','Padding','compact');
+t = tiledlayout(4,1,'TileSpacing','tight','Padding','compact');
 
 colT=[1,0,0;0,0,0.5;0,0,1;0,0.5,0;0,1,0;0.2,0.2,0.2];
 addX=-0.25:0.1:0.25;
@@ -194,6 +197,8 @@ for ii=1:length(uTypes)
 end
 
 xlim([0,numLabel+1]);
+xticks(1:numLabel);
+xlabel('Label');
 ylabel('Percent (%)');
 box on
 
@@ -206,11 +211,28 @@ for kk = 1:numLabel
 end
 
 xlabel('Label');
+xticks(1:numLabel);
 ylabel('Percent (%)');
 
 xlim([0,numLabel+1]);
 
 box on
+
+s3=nexttile(3,[2 1]);
+hold on
+scatter(1:numLabel,centersKmeans',60,'*');
+plot([0,numLabel+1],[1,1],'-k')
+
+xlim([0,numLabel+1]);
+ylim([0,1.08])
+box on
+legend(vars,'Interpreter','none','Location','north','Orientation','horizontal')
+colororder("gem12")
+
+xticks(1:numLabel);
+xlabel('Label');
+yticks(0:0.1:1);
+ylabel('Normalized variable value')
 
 set(gcf,'PaperPositionMode','auto')
 print(f1,[figdir,'histogram.png'],'-dpng','-r0');
