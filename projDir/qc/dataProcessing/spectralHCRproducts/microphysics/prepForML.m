@@ -9,6 +9,8 @@ lims.KURTOSIS=[-6,6];
 lims.EDGE_EDGE_WIDTH=[0,15];
 lims.LEFT_SLOPE=[0,20];
 lims.RIGHT_SLOPE=[-20,0];
+lims.LEFT_EDGE_VEL=[-12,12];
+lims.RIGHT_EDGE_VEL=[-12,12];
 lims.MELTING_LAYER=[9,21];
 lims.TEMP=[-60,40];
 

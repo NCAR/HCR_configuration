@@ -5,13 +5,18 @@ close all;
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
 numLabel=20;
-figdirver='momsSpecT';
+figdirver='momsSpecAllT';
 
 % Variables
 %vars={'VEL_MASKED','WIDTH_SPEC','SKEWNESS','KURTOSIS','EDGE_EDGE_WIDTH','LEFT_SLOPE','RIGHT_SLOPE'}; %spec7vars
 %vars={'DBZ_MASKED','VEL_MASKED','WIDTH_SPEC','SKEWNESS','KURTOSIS'}; %basicMoms
 %vars={'DBZ_MASKED','VEL_MASKED','WIDTH_SPEC','SKEWNESS','KURTOSIS','TEMP'}; %basicMomsT
-vars={'DBZ_MASKED','VEL_MASKED','WIDTH_SPEC','SKEWNESS','KURTOSIS','LEFT_SLOPE','RIGHT_SLOPE','TEMP'}; %momsSpecT
+%vars={'DBZ_MASKED','VEL_MASKED','WIDTH_SPEC','SKEWNESS','KURTOSIS','LEFT_SLOPE','RIGHT_SLOPE','TEMP'}; %momsSpecT
+%vars={'DBZ_MASKED','VEL_MASKED','WIDTH_SPEC','SKEWNESS','KURTOSIS','LEFT_SLOPE','RIGHT_SLOPE'}; %momsSpec
+%vars={'DBZ_MASKED','VEL_MASKED','WIDTH_SPEC','SKEWNESS','KURTOSIS', ...
+%    'LEFT_SLOPE','RIGHT_SLOPE','EDGE_EDGE_WIDTH','LEFT_EDGE_VEL','RIGHT_EDGE_VEL'}; %momsSpecAll
+vars={'DBZ_MASKED','VEL_MASKED','WIDTH_SPEC','SKEWNESS','KURTOSIS', ...
+    'LEFT_SLOPE','RIGHT_SLOPE','EDGE_EDGE_WIDTH','LEFT_EDGE_VEL','RIGHT_EDGE_VEL','TEMP'}; %momsSpecAllT
 
 showPlot='off';
 
@@ -89,7 +94,8 @@ end
 
 disp('Clustering ...');
 [nRow,nCol]=size(specDataAll.(vars{1}));
-[labelsKmeans,centersKmeans,centKmReScaled]=mlLabels(dataForML,numLabel,nRow,nCol,lims,vars);
+%[labelsKmeans,centersKmeans,centKmReScaled]=mlLabels(dataForML,numLabel,nRow,nCol,lims,vars);
+[labelsKmeans,centersKmeans,centKmReScaled]=mlLabels_sil(dataForML,numLabel,nRow,nCol,lims,vars);
 
 save([figdir,'centers.mat'],'centersKmeans','vars');
 
@@ -135,7 +141,7 @@ for aa=1:size(caseList,1)
 
     specDataPlot.labelsKmeans(isnan(specDataPlot.labelsKmeans))=-99;
 
-    f1 = figure('Position',[200 500 700 600],'DefaultAxesFontSize',12,'visible',showPlot);
+    f1 = figure('Position',[200 500 1200 1150],'DefaultAxesFontSize',12,'visible',showPlot);
 
     t = tiledlayout(2,1,'TileSpacing','tight','Padding','tight');
 
@@ -177,7 +183,7 @@ end
 
 %% Histograms
 
-f1 = figure('Position',[200 500 1200 1200],'DefaultAxesFontSize',12,'visible',showPlot);
+f1 = figure('Position',[200 500 1400 1200],'DefaultAxesFontSize',12,'visible',showPlot);
 
 t = tiledlayout(4,1,'TileSpacing','tight','Padding','compact');
 
@@ -191,6 +197,7 @@ hold on
 
 for ii=1:length(uTypes)
     thisType=hists.(uTypes{ii});
+    thisType(thisType>40)=40;
     for jj=1:size(thisType,1)
         scatter(x(ii,:),thisType(jj,:),'filled','MarkerFaceColor',colT(ii,:));
     end
@@ -227,7 +234,8 @@ xlim([0,numLabel+1]);
 ylim([0,1.08])
 box on
 legend(vars,'Interpreter','none','Location','north','Orientation','horizontal')
-colororder("gem12")
+%colororder("gem12")
+colororder(cmap(1:length(vars),:));
 
 xticks(1:numLabel);
 xlabel('Label');

@@ -9,6 +9,8 @@ clims.KURTOSIS=[-6,6];
 clims.EDGE_EDGE_WIDTH=[0,13];
 clims.LEFT_SLOPE=[0,20];
 clims.RIGHT_SLOPE=[-20,0];
+clims.LEFT_EDGE_VEL=[-15,15];
+clims.RIGHT_EDGE_VEL=[-15,15];
 clims.MELTING_LAYER=[6,24];
 clims.TEMP=[-50,30];
 
@@ -25,6 +27,8 @@ col.KURTOSIS=col2;
 col.EDGE_EDGE_WIDTH=col1;
 col.LEFT_SLOPE=col1;
 col.RIGHT_SLOPE=col3;
+col.LEFT_EDGE_VEL=col2;
+col.RIGHT_EDGE_VEL=col2;
 col.MELTING_LAYER=col3;
 col.TEMP=col1;
 
