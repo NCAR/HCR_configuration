@@ -6,24 +6,24 @@ dataGood=dataForML(goodInds==1,:);
 % k-means labels
 disp('k-means');
 %[kInds,kCenters]=kmeans(dataGood,numLabel,'MaxIter',1000);
-
-array_silhoutte = zeros(1,num_kmeans);
+dataset_len = size(dataGood,1);
+array_silhoutte = zeros(1,numLabel);
 for jj=1:numLabel
     % [cluster_assignments,centroids] = kmeans(X,j,'Distance','sqeuclidean','Start','sample');
     [kInds,kCenters]=kmeans(dataGood,numLabel,'MaxIter',1000);
     avgDWithin=zeros(dataset_len,1);
     avgDBetween=Inf(dataset_len,jj);
-    for i=1:dataset_len
+    for ii=1:dataset_len
         for jj=1:jj
-            boo=kInds==kInds(i);
+            boo=kInds==kInds(ii);
             Xsamecluster=X(boo,:);
             if size(Xsamecluster,1)>1
-                avgDWithin(i)=sum(sum((X(i,:)-Xsamecluster).^2,2))/(size(Xsamecluster,1)-1);
+                avgDWithin(ii)=sum(sum((X(ii,:)-Xsamecluster).^2,2))/(size(Xsamecluster,1)-1);
             end
-            boo1= kInds~=kInds(i);
+            boo1= kInds~=kInds(ii);
             Xdifferentcluster=X(boo1 & kInds ==jj,:);
             if ~isempty(Xdifferentcluster)
-                avgDBetween(i,jj)=mean(sum((X(i,:)-Xdifferentcluster).^2,2));
+                avgDBetween(ii,jj)=mean(sum((X(ii,:)-Xdifferentcluster).^2,2));
             end
         end
     end
