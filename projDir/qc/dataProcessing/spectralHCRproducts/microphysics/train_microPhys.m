@@ -36,11 +36,13 @@ endTimeAll=datetime(caseList{:,8:13});
 
 %% Read data
 
+disp(datetime)
 disp('Aggregating data ...')
 
 % Loop through files and aggregate data
 caseStartInd=1;
 for aa=1:size(caseList,1)
+%for    aa=1:2
 
     startTime=startTimeAll(aa);
     endTime=endTimeAll(aa);
