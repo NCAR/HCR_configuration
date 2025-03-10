@@ -1,4 +1,4 @@
-function [dataForML,lims]=prepForML(dataIn,vars)
+function [dataForML,lims]=prepForML(dataIn,vars,lowBound,highBound)
 
 % Set limits for scaling
 lims.DBZ_MASKED=[-50,20];
@@ -23,7 +23,8 @@ for ii=1:length(vars)
     varThis=dataIn.(varThis);
     varThis(varThis<lims.(vars{ii})(1))=lims.(vars{ii})(1);
     varThis(varThis>lims.(vars{ii})(2))=lims.(vars{ii})(2);
-    varScaled=1/(lims.(vars{ii})(2)-lims.(vars{ii})(1)).*(varThis-lims.(vars{ii})(1));
+    %varScaled=1/(lims.(vars{ii})(2)-lims.(vars{ii})(1)).*(varThis-lims.(vars{ii})(1));
+    varScaled=rescale(varThis,lowBound,highBound);
 
     stackVars=cat(3,stackVars,varScaled);
 end

@@ -1,4 +1,4 @@
-function [labelsInNum,kCenters,kCentReScaled]=mlLabels_sil(dataForML,numLabel,nRow,nCol,lims,vars)
+function [labelsInNum,kCenters,kCentReScaled]=mlLabels_kmeans_sil(dataForML,numLabel,nRow,nCol,lims,vars)
 
 goodInds=~any(isnan(dataForML),2);
 dataGood=dataForML(goodInds==1,:);

@@ -22,7 +22,7 @@ showPlot='off';
 
 freqData='10hz_spec';
 
-figdir=['/scr/virga1/rsfdata/projects/spicule/hcr/qc1/cfradial/v1.2_full_spec/microphysics/train/', ...
+figdir=['/scr/virga1/rsfdata/projects/spicule/hcr/qc1/cfradial/v1.2_full_spec/microphysics/train/kmeans/', ...
     figdirver,'_',num2str(numLabel),'labels/'];
 
 if ~exist(figdir,'dir')
@@ -90,14 +90,16 @@ end
 
 %% Scale and prepare input
 
-[dataForML,lims]=prepForML(specDataAll,vars);
+lowBound=0;
+highBound=1;
+
+[dataForML,lims]=prepForML(specDataAll,vars,lowBound,highBound);
 
 %% K-means clustering
 
 disp('Clustering ...');
 [nRow,nCol]=size(specDataAll.(vars{1}));
-%[labelsKmeans,centersKmeans,centKmReScaled]=mlLabels(dataForML,numLabel,nRow,nCol,lims,vars);
-[labelsKmeans,centersKmeans,centKmReScaled]=mlLabels_sil(dataForML,numLabel,nRow,nCol,lims,vars);
+[labelsKmeans,centersKmeans,centKmReScaled]=mlLabels_kmeans(dataForML,numLabel,nRow,nCol,lims,vars);
 
 save([figdir,'centers.mat'],'centersKmeans','vars');
 
@@ -121,6 +123,7 @@ edges=0.5:1:numLabel+0.5;
 cmap=cat(1,[0,0,0],distinguishable_colors(numLabel,'k'));
 
 disp('Plotting ...');
+%for aa=1:size(caseList,1)
 for aa=1:size(caseList,1)
 
     close all
