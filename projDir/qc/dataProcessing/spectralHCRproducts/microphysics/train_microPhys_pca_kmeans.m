@@ -4,8 +4,14 @@ close all;
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-numLabel=25;
-figdirver='momsSpecAllT';
+% Number of components for PCA. If empty, number will be determined by elbow method and
+% entered by user.
+numComp=3;
+% Number of kmeans labels. If empty, number will be determined by elbow method and
+% entered by user.
+numLabel=[];
+
+figdirver='momsSpecAll';
 
 % Variables
 %vars={'VEL_MASKED','WIDTH_SPEC','SKEWNESS','KURTOSIS','EDGE_EDGE_WIDTH','LEFT_SLOPE','RIGHT_SLOPE'}; %spec7vars
@@ -13,21 +19,14 @@ figdirver='momsSpecAllT';
 %vars={'DBZ_MASKED','VEL_MASKED','WIDTH_SPEC','SKEWNESS','KURTOSIS','TEMP'}; %basicMomsT
 %vars={'DBZ_MASKED','VEL_MASKED','WIDTH_SPEC','SKEWNESS','KURTOSIS','LEFT_SLOPE','RIGHT_SLOPE','TEMP'}; %momsSpecT
 %vars={'DBZ_MASKED','VEL_MASKED','WIDTH_SPEC','SKEWNESS','KURTOSIS','LEFT_SLOPE','RIGHT_SLOPE'}; %momsSpec
-%vars={'DBZ_MASKED','VEL_MASKED','WIDTH_SPEC','SKEWNESS','KURTOSIS', ...
-%    'LEFT_SLOPE','RIGHT_SLOPE','EDGE_EDGE_WIDTH','LEFT_EDGE_VEL','RIGHT_EDGE_VEL'}; %momsSpecAll
 vars={'DBZ_MASKED','VEL_MASKED','WIDTH_SPEC','SKEWNESS','KURTOSIS', ...
-    'LEFT_SLOPE','RIGHT_SLOPE','EDGE_EDGE_WIDTH','LEFT_EDGE_VEL','RIGHT_EDGE_VEL','TEMP'}; %momsSpecAllT
+   'LEFT_SLOPE','RIGHT_SLOPE','EDGE_EDGE_WIDTH','LEFT_EDGE_VEL','RIGHT_EDGE_VEL'}; %momsSpecAll
+% vars={'DBZ_MASKED','VEL_MASKED','WIDTH_SPEC','SKEWNESS','KURTOSIS', ...
+%     'LEFT_SLOPE','RIGHT_SLOPE','EDGE_EDGE_WIDTH','LEFT_EDGE_VEL','RIGHT_EDGE_VEL','TEMP'}; %momsSpecAllT
 
 showPlot='off';
 
 freqData='10hz_spec';
-
-figdir=['/scr/virga1/rsfdata/projects/spicule/hcr/qc1/cfradial/v1.2_full_spec/microphysics/train/pca_kmeans/', ...
-    figdirver,'_',num2str(numLabel),'labels/'];
-
-if ~exist(figdir,'dir')
-    mkdir(figdir);
-end
 
 caseList=readtable('~/git/HCR_configuration/projDir/qc/dataProcessing/HCRproducts/caseFiles/trainMicroPhys.txt','Delimiter',' ');
 
@@ -99,10 +98,24 @@ highBound=1;
 
 disp('Clustering ...');
 [nRow,nCol]=size(specDataAll.(vars{1}));
-[labelsKmeans,centersKmeans]=mlLabels_pca_kmeans(dataForML,numLabel,nRow,nCol);
+[labelsKmeans,centersKmeans,numLabel]=mlLabels_pca_kmeans(dataForML,numLabel,numComp,nRow,nCol);
+
+figdir=['/scr/virga1/rsfdata/projects/spicule/hcr/qc1/cfradial/v1.2_full_spec/microphysics/train/pca_kmeans/', ...
+    figdirver,'_',num2str(numLabel),'labels/'];
+
+%% Save files
+if ~exist(figdir,'dir')
+    mkdir(figdir);
+end
 
 save([figdir,'centers.mat'],'centersKmeans','vars');
 
+if exist('numComponents.png','file')
+    movefile('numComponents.png',[figdir,'numComponents.png']);
+end
+if exist('numLabels.png','file')
+    movefile('numLabels.png',[figdir,'numLabels.png']);
+end
 %% Set up analysis
 
 uTypes=unique(caseList.Var14(:));
@@ -122,9 +135,10 @@ edges=0.5:1:numLabel+0.5;
 %cmap=cat(1,[0,0,0],tab20(numLabel));
 cmap=cat(1,[0,0,0],distinguishable_colors(numLabel,'k'));
 
-disp('Plotting ...');
-%for aa=1:size(caseList,1)
+% Plot cases
 for aa=1:size(caseList,1)
+
+    disp(['Plotting case ',num2str(aa),' of ',num2str(size(caseList,1))]);
 
     close all
 
