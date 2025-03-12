@@ -9,7 +9,7 @@ addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 numComp=3;
 % Number of kmeans labels. If empty, number will be determined by elbow method and
 % entered by user.
-numLabel=[];
+numLabel=9;
 
 figdirver='momsSpecAll';
 
@@ -94,11 +94,11 @@ highBound=1;
 
 [dataForML,lims]=prepForML(specDataAll,vars,lowBound,highBound);
 
-%% K-means clustering
+%% PCA and K-means clustering
 
 disp('Clustering ...');
 [nRow,nCol]=size(specDataAll.(vars{1}));
-[labelsKmeans,centersKmeans,numLabel]=mlLabels_pca_kmeans(dataForML,numLabel,numComp,nRow,nCol);
+[labelsKmeans,centersKmeans,numLabel]=mlLabels_pca_kmeans(dataForML,numLabel,numComp,nRow,nCol,vars);
 
 figdir=['/scr/virga1/rsfdata/projects/spicule/hcr/qc1/cfradial/v1.2_full_spec/microphysics/train/pca_kmeans/', ...
     figdirver,'_',num2str(numLabel),'labels/'];
@@ -110,6 +110,12 @@ end
 
 save([figdir,'centers.mat'],'centersKmeans','vars');
 
+if exist('correlation.png','file')
+    movefile('correlation.png',[figdir,'correlation.png']);
+end
+if exist('pcaCoeffs.png','file')
+    movefile('pcaCoeffs.png',[figdir,'pcaCoeffs.png']);
+end
 if exist('numComponents.png','file')
     movefile('numComponents.png',[figdir,'numComponents.png']);
 end
