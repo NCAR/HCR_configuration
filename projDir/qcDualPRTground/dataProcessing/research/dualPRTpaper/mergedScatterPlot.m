@@ -42,7 +42,7 @@ edges.LDRV=[-50,-30:1:10,30];
 
 %% Plot
 close all
-f1 = figure('Position',[200 500 900 1000],'DefaultAxesFontSize',12);
+f1 = figure('Position',[200 500 450 500],'DefaultAxesFontSize',12);
 t = tiledlayout(3,2,'TileSpacing','tight','Padding','compact');
 col=cat(1,[1,1,1],jet);
 
