@@ -76,7 +76,7 @@ end
 
 %% Plot reflectivity
 close all
-f1 = figure('Position',[200 500 900 1000],'DefaultAxesFontSize',12,'renderer','painters');
+f1 = figure('Position',[200 500 500 600],'DefaultAxesFontSize',8,'renderer','painters');
 t = tiledlayout(4,2,'TileSpacing','tight','Padding','compact');
 
 s1=nexttile(1);
@@ -86,7 +86,7 @@ plot(edgesPlot,allShortDBZbins/sum(allLongDBZbins).*100,'-g','LineWidth',2);
 
 xlim([-55,20]);
 
-legend('Long','Short','Location','northwest');
+%legend('Long','Short','Location','northwest');
 
 grid on
 box on
@@ -169,7 +169,7 @@ for ii=1:length(alts)
     xlabel('Reflectivity (dBZ)');
     ylabel('Percent (%)')
 
-    title([subplots{tileNum-2},' Reflectivities at ',alts{ii},' km range (zoomed)']);
+    title([subplots{tileNum-2},' Refl. at ',alts{ii},' km range (zoomed)']);
 
     tileNum=tileNum+1;
 end

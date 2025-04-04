@@ -42,7 +42,7 @@ edges.LDRV=[-50,-30:1:10,30];
 
 %% Plot
 close all
-f1 = figure('Position',[200 500 450 500],'DefaultAxesFontSize',12);
+f1 = figure('Position',[200 500 500 600],'DefaultAxesFontSize',8);
 t = tiledlayout(3,2,'TileSpacing','tight','Padding','compact');
 col=cat(1,[1,1,1],jet);
 
@@ -200,7 +200,10 @@ l1=plot(nan,'-','Color',[0,1,1],'LineWidth',2);
 l2=plot(nan,'-','Color',[0.5,0.5,1],'LineWidth',2);
 l3=plot(nan,'-','Color',[1,0,1],'LineWidth',2);
 
-legend([l1,l2,l3],{'DBZ/VEL','WIDTH','LDR'});
+l=legend([l1,l2,l3],{'DBZ/VEL','WIDTH','LDR'});
+l.IconColumnWidth = 10;
+l.Location='southoutside';
+l.Orientation='horizontal';
 
 title('(f) SNR thresholds','Interpreter','none');
 yticklabels('');
