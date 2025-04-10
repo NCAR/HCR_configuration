@@ -4,10 +4,10 @@ close all;
 
 addpath(genpath('~/git/HCR_configuration/projDir/qc/dataProcessing/'));
 
-project='noreaster'; % socrates, cset, aristo, otrec
+project='spicule'; % socrates, cset, aristo, otrec
 quality='qc2'; % field, qc1, qc2
-qcVersion='v2.1';
-freqData='10hz_spec';
+qcVersion='v2.0';
+freqData='10hz';
 whichModel='era5';
 
 infile=['~/git/HCR_configuration/projDir/qc/dataProcessing/scriptsFiles/flights_',project,'.txt'];
@@ -35,10 +35,23 @@ for ii=1:size(caseList,1)
         % Get model data
         model=[];
         model.momentsSpecParams=[];
-                
+
         model=read_model(model,modeldir,startTime,endTime);
         model=rmfield(model,'momentsSpecParams');
         timeModelNum=datenum(model.time);
+
+        % Fix sign for spectral parameters and skew
+        model.skew(:,model.elevation>0)=-model.skew(:,model.elevation>0);
+
+        lslopeOrig=model.lslope;
+        rslopeOrig=model.rslope;
+        model.lslope(:,model.elevation>0)=-rslopeOrig(:,model.elevation>0);
+        model.rslope(:,model.elevation>0)=-lslopeOrig(:,model.elevation>0);
+
+        levelOrig=model.level;
+        revelOrig=model.revel;
+        model.level(:,model.elevation>0)=-revelOrig(:,model.elevation>0);
+        model.revel(:,model.elevation>0)=-levelOrig(:,model.elevation>0);
         
         %model.sst(model.topo>0)=nan;
         
@@ -89,7 +102,7 @@ for ii=1:size(caseList,1)
 
             modOut.mp=double(modOut.rpvel~=fillVal);
             modOut.mp(modOut.skew==fillVal)=fillValMask;
-            
+
             % Open file
             ncid = netcdf.open(infile,'WRITE');
             netcdf.setFill(ncid,'FILL');

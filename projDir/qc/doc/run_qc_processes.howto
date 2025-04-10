@@ -319,6 +319,15 @@ $PROJ_DIR/qc/dataProcessing/HCRproducts/PID/HCRonly/call_pid_wholeFlights.m
 $PROJ_DIR/qc/dataProcessing/HCRproducts/HCRonly/cfradial_pid.m
 
 #################################################################
+# Add skewness, kurtosis, and spectral parameters
+
+# Adjust and run
+$PROJ_DIR/qc/dataProcessing/spectralHCRproducts/specParams/run_momentsSpecParams_10Hz_wholeFlights.m
+
+# To add them to the dataset run
+$PROJ_DIR/qc/dataProcessing/spectralHCRproducts/specParams/cfradialMomSpecPar.m
+
+#################################################################
 # Create final subset
 
 # Once all fields have been added we create a dataset version that
