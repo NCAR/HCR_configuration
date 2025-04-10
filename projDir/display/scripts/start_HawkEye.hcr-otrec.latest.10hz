@@ -1,22 +1,15 @@
 #! /bin/csh
 
-# basic setup
-
-#source /opt/local/git/HCR_configuration/projDir/system/params/project_info.socrates
+#source /opt/local/git/HCR_configuration/projDir/system/params/project_info.otrec
 #setenv PROJ_DIR /opt/local/git/HCR_configuration/projDir
 
 setenv PROJ_DIR $HOME/git/HCR_configuration/projDir
 source $PROJ_DIR/system/params/project_info.otrec
 cd $PROJ_DIR/display/params
 
-cd ${PROJ_DIR}/display/params
-
-#set HAWKEYE = /opt/local/lrose/bin/HawkEye
-set HAWKEYE = HawkEye
-
 if ($#argv < 6) then
-  $HAWKEYE -params HawkEye.hcr.latest.10hz -start_time "2019 08 07 15 30 00" >& /dev/null &
+ HawkEye -params HawkEye.hcr.latest.10hz -start_time "2019 08 07 12 35 00" >& /dev/null &
 else
-  $HAWKEYE -params HawkEye.hcr.latest.10hz -start_time "$1 $2 $3 $4 $5 $6" >& /dev/null &
+  HawkEye -params HawkEye.hcr.latest.10hz -start_time "$1 $2 $3 $4 $5 $6" >& /dev/null &
 endif
 

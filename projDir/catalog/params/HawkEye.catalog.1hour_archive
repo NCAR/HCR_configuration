@@ -511,6 +511,87 @@ fields = {
     color_map = "hcr_pid.colors",
     shortcut = "d"
   }
+        ,
+  {
+    label = "1Hr_WIDTH_SPEC",
+    raw_name = "WIDTH_SPEC",
+    filtered_name = "",
+    units = "m/s",
+    color_map = "width_w.colors",
+    shortcut = "d"
+  }
+    ,
+  {
+    label = "1Hr_SKEWNESS",
+    raw_name = "SKEWNESS",
+    filtered_name = "",
+    units = "m/s",
+    color_map = "hcr_skewness.colors",
+    shortcut = "d"
+  }
+    ,
+  {
+    label = "1Hr_KURTOSIS",
+    raw_name = "KURTOSIS",
+    filtered_name = "",
+    units = "m/s",
+    color_map = "hcr_kurtosis.colors",
+    shortcut = "d"
+  }
+    ,
+  {
+    label = "1Hr_LEFT_SLOPE",
+    raw_name = "LEFT_SLOPE",
+    filtered_name = "",
+    units = "(dB s)/m",
+    color_map = "hcr_leftSlope.colors",
+    shortcut = "d"
+  }
+    ,
+  {
+    label = "1Hr_RIGHT_SLOPE",
+    raw_name = "RIGHT_SLOPE",
+    filtered_name = "",
+    units = "(dB s)/m",
+    color_map = "hcr_rightSlope.colors",
+    shortcut = "d"
+  }
+    ,
+  {
+    label = "1Hr_EDGE_EDGE_WIDTH",
+    raw_name = "EDGE_EDGE_WIDTH",
+    filtered_name = "",
+    units = "m/s",
+    color_map = "hcr_edgeEdge.colors",
+    shortcut = "d"
+  }
+    ,
+  {
+    label = "1Hr_LEFT_EDGE_VEL",
+    raw_name = "LEFT_EDGE_VEL",
+    filtered_name = "",
+    units = "m/s",
+    color_map = "hcr_vel_blueYellow.colors",
+    shortcut = "d"
+  }
+    ,
+  {
+    label = "1Hr_RIGHT_EDGE_VEL",
+    raw_name = "RIGHT_EDGE_VEL",
+    filtered_name = "",
+    units = "m/s",
+    color_map = "hcr_vel_blueYellow.colors",
+    shortcut = "d"
+  }
+    ,
+  {
+    label = "1Hr_MULTI_PEAK_MASK",
+    raw_name = "MULTI_PEAK_MASK",
+    filtered_name = "",
+    units = "",
+    color_map = "hcr_multi_peak_mask.colors",
+    shortcut = "d"
+  }
 };
 
 ///////////// background_render_mins //////////////////

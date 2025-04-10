@@ -315,7 +315,7 @@ $PROJ_DIR/qc/dataProcessing/HCRproducts/stratConv/cfradial_convStrat.m
 # Adjust and run
 $PROJ_DIR/qc/dataProcessing/HCRproducts/PID/HCRonly/call_pid_wholeFlights.m
 
-# To add id to the dataset run
+# To add pid to the dataset run
 $PROJ_DIR/qc/dataProcessing/HCRproducts/HCRonly/cfradial_pid.m
 
 #################################################################
