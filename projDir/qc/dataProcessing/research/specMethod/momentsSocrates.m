@@ -136,4 +136,5 @@ xlim(xlims);
 
 
 set(gcf,'PaperPositionMode','auto')
-print(f1,[figdir,'momentsSOCRATES.png'],'-dpng','-r0');
+%print(f1,[figdir,'momentsSOCRATES.png'],'-dpng','-r0');
+exportgraphics(f1,[figdir,'momentsSOCRATES.png'],'Resolution','300');

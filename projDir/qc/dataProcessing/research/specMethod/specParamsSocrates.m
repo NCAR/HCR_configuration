@@ -173,4 +173,5 @@ ylim(ylims);
 xlim(xlims);
 
 set(gcf,'PaperPositionMode','auto')
-print(f1,[figdir,'specParamsSOCRATES.png'],'-dpng','-r0');
+%print(f1,[figdir,'specParamsSOCRATES.png'],'-dpng','-r0');
+exportgraphics(f1,[figdir,'specParamsSOCRATES.png'],'Resolution','300');

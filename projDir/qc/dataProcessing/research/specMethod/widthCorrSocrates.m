@@ -59,4 +59,5 @@ ylim(ylims);
 xlim(xlims);
 
 set(gcf,'PaperPositionMode','auto')
-print(f1,[figdir,'widthCorr_socrates.png'],'-dpng','-r0');
+%print(f1,[figdir,'widthCorr_socrates.png'],'-dpng','-r0');
+exportgraphics(f1,[figdir,'widthCorr_socrates.png'],'Resolution','300');

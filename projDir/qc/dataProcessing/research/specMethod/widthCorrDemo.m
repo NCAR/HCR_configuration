@@ -42,4 +42,5 @@ grid on
 box on
 
 set(gcf,'PaperPositionMode','auto')
-print(f1,[figdir,'widthCorrModel'],'-dpng','-r0');
+%print(f1,[figdir,'widthCorrModel'],'-dpng','-r0');
+exportgraphics(f1,[figdir,'widthCorrModel.png'],'Resolution','300');

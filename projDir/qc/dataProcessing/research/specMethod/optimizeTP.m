@@ -73,4 +73,5 @@ h2=drawellipse('Center',[740,-50],'SemiAxes',[12,8],'Color','b', ...
     'FaceAlpha',0,'HandleVisibility','off','MarkerSize',0.01);
 
 set(gcf,'PaperPositionMode','auto')
-print(f1,[figdir,'optTP.png'],'-dpng','-r0');
+%print(f1,[figdir,'optTP.png'],'-dpng','-r0');
+exportgraphics(f1,[figdir,'optTP.png'],'Resolution','300');

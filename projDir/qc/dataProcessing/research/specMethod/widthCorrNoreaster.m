@@ -103,4 +103,5 @@ xlim([momentsTime.time(1),momentsTime.time(end)]);
 legend(l,'Aircraft altitude','Location','southeast');
 
 set(gcf,'PaperPositionMode','auto')
-print(f1,[figdir,'widthCorr_noreaster.png'],'-dpng','-r0');
+%print(f1,[figdir,'widthCorr_noreaster.png'],'-dpng','-r0');
+exportgraphics(f1,[figdir,'widthCorr_noreaster.png'],'Resolution','300');

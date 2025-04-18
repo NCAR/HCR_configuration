@@ -82,4 +82,5 @@ t = annotation('textbox',[0.46, 0.16, 0.1, 0.1],'String',"Edge-to-edge width",'F
     'HorizontalAlignment','center','VerticalAlignment','middle','BackgroundColor',[0.4660 0.6740 0.1880]);
 
 set(gcf,'PaperPositionMode','auto')
-print(f1,[figdir,'specParamsDemo.png'],'-dpng','-r0');
+%print(f1,[figdir,'specParamsDemo.png'],'-dpng','-r0');
+exportgraphics(f1,[figdir,'specParamsDemo.png'],'Resolution','300');
