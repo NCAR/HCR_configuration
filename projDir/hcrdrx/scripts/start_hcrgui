@@ -1,5 +1,10 @@
 #!/bin/csh
 
+if ( `hostname` == "rds" ) then
+	echo "You are on RDS"
+	exit
+endif
+
 cd $HOME/git/HCR_instrument/src/hcrgui
 ./hcrgui |& LogFilter -d $ERRORS_LOG_DIR -p hcrgui &
 
