@@ -266,8 +266,11 @@ siggen_specify_power_sequence = TRUE;
 //
 
 
-//siggen_sequence_start_power = -23.03;   // Verified on 2024-04-15
-siggen_sequence_start_power = -23.06;     // Verified on 2024-11-19
+//siggen_sequence_start_power = -23.03;     // Verified on 2024-04-15, JSS
+//siggen_sequence_start_power = -23.06;     // Verified on 2024-11-19, JSS
+//siggen_sequence_start_power = -22.70;     // Verified on 2025-05-29, JSS
+siggen_sequence_start_power = -27.12;     // Verified on 2025-06-03, JE & JSS
+
 
 ///////////// siggen_delta_power_sequence /////////////
 //
@@ -279,11 +282,9 @@ siggen_sequence_start_power = -23.06;     // Verified on 2024-11-19
 //
 
 siggen_delta_power_sequence = {
- -4,
- -6,
- -8,
+   0,
+  -5,
  -10,
- -12,
  -15,
  -20,
  -25,
@@ -296,21 +297,48 @@ siggen_delta_power_sequence = {
  -60,
  -65,
  -70,
- -74,
- -78,
+ -75,
  -80,
- -82,
- -84,
- -87,
+ -85,
  -90,
  -95,
  -100,
- -105,
- -110,
- -115,
- -120,
- -125
+ -105   // Sig gen RF power off
 };
+
+//siggen_delta_power_sequence = {
+// -4,
+// -6,
+// -8,
+// -10,
+// -12,
+// -15,
+// -20,
+// -25,
+// -30,
+// -35,
+// -40,
+// -45,
+// -50,
+// -55,
+// -60,
+// -65,
+// -70,
+// -74,
+// -78,
+// -80,
+// -82,
+// -84,
+// -87,
+// -90,
+// -95,
+// -100,
+// -105,
+// -110,
+// -115,
+// -120,
+// -125   // Sig gen RF power off
+//};
 
 ///////////// set_sig_freq ////////////////////////////
 //
@@ -734,7 +762,7 @@ systemPhidpDeg = 0;
 // Type: double
 //
 
-linear_region_min_power = -85;
+linear_region_min_power = -80;
 
 ///////////// linear_region_max_power /////////////////
 //
@@ -744,7 +772,7 @@ linear_region_min_power = -85;
 // Type: double
 //
 
-linear_region_max_power = -50;
+linear_region_max_power = -40;
 
 ///////////// noise_region_max_power //////////////////
 //
