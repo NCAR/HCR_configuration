@@ -319,11 +319,11 @@ fields = {
   }
   ,
   {
-    label = "VEL_unfold_15",
+    label = "VEL_unfold_16",
     raw_name = "VEL_unfold_short",
     filtered_name = "",
     units = "m/s",
-    color_map = "vel.colors",
+    color_map = "vel_16.colors",
     shortcut = "1"
   }
   ,
